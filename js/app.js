@@ -398,12 +398,36 @@ function renderVideos() {
 }
 
 function renderArcade() {
+  const gameMeta = {
+    reaction: { title: '반응속도', level: '입문', control: '클릭 / 스페이스바', desc: '신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.' },
+    memory: { title: '기억력', level: '입문', control: '마우스 클릭', desc: '카드를 맞추며 기억력과 정확도를 테스트합니다.' },
+    rhythm: { title: '리듬', level: '중급', control: '스페이스 / 터치', desc: '노트 타이밍을 맞춰 콤보를 쌓고 고득점에 도전하세요.' },
+    puzzle: { title: '퍼즐', level: '중급', control: '클릭 / 방향키', desc: '15퍼즐을 최소 이동으로 정렬해 최고 기록을 경신하세요.' },
+    math: { title: '스피드 합산', level: '중급', control: '키보드 입력', desc: '덧셈/뺄셈/곱셈을 빠르게 풀어 콤보 점수를 획득하세요.' },
+    rps: { title: '가위바위보', level: '입문', control: '클릭 / R,P,S 키', desc: '연승과 승률을 동시에 관리하며 기록을 쌓아보세요.' },
+    number: { title: '숫자 기억력', level: '중급', control: '키보드 입력', desc: '레벨이 오를수록 숫자 노출 속도가 빨라집니다.' },
+    typing: { title: '타이핑', level: '중급', control: '키보드 입력', desc: '정확도와 WPM을 동시에 끌어올리는 집중형 게임입니다.' },
+    reflex: { title: '반사신경', level: '중급', control: '클릭 / 터치', desc: '목표를 빠르게 터치해 타이머 내 최대 점수를 기록하세요.' },
+    maze: { title: '미로', level: '중급', control: '방향키 / 버튼', desc: '이동 횟수와 시간 효율을 함께 고려한 미로 탈출 챌린지.' },
+    dodge: { title: '낙하 피하기', level: '상급', control: '좌/우 방향키', desc: '시간이 지날수록 속도가 빨라지는 장애물을 회피하세요.' }
+  };
+
   app.innerHTML = `
     <div class="fade-in">
       <h2 class="page-title">🕹️ 팬클럽 챌린지</h2>
       <div class="game-intro">
         <p class="text-sub">팬들이 함께 즐기는 이벤트 공간입니다. 기록을 공유하고 하이라이트에 도전하세요.</p>
         <div class="badge"><strong>EVENT</strong> 이번 주 랭킹 도전전</div>
+      </div>
+      <div class="arcade-meta card">
+        <div>
+          <h3 id="arcade-meta-title">반응속도</h3>
+          <p id="arcade-meta-desc" class="text-sub">신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.</p>
+        </div>
+        <div class="arcade-meta-grid">
+          <div class="stat-card"><span class="stat-label">난이도</span><strong id="arcade-meta-level">입문</strong></div>
+          <div class="stat-card"><span class="stat-label">조작</span><strong id="arcade-meta-control">클릭 / 스페이스바</strong></div>
+        </div>
       </div>
       <div class="game-tabs">
         <button class="tab-btn active" data-game="reaction">반응속도</button>
@@ -424,10 +448,21 @@ function renderArcade() {
 
   const container = document.getElementById('game-container');
   const tabs = document.querySelectorAll('.game-tabs .tab-btn');
+  const metaTitle = document.getElementById('arcade-meta-title');
+  const metaDesc = document.getElementById('arcade-meta-desc');
+  const metaLevel = document.getElementById('arcade-meta-level');
+  const metaControl = document.getElementById('arcade-meta-control');
   
   const setGame = (type) => {
     if (activeGame?.destroy) activeGame.destroy();
     container.innerHTML = '';
+    const meta = gameMeta[type];
+    if (meta) {
+      metaTitle.textContent = meta.title;
+      metaDesc.textContent = meta.desc;
+      metaLevel.textContent = meta.level;
+      metaControl.textContent = meta.control;
+    }
     if (type === 'reaction') activeGame = new ReactionGame(container);
     if (type === 'memory') activeGame = new MemoryGame(container);
     if (type === 'rhythm') activeGame = new RhythmGame(container);

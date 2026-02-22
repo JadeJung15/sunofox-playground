@@ -1,13 +1,39 @@
 // js/games.js
 import { Store } from './store.js';
 
+function createShareButton(label, onClick) {
+  const shareBtn = document.createElement('button');
+  shareBtn.className = 'btn btn-primary btn-share';
+  shareBtn.textContent = label || '공유하기';
+  shareBtn.addEventListener('click', onClick);
+  return shareBtn;
+}
+
+function dispatchShare(gameName, score) {
+  window.dispatchEvent(new CustomEvent('gameShareRecord', {
+    detail: { gameName, score }
+  }));
+}
+
+function percent(numerator, denominator) {
+  if (!denominator) return 0;
+  return Math.round((numerator / denominator) * 100);
+}
+
 export class ReactionGame {
   constructor(element) {
     this.container = element;
     this.state = 'idle'; // idle, waiting, ready, finished
     this.timer = null;
     this.startTime = 0;
+    this.attempts = [];
     this.handleClickBound = () => this.handleClick();
+    this.handleKeyDown = (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        this.handleClick();
+      }
+    };
     this.render();
   }
 
@@ -19,6 +45,7 @@ export class ReactionGame {
         <div class="game-result"></div>
       </div>
       <div class="game-controls">
+        <p class="text-sub">마우스 클릭 또는 스페이스바로 플레이</p>
         <button class="btn btn-secondary" id="reset-reaction">기록 초기화</button>
       </div>
     `;
@@ -27,8 +54,10 @@ export class ReactionGame {
     this.result = this.container.querySelector('.game-result');
 
     this.area.addEventListener('click', this.handleClickBound);
+    document.addEventListener('keydown', this.handleKeyDown);
     this.container.querySelector('#reset-reaction').addEventListener('click', () => {
       Store.saveGameRecord('reaction', null);
+      this.attempts = [];
       this.result.textContent = '기록 초기화됨.';
       alert('기록이 초기화되었습니다.');
     });
@@ -69,25 +98,23 @@ export class ReactionGame {
     
     const isBest = Store.saveGameRecord('reaction', time);
     const best = Store.getGameRecord('reaction');
+    this.attempts.push(time);
+    if (this.attempts.length > 5) this.attempts.shift();
+    const avg = Math.round(this.attempts.reduce((sum, v) => sum + v, 0) / this.attempts.length);
     
-    this.status.textContent = `${time}ms! 다시 하려면 클릭.`;
-    this.result.innerHTML = `현재: ${time}ms <br> 최고: ${best}ms ${isBest ? '(New!)' : ''}`;
+    this.status.textContent = `${time}ms! 다시 하려면 클릭 또는 스페이스바를 누르세요.`;
+    this.result.innerHTML = `현재: ${time}ms <br> 최고: ${best}ms ${isBest ? '(New!)' : ''}<br>최근 평균(최대 5회): ${avg}ms`;
 
     if (isBest) {
-        this.result.innerHTML += ` <button class="btn btn-primary btn-share" data-game-name="반응속도 테스트" data-score="${time}ms">공유하기</button>`;
-        this.result.querySelector('.btn-share').addEventListener('click', (e) => {
-            window.dispatchEvent(new CustomEvent('gameShareRecord', { 
-                detail: { 
-                    gameName: e.target.dataset.gameName, 
-                    score: e.target.dataset.score 
-                } 
-            }));
-        });
+        this.result.appendChild(
+          createShareButton('공유하기', () => dispatchShare('반응속도 테스트', `${time}ms`))
+        );
     }
   }
 
   destroy() {
     clearTimeout(this.timer);
+    document.removeEventListener('keydown', this.handleKeyDown);
     if (this.area) {
       this.area.removeEventListener('click', this.handleClickBound);
     }
@@ -102,6 +129,8 @@ export class MemoryGame {
     this.matched = [];
     this.isLock = false;
     this.turns = 0;
+    this.startTime = null;
+    this.matchesTried = 0;
     this.render();
   }
 
@@ -137,6 +166,8 @@ export class MemoryGame {
     this.flipped = [];
     this.matched = [];
     this.turns = 0;
+    this.matchesTried = 0;
+    this.startTime = Date.now();
     this.isLock = false;
     this.scoreDisplay.textContent = `Turns: 0 (Best: ${Store.getGameRecord('memory') || '-'})`;
 
@@ -159,6 +190,7 @@ export class MemoryGame {
 
     if (this.flipped.length === 2) {
       this.turns++;
+      this.matchesTried++;
       this.scoreDisplay.textContent = `Turns: ${this.turns} (Best: ${Store.getGameRecord('memory') || '-'})`;
       this.checkMatch();
     }
@@ -186,18 +218,13 @@ export class MemoryGame {
   endGame() {
     const isBest = Store.saveGameRecord('memory', this.turns);
     const best = Store.getGameRecord('memory');
-    alert(`성공! 총 ${this.turns}턴 소요되었습니다. (최고 기록: ${best || '-'})`);
+    const sec = Math.round((Date.now() - this.startTime) / 1000);
+    const accuracy = percent(this.matched.length / 2, this.matchesTried);
+    alert(`성공! ${this.turns}턴 / ${sec}초 / 정확도 ${accuracy}% (최고 기록: ${best || '-'})`);
     
     if (isBest) {
         const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
-        if (shareConfirm) {
-            window.dispatchEvent(new CustomEvent('gameShareRecord', { 
-                detail: { 
-                    gameName: '카드 뒤집기', 
-                    score: `${this.turns}턴` 
-                } 
-            }));
-        }
+        if (shareConfirm) dispatchShare('카드 뒤집기', `${this.turns}턴 / ${sec}초`);
     }
     this.startGame();
   }
@@ -207,6 +234,10 @@ export class RhythmGame {
     constructor(element) {
         this.container = element;
         this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.hits = 0;
+        this.misses = 0;
         this.isPlaying = false;
         this.spawnInterval = null;
         this.gameTimer = null;
@@ -260,10 +291,20 @@ export class RhythmGame {
         if (this.isPlaying) return;
         this.isPlaying = true;
         this.score = 0;
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.hits = 0;
+        this.misses = 0;
         this.scoreEl.textContent = `Score: 0 (Best: ${Store.getGameRecord('rhythm') || 0})`;
         this.notesContainer.innerHTML = '';
-        
-        this.spawnInterval = setInterval(() => this.spawnNote(), 800);
+
+        let spawnMs = 820;
+        this.spawnInterval = setInterval(() => this.spawnNote(), spawnMs);
+        setTimeout(() => {
+          clearInterval(this.spawnInterval);
+          spawnMs = 680;
+          this.spawnInterval = setInterval(() => this.spawnNote(), spawnMs);
+        }, 8000);
         this.gameTimer = setTimeout(() => this.endGame(), 15000); // 15 seconds game
     }
 
@@ -274,6 +315,8 @@ export class RhythmGame {
         
         setTimeout(() => {
             if (note.parentNode) {
+                this.combo = 0;
+                this.misses += 1;
                 note.remove();
             }
         }, 2000);
@@ -288,8 +331,11 @@ export class RhythmGame {
             const noteRect = note.getBoundingClientRect();
             // Check if note overlaps with target zone
             if (noteRect.bottom > targetRect.top && noteRect.top < targetRect.bottom) {
-                this.score += 10;
-                this.scoreEl.textContent = `Score: ${this.score} (Best: ${Store.getGameRecord('rhythm') || 0})`;
+                this.combo += 1;
+                this.hits += 1;
+                this.maxCombo = Math.max(this.maxCombo, this.combo);
+                this.score += 10 + Math.min(this.combo, 10);
+                this.scoreEl.textContent = `Score: ${this.score} | Combo: ${this.combo} (Best: ${Store.getGameRecord('rhythm') || 0})`;
                 note.classList.add('hit');
                 setTimeout(() => note.remove(), 100);
                 hitMade = true;
@@ -309,19 +355,13 @@ export class RhythmGame {
         
         const isBest = Store.saveGameRecord('rhythm', this.score);
         const best = Store.getGameRecord('rhythm');
-        alert(`게임 종료! 점수: ${this.score} (최고 기록: ${best || 0})`);
+        const acc = percent(this.hits, this.hits + this.misses);
+        alert(`게임 종료! 점수: ${this.score} | 최대 콤보: ${this.maxCombo} | 정확도: ${acc}% (최고 기록: ${best || 0})`);
         this.notesContainer.innerHTML = '';
 
         if (isBest) {
             const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
-            if (shareConfirm) {
-                window.dispatchEvent(new CustomEvent('gameShareRecord', { 
-                    detail: { 
-                        gameName: '비트 탭', 
-                        score: `${this.score}점` 
-                    } 
-                }));
-            }
+            if (shareConfirm) dispatchShare('비트 탭', `${this.score}점 / 콤보 ${this.maxCombo}`);
         }
     }
 
@@ -342,6 +382,8 @@ export class PuzzleGame {
         this.tiles = [];
         this.emptyIndex = 15;
         this.moves = 0;
+        this.startTime = Date.now();
+        this.handleKeyDown = (e) => this.onKeyDown(e);
         this.render();
     }
 
@@ -349,7 +391,7 @@ export class PuzzleGame {
         this.container.innerHTML = `
             <div class="game-header">
                 <h3 class="game-title">🧩 15 퍼즐</h3>
-                <span class="puzzle-moves">Moves: 0</span>
+                <span class="puzzle-moves">Moves: 0 | Time: 0s</span>
             </div>
             <div class="puzzle-grid" id="puzzle-grid"></div>
             <div class="game-controls">
@@ -363,9 +405,10 @@ export class PuzzleGame {
         this.container.querySelector('#shuffle-puzzle').addEventListener('click', () => this.shuffle());
         this.container.querySelector('#reset-puzzle').addEventListener('click', () => {
             Store.saveGameRecord('puzzle', null);
-            this.movesEl.textContent = `Moves: 0 (Best: -)`;
+            this.movesEl.textContent = `Moves: 0 | Time: 0s (Best: -)`;
             alert('기록이 초기화되었습니다.');
         });
+        document.addEventListener('keydown', this.handleKeyDown);
         this.initGrid();
     }
 
@@ -373,6 +416,7 @@ export class PuzzleGame {
         this.tiles = Array.from({length: 15}, (_, i) => i + 1);
         this.tiles.push(null); // Empty slot
         this.emptyIndex = 15;
+        this.startTime = Date.now();
         this.draw();
         this.shuffle(); // Shuffle on init
     }
@@ -388,10 +432,12 @@ export class PuzzleGame {
             }
             this.grid.appendChild(tile);
         });
-        this.movesEl.textContent = `Moves: ${this.moves} (Best: ${Store.getGameRecord('puzzle') || '-'})`;
+        const sec = Math.round((Date.now() - this.startTime) / 1000);
+        this.movesEl.textContent = `Moves: ${this.moves} | Time: ${sec}s (Best: ${Store.getGameRecord('puzzle') || '-'})`;
     }
 
     move(index) {
+        if (index < 0 || index >= this.tiles.length) return;
         if (this.canMove(index)) {
             this.tiles[this.emptyIndex] = this.tiles[index];
             this.tiles[index] = null;
@@ -431,7 +477,15 @@ export class PuzzleGame {
             }
         }
         this.moves = 0;
+        this.startTime = Date.now();
         this.draw();
+    }
+
+    onKeyDown(e) {
+        if (e.key === 'ArrowUp') this.move(this.emptyIndex + 4);
+        if (e.key === 'ArrowDown') this.move(this.emptyIndex - 4);
+        if (e.key === 'ArrowLeft') this.move(this.emptyIndex + 1);
+        if (e.key === 'ArrowRight') this.move(this.emptyIndex - 1);
     }
 
     checkWin() {
@@ -444,19 +498,17 @@ export class PuzzleGame {
         
         const isBest = Store.saveGameRecord('puzzle', this.moves);
         const best = Store.getGameRecord('puzzle');
-        alert(`축하합니다! ${this.moves}번 움직여서 완성했습니다. (최고 기록: ${best || '-'})`);
+        const sec = Math.round((Date.now() - this.startTime) / 1000);
+        alert(`축하합니다! ${this.moves}번 / ${sec}초에 완성했습니다. (최고 기록: ${best || '-'})`);
 
         if (isBest) {
             const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
-            if (shareConfirm) {
-                window.dispatchEvent(new CustomEvent('gameShareRecord', { 
-                    detail: { 
-                        gameName: '15 퍼즐', 
-                        score: `${this.moves}회` 
-                    } 
-                }));
-            }
+            if (shareConfirm) dispatchShare('15 퍼즐', `${this.moves}회 / ${sec}초`);
         }
+    }
+
+    destroy() {
+        document.removeEventListener('keydown', this.handleKeyDown);
     }
 }
 
@@ -464,6 +516,7 @@ export class MathGame {
     constructor(element) {
         this.container = element;
         this.score = 0;
+        this.combo = 0;
         this.timeLeft = 30;
         this.timer = null;
         this.answer = null;
@@ -475,7 +528,7 @@ export class MathGame {
         this.container.innerHTML = `
             <div class="game-header">
                 <h3 class="game-title">🔢 스피드 합산</h3>
-                <span class="math-status">Time: 30s | Score: 0</span>
+                <span class="math-status">Time: 30s | Score: 0 | Combo: 0</span>
             </div>
             <div class="math-area">
                 <div class="math-question">시작 버튼을 눌러주세요</div>
@@ -512,6 +565,7 @@ export class MathGame {
         if (this.isPlaying) return;
         this.isPlaying = true;
         this.score = 0;
+        this.combo = 0;
         this.timeLeft = 30;
         this.feedbackEl.textContent = '';
         this.updateStatus();
@@ -529,16 +583,32 @@ export class MathGame {
 
     updateStatus() {
         const best = Store.getGameRecord('math') || 0;
-        this.statusEl.textContent = `Time: ${this.timeLeft}s | Score: ${this.score} (Best: ${best})`;
+        this.statusEl.textContent = `Time: ${this.timeLeft}s | Score: ${this.score} | Combo: ${this.combo} (Best: ${best})`;
     }
 
     nextQuestion() {
-        const a = Math.floor(Math.random() * 30) + 1;
-        const b = Math.floor(Math.random() * 30) + 1;
+        const levelBoost = Math.min(20, Math.floor(this.score / 3));
+        const a = Math.floor(Math.random() * (20 + levelBoost)) + 1;
+        const b = Math.floor(Math.random() * (20 + levelBoost)) + 1;
         const c = Math.floor(Math.random() * 10);
-        const useThree = Math.random() < 0.4;
-        this.answer = useThree ? a + b + c : a + b;
-        this.questionEl.textContent = useThree ? `${a} + ${b} + ${c} = ?` : `${a} + ${b} = ?`;
+        const type = Math.random();
+        if (type < 0.55) {
+            const useThree = Math.random() < 0.4;
+            this.answer = useThree ? a + b + c : a + b;
+            this.questionEl.textContent = useThree ? `${a} + ${b} + ${c} = ?` : `${a} + ${b} = ?`;
+            return;
+        }
+        if (type < 0.82) {
+            const x = Math.max(a, b);
+            const y = Math.min(a, b);
+            this.answer = x - y;
+            this.questionEl.textContent = `${x} - ${y} = ?`;
+            return;
+        }
+        const x = Math.floor(Math.random() * 12) + 2;
+        const y = Math.floor(Math.random() * 9) + 2;
+        this.answer = x * y;
+        this.questionEl.textContent = `${x} × ${y} = ?`;
     }
 
     submitAnswer() {
@@ -546,9 +616,13 @@ export class MathGame {
         const value = parseInt(this.inputEl.value, 10);
         if (Number.isNaN(value)) return;
         if (value === this.answer) {
-            this.score += 1;
-            this.feedbackEl.textContent = '정답!';
+            this.combo += 1;
+            const bonus = this.combo >= 5 ? 2 : 1;
+            this.score += bonus;
+            this.feedbackEl.textContent = bonus > 1 ? `정답! 콤보 보너스 +${bonus}` : '정답!';
         } else {
+            this.combo = 0;
+            this.timeLeft = Math.max(0, this.timeLeft - 1);
             this.feedbackEl.textContent = `틀림! 정답은 ${this.answer}`;
         }
         this.inputEl.value = '';
@@ -566,13 +640,8 @@ export class MathGame {
         this.feedbackEl.innerHTML = `점수: ${this.score} / 최고: ${best}`;
 
         if (isBest) {
-            const shareBtn = document.createElement('button');
-            shareBtn.className = 'btn btn-primary btn-share';
-            shareBtn.textContent = '공유하기';
-            shareBtn.addEventListener('click', () => {
-                window.dispatchEvent(new CustomEvent('gameShareRecord', {
-                    detail: { gameName: '스피드 합산', score: `${this.score}점` }
-                }));
+            const shareBtn = createShareButton('공유하기', () => {
+                dispatchShare('스피드 합산', `${this.score}점`);
             });
             this.feedbackEl.appendChild(shareBtn);
         }
@@ -586,6 +655,11 @@ export class RpsGame {
         this.losses = 0;
         this.draws = 0;
         this.streak = 0;
+        this.handleKeyDown = (e) => {
+          if (e.key.toLowerCase() === 'r') this.playRound('rock');
+          if (e.key.toLowerCase() === 'p') this.playRound('paper');
+          if (e.key.toLowerCase() === 's') this.playRound('scissors');
+        };
         this.render();
     }
 
@@ -601,6 +675,7 @@ export class RpsGame {
                     <button class="btn btn-secondary" data-pick="paper">✋ 보</button>
                     <button class="btn btn-secondary" data-pick="scissors">✌️ 가위</button>
                 </div>
+                <p class="text-sub">단축키: R(바위), P(보), S(가위)</p>
                 <div class="rps-result">버튼을 눌러 대결하세요!</div>
                 <div class="rps-scoreboard">승 ${this.wins} / 패 ${this.losses} / 무 ${this.draws}</div>
             </div>
@@ -616,8 +691,15 @@ export class RpsGame {
         this.container.querySelectorAll('.rps-buttons .btn').forEach(btn => {
             btn.addEventListener('click', () => this.playRound(btn.dataset.pick));
         });
+        document.addEventListener('keydown', this.handleKeyDown);
         this.container.querySelector('#reset-rps').addEventListener('click', () => {
             Store.saveGameRecord('rps', 0);
+            this.wins = 0;
+            this.losses = 0;
+            this.draws = 0;
+            this.streak = 0;
+            this.resultEl.textContent = '버튼을 눌러 대결하세요!';
+            this.updateScoreboard();
             this.updateStatus();
             alert('기록이 초기화되었습니다.');
         });
@@ -638,15 +720,12 @@ export class RpsGame {
         }
 
         const isBest = Store.saveGameRecord('rps', this.streak);
-        this.resultEl.innerHTML = `내 선택: ${this.toKorean(player)} / 컴퓨터: ${this.toKorean(cpu)}<br>${this.resultMessage(result)}`;
+        const total = this.wins + this.losses + this.draws;
+        const winRate = percent(this.wins, total);
+        this.resultEl.innerHTML = `내 선택: ${this.toKorean(player)} / 컴퓨터: ${this.toKorean(cpu)}<br>${this.resultMessage(result)}<br>승률: ${winRate}%`;
         if (isBest && this.streak > 0) {
-            const shareBtn = document.createElement('button');
-            shareBtn.className = 'btn btn-primary btn-share';
-            shareBtn.textContent = '공유하기';
-            shareBtn.addEventListener('click', () => {
-                window.dispatchEvent(new CustomEvent('gameShareRecord', {
-                    detail: { gameName: '가위바위보', score: `${this.streak}연승` }
-                }));
+            const shareBtn = createShareButton('공유하기', () => {
+              dispatchShare('가위바위보', `${this.streak}연승`);
             });
             this.resultEl.appendChild(shareBtn);
         }
@@ -687,6 +766,10 @@ export class RpsGame {
         if (pick === 'rock') return '바위';
         if (pick === 'paper') return '보';
         return '가위';
+    }
+
+    destroy() {
+        document.removeEventListener('keydown', this.handleKeyDown);
     }
 }
 
@@ -784,6 +867,7 @@ export class PersonalityTest {
                 <span class="test-progress">1 / ${this.questions.length}</span>
             </div>
             <div class="test-card">
+                <div class="progress-track"><div class="progress-fill" style="width:0%"></div></div>
                 <div class="test-question"></div>
                 <div class="test-options"></div>
             </div>
@@ -793,6 +877,7 @@ export class PersonalityTest {
         `;
 
         this.progressEl = this.container.querySelector('.test-progress');
+        this.progressFill = this.container.querySelector('.progress-fill');
         this.questionEl = this.container.querySelector('.test-question');
         this.optionsEl = this.container.querySelector('.test-options');
 
@@ -803,6 +888,7 @@ export class PersonalityTest {
     renderQuestion() {
         const current = this.questions[this.index];
         this.progressEl.textContent = `${this.index + 1} / ${this.questions.length}`;
+        this.progressFill.style.width = `${Math.round((this.index / this.questions.length) * 100)}%`;
         this.questionEl.textContent = current.q;
         this.optionsEl.innerHTML = current.options.map(opt => (
             `<button class="test-option" data-type="${opt.t}">${opt.text}</button>`
@@ -827,16 +913,20 @@ export class PersonalityTest {
         const top = Object.entries(this.score).sort((a, b) => b[1] - a[1])[0][0];
         const result = this.results[top];
         this.progressEl.textContent = '완료';
+        this.progressFill.style.width = '100%';
+        const summary = Object.entries(this.score)
+          .sort((a, b) => b[1] - a[1])
+          .map(([k, v]) => `${k}:${v}`)
+          .join(' · ');
         this.questionEl.innerHTML = `<strong>${result.title}</strong>`;
         this.optionsEl.innerHTML = `
             <p class="test-result">${result.desc}</p>
+            <p class="text-sub">성향 점수: ${summary}</p>
             <button class="btn btn-primary btn-share" id="share-test">결과 공유</button>
             <button class="btn btn-secondary" id="download-card">결과 카드 저장</button>
         `;
         this.optionsEl.querySelector('#share-test').addEventListener('click', () => {
-            window.dispatchEvent(new CustomEvent('gameShareRecord', {
-                detail: { gameName: '심리테스트', score: result.title }
-            }));
+            dispatchShare('심리테스트', result.title);
         });
         this.optionsEl.querySelector('#download-card').addEventListener('click', () => {
             this.downloadResultCard(result);
@@ -846,6 +936,7 @@ export class PersonalityTest {
     reset() {
         this.index = 0;
         this.score = { A: 0, B: 0, C: 0, D: 0, E: 0 };
+        this.progressFill.style.width = '0%';
         this.renderQuestion();
     }
 
@@ -914,6 +1005,8 @@ export class NumberMemoryGame {
         this.sequence = [];
         this.level = 3;
         this.isShowing = false;
+        this.hasStarted = false;
+        this.revealTimer = null;
         this.render();
     }
 
@@ -944,13 +1037,19 @@ export class NumberMemoryGame {
         this.container.querySelector('#check-number').addEventListener('click', () => this.check());
         this.container.querySelector('#reset-number').addEventListener('click', () => {
             Store.saveGameRecord('number', 0);
+            this.level = 3;
+            this.hasStarted = false;
+            this.sequence = [];
+            this.sequenceEl.textContent = '시작 버튼을 눌러주세요';
             this.feedbackEl.textContent = '기록 초기화됨.';
+            this.updateStatus();
             alert('기록이 초기화되었습니다.');
         });
     }
 
     start() {
         if (this.isShowing) return;
+        this.hasStarted = true;
         this.sequence = Array.from({ length: this.level }, () => Math.floor(Math.random() * 9) + 1);
         this.inputEl.value = '';
         this.feedbackEl.textContent = '';
@@ -961,22 +1060,24 @@ export class NumberMemoryGame {
         this.isShowing = true;
         let index = 0;
         this.sequenceEl.textContent = '';
-        const timer = setInterval(() => {
+        const tickMs = Math.max(360, 760 - this.level * 25);
+        clearInterval(this.revealTimer);
+        this.revealTimer = setInterval(() => {
             this.sequenceEl.textContent = this.sequence[index];
             index += 1;
             if (index >= this.sequence.length) {
-                clearInterval(timer);
+                clearInterval(this.revealTimer);
                 setTimeout(() => {
                     this.sequenceEl.textContent = '입력하세요!';
                     this.isShowing = false;
                     this.inputEl.focus();
                 }, 600);
             }
-        }, 700);
+        }, tickMs);
     }
 
     check() {
-        if (this.isShowing) return;
+        if (!this.hasStarted || this.isShowing) return;
         const value = this.inputEl.value.trim();
         const answer = this.sequence.join('');
         if (!value) return;
@@ -987,12 +1088,16 @@ export class NumberMemoryGame {
             const isBest = Store.saveGameRecord('number', this.level - 1);
             if (isBest) {
                 this.feedbackEl.textContent += ' (최고 기록!)';
+                this.feedbackEl.appendChild(
+                  createShareButton('기록 공유', () => dispatchShare('숫자 기억력', `Lv.${this.level - 1}`))
+                );
             }
             this.updateStatus();
             this.start();
         } else {
             this.feedbackEl.textContent = `오답! 정답은 ${answer}`;
             this.level = 3;
+            this.hasStarted = false;
             this.updateStatus();
         }
     }
@@ -1000,6 +1105,11 @@ export class NumberMemoryGame {
     updateStatus() {
         const best = Store.getGameRecord('number') || 0;
         this.statusEl.textContent = `Level: ${this.level} (Best: ${best})`;
+    }
+
+    destroy() {
+        clearInterval(this.revealTimer);
+        this.isShowing = false;
     }
 }
 
@@ -1014,6 +1124,7 @@ export class TypingGame {
             '속도와 정확도를 모두 잡아보자',
         ];
         this.startTime = null;
+        this.roundDone = false;
         this.render();
     }
 
@@ -1055,19 +1166,34 @@ export class TypingGame {
         this.inputEl.value = '';
         this.feedbackEl.textContent = '문장을 정확히 입력하세요.';
         this.startTime = null;
+        this.roundDone = false;
         this.inputEl.focus();
     }
 
     check() {
+        if (this.roundDone) return;
         if (!this.startTime) this.startTime = Date.now();
         const target = this.phraseEl.textContent;
         const typed = this.inputEl.value;
+        let matched = 0;
+        for (let i = 0; i < typed.length; i++) {
+            if (typed[i] === target[i]) matched += 1;
+        }
+        const accuracy = percent(matched, Math.max(typed.length, 1));
+        const elapsedSec = Math.max(1, Math.round((Date.now() - this.startTime) / 1000));
+        this.feedbackEl.textContent = `진행 중... 정확도 ${accuracy}% | ${elapsedSec}초`;
         if (typed === target) {
             const timeMin = (Date.now() - this.startTime) / 60000;
             const wpm = Math.round((target.length / 5) / timeMin);
             const isBest = Store.saveGameRecord('typing', wpm);
-            this.feedbackEl.textContent = `완료! ${wpm} WPM`;
-            if (isBest) this.feedbackEl.textContent += ' (최고 기록!)';
+            this.roundDone = true;
+            this.feedbackEl.textContent = `완료! ${wpm} WPM / 정확도 ${accuracy}%`;
+            if (isBest) {
+                this.feedbackEl.textContent += ' (최고 기록!)';
+                this.feedbackEl.appendChild(
+                  createShareButton('기록 공유', () => dispatchShare('타이핑 속도', `${wpm} WPM`))
+                );
+            }
             this.updateStatus();
         }
     }
@@ -1084,6 +1210,8 @@ export class ReflexGame {
         this.timeLeft = 15;
         this.timer = null;
         this.spawnTimer = null;
+        this.isPlaying = false;
+        this.fastMode = false;
         this.render();
     }
 
@@ -1117,8 +1245,10 @@ export class ReflexGame {
     }
 
     start() {
+        this.isPlaying = true;
         this.score = 0;
         this.timeLeft = 15;
+        this.fastMode = false;
         this.updateStatus();
         this.resetTarget();
         clearInterval(this.timer);
@@ -1130,11 +1260,18 @@ export class ReflexGame {
             if (this.timeLeft <= 0) this.end();
         }, 1000);
 
-        this.spawnTimer = setInterval(() => this.resetTarget(), 900);
+        this.spawnTimer = setInterval(() => {
+          this.resetTarget();
+          if (this.score >= 18 && !this.fastMode) {
+            this.fastMode = true;
+            clearInterval(this.spawnTimer);
+            this.spawnTimer = setInterval(() => this.resetTarget(), 650);
+          }
+        }, 900);
     }
 
     hit() {
-        if (this.timeLeft <= 0) return;
+        if (!this.isPlaying || this.timeLeft <= 0) return;
         this.score += 1;
         this.updateStatus();
         this.resetTarget();
@@ -1156,11 +1293,13 @@ export class ReflexGame {
     }
 
     end() {
+        this.isPlaying = false;
         clearInterval(this.timer);
         clearInterval(this.spawnTimer);
         const isBest = Store.saveGameRecord('reflex', this.score);
         if (isBest) {
             this.statusEl.textContent += ' (최고 기록!)';
+            dispatchShare('반사신경', `${this.score}점`);
         }
     }
 }
@@ -1189,7 +1328,7 @@ export class MazeGame {
         this.container.innerHTML = `
             <div class="game-header">
                 <h3 class="game-title">🧭 미로 탈출</h3>
-                <span class="maze-status">Moves: 0 | Best: ${Store.getGameRecord('maze') || 0}</span>
+                <span class="maze-status">Moves: 0 | Time: 0s | Best: ${Store.getGameRecord('maze') || 0}</span>
             </div>
             <div class="maze-grid"></div>
             <div class="maze-controls">
@@ -1224,6 +1363,9 @@ export class MazeGame {
     }
 
     handleKey(e) {
+        if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+        }
         if (e.key === 'ArrowUp') this.move('up');
         if (e.key === 'ArrowDown') this.move('down');
         if (e.key === 'ArrowLeft') this.move('left');
@@ -1267,7 +1409,8 @@ export class MazeGame {
 
     updateStatus() {
         const best = Store.getGameRecord('maze') || 0;
-        this.statusEl.textContent = `Moves: ${this.moves} | Best: ${best}`;
+        const sec = Math.round((Date.now() - this.startTime) / 1000);
+        this.statusEl.textContent = `Moves: ${this.moves} | Time: ${sec}s | Best: ${best}`;
     }
 
     win() {
@@ -1276,9 +1419,7 @@ export class MazeGame {
         const isBest = Store.saveGameRecord('maze', score);
         alert(`탈출 성공! 시간: ${timeSec}s, 점수: ${score}`);
         if (isBest) {
-            window.dispatchEvent(new CustomEvent('gameShareRecord', {
-                detail: { gameName: '미로 탈출', score: `${score}점` }
-            }));
+            dispatchShare('미로 탈출', `${score}점 / ${timeSec}초`);
         }
     }
 
@@ -1297,7 +1438,11 @@ export class DodgeGame {
         this.score = 0;
         this.timer = null;
         this.spawnTimer = null;
+        this.fallSpeed = 4;
+        this.isPlaying = false;
         this.handleKeyDown = (e) => {
+            if (!this.isPlaying) return;
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.preventDefault();
             if (e.key === 'ArrowLeft') this.move('left');
             if (e.key === 'ArrowRight') this.move('right');
         };
@@ -1341,9 +1486,13 @@ export class DodgeGame {
     }
 
     start() {
+        this.isPlaying = true;
         this.obstacles = [];
         this.score = 0;
+        this.fallSpeed = 4;
+        this.playerX = 120;
         this.clearObstacles();
+        this.updatePlayer();
         this.updateStatus();
         clearInterval(this.timer);
         clearInterval(this.spawnTimer);
@@ -1379,7 +1528,7 @@ export class DodgeGame {
         const playerRect = { x: this.playerX, y: this.height - 24, w: 30, h: 18 };
 
         this.obstacles.forEach(obs => {
-            obs.y += 4;
+            obs.y += this.fallSpeed;
             obs.el.style.top = `${obs.y}px`;
         });
 
@@ -1394,6 +1543,9 @@ export class DodgeGame {
             else obs.el.remove();
         }
         this.obstacles = remaining;
+        if (this.score % 180 === 0) {
+            this.fallSpeed = Math.min(9, this.fallSpeed + 0.2);
+        }
     }
 
     isHit(a, b) {
@@ -1410,18 +1562,18 @@ export class DodgeGame {
     }
 
     end() {
+        this.isPlaying = false;
         clearInterval(this.timer);
         clearInterval(this.spawnTimer);
         const isBest = Store.saveGameRecord('dodge', this.score);
         alert(`게임 종료! 점수: ${this.score}`);
         if (isBest) {
-            window.dispatchEvent(new CustomEvent('gameShareRecord', {
-                detail: { gameName: '낙하 피하기', score: `${this.score}점` }
-            }));
+            dispatchShare('낙하 피하기', `${this.score}점`);
         }
     }
 
     destroy() {
+        this.isPlaying = false;
         clearInterval(this.timer);
         clearInterval(this.spawnTimer);
         document.removeEventListener('keydown', this.handleKeyDown);
