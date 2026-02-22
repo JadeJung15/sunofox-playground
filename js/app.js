@@ -33,21 +33,28 @@ for (let i = 0; i < 40; i++) {
     });
 }
 
-const categoryMap = { '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹' };
+const categoryMap = { 
+    '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', 
+    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드'
+};
 let currentFilter = '전체';
 
 async function router() {
     const hash = window.location.hash || '#home';
+    
     navLinks.forEach(link => {
         const filter = link.dataset.filter;
         link.classList.toggle('active', (hash === '#home' && filter === '전체') || hash.includes(filter?.toLowerCase()));
     });
-    app.innerHTML = ''; 
+
+    app.innerHTML = ''; // Clear main content
+
     if (hash === '#privacy') renderPrivacy();
     else if (hash === '#about') renderAbout();
     else if (hash === '#arcade') renderArcade();
     else if (hash === '#board') await renderBoard(app);
     else if (hash === '#ranking') await renderRanking(app);
+    else if (hash === '#guide') renderGuide();
     else if (hash === '#profile') renderProfile();
     else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
     else {
@@ -55,6 +62,71 @@ async function router() {
         renderHome();
     }
     window.scrollTo(0, 0);
+}
+
+function renderGuide() {
+    app.innerHTML = `
+        <div class="card guide-container fade-in">
+            <h2 style="text-align:center; margin-bottom:2rem;">📜 SevenCheck 이용 가이드</h2>
+            
+            <section class="guide-section">
+                <h3>1. 포인트(P) 시스템</h3>
+                <p class="text-sub">포인트는 오락실 이용과 게시판 강조 등에 사용됩니다.</p>
+                <ul class="guide-list">
+                    <li><strong>테스트 완료</strong>: +10P 지급 (부스터 적용 시 20P)</li>
+                    <li><strong>테스트 링크 공유</strong>: +30P 지급</li>
+                    <li><strong>오락실 채굴</strong>: 클릭 시 랜덤 포인트 획득</li>
+                    <li><strong>베팅 & 복권</strong>: 게임 결과에 따라 대량 획득 가능</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>2. 계정 티어(등급) 안내</h3>
+                <p class="text-sub">보유한 모든 아이템의 점수 합계로 등급이 결정됩니다.</p>
+                <div class="tier-table-wrapper">
+                    <table class="guide-table">
+                        <thead>
+                            <tr><th>티어</th><th>필요 점수</th><th>색상</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="tier-badge tier-rookie">ROOKIE</span></td><td>0 ~</td><td>그레이</td></tr>
+                            <tr><td><span class="tier-badge tier-bronze">BRONZE</span></td><td>1,000 ~</td><td>브론즈</td></tr>
+                            <tr><td><span class="tier-badge tier-silver">SILVER</span></td><td>5,000 ~</td><td>실버</td></tr>
+                            <tr><td><span class="tier-badge tier-gold">GOLD</span></td><td>15,000 ~</td><td>골드</td></tr>
+                            <tr><td><span class="tier-badge tier-platinum">PLATINUM</span></td><td>50,000 ~</td><td>플래티넘</td></tr>
+                            <tr><td><span class="tier-badge tier-diamond">DIAMOND</span></td><td>100,000 ~</td><td>다이아몬드</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>3. 인벤토리 및 이모지 교환</h3>
+                <ul class="guide-list">
+                    <li><strong>아이템 가치</strong>: 뽑기로 얻은 아이템은 각자 고유 점수가 있습니다. (다이아몬드 2000점 등)</li>
+                    <li><strong>이모지 교환</strong>: 프로필 상점에서 이모지 교환 시, 보유한 아이템 중 가치가 낮은 것부터 가격만큼 **자동 소모**됩니다.</li>
+                    <li><strong>점수 차감</strong>: 아이템이 소모되면 랭킹 점수도 함께 낮아지니 신중하게 교환하세요!</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>4. 오락실 전용 기능</h3>
+                <ul class="guide-list">
+                    <li><strong>슈퍼 부스터</strong>: 100P로 구매 가능하며, 20회 동안 테스트 보상을 2배로 늘려줍니다.</li>
+                    <li><strong>아이템 연금술</strong>: 아이템 5개와 500P를 소모하여 무작위 상위 아이템을 연성합니다.</li>
+                    <li><strong>즉석 복권</strong>: 500P로 최대 30,000P 당첨 기회를 노릴 수 있습니다.</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>5. 계정 정책</h3>
+                <ul class="guide-list">
+                    <li><strong>닉네임 변경</strong>: 한 번 변경하면 30일 동안 재변경이 불가능합니다. (관리자 제외)</li>
+                    <li><strong>커뮤니티 매너</strong>: 비방이나 욕설 게시글은 관리자에 의해 즉시 삭제될 수 있습니다.</li>
+                </ul>
+            </section>
+        </div>
+    `;
 }
 
 function renderHome() {
