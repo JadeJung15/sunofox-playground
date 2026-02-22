@@ -2922,3 +2922,113 @@ header {
     grid-template-columns: 1fr;
   }
 }
+
+/* SunoFox Simple Fan Page */
+:root {
+  --sf-bg: #f5f7fb;
+  --sf-surface: #ffffff;
+  --sf-text: #151a28;
+  --sf-sub: #596177;
+  --sf-line: rgba(21, 26, 40, 0.12);
+  --sf-brand: #e50914;
+}
+
+[data-theme='dark'] {
+  --sf-bg: #0f1420;
+  --sf-surface: #161d2d;
+  --sf-text: #edf1fb;
+  --sf-sub: #a8b3cb;
+  --sf-line: rgba(237, 241, 251, 0.15);
+  --sf-brand: #ff4d57;
+}
+
+body {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--sf-bg) 88%, #ffffff 12%), var(--sf-bg));
+  color: var(--sf-text);
+}
+
+.sf-hero {
+  border: 1px solid var(--sf-line);
+  border-radius: 20px;
+  padding: clamp(1.2rem, 3vw, 2.2rem);
+  background: var(--sf-surface);
+}
+
+.sf-hero-slim {
+  margin-bottom: 0.8rem;
+}
+
+.sf-kicker {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sf-sub);
+}
+
+.sf-hero h1 {
+  margin: 0.4rem 0 0.6rem;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  font-size: clamp(1.8rem, 4.8vw, 3.2rem);
+}
+
+.sf-sub {
+  margin: 0;
+  color: var(--sf-sub);
+}
+
+.sf-grid {
+  display: grid;
+  gap: 0.8rem;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+.sf-card {
+  border: 1px solid var(--sf-line);
+  border-radius: 16px;
+  background: var(--sf-surface);
+  padding: 1rem;
+}
+
+.sf-main {
+  min-height: 320px;
+}
+
+.sf-list {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.sf-list a {
+  display: block;
+  border: 1px solid var(--sf-line);
+  border-radius: 10px;
+  padding: 0.58rem 0.7rem;
+}
+
+.sf-community .post-table-header,
+.sf-community .post-list-table {
+  border-color: var(--sf-line);
+}
+
+.btn-primary {
+  background: var(--sf-brand);
+  border-color: var(--sf-brand);
+  color: #fff;
+}
+
+.btn-outline {
+  color: var(--sf-text);
+  border-color: var(--sf-line);
+}
+
+@media (max-width: 920px) {
+  .sf-grid {
+    grid-template-columns: 1fr;
+  }
+}

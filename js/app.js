@@ -59,8 +59,6 @@ const LINKTREE_LINKS = [
 // Routing
 const routes = {
   '#home': renderHome,
-  '#games': renderArcade,
-  '#arcade': renderArcade,
   '#videos': renderVideos,
   '#community': renderCommunity,
   '#profile': renderProfile,
@@ -69,7 +67,7 @@ const routes = {
 
 function router() {
   const hash = window.location.hash || '#home';
-  if ((currentRoute === '#games' || currentRoute === '#arcade') && hash !== currentRoute && activeGame?.destroy) {
+  if (currentRoute === '#arcade' && hash !== '#arcade' && activeGame?.destroy) {
     activeGame.destroy();
     activeGame = null;
   }
@@ -165,66 +163,48 @@ function renderHome() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="pulse-hero fade-in">
-      <div class="pulse-mark">Discover</div>
-      <h1>팬들과 바로 연결되는<br>수노폭스 소통 허브</h1>
-      <p>시청, 채팅, 게임, 후기 작성을 끊김 없이 이어주는 실시간 팬 플랫폼.</p>
-      <div class="pulse-cta">
-        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">지금 시청</a>
-        <a class="btn btn-outline" href="#community">팬들과 대화</a>
+    <section class="sf-hero fade-in">
+      <p class="sf-kicker">SunoFox Fan Page</p>
+      <h1>수노폭스를 좋아하는 팬들을 위한<br>심플 팬페이지</h1>
+      <p class="sf-sub">최신 영상 확인하고, 커뮤니티 글 읽고, 바로 의견 남기기.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널</a>
+        <a class="btn btn-outline" href="#community">팬 커뮤니티</a>
       </div>
     </section>
 
-    <section class="pulse-marquee fade-in">
-      <span>LIVE</span>
-      <strong>#신곡반응 #팬챌린지 #수노폭스토론 #클립공유</strong>
-    </section>
-
-    <section class="pulse-grid fade-in">
-      <article class="pulse-panel pulse-panel-wide">
-        <div class="section-head">
-          <h2>메인 스트림</h2>
-          <span>대표 재생목록</span>
-        </div>
+    <section class="sf-grid fade-in">
+      <article class="sf-card sf-main">
+        <h2>대표 플레이리스트</h2>
         <div class="embed">
           <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
       </article>
-      <article class="pulse-panel">
-        <h3>팬 트렌드 보드</h3>
-        <ul class="pulse-list">
-          <li><a href="#videos">이번 주 인기 업로드 모아보기</a></li>
-          <li><a href="#arcade">게임 상위권 기록 확인</a></li>
-          <li><a href="#community">팬 리뷰·질문·추천글 탐색</a></li>
-          <li><a href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널 커뮤니티 바로가기</a></li>
+      <article class="sf-card">
+        <h3>팬 페이지 안내</h3>
+        <ul class="sf-list">
+          <li><a href="#videos">최신 영상 보기</a></li>
+          <li><a href="#community">팬 글 읽기/작성</a></li>
+          <li><a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer">유튜브 커뮤니티 보기</a></li>
         </ul>
-      </article>
-      <article class="pulse-panel">
-        <h3>추천 이동</h3>
-        <div class="pulse-route">
-          <a href="#videos">스트리밍</a>
-          <a href="#community">커뮤니티</a>
-          <a href="#arcade">아케이드</a>
-        </div>
       </article>
     </section>
 
     <section class="section fade-in">
       <div class="section-head">
         <h2>오늘의 코멘트</h2>
-        <span>랜덤 팬 메시지</span>
+        <span>팬 메시지</span>
       </div>
-      <div id="advice-section" class="pulse-panel">
+      <div id="advice-section" class="sf-card">
         <p id="advice-text">로딩 중...</p>
       </div>
     </section>
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>플랫폼 링크</h2>
-        <span>외부 채널 이동</span>
+        <h2>공식 링크</h2>
       </div>
-      <div class="hub-link-list pulse-links">
+      <div class="hub-link-list">
         ${linkButtons}
       </div>
     </section>
@@ -251,33 +231,13 @@ function renderVideos() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="pulse-hero pulse-hero-slim fade-in">
-      <div class="pulse-mark">Live</div>
-      <h1>영상 감상부터<br>팬 대화까지 한 번에</h1>
-      <p>최신 영상 확인 후 라운지에서 바로 감상을 나눌 수 있습니다.</p>
-      <div class="pulse-cta">
+    <section class="sf-hero sf-hero-slim fade-in">
+      <p class="sf-kicker">Live</p>
+      <h1>최신 영상 모아보기</h1>
+      <p class="sf-sub">수노폭스 최신 업로드를 팬페이지에서 바로 확인합니다.</p>
+      <div class="hero-actions">
         <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 방문</a>
-        <a class="btn btn-outline" href="#community">후기 보러가기</a>
-      </div>
-    </section>
-
-    <section class="pulse-grid fade-in">
-      <div class="pulse-panel pulse-panel-wide">
-          <div class="section-head">
-            <h2>플레이리스트</h2>
-            <span>${CHANNEL_URL.replace('https://', '')}</span>
-          </div>
-          <div class="embed">
-            <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-          </div>
-      </div>
-      <div class="pulse-panel">
-        <h3>빠른 이동</h3>
-        <ul class="pulse-list">
-          <li><a href="https://www.youtube.com/@sunofox/playlists" target="_blank">재생목록 정주행</a></li>
-          <li><a href="#community">팬 클립 공유</a></li>
-          <li><a href="#community">리뷰/요약 글 보기</a></li>
-        </ul>
+        <a class="btn btn-outline" href="#community">팬 후기 보기</a>
       </div>
     </section>
 
@@ -287,6 +247,15 @@ function renderVideos() {
         <span>YouTube 자동 동기화 · 더 많은 목록</span>
       </div>
       <div id="latest-videos" class="video-grid"></div>
+    </section>
+
+    <section class="section fade-in">
+      <div class="sf-card">
+        <h2>대표 플레이리스트</h2>
+        <div class="embed">
+          <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </div>
     </section>
 
     <section class="section fade-in">
@@ -546,33 +515,32 @@ async function fetchDogImg() {
 
 function renderCommunity() {
   app.innerHTML = `
-    <div class="community-layout fade-in">
-      <section class="pulse-hero pulse-hero-slim">
-        <div class="pulse-mark">Community</div>
-        <h1>팬 콘텐츠 타임라인</h1>
-        <p>공지, 리뷰, 질문, 게임 기록을 타임라인 형태로 확인하세요.</p>
+    <div class="community-layout fade-in sf-community">
+      <section class="sf-hero sf-hero-slim">
+        <p class="sf-kicker">Community</p>
+        <h1>수노폭스 팬 게시판</h1>
+        <p class="sf-sub">팬 글과 유튜브 커뮤니티 글을 한 화면에서 확인하세요.</p>
       </section>
-      <div class="toolbar fan-toolbar pulse-panel">
-        <h2 class="page-title">팬클럽 뉴스룸</h2>
+      <div class="toolbar sf-card">
+        <h2 class="page-title">팬 커뮤니티</h2>
         <div class="actions">
           <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener" class="btn btn-outline">유튜브 커뮤니티</a>
-          <button id="write-comm-btn" class="btn btn-primary">뉴스룸 글쓰기</button>
+          <button id="write-comm-btn" class="btn btn-primary">글쓰기</button>
         </div>
       </div>
       <div class="section mt-4">
         <div class="section-head">
           <h3>유튜브 커뮤니티 게시글</h3>
-          <span>채널 커뮤니티 동기화</span>
         </div>
-        <div id="yt-community-list" class="post-list-table pulse-panel"></div>
+        <div id="yt-community-list" class="post-list-table sf-card"></div>
       </div>
-      <div class="post-table-header pulse-mini">
+      <div class="post-table-header">
         <span class="col-cat">분류</span>
         <span class="col-title">제목</span>
         <span class="col-author">작성자</span>
         <span class="col-meta">조회/추천</span>
       </div>
-      <div id="community-list" class="post-list-table pulse-panel"></div>
+      <div id="community-list" class="post-list-table sf-card"></div>
     </div>
   `;
 
