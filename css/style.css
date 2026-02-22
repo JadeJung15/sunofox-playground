@@ -50,6 +50,7 @@ body {
   transition: background 0.3s, color 0.3s;
   font-size: var(--font-md);
   -webkit-text-size-adjust: 100%; /* Prevent font scaling on orientation change */
+  overflow-x: hidden; /* Prevent accidental horizontal scroll */
 }
 
 /* Typography */
@@ -518,7 +519,8 @@ main {
 @media (max-width: 768px) {
   .nav-container { flex-wrap: wrap; justify-content: center; }
   .logo { margin-bottom: 0.5rem; width: 100%; text-align: center; }
-  .nav-tabs { width: 100%; justify-content: center; }
+  .nav-tabs { width: 100%; justify-content: center; flex-wrap: wrap; }
+  .nav-link { padding: 0.4rem 0.7rem; font-size: var(--font-sm); }
   .theme-toggle { 
     position: static; /* Move to flow */
     margin-left: auto; /* Push to right */
