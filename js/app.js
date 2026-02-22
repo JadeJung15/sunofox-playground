@@ -9,9 +9,6 @@ const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
-// =================================================================
-// 1. Data Store
-// =================================================================
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
 const categories = ['성격', '얼굴', '사주', '재미'];
 const TESTS = [];
@@ -34,14 +31,7 @@ for (let i = 0; i < 40; i++) {
     });
 }
 
-// =================================================================
-// 2. Application Logic (Router)
-// =================================================================
-
-const categoryMap = { 
-    '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', 
-    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹' 
-};
+const categoryMap = { '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹' };
 let currentFilter = '전체';
 
 async function router() {
@@ -65,15 +55,14 @@ async function router() {
     window.scrollTo(0, 0);
 }
 
-// =================================================================
-// 3. Render Functions
-// =================================================================
-
 function renderHome() {
     const authHeader = `
         <div class="card mini-profile-bar" style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; padding: 1rem;">
             ${UserState.user ? 
-                `<span><strong>${UserState.data.nickname}</strong>님</span>
+                `<div style="display:flex; align-items:center; gap:0.5rem;">
+                    <span id="user-emoji" style="font-size:1.5rem;">${UserState.data.emoji || '👤'}</span>
+                    <strong>${UserState.data.nickname}</strong>님
+                 </div>
                  <div style="display:flex; gap:0.5rem;">
                     <button onclick="location.hash='#ranking'" class="btn-secondary" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">🏆 랭킹</button>
                     <button onclick="location.hash='#profile'" class="btn-secondary" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">👤 프로필</button>
@@ -106,38 +95,30 @@ function renderProfile() {
         app.innerHTML = `<div class="card" style="text-align:center; padding:3rem;"><h2>👤 프로필</h2><button id="login-btn" class="btn-primary" style="margin-top:1rem;">로그인하기</button></div>`;
         return;
     }
-
     const inv = UserState.data.inventory || [];
-    // Group duplicates
-    const groupedInv = inv.reduce((acc, item) => {
-        acc[item] = (acc[item] || 0) + 1;
-        return acc;
-    }, {});
-
+    const groupedInv = inv.reduce((acc, item) => { acc[item] = (acc[item] || 0) + 1; return acc; }, {});
     const invHTML = Object.entries(groupedInv).length > 0 ? 
-        Object.entries(groupedInv).map(([name, count]) => `
-            <div class="inv-item">
-                <span class="inv-name">${name}</span>
-                <span class="inv-count">x${count}</span>
-            </div>
-        `).join('') : 
+        Object.entries(groupedInv).map(([name, count]) => `<div class="inv-item"><span class="inv-name">${name}</span><span class="inv-count">x${count}</span></div>`).join('') : 
         '<p class="text-sub">획득한 아이템이 없습니다.</p>';
+
+    const emojis = ['👤', '🦊', '🐱', '🐶', '🐯', '🐰', '🐨', '🐼', '🦄', '🌈', '🔥', '✨', '🍀', '💎'];
 
     app.innerHTML = `
         <div class="card profile-container fade-in">
-            <h2>👤 내 정보</h2>
-            <div class="profile-stats">
-                <div class="stat-item">
-                    <span class="stat-label">보유 포인트</span>
-                    <span class="stat-value" id="user-points">0 P</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-label">아이템 점수</span>
-                    <span class="stat-value" id="user-total-score">0 점</span>
+            <div style="text-align:center; margin-bottom:2rem;">
+                <div id="user-emoji" style="font-size:4rem; margin-bottom:1rem;">${UserState.data.emoji || '👤'}</div>
+                <h2 id="user-name" style="margin:0;">${UserState.data.nickname}</h2>
+                <p id="user-points" style="color:var(--accent-color); font-weight:bold;">0 P</p>
+            </div>
+
+            <div class="profile-section">
+                <h3>프로필 이모지 설정</h3>
+                <div class="emoji-selector" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1rem;">
+                    ${emojis.map(e => `<button class="emoji-btn ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">${e}</button>`).join('')}
                 </div>
             </div>
 
-            <div class="inventory-section" style="margin-top:2rem;">
+            <div class="profile-section" style="margin-top:2rem;">
                 <h3>🎒 내 인벤토리</h3>
                 <div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:0.8rem; margin-top:1rem;">
                     ${invHTML}
@@ -167,14 +148,10 @@ function renderArcade() {
     app.innerHTML = `
         <div class="card arcade-container fade-in" style="text-align:center; padding:2rem;">
             <h2>🎰 오락실</h2>
-            <div class="profile-stats" style="margin:1rem 0;">
-                <div class="stat-item"><span class="stat-label">내 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
-            </div>
+            <div class="profile-stats" style="margin:1rem 0;"><div class="stat-item"><span class="stat-label">내 포인트</span><span class="stat-value" id="user-points">0 P</span></div></div>
             <div class="game-zone" style="margin-bottom:2rem; padding:1.5rem; background:var(--bg-color); border-radius:15px; border: 1px solid var(--border-color);">
                 <h3>📦 아이템 뽑기 (100 P)</h3>
-                <div id="gacha-result" class="gacha-box" style="height:120px; display:flex; align-items:center; justify-content:center; margin:1rem 0; font-weight:bold;">
-                    준비 완료!
-                </div>
+                <div id="gacha-result" class="gacha-box" style="height:120px; display:flex; align-items:center; justify-content:center; margin:1rem 0; font-weight:bold;">준비 완료!</div>
                 <button id="gacha-btn" class="btn-primary">뽑기!</button>
             </div>
             <div class="game-zone" style="padding:1.5rem; background:var(--bg-color); border-radius:15px; border: 1px solid var(--border-color);">
@@ -197,9 +174,7 @@ function renderTestExecution(testId) {
             <div class="test-execution fade-in">
                 <div class="progress-container"><div class="step-dots">${Array.from({length: 7}).map((_, i) => `<div class="dot ${i <= step ? 'active' : ''}"></div>`).join('')}</div></div>
                 <h2 style="font-size:1.4rem; margin-bottom:2rem;">Q${step + 1}. ${currentQ.q}</h2>
-                <div class="options">
-                    ${currentQ.options.map(opt => `<button class="option-btn" data-type="${opt.type}">${opt.text}</button>`).join('')}
-                </div>
+                <div class="options">${currentQ.options.map(opt => `<button class="option-btn" data-type="${opt.type}">${opt.text}</button>`).join('')}</div>
                 <button class="btn-share" id="share-link-btn" style="margin-top:2rem; background:var(--text-sub); font-size:0.8rem;">🔗 이 테스트 공유하기 (+30P)</button>
             </div>
         `;

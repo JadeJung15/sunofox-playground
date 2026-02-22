@@ -19,7 +19,12 @@ export const UserState = {
     data: null
 };
 
+let authInitialized = false;
+
 export function initAuth() {
+    if (authInitialized) return;
+    authInitialized = true;
+
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             UserState.user = user;
@@ -46,6 +51,9 @@ export function initAuth() {
         if (e.target.id === 'nickname-save') {
             await changeNickname();
         }
+        if (e.target.classList.contains('emoji-btn')) {
+            await changeEmoji(e.target.dataset.emoji);
+        }
     });
 }
 
@@ -57,6 +65,7 @@ async function loadUserData(user) {
         const newData = {
             uid: user.uid,
             nickname: user.displayName || '익명',
+            emoji: '👤',
             points: 1000,
             inventory: [],
             totalScore: 0,
@@ -66,12 +75,12 @@ async function loadUserData(user) {
         await setDoc(userRef, newData);
         snap = await getDoc(userRef);
     } else {
-        // Migration check for old users
         const data = snap.data();
-        if (data.inventory === undefined) {
-            await updateDoc(userRef, { inventory: [], totalScore: 0 });
-            snap = await getDoc(userRef);
+        if (data.emoji === undefined) {
+            await updateDoc(userRef, { emoji: '👤' });
+            data.emoji = '👤';
         }
+        UserState.data = data;
     }
     UserState.data = snap.data();
 }
@@ -82,6 +91,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
     const userNameEls = document.querySelectorAll('#user-name');
     const userPointsEls = document.querySelectorAll('#user-points');
     const userScoreEls = document.querySelectorAll('#user-total-score');
+    const userEmojiEls = document.querySelectorAll('#user-emoji');
     const nicknameInput = document.getElementById('nickname-input');
 
     if (isLoggedIn && UserState.data) {
@@ -90,6 +100,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         userNameEls.forEach(el => el.textContent = UserState.data.nickname);
         userPointsEls.forEach(el => el.textContent = `${(UserState.data.points || 0).toLocaleString()} P`);
         userScoreEls.forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
+        userEmojiEls.forEach(el => el.textContent = UserState.data.emoji || '👤');
         if (nicknameInput && !nicknameInput.value) nicknameInput.value = UserState.data.nickname;
     } else {
         if (loginBtn) loginBtn.classList.remove('hidden');
@@ -134,6 +145,18 @@ async function changeNickname() {
     }
 }
 
+async function changeEmoji(newEmoji) {
+    if (!UserState.user) return;
+    try {
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, { emoji: newEmoji });
+        UserState.data.emoji = newEmoji;
+        updateUI();
+    } catch (e) {
+        console.error("Emoji update failed:", e);
+    }
+}
+
 export async function addPoints(amount) {
     if (!UserState.user) return false;
     try {
@@ -153,7 +176,7 @@ export async function usePoints(amount) {
     try {
         const userRef = doc(db, "users", UserState.user.uid);
         await updateDoc(userRef, { points: increment(-amount) });
-        UserState.data.points -= amount;
+        UserState.data.points -= (UserState.data.points || 0) < amount ? 0 : amount;
         updateUI();
         return true;
     } catch (e) { return false; }

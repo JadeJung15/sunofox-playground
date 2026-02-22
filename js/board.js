@@ -53,6 +53,7 @@ export async function renderBoard(container) {
             await addDoc(collection(db, "posts"), {
                 uid: UserState.user.uid,
                 author: UserState.data.nickname || "익명",
+                authorEmoji: UserState.data.emoji || "👤",
                 content: content,
                 createdAt: serverTimestamp()
             });
@@ -61,7 +62,7 @@ export async function renderBoard(container) {
             await loadPosts(listContainer);
         } catch (e) {
             console.error("Post creation error:", e);
-            alert("게시글 등록에 실패했습니다. (권한 문제일 수 있습니다)");
+            alert("게시글 등록에 실패했습니다.");
         } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = "등록하기";
@@ -87,7 +88,10 @@ async function loadPosts(container) {
             return `
                 <div class="post-item fade-in">
                     <div class="post-header">
-                        <span class="post-author">${data.author}</span>
+                        <div class="post-author-info">
+                            <span class="author-emoji">${data.authorEmoji || '👤'}</span>
+                            <span class="post-author">${data.author}</span>
+                        </div>
                         <span class="post-date">${date}</span>
                     </div>
                     <div class="post-content">${data.content}</div>
@@ -110,7 +114,6 @@ async function loadPosts(container) {
         });
 
     } catch (e) {
-        console.error("Load posts error:", e);
         container.innerHTML = `<p class="error-msg" style="text-align:center; padding:2rem;">게시글을 불러오는 중 오류가 발생했습니다.</p>`;
     }
 }

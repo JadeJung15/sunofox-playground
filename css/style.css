@@ -265,6 +265,13 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
 .rank-name { flex: 1; font-weight: 700; }
 .rank-score { font-weight: 800; color: var(--accent-color); }
 
+.emoji-btn { font-size: 1.5rem; padding: 0.5rem; border: 1px solid var(--border-color); background: var(--card-bg); border-radius: 10px; cursor: pointer; transition: 0.2s; }
+.emoji-btn:hover { background: var(--bg-color); }
+.emoji-btn.active { border-color: var(--accent-color); background: var(--bg-color); transform: scale(1.1); }
+
+.post-author-info { display: flex; align-items: center; gap: 0.4rem; }
+.author-emoji { font-size: 1.2rem; }
+
 @media (max-width: 600px) {
   .test-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
   .test-card h3 { font-size: 0.95rem; }
