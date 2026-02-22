@@ -251,6 +251,27 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .result-card h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem; }
 .result-desc { color: var(--text-sub); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem; }
 
+/* Ranking Page */
+.ranking-list { margin-top: 1.5rem; }
+.ranking-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1.25rem; background: var(--bg-color);
+  border-radius: var(--radius-md); margin-bottom: 0.75rem;
+  border: 1px solid var(--border-color); transition: all 0.2s;
+}
+.ranking-item:hover { border-color: var(--accent-color); transform: translateX(5px); }
+.rank-badge {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: var(--card-bg); display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 1.1rem; border: 1px solid var(--border-color);
+}
+.ranking-item:nth-child(1) { border-left: 4px solid #ffd700; background: linear-gradient(90deg, rgba(255, 215, 0, 0.05) 0%, var(--card-bg) 100%); }
+.ranking-item:nth-child(2) { border-left: 4px solid #c0c0c0; background: linear-gradient(90deg, rgba(192, 192, 192, 0.05) 0%, var(--card-bg) 100%); }
+.ranking-item:nth-child(3) { border-left: 4px solid #cd7f32; background: linear-gradient(90deg, rgba(205, 127, 50, 0.05) 0%, var(--card-bg) 100%); }
+
+.rank-name { font-weight: 700; flex-grow: 1; }
+.rank-score { font-weight: 800; color: var(--accent-color); }
+
 /* Arcade Redesign */
 .arcade-page { max-width: 1000px; margin: 0 auto; }
 .arcade-item-card {
