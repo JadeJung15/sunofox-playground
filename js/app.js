@@ -150,7 +150,7 @@ async function renderHome() {
             ${filtered.map(t => {
                 const likes = testLikesData[t.id] || 0;
                 return `
-                <div class="test-card fade-in" onclick="location.hash='#test/${t.id}'">
+                <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'">
                     <div class="thumb-wrapper">
                         <div class="test-thumb" style="background-image: url('${t.thumb}')">
                             <div class="like-badge">❤️ ${likes}</div>
@@ -456,7 +456,7 @@ async function renderResult(testId, answers) {
     if (UserState.user) await addPoints(reward);
 
     app.innerHTML = `
-        <div class="result-card fade-in">
+        <div class="result-card fade-in" data-cat="${test.category}">
             <span class="test-category">분석 리포트</span>
             <div class="result-img" style="background-image: url('${result.img}'); background-size:cover; background-position:center;"></div>
             <h2 style="color:var(--accent-color);">[${result.title}]</h2>

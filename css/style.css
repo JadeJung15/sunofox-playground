@@ -95,6 +95,50 @@ header {
 .nav-link:hover { color: var(--accent-color); background: var(--card-bg); border-color: var(--border-color); }
 .nav-link.active { color: #fff; background: var(--accent-color); box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39); border-color: var(--accent-color); }
 
+/* Category Colors & Theming */
+:root {
+  --color-personality: #6366f1;
+  --color-face: #ec4899;
+  --color-fortune: #f59e0b;
+  --color-fun: #10b981;
+  --color-board: #3b82f6;
+  --color-arcade: #8b5cf6;
+  --color-ranking: #f43f5e;
+  --color-guide: #64748b;
+  --color-profile: #1e293b;
+}
+
+.nav-link[data-filter="전체"].active { background: var(--accent-color); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); }
+.nav-link[data-filter="성격"].active { background: var(--color-personality); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4); }
+.nav-link[data-filter="얼굴"].active { background: var(--color-face); box-shadow: 0 4px 14px rgba(236, 72, 153, 0.4); }
+.nav-link[data-filter="사주"].active { background: var(--color-fortune); box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4); }
+.nav-link[data-filter="게시판"].active { background: var(--color-board); box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); }
+.nav-link[data-filter="오락실"].active { background: var(--color-arcade); box-shadow: 0 4px 14px rgba(139, 92, 246, 0.4); }
+.nav-link[data-filter="랭킹"].active { background: var(--color-ranking); box-shadow: 0 4px 14px rgba(244, 63, 94, 0.4); }
+.nav-link[data-filter="가이드"].active { background: var(--color-guide); box-shadow: 0 4px 14px rgba(100, 116, 139, 0.4); }
+.nav-link[data-filter="프로필"].active { background: var(--color-profile); box-shadow: 0 4px 14px rgba(30, 41, 59, 0.4); }
+
+/* Test Card Category Styling */
+.test-category-tag {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  margin-bottom: 0.75rem;
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.test-card[data-cat="성격"] .test-category-tag { color: var(--color-personality); background: rgba(99, 102, 241, 0.1); }
+.test-card[data-cat="성격"]:hover { border-color: var(--color-personality); }
+.test-card[data-cat="얼굴"] .test-category-tag { color: var(--color-face); background: rgba(236, 72, 153, 0.1); }
+.test-card[data-cat="얼굴"]:hover { border-color: var(--color-face); }
+.test-card[data-cat="사주"] .test-category-tag { color: var(--color-fortune); background: rgba(245, 158, 11, 0.1); }
+.test-card[data-cat="사주"]:hover { border-color: var(--color-fortune); }
+.test-card[data-cat="재미"] .test-category-tag { color: var(--color-fun); background: rgba(16, 185, 129, 0.1); }
+.test-card[data-cat="재미"]:hover { border-color: var(--color-fun); }
+
 /* Layout & Grid */
 main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80vh; }
 
@@ -245,11 +289,22 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 .btn-delete:hover { opacity: 1; text-decoration: underline; }
 
+/* Result Page Category Styling */
+.result-card[data-cat="성격"] .test-category { color: var(--color-personality); background: rgba(99, 102, 241, 0.1); }
+.result-card[data-cat="성격"] h2 { color: var(--color-personality); }
+.result-card[data-cat="얼굴"] .test-category { color: var(--color-face); background: rgba(236, 72, 153, 0.1); }
+.result-card[data-cat="얼굴"] h2 { color: var(--color-face); }
+.result-card[data-cat="사주"] .test-category { color: var(--color-fortune); background: rgba(245, 158, 11, 0.1); }
+.result-card[data-cat="사주"] h2 { color: var(--color-fortune); }
+.result-card[data-cat="재미"] .test-category { color: var(--color-fun); background: rgba(16, 185, 129, 0.1); }
+.result-card[data-cat="재미"] h2 { color: var(--color-fun); }
+
 /* Result Page */
 .result-card { text-align: center; max-width: 600px; margin: 0 auto; padding: 2.5rem; background: var(--card-bg); border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); border: 1px solid var(--border-color); }
 .result-img { width: 100%; aspect-ratio: 1; border-radius: var(--radius-lg); margin-bottom: 2rem; box-shadow: var(--shadow-md); }
 .result-card h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem; }
 .result-desc { color: var(--text-sub); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem; }
+.test-category { display: inline-block; padding: 6px 16px; border-radius: 50px; font-weight: 800; font-size: 0.85rem; margin-bottom: 1.5rem; }
 
 /* Ranking Page */
 .ranking-list { margin-top: 1.5rem; }
