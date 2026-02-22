@@ -1090,9 +1090,19 @@ async function loadYouTubeCommunityPosts() {
         return { content, url };
       });
 
-    const posts = blocks.slice(0, 8);
+    const posts = blocks.slice(0, 12);
+    const postsWithValidUrl = posts.filter((p) => p.url && p.url !== `${CHANNEL_URL}/community`);
+    const uniquePosts = [];
+    const seen = new Set();
+    postsWithValidUrl.forEach((p) => {
+      if (seen.has(p.url)) return;
+      seen.add(p.url);
+      uniquePosts.push(p);
+    });
 
-    const cards = posts.map((post, idx) => {
+    const renderTargets = uniquePosts.slice(0, 8);
+
+    const cards = renderTargets.map((post, idx) => {
       return `
         <a class="post-row" href="${escapeHTML(post.url)}" target="_blank" rel="noreferrer noopener">
           <span class="col-cat"><span class="chip micro">YouTube</span></span>
@@ -1103,7 +1113,17 @@ async function loadYouTubeCommunityPosts() {
       `;
     }).join('');
 
-    container.innerHTML = cards || '<div class="empty">가져올 수 있는 커뮤니티 게시글이 없습니다.</div>';
+    if (!cards) {
+      container.innerHTML = `
+        <div class="empty">
+          개별 게시글 링크를 찾지 못했습니다.
+          <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener">유튜브 커뮤니티 보기</a>
+        </div>
+      `;
+      return;
+    }
+
+    container.innerHTML = cards;
   } catch (error) {
     console.error('Failed to load YouTube community posts:', error);
     container.innerHTML = `
