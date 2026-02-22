@@ -3,206 +3,286 @@ const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
-// 테스트 데이터베이스 (Anime Style 비주얼 + 7단계 질문 + 상세 한글 결과)
+// 테스트 데이터베이스 (결과별 고유 애니메이션 이미지 포함)
 const TESTS = [
     { 
-        id: 'real-mbti', 
+        id: 'hero-origin', 
         category: '성격', 
-        title: '나의 진짜 내면 성격', 
-        desc: '겉모습 속에 숨겨진 당신의 진짜 성격을 7번의 선택으로 확인하세요.', 
-        thumb: 'https://images.unsplash.com/photo-1578632738908-4521c442075a?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '주말 아침, 창밖을 보며 드는 생각은?', options: [{ text: '밖으로 나가 사람들을 만나고 싶다', type: 'E' }, { text: '집에서 조용히 여유를 즐기고 싶다', type: 'I' }] },
-            { q: '새로운 취미를 시작한다면?', options: [{ text: '활동적인 동호회 활동', type: 'E' }, { text: '혼자서 하는 독서나 그리기', type: 'I' }] },
-            { q: '친구의 갑작스러운 약속 제안에?', options: [{ text: '좋아! 어디서 볼까?', type: 'E' }, { text: '미안, 오늘은 좀 쉬고 싶어', type: 'I' }] },
-            { q: '문제가 생겼을 때 해결 방식은?', options: [{ text: '주변에 조언을 구하고 대화한다', type: 'E' }, { text: '혼자 깊이 고민하며 해결책을 찾는다', type: 'I' }] },
-            { q: '자신을 표현하는 단어는?', options: [{ text: '에너제틱하고 사교적인', type: 'E' }, { text: '차분하고 사색적인', type: 'I' }] },
-            { q: '파티에 초대받았을 때 나의 모습은?', options: [{ text: '처음 본 사람과도 금방 친해진다', type: 'E' }, { text: '아는 사람 곁에만 머무른다', type: 'I' }] },
-            { q: '하루를 마무리하는 가장 좋은 방법은?', options: [{ text: '왁자지껄한 모임 후의 수다', type: 'E' }, { text: '조명 아래 혼자만의 일기 쓰기', type: 'I' }] }
-        ],
-        results: {
-            E: { title: '빛나는 햇살 에너지', desc: '당신은 주변을 밝게 비추는 태양 같은 사람입니다. 사람들과의 만남에서 힘을 얻고, 긍정적인 에너지를 전파하는 능력이 탁월하군요!' },
-            I: { title: '포근한 달빛 감성', desc: '당신은 깊고 은은한 매력을 가진 달빛 같은 사람입니다. 혼자만의 시간에서 창의성을 발휘하며, 내면의 단단한 중심을 가진 분이시네요.' }
-        }
-    },
-    { 
-        id: 'love-destiny', 
-        category: '감성', 
-        title: '나의 운명적 연애 타입', 
-        desc: '애니메이션 같은 로맨틱한 연애, 당신은 어떤 사랑을 꿈꾸나요?', 
-        thumb: 'https://images.unsplash.com/photo-1581833971358-2c8b550f87b3?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '운명적인 만남이 시작된다면?', options: [{ text: '첫눈에 불꽃이 튀는 강렬한 만남', type: 'A' }, { text: '서서히 스며드는 따뜻한 만남', type: 'B' }] },
-            { q: '연인과 가고 싶은 장소는?', options: [{ text: '화려한 야경이 보이는 도심', type: 'A' }, { text: '은은한 파도 소리가 들리는 바다', type: 'B' }] },
-            { q: '질투심이 느껴질 때 당신은?', options: [{ text: '솔직하게 서운함을 바로 표현한다', type: 'A' }, { text: '혼자 마음을 정리하며 지켜본다', type: 'B' }] },
-            { q: '당신이 생각하는 이상적인 연애는?', options: [{ text: '매일이 새로운 열정적인 사랑', type: 'A' }, { text: '서로를 이해하고 믿어주는 안정된 사랑', type: 'B' }] },
-            { q: '기념일에 당신의 준비는?', options: [{ text: '화려한 서프라이즈 이벤트', type: 'A' }, { text: '진심이 담긴 손편지와 작은 선물', type: 'B' }] },
-            { q: '연애할 때 나의 연락 스타일은?', options: [{ text: '틈날 때마다 일상을 공유하는 톡', type: 'A' }, { text: '중요한 순간에 진심을 전하는 통화', type: 'B' }] },
-            { q: '함께 꿈꾸는 미래의 모습은?', options: [{ text: '세계를 여행하며 즐기는 모험', type: 'A' }, { text: '따뜻한 집에서 나누는 소소한 일상', type: 'B' }] }
-        ],
-        results: {
-            A: { title: '불꽃 같은 정열파', desc: '당신은 사랑 앞에 당당하고 열정적인 사람입니다. 연인에게 모든 것을 쏟아붓는 순수한 마음을 가졌으며, 당신과의 연애는 언제나 영화처럼 극적일 거예요.' },
-            B: { title: '포근한 안식처파', desc: '당신은 연인에게 쉼터가 되어주는 따뜻한 사람입니다. 상대의 마음을 섬세하게 살필 줄 알며, 시간이 지날수록 깊어지는 진한 사랑을 하는 타입이네요.' }
-        }
-    },
-    { 
-        id: 'office-warrior', 
-        category: '성격', 
-        title: '직장 속 나의 부캐 찾기', 
-        desc: '사무실이라는 전장에서 당신은 어떤 전사일까요?', 
-        thumb: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '출근 후 가장 먼저 하는 일은?', options: [{ text: '오늘의 할 일을 완벽하게 정리', type: 'Plan' }, { text: '커피 한 잔과 함께 기분 전환', type: 'Flow' }] },
-            { q: '회의 시간에 당신의 태도는?', options: [{ text: '핵심을 찌르는 의견 제시', type: 'Plan' }, { text: '분위기를 부드럽게 만드는 리액션', type: 'Flow' }] },
-            { q: '업무 중 예상치 못한 실수를 했다면?', options: [{ text: '원인을 분석하고 즉시 수정한다', type: 'Plan' }, { text: '당황하지 않고 유연하게 대처한다', type: 'Flow' }] },
-            { q: '야근이 확정되었을 때 당신은?', options: [{ text: '최대한 빠르게 일을 끝내려 집중한다', type: 'Plan' }, { text: '동료들과 간식을 먹으며 힘을 낸다', type: 'Flow' }] },
-            { q: '직장 동료가 실수를 했을 때?', options: [{ text: '해결 방법을 논리적으로 알려준다', type: 'Plan' }, { text: '괜찮다고 다독이며 격려해준다', type: 'Flow' }] },
-            { q: '퇴근 후 나의 모습은?', options: [{ text: '자기계발이나 계획적인 운동', type: 'Plan' }, { text: '침대에서 맛있는 것 먹으며 힐링', type: 'Flow' }] },
-            { q: '다음 프로젝트를 맡게 된다면?', options: [{ text: '모든 과정을 철저히 리드하고 싶다', type: 'Plan' }, { text: '자유로운 환경에서 창의력을 발휘하고 싶다', type: 'Flow' }] }
-        ],
-        results: {
-            Plan: { title: '완벽주의 전략가', desc: '당신은 철저한 계획과 실행력을 겸비한 스마트한 인재입니다. 어떤 어려운 프로젝트도 당신의 손을 거치면 완벽하게 성공하게 될 거예요!' },
-            Flow: { title: '유연한 분위기 메이커', desc: '당신은 조직의 윤활유 같은 존재입니다. 뛰어난 공감 능력과 창의적인 발상으로 팀의 사기를 높이고 문제를 독창적으로 해결하는군요.' }
-        }
-    },
-    { 
-        id: 'fashion-aura', 
-        category: '감성', 
-        title: '나만의 분위기 코드', 
-        desc: '당신을 감싸고 있는 오라(Aura)는 어떤 색깔인가요?', 
-        thumb: 'https://images.unsplash.com/photo-1560972550-aba3456b5564?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '당신이 좋아하는 아침 풍경은?', options: [{ text: '안개 낀 고요한 숲', type: 'Cool' }, { text: '햇살이 쏟아지는 창가', type: 'Warm' }] },
-            { q: '더 끌리는 질감은?', options: [{ text: '매끄럽고 차가운 실크', type: 'Cool' }, { text: '폭신하고 부드러운 니트', type: 'Warm' }] },
-            { q: '가장 좋아하는 색조는?', options: [{ text: '시크한 무채색이나 블루', type: 'Cool' }, { text: '화사한 파스텔이나 오렌지', type: 'Warm' }] },
-            { q: '당신을 닮은 보석은?', options: [{ text: '신비로운 다이아몬드', type: 'Cool' }, { text: '따뜻한 호박(Amber)', type: 'Warm' }] },
-            { q: '비 오는 날 당신의 기분은?', options: [{ text: '차분해지며 사색에 잠긴다', type: 'Cool' }, { text: '포근한 분위기에 행복해진다', type: 'Warm' }] },
-            { q: '사람들이 말하는 당신의 이미지는?', options: [{ text: '도회적이고 지적인 느낌', type: 'Cool' }, { text: '친근하고 사랑스러운 느낌', type: 'Warm' }] },
-            { q: '자주 사용하는 향수는?', options: [{ text: '상쾌한 시트러스나 우디 향', type: 'Cool' }, { text: '달콤한 바닐라나 플로럴 향', type: 'Warm' }] }
-        ],
-        results: {
-            Cool: { title: '미스티 블루 오라', desc: '당신은 신비롭고 세련된 분위기를 가진 사람입니다. 차분한 카리스마로 주변 사람들에게 신뢰감을 주며, 범접할 수 없는 독특한 매력이 있네요.' },
-            Warm: { title: '피치 골드 오라', desc: '당신은 보고만 있어도 마음이 따뜻해지는 사람입니다. 밝고 긍정적인 기운으로 주변을 치유하며, 모두에게 사랑받는 포근한 에너지를 가졌군요.' }
-        }
-    },
-    { 
-        id: 'money-road', 
-        category: '사주', 
-        title: '미래 재물운 보고서', 
-        desc: '7번의 선택으로 알아보는 나의 황금빛 미래 재력', 
-        thumb: 'https://images.unsplash.com/photo-1541562232579-512a21360020?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '갑자기 거액의 복권에 당첨된다면?', options: [{ text: '즉시 안전한 곳에 투자한다', type: 'Rich' }, { text: '그동안 사고 싶었던 것을 산다', type: 'Happy' }] },
-            { q: '물건을 살 때 당신의 기준은?', options: [{ text: '미래의 가치와 가성비', type: 'Rich' }, { text: '지금 당장 느끼는 디자인과 만족', type: 'Happy' }] },
-            { q: '재테크에 대한 당신의 생각은?', options: [{ text: '공부를 통해 공격적으로 도전', type: 'Rich' }, { text: '차곡차곡 저축하며 안정적으로', type: 'Happy' }] },
-            { q: '성공한 부자의 삶 중 부러운 것은?', options: [{ text: '끊임없이 불어나는 자산', type: 'Rich' }, { text: '제약 없이 누리는 자유로운 시간', type: 'Happy' }] },
-            { q: '길을 가다 반짝이는 동전을 발견하면?', options: [{ text: '행운의 징조라며 소중히 챙긴다', type: 'Rich' }, { text: '기분 좋게 웃으며 지나간다', type: 'Happy' }] },
-            { q: '당신의 지갑 스타일은?', options: [{ text: '깔끔하게 정리된 장지갑', type: 'Rich' }, { text: '가볍고 편안한 카드지갑', type: 'Happy' }] },
-            { q: '10년 후 나의 모습은?', options: [{ text: '자수성가한 경제적 자유인', type: 'Rich' }, { text: '좋아하는 일을 하며 사는 행복한 사람', type: 'Happy' }] }
-        ],
-        results: {
-            Rich: { title: '자수성가 자산가형', desc: '당신은 돈의 흐름을 읽는 본능적인 감각을 가졌습니다. 치밀한 계산과 결단력으로 미래에 큰 부를 쌓을 잠재력이 매우 높네요!' },
-            Happy: { title: '풍요로운 라이프형', desc: '당신은 돈보다 가치 있는 삶을 즐길 줄 아는 사람입니다. 성실하게 쌓아온 기반 위에 소소한 행운이 겹쳐 늘 여유롭고 풍족한 삶을 살게 될 거예요.' }
-        }
-    },
-    { 
-        id: 'hidden-talent', 
-        category: '성격', 
-        title: '나의 숨겨진 천재성', 
-        desc: '아직 발견하지 못한 당신만의 특별한 재능을 찾아보세요.', 
-        thumb: 'https://images.unsplash.com/photo-1513001900722-370f803f498d?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '복잡한 퍼즐을 마주했을 때?', options: [{ text: '끝까지 물고 늘어져 풀어낸다', type: 'Logic' }, { text: '전체적인 모양을 보며 감으로 맞춘다', type: 'Art' }] },
-            { q: '평소에 아이디어가 떠오르면?', options: [{ text: '메모장에 꼼꼼히 기록한다', type: 'Logic' }, { text: '머릿속으로 상상하며 즐긴다', type: 'Art' }] },
-            { q: '좋아하는 과목은?', options: [{ text: '수학이나 과학 같은 이과 계열', type: 'Logic' }, { text: '미술이나 음악 같은 예체능 계열', type: 'Art' }] },
-            { q: '길을 설명할 때 당신은?', options: [{ text: '몇 미터 직진 후 좌회전하세요', type: 'Logic' }, { text: '저기 빨간 건물 보이면 꺾으세요', type: 'Art' }] },
-            { q: '당신의 책상 상태는?', options: [{ text: '칼같이 정리된 상태', type: 'Logic' }, { text: '자유분방하게 어질러진 상태', type: 'Art' }] },
-            { q: '결정을 내릴 때 중요한 것은?', options: [{ text: '객관적인 근거와 데이터', type: 'Logic' }, { text: '나의 느낌과 감정', type: 'Art' }] },
-            { q: '새로운 기계를 샀을 때?', options: [{ text: '설명서를 정독한다', type: 'Logic' }, { text: '일단 이것저것 만져본다', type: 'Art' }] }
-        ],
-        results: {
-            Logic: { title: '분석적인 전략가', desc: '당신은 논리적이고 치밀한 사고력을 가졌습니다. 복잡한 문제를 단순화하여 해결하는 능력이 뛰어나며, 리더로서의 자질이 충분합니다.' },
-            Art: { title: '창의적인 예술가', desc: '당신은 남들이 보지 못하는 세상을 보는 눈을 가졌습니다. 풍부한 상상력과 공감 능력은 세상을 더 아름답게 만드는 큰 힘이 됩니다.' }
-        }
-    },
-    { 
-        id: 'food-soul', 
-        category: '감성', 
-        title: '나의 소울 푸드 분석', 
-        desc: '음식 취향으로 알아보는 당신의 성격과 감성 상태', 
-        thumb: 'https://images.unsplash.com/photo-1512152272829-e3139592d56f?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '오늘따라 스트레스가 쌓였다면?', options: [{ text: '땀이 날 정도로 매운 음식', type: 'Strong' }, { text: '입안에서 녹는 달콤한 디저트', type: 'Mild' }] },
-            { q: '선호하는 맛의 계열은?', options: [{ text: '강렬하고 짠맛의 조화', type: 'Strong' }, { text: '담백하고 건강한 맛', type: 'Mild' }] },
-            { q: '식사할 때 가장 중요한 것은?', options: [{ text: '푸짐한 양과 포만감', type: 'Strong' }, { text: '정갈한 플레이팅과 분위기', type: 'Mild' }] },
-            { q: '친구와 맛집을 간다면?', options: [{ text: '줄 서서 기다리는 유명 맛집', type: 'Strong' }, { text: '조용하고 대화하기 좋은 곳', type: 'Mild' }] },
-            { q: '새로운 도전에 대해?', options: [{ text: '처음 보는 이색 요리 도전!', type: 'Strong' }, { text: '늘 먹던 익숙한 메뉴 선택', type: 'Mild' }] },
-            { q: '요리할 때 나의 스타일은?', options: [{ text: '화려한 기술과 불 맛!', type: 'Strong' }, { text: '정성이 담긴 느린 요리', type: 'Mild' }] },
-            { q: '당신을 비유한다면?', options: [{ text: '톡 쏘는 탄산음료', type: 'Strong' }, { text: '따뜻한 라떼 한 잔', type: 'Mild' }] }
-        ],
-        results: {
-            Strong: { title: '강렬한 핫스파이시', desc: '당신은 솔직하고 에너지가 넘치는 사람입니다. 호불호가 확실하며, 목표를 향해 거침없이 나아가는 화끈한 성격의 소유자군요!' },
-            Mild: { title: '부드러운 밀크 바닐라', desc: '당신은 다정다감하고 평화를 사랑하는 사람입니다. 주변을 편안하게 만드는 매력이 있으며, 사소한 것에서도 행복을 찾을 줄 아는 분이네요.' }
-        }
-    },
-    { 
-        id: 'past-life-anime', 
-        category: '사주', 
-        title: '나의 전생 판타지', 
-        desc: '전생에 당신은 어떤 세상을 구했을까요?', 
+        title: '판타지 세계 나의 직업', 
+        desc: '이세계에 소환된 당신, 어떤 클래스로 전직할까요?', 
         thumb: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '전쟁터 한복판, 당신의 손에 들린 것은?', options: [{ text: '날카로운 전설의 성검', type: 'Hero' }, { text: '신비로운 마법의 지팡이', type: 'Sage' }] },
-            { q: '당신이 다스리던 땅은?', options: [{ text: '화려하고 거대한 왕국', type: 'Hero' }, { text: '구름 위의 비밀스러운 섬', type: 'Sage' }] },
-            { q: '백성들이 당신을 부르던 칭호는?', options: [{ text: '무적의 수호자', type: 'Hero' }, { text: '지혜로운 인도자', type: 'Sage' }] },
-            { q: '당신의 가장 충성스러운 동료는?', options: [{ text: '강력한 용의 기사', type: 'Hero' }, { text: '영리한 숲의 정령', type: 'Sage' }] },
-            { q: '어려운 결정을 내릴 때 당신은?', options: [{ text: '직감과 용기로 밀어붙인다', type: 'Hero' }, { text: '별의 움직임을 읽어 판단한다', type: 'Sage' }] },
-            { q: '휴식할 때 즐기던 것은?', options: [{ text: '화려한 연회와 사냥', type: 'Hero' }, { text: '도서관에서의 고대 서적 읽기', type: 'Sage' }] },
-            { q: '현생의 나에게 전하고 싶은 메시지는?', options: [{ text: '두려워 말고 도전하라', type: 'Hero' }, { text: '늘 지혜롭게 생각하라', type: 'Sage' }] }
+            { q: '길을 가다 마주친 몬스터! 첫 행동은?', options: [{ text: '검을 뽑아 돌진한다', type: 'A' }, { text: '거리를 두며 마법 주문을 외운다', type: 'B' }] },
+            { q: '동료를 한 명 영입한다면?', options: [{ text: '나를 지켜줄 든든한 방패 기사', type: 'A' }, { text: '강력한 파괴력을 가진 흑마법사', type: 'B' }] },
+            { q: '가장 탐나는 보물은?', options: [{ text: '전설의 성검', type: 'A' }, { text: '지혜의 마법 지팡이', type: 'B' }] },
+            { q: '당신이 선호하는 전투 방식은?', options: [{ text: '근접전에서 느끼는 타격감', type: 'A' }, { text: '후방에서 지원하는 지략전', type: 'B' }] },
+            { q: '마을 사람들이 도움을 요청한다.', options: [{ text: '직접 몸을 써서 해결해준다', type: 'A' }, { text: '마법 장치나 도구로 도와준다', type: 'B' }] },
+            { q: '나의 가장 큰 장점은?', options: [{ text: '지치지 않는 체력과 용기', type: 'A' }, { text: '명석한 두뇌와 판단력', type: 'B' }] },
+            { q: '최종 보스와의 대결에서?', options: [{ text: '정면 돌파로 승부한다', type: 'A' }, { text: '약점을 노려 한 방에 끝낸다', type: 'B' }] }
         ],
         results: {
-            Hero: { title: '대륙의 패왕, 전설의 용사', desc: '전생에 당신은 대륙을 호령하던 용맹한 용사였습니다. 현생에서도 당신의 강한 의지와 리더십은 어디서든 빛을 발하게 될 것입니다.' },
-            Sage: { title: '하늘의 예언자, 신비의 마도사', desc: '전생에 당신은 세상을 올바른 길로 인도하던 현자였습니다. 깊은 통찰력과 직관은 당신이 살아가며 마주할 모든 어려움을 해결해 줄 열쇠입니다.' }
+            A: { 
+                title: '용맹한 성기사', 
+                desc: '당신은 정의감이 넘치고 행동력이 뛰어납니다. 항상 앞장서서 동료들을 이끄는 리더 타입이군요!',
+                img: 'https://images.unsplash.com/photo-1559519529-31718974cb14?auto=format&fit=crop&w=500&q=60'
+            },
+            B: { 
+                title: '대현자 마법사', 
+                desc: '냉철한 판단력과 깊은 지식을 가진 당신은 전략적인 사고에 능합니다. 세상을 바꿀 지혜의 소유자입니다.',
+                img: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=500&q=60'
+            }
         }
     },
     { 
-        id: 'pet-match', 
-        category: '감성', 
-        title: '나와 닮은 영혼의 반려동물', 
-        desc: '7번의 질문으로 만나는 당신의 운명적인 짝궁 동물', 
-        thumb: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '혼자 있을 때 당신은?', options: [{ text: '누군가 보고 싶어 연락한다', type: 'Dog' }, { text: '혼자만의 자유를 만끽한다', type: 'Cat' }] },
-            { q: '칭찬을 받았을 때 나의 반응은?', options: [{ text: '너무 좋아서 꼬리를 흔들듯 기뻐한다', type: 'Dog' }, { text: '덤덤하게 고맙다고 말한다', type: 'Cat' }] },
-            { q: '산책을 나간다면?', options: [{ text: '새로운 길을 탐험하며 신나게', type: 'Dog' }, { text: '익숙하고 편안한 길로 천천히', type: 'Cat' }] },
-            { q: '처음 보는 사람을 대할 때?', options: [{ text: '먼저 다가가 인사를 건넨다', type: 'Dog' }, { text: '거리를 두고 조심스럽게 살핀다', type: 'Cat' }] },
-            { q: '집안의 상태는?', options: [{ text: '장난감과 물건이 섞인 활기찬 상태', type: 'Dog' }, { text: '정돈되고 깔끔한 상태', type: 'Cat' }] },
-            { q: '애정 표현을 할 때?', options: [{ text: '아낌없이 온몸으로 표현한다', type: 'Dog' }, { text: '은근하게 챙겨주며 표현한다', type: 'Cat' }] },
-            { q: '당신을 더 기쁘게 하는 것은?', options: [{ text: '다 함께 즐거운 시간', type: 'Dog' }, { text: '나만의 공간에서의 휴식', type: 'Cat' }] }
-        ],
-        results: {
-            Dog: { title: '사랑스러운 골든 리트리버', desc: '당신은 존재만으로도 주변을 행복하게 만드는 무한 긍정주의자입니다. 사람을 진심으로 아끼는 당신은 누구에게나 환영받는 최고의 친구입니다.' },
-            Cat: { title: '고고한 브리티시 숏헤어', desc: '당신은 독립적이고 세련된 매력을 가진 사람입니다. 자신만의 기준이 명확하며, 당신의 신뢰를 얻은 사람에게는 누구보다 깊은 애정을 주는 츤데레 매력의 소유자군요.' }
-        }
-    },
-    { 
-        id: 'hobby-master', 
+        id: 'school-life', 
         category: '성격', 
-        title: '인생 취미 가이드', 
-        desc: '지루한 일상을 바꿔줄 당신에게 딱 맞는 취미는?', 
-        thumb: 'https://images.unsplash.com/photo-1520156582985-31368ad1a1b1?auto=format&fit=crop&w=500&q=60',
+        title: '하이틴 애니 속 나의 역할', 
+        desc: '학교 배경 애니메이션에서 나는 어떤 캐릭터일까?', 
+        thumb: 'https://images.unsplash.com/photo-1523050853061-850013fca462?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '몸을 움직이는 것 vs 머리를 쓰는 것?', options: [{ text: '땀 흘리는 활동적인 것', type: 'A' }, { text: '집중해서 생각하는 정적인 것', type: 'B' }] },
-            { q: '취미에 투자할 시간은?', options: [{ text: '짧고 굵게 즐기는 취미', type: 'A' }, { text: '오래도록 깊게 파고드는 취미', type: 'B' }] },
-            { q: '누구와 함께하고 싶나요?', options: [{ text: '여러 사람과 북적이며', type: 'A' }, { text: '나 혼자 오롯이 집중하며', type: 'B' }] },
-            { q: '취미의 목적은?', options: [{ text: '스트레스 해소와 활력', type: 'A' }, { text: '성취감과 지적 만족', type: 'B' }] },
-            { q: '장소는 어디가 좋은가요?', options: [{ text: '탁 트인 야외 공간', type: 'A' }, { text: '안정적인 실내 공간', type: 'B' }] },
-            { q: '취미 도구를 준비할 때?', options: [{ text: '일단 시작하고 나중에 구비', type: 'A' }, { text: '완벽하게 갖추고 시작', type: 'B' }] },
-            { q: '하고 난 뒤의 느낌은?', options: [{ text: '개운하고 상쾌한 기분', type: 'A' }, { text: '뿌듯하고 차분해지는 기분', type: 'B' }] }
+            { q: '등굣길, 당신의 모습은?', options: [{ text: '친구들과 수다 떨며 즐겁게', type: 'A' }, { text: '이어폰을 끼고 혼자 차분하게', type: 'B' }] },
+            { q: '점심시간에 당신은 어디에?', options: [{ text: '매점이나 운동장에서 활발하게', type: 'A' }, { text: '교실이나 도서관에서 조용히', type: 'B' }] },
+            { q: '동아리를 선택한다면?', options: [{ text: '활동적인 밴드부나 운동부', type: 'A' }, { text: '감성적인 미술부나 독서부', type: 'B' }] },
+            { q: '발표 수업 시간이 다가왔다.', options: [{ text: '자신 있게 나가서 발표한다', type: 'A' }, { text: '원고를 꼼꼼히 준비해 차분히 읽는다', type: 'B' }] },
+            { q: '축제 때 당신이 맡을 역할은?', options: [{ text: '무대 위 주인공', type: 'A' }, { text: '무대 뒤 든든한 스태프', type: 'B' }] },
+            { q: '친구가 고민 상담을 요청하면?', options: [{ text: '함께 놀러 나가 기분을 풀어준다', type: 'A' }, { text: '조용히 들어주며 공감해준다', type: 'B' }] },
+            { q: '방과 후 나의 일상은?', options: [{ text: '친구들과 카페에서 즐거운 시간', type: 'A' }, { text: '집에서 좋아하는 취미에 몰두', type: 'B' }] }
         ],
         results: {
-            A: { title: '액티브 어드벤처러', desc: '당신은 활동적인 스포츠나 아웃도어 취미가 제격입니다! 등산, 서핑, 혹은 댄스 같은 활동으로 일상의 스트레스를 날려버리세요.' },
-            B: { title: '크리에이티브 마스터', desc: '당신은 결과물을 만들어내는 정적인 취미가 어울립니다. 요리, 프로그래밍, 혹은 악기 연주를 통해 당신의 섬세한 감각을 표현해보세요.' }
+            A: { 
+                title: '인기 만점 주인공', 
+                desc: '어디서나 주목받는 밝은 에너지를 가진 당신! 주변 사람들을 행복하게 만드는 능력이 있네요.',
+                img: 'https://images.unsplash.com/photo-1541178735423-4793327ad1f1?auto=format&fit=crop&w=500&q=60'
+            },
+            B: { 
+                title: '신비로운 전학생', 
+                desc: '차분하고 생각이 깊은 당신은 남들이 모르는 독특한 매력을 지니고 있습니다. 관찰력이 매우 뛰어나군요.',
+                img: 'https://images.unsplash.com/photo-1525921429573-05911ad2fc6b?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'element-power', 
+        category: '감성', 
+        title: '나를 상징하는 원소', 
+        desc: '불과 물 중 당신의 영혼은 무엇을 닮았나요?', 
+        thumb: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '좋아하는 계절은?', options: [{ text: '뜨거운 열정의 여름', type: 'Fire' }, { text: '차분하고 맑은 가을', type: 'Water' }] },
+            { q: '가장 끌리는 풍경은?', options: [{ text: '타오르는 노을', type: 'Fire' }, { text: '끝없이 펼쳐진 바다', type: 'Water' }] },
+            { q: '화가 났을 때 당신은?', options: [{ text: '금방 뜨거워졌다가 식는다', type: 'Fire' }, { text: '차갑게 가라앉으며 생각한다', type: 'Water' }] },
+            { q: '선호하는 색상 톤은?', options: [{ text: '강렬한 붉은색 계열', type: 'Fire' }, { text: '평온한 푸른색 계열', type: 'Water' }] },
+            { q: '휴식을 취할 때?', options: [{ text: '땀을 흘리며 활동적으로', type: 'Fire' }, { text: '반신욕이나 명상을 하며', type: 'Water' }] },
+            { q: '도전적인 상황이 오면?', options: [{ text: '열정으로 맞서 싸운다', type: 'Fire' }, { text: '유연하게 흘려보낸다', type: 'Water' }] },
+            { q: '당신을 한 단어로 표현하면?', options: [{ text: '열정(Passion)', type: 'Fire' }, { text: '정화(Pure)', type: 'Water' }] }
+        ],
+        results: {
+            Fire: { 
+                title: '타오르는 불꽃', 
+                desc: '당신은 주도적이고 열정적인 사람입니다. 목표가 생기면 누구보다 뜨겁게 타올라 성취해내는군요!',
+                img: 'https://images.unsplash.com/photo-1518107616385-ad30833edce7?auto=format&fit=crop&w=500&q=60'
+            },
+            Water: { 
+                title: '고요한 푸른 물결', 
+                desc: '당신은 유연하고 포용력이 넓은 사람입니다. 주변 사람들을 편안하게 감싸주는 치유의 에너지를 가졌네요.',
+                img: 'https://images.unsplash.com/photo-1505118380757-91f5f45d8de4?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'magic-pet', 
+        category: '감성', 
+        title: '나의 수호 정령 찾기', 
+        desc: '내 곁을 지켜줄 특별한 영적 파트너는 누구일까요?', 
+        thumb: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '동물 중에서 더 끌리는 쪽은?', options: [{ text: '민첩한 여우', type: 'A' }, { text: '영리한 부엉이', type: 'B' }] },
+            { q: '밤하늘을 볼 때 찾는 것은?', options: [{ text: '반짝이는 별자리', type: 'A' }, { text: '은은한 달빛', type: 'B' }] },
+            { q: '당신이 좋아하는 시간대는?', options: [{ text: '활기찬 오후', type: 'A' }, { text: '신비로운 자정', type: 'B' }] },
+            { q: '숲속에서 길을 잃었다면?', options: [{ text: '직감을 믿고 나아간다', type: 'A' }, { text: '흔적을 분석하며 길을 찾는다', type: 'B' }] },
+            { q: '어떤 초능력이 탐나나요?', options: [{ text: '순간이동', type: 'A' }, { text: '시간 정지', type: 'B' }] },
+            { q: '당신의 방 스타일은?', options: [{ text: '다양한 소품으로 꾸민 방', type: 'A' }, { text: '필요한 것만 있는 미니멀 방', type: 'B' }] },
+            { q: '꿈을 자주 꾸시나요?', options: [{ text: '모험이 가득한 화려한 꿈', type: 'A' }, { text: '잔잔하고 기억에 남는 꿈', type: 'B' }] }
+        ],
+        results: {
+            A: { 
+                title: '신비로운 구미호 정령', 
+                desc: '변화무쌍하고 매력적인 당신! 임기응변에 강하고 어디서나 잘 적응하는 영리함을 가졌습니다.',
+                img: 'https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=500&q=60'
+            },
+            B: { 
+                title: '지혜로운 수호 부엉이', 
+                desc: '깊은 통찰력과 인내심을 가진 당신! 남들이 보지 못하는 본질을 꿰뚫어 보는 힘이 있군요.',
+                img: 'https://images.unsplash.com/photo-1543549710-8902f9a02eb5?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'detective-case', 
+        category: '성격', 
+        title: '추리 애니 속 나의 지능', 
+        desc: '사건 발생! 당신은 어떤 방식으로 범인을 잡을까요?', 
+        thumb: 'https://images.unsplash.com/photo-1453873531674-215ee3ac4cd1?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '사건 현장에 도착했다. 가장 먼저 하는 일은?', options: [{ text: '현장의 전체적인 분위기를 살핀다', type: 'A' }, { text: '작은 발자국 하나까지 꼼꼼히 조사한다', type: 'B' }] },
+            { q: '증언이 엇갈린다. 누구를 믿을까?', options: [{ text: '나의 직감과 사람의 태도', type: 'A' }, { text: '객관적인 증거와 알리바이', type: 'B' }] },
+            { q: '범인이 남긴 암호가 발견되었다.', options: [{ text: '번뜩이는 영감으로 풀어낸다', type: 'A' }, { text: '하나씩 대입하며 논리적으로 푼다', type: 'B' }] },
+            { q: '추리 도중 막다른 길에 다다랐다.', options: [{ text: '잠시 쉬며 생각을 환기한다', type: 'A' }, { text: '처음부터 다시 차근차근 검토한다', type: 'B' }] },
+            { q: '당신의 탐정 도구는?', options: [{ text: '변장 도구와 사교술', type: 'A' }, { text: '최첨단 분석기', type: 'B' }] },
+            { q: '범인과 대면했을 때?', options: [{ text: '심리전으로 자백을 유도한다', type: 'A' }, { text: '증거를 들이밀어 항복시킨다', type: 'B' }] },
+            { q: '사건 해결 후 당신의 소감은?', options: [{ text: '진실은 언제나 하나!', type: 'A' }, { text: '모든 퍼즐이 맞춰졌군.', type: 'B' }] }
+        ],
+        results: {
+            A: { 
+                title: '괴도 신사 탐정', 
+                desc: '창의적이고 직관적인 추리력을 가진 당신! 사람의 마음을 읽는 능력이 탁월하여 어려운 사건도 화려하게 해결합니다.',
+                img: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=500&q=60'
+            },
+            B: { 
+                title: '명탐정 브레인', 
+                desc: '논리적이고 치밀한 분석력을 가진 당신! 작은 단서 하나 놓치지 않는 꼼꼼함으로 완벽하게 진실을 찾아냅니다.',
+                img: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'space-pilot', 
+        category: '성격', 
+        title: '우주 함대 보직 테스트', 
+        desc: '광활한 우주선에서 당신이 맡게 될 역할은?', 
+        thumb: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '우주선에 알람이 울린다! 당신의 행동은?', options: [{ text: '즉시 조종간을 잡고 상황을 통제한다', type: 'Pilot' }, { text: '시스템 로그를 확인해 원인을 파악한다', type: 'Eng' }] },
+            { q: '새로운 행성에 도착했다. 무엇을 할까?', options: [{ text: '직접 내려가 행성을 탐사한다', type: 'Pilot' }, { text: '궤도 위에서 행성 데이터를 수집한다', type: 'Eng' }] },
+            { q: '에너지가 부족하다. 해결책은?', options: [{ text: '최대한 아끼며 운행을 계속한다', type: 'Pilot' }, { text: '새로운 에너지원을 개발하거나 수리한다', type: 'Eng' }] },
+            { q: '동료가 다쳤다. 어떻게 대응할까?', options: [{ text: '빠르게 안전한 곳으로 후송한다', type: 'Pilot' }, { text: '응급 처치 장비를 작동시켜 고친다', type: 'Eng' }] },
+            { q: '외계 생명체와의 조우!', options: [{ text: '당당하게 소통을 시도한다', type: 'Pilot' }, { text: '그들의 기술력을 먼저 분석한다', type: 'Eng' }] },
+            { q: '당신이 더 신뢰하는 것은?', options: [{ text: '나의 경험과 조종 감각', type: 'Pilot' }, { text: '우주선의 데이터', type: 'Eng' }] },
+            { q: '미션 성공 후 당신이 받는 칭찬은?', options: [{ text: '최고의 리더십이었어!', type: 'Pilot' }, { text: '완벽한 기술 지원이었어!', type: 'Eng' }] }
+        ],
+        results: {
+            Pilot: { 
+                title: '무적의 함장님', 
+                desc: '결단력 있고 카리스마 넘치는 리더입니다. 위기 상황에서도 흔들리지 않고 모두를 목적지까지 이끄는 힘이 있습니다.',
+                img: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=500&q=60'
+            },
+            Eng: { 
+                title: '천재 수석 엔지니어', 
+                desc: '분석적이고 지적인 기술 전문가입니다. 어떤 복잡한 기계라도 당신의 손을 거치면 완벽하게 작동하게 되는군요.',
+                img: 'https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'food-chef', 
+        category: '감성', 
+        title: '애니 속 요리 장인', 
+        desc: '당신의 요리는 사람들에게 어떤 감동을 줄까요?', 
+        thumb: 'https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '요리할 때 가장 중요한 것은?', options: [{ text: '먹는 사람을 생각하는 마음', type: 'Heart' }, { text: '완벽한 레시피와 계량', type: 'Tech' }] },
+            { q: '어떤 재료에 더 끌리나요?', options: [{ text: '신선하고 자연스러운 재료', type: 'Heart' }, { text: '희귀하고 독특한 향신료', type: 'Tech' }] },
+            { q: '주방 분위기는 어떠한가요?', options: [{ text: '활기차고 따뜻한 분위기', type: 'Heart' }, { text: '조용하고 집중된 분위기', type: 'Tech' }] },
+            { q: '요리가 완성되었을 때의 느낌은?', options: [{ text: '뿌듯하고 행복한 기분', type: 'Heart' }, { text: '성공했다는 만족감', type: 'Tech' }] },
+            { q: '플레이팅 스타일은?', options: [{ text: '정감 가고 푸짐하게', type: 'Heart' }, { text: '예술 작품처럼 정교하게', type: 'Tech' }] },
+            { q: '누군가 맛없다고 한다면?', options: [{ text: '슬퍼하며 보완할 점을 묻는다', type: 'Heart' }, { text: '조리 과정의 문제를 분석한다', type: 'Tech' }] },
+            { q: '당신의 시그니처 메뉴는?', options: [{ text: '추억을 부르는 소울 푸드', type: 'Heart' }, { text: '화려한 기술의 요리', type: 'Tech' }] }
+        ],
+        results: {
+            Heart: { 
+                title: '마음을 치유하는 요리사', 
+                desc: '당신의 요리에는 사람의 마음을 녹이는 따뜻함이 담겨 있습니다. 먹는 것만으로도 행복해지는 마법을 부리시네요!',
+                img: 'https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=500&q=60'
+            },
+            Tech: { 
+                title: '전설의 미식 장인', 
+                desc: '당신은 완벽을 추구하는 요리 예술가입니다. 정교한 기술과 창의적인 맛의 조합으로 사람들을 놀라게 만드는군요.',
+                img: 'https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'magic-academy', 
+        category: '사주', 
+        title: '마법 학교 기숙사 배정', 
+        desc: '7번의 선택으로 결정되는 당신의 운명적인 기숙사', 
+        thumb: 'https://images.unsplash.com/photo-1514539079130-25950c84af65?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '입학식 날, 당신의 기분은?', options: [{ text: '두근거리는 기대감', type: 'G' }, { text: '차분한 긴장감', type: 'S' }] },
+            { q: '어떤 수업이 가장 듣고 싶나요?', options: [{ text: '하늘을 나는 비행 수업', type: 'G' }, { text: '비밀스러운 약초 조제', type: 'S' }] },
+            { q: '도서관 금지구역에 들어간다면?', options: [{ text: '당당하게 모험을 즐긴다', type: 'G' }, { text: '몰래 숨어 정보를 캔다', type: 'S' }] },
+            { q: '당신이 가장 아끼는 마법 물건은?', options: [{ text: '빛나는 용기의 펜던트', type: 'G' }, { text: '투명해지는 은신 망토', type: 'S' }] },
+            { q: '어려운 마법 주문을 연습할 때?', options: [{ text: '될 때까지 반복하며 도전한다', type: 'G' }, { text: '원리를 이해하고 실습한다', type: 'S' }] },
+            { q: '친구를 사귀는 방식은?', options: [{ text: '누구에게나 먼저 다가간다', type: 'G' }, { text: '마음이 맞는 소수와 깊게 사귄다', type: 'S' }] },
+            { q: '졸업 후 당신의 모습은?', options: [{ text: '세상을 구하는 영웅', type: 'G' }, { text: '지식을 전파하는 연구자', type: 'S' }] }
+        ],
+        results: {
+            G: { 
+                title: '그리핀 라이온 기숙사', 
+                desc: '당신은 용기와 정의를 상징하는 사자의 심장을 가졌습니다. 어떤 역경도 굴하지 않고 헤쳐나갈 운명이네요!',
+                img: 'https://images.unsplash.com/photo-1541512416146-3cf58d6b2732?auto=format&fit=crop&w=500&q=60'
+            },
+            S: { 
+                title: '실버 스네이크 기숙사', 
+                desc: '당신은 야망과 지혜를 상징하는 뱀의 영리함을 가졌습니다. 치밀한 계획과 실력으로 세상을 뒤흔들 운명입니다.',
+                img: 'https://images.unsplash.com/photo-1531912479218-4690c1db477b?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'time-traveler', 
+        category: '감성', 
+        title: '나의 시간 여행 타입', 
+        desc: '과거로? 미래로? 당신의 영혼이 머물고 싶은 시간', 
+        thumb: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '시간 여행 장치를 얻었다. 어디로 갈까?', options: [{ text: '그리운 추억이 있는 과거', type: 'Past' }, { text: '궁금한 미래의 도시', type: 'Future' }] },
+            { q: '과거의 나를 만난다면?', options: [{ text: '따뜻하게 안아준다', type: 'Past' }, { text: '중요한 정보를 알려준다', type: 'Future' }] },
+            { q: '미래의 기술 중 가장 탐나는 것은?', options: [{ text: '기억 저장 기술', type: 'Past' }, { text: '은하계 여행 기술', type: 'Future' }] },
+            { q: '당신의 패션 스타일은?', options: [{ text: '빈티지하고 클래식한 룩', type: 'Past' }, { text: '세련되고 미니멀한 룩', type: 'Future' }] },
+            { q: '가장 소중한 물건은?', options: [{ text: '오래된 일기장이나 사진', type: 'Past' }, { text: '최신형 스마트 기기', type: 'Future' }] },
+            { q: '어떤 장르를 더 좋아하나요?', options: [{ text: '로맨스 판타지', type: 'Past' }, { text: 'SF 미스터리', type: 'Future' }] },
+            { q: '인생의 모토는?', options: [{ text: '지나간 것은 아름답다', type: 'Past' }, { text: '내일은 오늘보다 나을 것이다', type: 'Future' }] }
+        ],
+        results: {
+            Past: { 
+                title: '따뜻한 로맨티스트 여행자', 
+                desc: '당신은 감수성이 풍부하고 소중한 기억을 간직할 줄 아는 사람입니다. 과거의 아름다움을 현대에 전하는 메신저이기도 하네요.',
+                img: 'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=500&q=60'
+            },
+            Future: { 
+                title: '혁신적인 개척자 여행자', 
+                desc: '당신은 호기심이 많고 변화를 즐기는 사람입니다. 항상 새로운 가능성을 꿈꾸며 미래를 설계하는 선구자적 면모가 있군요.',
+                img: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?auto=format&fit=crop&w=500&q=60'
+            }
+        }
+    },
+    { 
+        id: 'pet-dragon', 
+        category: '사주', 
+        title: '나와 닮은 전설의 용', 
+        desc: '당신의 성격 속에 숨겨진 강력한 용의 기운은?', 
+        thumb: 'https://images.unsplash.com/photo-1577493322601-3ae139071c51?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '당신의 힘은 어디서 나오나요?', options: [{ text: '강력한 신체적 힘', type: 'A' }, { text: '신비로운 정신적 힘', type: 'B' }] },
+            { q: '주로 활동하는 장소는?', options: [{ text: '높은 산이나 하늘', type: 'A' }, { text: '깊은 바다나 동굴', type: 'B' }] },
+            { q: '보물을 지킬 때 당신의 태도는?', options: [{ text: '침입자를 단숨에 쫓아버린다', type: 'A' }, { text: '함정을 파서 포기하게 한다', type: 'B' }] },
+            { q: '사람들이 당신을 볼 때 느끼는 감정은?', options: [{ text: '경외심과 공포', type: 'A' }, { text: '신비로움과 경이로움', type: 'B' }] },
+            { q: '당신의 숨결(Breath)은?', options: [{ text: '모든 것을 태우는 화염', type: 'A' }, { text: '모든 것을 얼리는 냉기', type: 'B' }] },
+            { q: '당신이 가장 중요하게 여기는 것?', options: [{ text: '최강이라는 명예', type: 'A' }, { text: '끝없는 생명의 영속성', type: 'B' }] },
+            { q: '인간과 친구가 될 수 있나요?', options: [{ text: '나를 존중한다면 가능하다', type: 'A' }, { text: '먼저 지혜를 증명해야 한다', type: 'B' }] }
+        ],
+        results: {
+            A: { 
+                title: '태양의 골드 드래곤', 
+                desc: '당신은 압도적인 존재감과 리더십을 가졌습니다. 태양처럼 밝고 강한 에너지는 주변을 이끄는 힘이 됩니다.',
+                img: 'https://images.unsplash.com/photo-1535666669445-e8c15cd2e7d9?auto=format&fit=crop&w=500&q=60'
+            },
+            B: { 
+                title: '달빛의 실버 드래곤', 
+                desc: '당신은 우아하고 신비로운 매력을 가졌습니다. 차분한 통찰력과 지혜로 세상의 흐름을 읽어내는 능력이 탁월하군요.',
+                img: 'https://images.unsplash.com/photo-1502134249126-9f3755a50d78?auto=format&fit=crop&w=500&q=60'
+            }
         }
     }
 ];
@@ -232,7 +312,7 @@ function renderHome() {
         <div class="ad-slot">AD SPACE - 메인 상단</div>
         <section class="portal-hero">
             <h1><span>7</span>Check</h1>
-            <p>7번의 선택으로 확인하는 나의 모든 것</p>
+            <p>7번의 질문으로 확인하는 나의 모든 것</p>
         </section>
         <div class="test-grid">
             ${filtered.map(t => `
@@ -293,22 +373,22 @@ function renderResult(testId, answers) {
     const test = TESTS.find(t => t.id === testId);
     const counts = answers.reduce((acc, type) => { acc[type] = (acc[type] || 0) + 1; return acc; }, {});
     const winningType = Object.keys(counts).sort((a, b) => counts[b] - counts[a])[0];
-    const result = test.results[winningType] || { title: '미확인 타입', desc: '분석 중 오류가 발생했습니다.' };
+    const result = test.results[winningType];
 
     app.innerHTML = `
         <div class="ad-slot">AD SPACE - 결과 상단</div>
         <div class="result-card fade-in">
-            <span class="test-category">${test.title} 분석 결과</span>
-            <div class="result-img" style="background-image: url('${test.thumb}'); background-size: cover; background-position: center;"></div>
+            <span class="test-category">${test.title} 결과</span>
+            <div class="result-img" style="background-image: url('${result.img}'); background-size: cover; background-position: center;"></div>
             <h2 style="font-size:2rem; color:var(--accent-color); margin-bottom:1rem; word-break:keep-all;">당신은 [${result.title}]</h2>
-            <p style="font-size:1.1rem; line-height:1.8; margin-bottom:2rem; word-break:keep-all; padding: 0 10px;">${result.desc}</p>
+            <p style="font-size:1.1rem; line-height:1.8; margin-bottom:2rem; word-break:keep-all; padding: 0 15px;">${result.desc}</p>
             
             <div class="share-grid">
                 <button class="btn-share" id="share-web">공유하기</button>
                 <button class="btn-share btn-copy" id="share-copy">링크 복사</button>
             </div>
             
-            <button class="btn-share" style="width:100%; margin-top:1rem; background:#4a4a4a;" onclick="location.hash='#home'">다른 테스트 하러 가기</button>
+            <button class="btn-share" style="width:100%; margin-top:1rem; background:#4a4a4a;" onclick="location.hash='#home'">다른 테스트 더 보기</button>
         </div>
         <div class="ad-slot">AD SPACE - 결과 하단</div>
     `;
@@ -327,7 +407,7 @@ function renderResult(testId, answers) {
                     url: window.location.href,
                 });
             } catch (err) { console.log(err); }
-        } else { alert('링크를 복사해 공유해 주세요!'); }
+        } else { alert('공유하기를 지원하지 않는 브라우저입니다. 링크 복사를 이용해주세요!'); }
     };
 }
 
