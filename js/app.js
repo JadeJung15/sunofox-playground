@@ -1082,29 +1082,28 @@ async function loadYouTubeCommunityPosts() {
       .split(/\nRead more[^\n]*\n/gi)
       .map((v) => v.trim())
       .filter((v) => v && v.length > 80)
-      .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'))
+      .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'));
+
+    // 커뮤니티 게시글 ID(Ugk...)만 허용해서 동영상/깨진 링크를 차단한다.
+    const parsed = blocks
       .map((block) => {
-        const urls = (block.match(/https?:\/\/[^\s)\]]+/gi) || [])
-          .map((u) => safeExternalUrl(u))
-          .filter(Boolean);
-        const pick = urls.find((u) => /youtube\.com\/post\//i.test(u))
-          || urls.find((u) => /youtube\.com\/watch\?/i.test(u))
-          || urls.find((u) => /youtu\.be\//i.test(u))
-          || '';
+        const idMatch = block.match(/Ugk[0-9A-Za-z_-]{20,}/);
+        const postId = idMatch ? idMatch[0] : '';
+        const url = postId ? `https://www.youtube.com/post/${postId}` : '';
         const content = block
           .replace(/\[!\[Image[^\n]*\)\]\([^\n]*\)\n?/g, '')
           .replace(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g, '$1')
           .replace(/\s+/g, ' ')
           .trim();
-        return { content, url: pick };
+        return { content, url, postId };
       })
-      .filter((item) => item.url);
+      .filter((item) => item.postId && item.content.length > 20);
 
     const uniquePosts = [];
     const seen = new Set();
-    blocks.forEach((p) => {
-      if (seen.has(p.url)) return;
-      seen.add(p.url);
+    parsed.forEach((p) => {
+      if (seen.has(p.postId)) return;
+      seen.add(p.postId);
       uniquePosts.push(p);
     });
 
