@@ -458,30 +458,37 @@ export class PuzzleGame {
     }
 
     shuffle() {
-        // Perform many valid random moves to ensure solvability
-        for (let i = 0; i < 200; i++) { // More shuffles for better randomness
-            const neighbors = [];
-            const row = Math.floor(this.emptyIndex / 4);
-            const col = this.emptyIndex % 4;
+        // Perform many valid random moves to ensure solvability.
+        // Retry when the board accidentally returns to solved state.
+        do {
+            for (let i = 0; i < 220; i++) {
+                const neighbors = [];
+                const row = Math.floor(this.emptyIndex / 4);
+                const col = this.emptyIndex % 4;
 
-            if (row > 0) neighbors.push(this.emptyIndex - 4);
-            if (row < 3) neighbors.push(this.emptyIndex + 4);
-            if (col > 0) neighbors.push(this.emptyIndex - 1);
-            if (col < 3) neighbors.push(this.emptyIndex + 1);
+                if (row > 0) neighbors.push(this.emptyIndex - 4);
+                if (row < 3) neighbors.push(this.emptyIndex + 4);
+                if (col > 0) neighbors.push(this.emptyIndex - 1);
+                if (col < 3) neighbors.push(this.emptyIndex + 1);
 
-            if (neighbors.length > 0) {
-                const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
-                this.tiles[this.emptyIndex] = this.tiles[randomNeighbor];
-                this.tiles[randomNeighbor] = null;
-                this.emptyIndex = randomNeighbor;
+                if (neighbors.length > 0) {
+                    const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+                    this.tiles[this.emptyIndex] = this.tiles[randomNeighbor];
+                    this.tiles[randomNeighbor] = null;
+                    this.emptyIndex = randomNeighbor;
+                }
             }
-        }
+        } while (this.isSolved());
         this.moves = 0;
         this.startTime = Date.now();
         this.draw();
     }
 
     onKeyDown(e) {
+        const tag = e.target?.tagName?.toLowerCase();
+        if (tag === 'input' || tag === 'textarea') return;
+        if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) return;
+        e.preventDefault();
         if (e.key === 'ArrowUp') this.move(this.emptyIndex + 4);
         if (e.key === 'ArrowDown') this.move(this.emptyIndex - 4);
         if (e.key === 'ArrowLeft') this.move(this.emptyIndex + 1);
@@ -489,12 +496,7 @@ export class PuzzleGame {
     }
 
     checkWin() {
-        // Only check if last tile is empty and others are sorted
-        if (this.tiles[15] !== null) return;
-        
-        for (let i = 0; i < 15; i++) {
-            if (this.tiles[i] !== i + 1) return;
-        }
+        if (!this.isSolved()) return;
         
         const isBest = Store.saveGameRecord('puzzle', this.moves);
         const best = Store.getGameRecord('puzzle');
@@ -505,6 +507,14 @@ export class PuzzleGame {
             const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
             if (shareConfirm) dispatchShare('15 퍼즐', `${this.moves}회 / ${sec}초`);
         }
+    }
+
+    isSolved() {
+        if (this.tiles[15] !== null) return false;
+        for (let i = 0; i < 15; i++) {
+            if (this.tiles[i] !== i + 1) return false;
+        }
+        return true;
     }
 
     destroy() {
