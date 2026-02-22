@@ -157,10 +157,10 @@ function renderArcade() {
             </div>
 
             <details class="profile-details" open>
-                <summary>⚡ 포인트 부스터 상점</summary>
+                <summary>⚡ 슈퍼 포인트 부스터 상점</summary>
                 <div class="game-zone" style="background:#e3f2fd; border-radius:12px; padding:1.2rem;">
-                    <p class="text-sub">구매 시 다음 5번의 테스트 보상이 <strong>2배(20P)</strong>가 됩니다!</p>
-                    <button id="buy-booster-btn" class="btn-primary" style="margin-top:1rem; background:#1976d2;">부스터 구매 (1000P)</button>
+                    <p class="text-sub">구매 시 다음 20번의 테스트 보상이 <strong>2배(20P)</strong>가 됩니다!</p>
+                    <button id="buy-booster-btn" class="btn-primary" style="margin-top:1rem; background:#1976d2;">슈퍼 부스터 구매 (100P)</button>
                 </div>
             </details>
 
@@ -216,12 +216,12 @@ function renderArcade() {
     initArcade(); 
     
     document.getElementById('buy-booster-btn').onclick = async () => {
-        if (await usePoints(1000)) {
+        if (await usePoints(100)) {
             const userRef = doc(db, "users", UserState.user.uid);
-            await updateDoc(userRef, { boosterCount: increment(5) });
-            UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 5;
+            await updateDoc(userRef, { boosterCount: increment(20) });
+            UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
             updateUI();
-            alert("부스터 구매 완료!");
+            alert("슈퍼 부스터 구매 완료! 다음 20번의 테스트 보상이 2배가 됩니다.");
             renderArcade();
         }
     };
