@@ -18,29 +18,164 @@ const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fi
 // =================================================================
 
 const TESTS = [
-    // 성격 분석 (Self-Discovery)
     {
         id: 'p1', category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '타인에게 느껴지는 당신만의 고유한 색채와 분위기를 7단계 심층 질문으로 분석합니다.', thumb: unsplash('1557683316-973673baf926'),
         questions: [
-            { q: '낯선 파티에 초대받았다면?', options: [{ text: '화려한 옷으로 존재감을 뽐낸다', type: 'A' }, { text: '깔끔하고 단정한 옷으로 섞인다', type: 'B' }] },
-            { q: '길을 걷다 예쁜 꽃을 발견하면?', options: [{ text: '사진을 찍어 SNS에 공유한다', type: 'A' }, { text: '잠시 멈춰 향기를 맡으며 감상한다', type: 'B' }] },
-            { q: '중요한 결정을 내릴 때 나는?', options: [{ text: '나의 직관과 느낌을 믿는다', type: 'A' }, { text: '데이터와 주변의 조언을 참고한다', type: 'B' }] },
-            { q: '비 오는 창밖을 볼 때 드는 생각은?', options: [{ text: '파전에 막걸리 먹고 싶다!', type: 'A' }, { text: '왠지 모르게 감성적으로 변한다', type: 'B' }] },
-            { q: '친구가 나에게 고민을 털어놓으면?', options: [{ text: '확실한 해결책을 제시해준다', type: 'A' }, { text: '끝까지 들어주며 같이 울어준다', type: 'B' }] },
-            { q: '나의 책상 위 모습은?', options: [{ text: '자유분방하게 흐트러져 있다', type: 'A' }, { text: '항상 정해진 자리에 물건이 있다', type: 'B' }] },
-            { q: '10년 후 나의 모습은 어떨까?', options: [{ text: '여전히 도전하며 열정적으로 살 것', type: 'A' }, { text: '평온하고 안정적인 삶을 누릴 것', type: 'B' }] }
+            { q: '낯선 파티에 초대받았다면 당신의 선택은?', options: [{ text: '화려한 옷으로 존재감을 뽐낸다', type: 'A' }, { text: '깔끔하고 단정한 옷으로 자연스럽게 섞인다', type: 'B' }] },
+            { q: '길을 걷다 예쁜 꽃을 발견했을 때 행동은?', options: [{ text: '바로 사진을 찍어 SNS에 공유한다', type: 'A' }, { text: '잠시 멈춰 향기를 맡으며 감상에 젖는다', type: 'B' }] },
+            { q: '중요한 결정을 내릴 때 당신의 기준은?', options: [{ text: '나의 직관과 느낌을 전적으로 믿는다', type: 'A' }, { text: '객관적인 데이터와 조언을 신중히 참고한다', type: 'B' }] },
+            { q: '비 오는 창밖을 볼 때 드는 생각은?', options: [{ text: '파전에 막걸리 같은 맛있는 음식이 생각난다', type: 'A' }, { text: '왠지 모르게 과거의 기억들이 떠오르며 감성적이 된다', type: 'B' }] },
+            { q: '친구가 고민을 털어놓을 때 당신의 반응은?', options: [{ text: '도움이 될 만한 확실한 해결책을 제시한다', type: 'A' }, { text: '말없이 끝까지 들어주며 공감해준다', type: 'B' }] },
+            { q: '평소 당신의 책상 위 모습은 어떤가요?', options: [{ text: '자유분방하고 창의적으로 어질러져 있다', type: 'A' }, { text: '항상 정해진 자리에 필요한 물건만 놓여 있다', type: 'B' }] },
+            { q: '10년 후 당신의 모습은 어떨 것 같나요?', options: [{ text: '새로운 분야에 도전하며 열정적으로 살고 있다', type: 'A' }, { text: '평온하고 안정적인 삶의 여유를 누리고 있다', type: 'B' }] }
         ],
         results: {
-            A: { title: '타오르는 태양의 레드', desc: '당신은 주변 사람들에게 에너지를 나눠주는 강력한 아우라를 가졌습니다. 리더십이 뛰어나고 솔직한 표현이 매력적입니다.', img: unsplash('1525909002-1b05e0c869d8') },
-            B: { title: '고요한 숲의 그린', desc: '당신은 함께 있는 것만으로도 마음이 편안해지는 아우라를 가졌습니다. 신중하고 사려 깊은 태도가 주변의 신뢰를 얻습니다.', img: unsplash('1518310383802-640c2de311b2') }
+            A: { title: '타오르는 태양의 레드', desc: '당신은 주변 사람들에게 긍정적인 에너지를 전파하는 강력한 아우라를 가졌습니다. 리더십이 뛰어나고 솔직한 표현이 매력적입니다.', img: unsplash('1525909002-1b05e0c869d8') },
+            B: { title: '고요한 숲의 그린', desc: '당신은 함께 있는 것만으로도 주변을 편안하게 만드는 치유의 아우라를 가졌습니다. 사려 깊은 태도가 주변의 큰 신뢰를 얻습니다.', img: unsplash('1518310383802-640c2de311b2') }
         }
     },
     {
-        id: 'p2', category: '성격', title: '내면 아이 유형 테스트', desc: '당신의 무의식 깊은 곳에 자리 잡은 내면 아이의 목소리에 귀를 기울여 보세요.', thumb: unsplash('1516035069371-29a1b244cc32'),
-        questions: Array(7).fill({ q: '어린 시절 가장 좋아했던 놀이는?', options: [{ text: '친구들과 뛰어노는 술래잡기', type: 'A' }, { text: '혼자 상상하며 그리는 그림', type: 'B' }] }),
+        id: 'p2', category: '성격', title: '내면 아이 유형 테스트', desc: '당신의 무의식 깊은 곳에 자리 잡은 내면 아이의 성향을 7단계로 분석합니다.', thumb: unsplash('1516035069371-29a1b244cc32'),
+        questions: [
+            { q: '어린 시절 가장 즐거웠던 기억은?', options: [{ text: '동네 친구들과 뛰어놀던 골목길', type: 'A' }, { text: '방 안에서 혼자 상상하며 놀던 시간', type: 'B' }] },
+            { q: '꿈속에서 마법 지팡이를 얻었다면?', options: [{ text: '하늘을 날아 세계 여행을 떠난다', type: 'A' }, { text: '동물들과 대화하는 능력을 갖는다', type: 'B' }] },
+            { q: '맛있는 간식이 하나만 남았다면?', options: [{ text: '친구에게 기분 좋게 양보한다', type: 'A' }, { text: '몰래 아껴두었다가 나중에 먹는다', type: 'B' }] },
+            { q: '길을 잃은 강아지를 발견한다면?', options: [{ text: '주인을 찾아주기 위해 적극적으로 나선다', type: 'A' }, { text: '겁이 나지만 먹을 것을 챙겨준다', type: 'B' }] },
+            { q: '무서운 번개가 칠 때 당신은?', options: [{ text: '가족에게 달려가 품에 안긴다', type: 'A' }, { text: '이불 속으로 들어가 소리를 차단한다', type: 'B' }] },
+            { q: '새로운 장난감을 선물받았을 때?', options: [{ text: '설명서 없이 바로 조립해본다', type: 'A' }, { text: '그림을 보며 신중하게 하나씩 만든다', type: 'B' }] },
+            { q: '잠들기 전 주로 어떤 생각을 하나요?', options: [{ text: '내일 일어날 즐거운 일들을 상상한다', type: 'A' }, { text: '오늘 하루 있었던 일들을 되짚어본다', type: 'B' }] }
+        ],
         results: {
-            A: { title: '호기심 많은 모험가', desc: '당신의 내면 아이는 여전히 새로운 세상을 향해 뛰어놀고 싶어 합니다. 지치지 않는 호기심이 당신의 힘입니다.', img: unsplash('1534361960057-19889db9621e') },
-            B: { title: '지혜로운 꼬마 학자', desc: '당신의 내면 아이는 세상을 관찰하고 이해하며 깊은 생각을 즐깁니다. 통찰력 있는 시선이 당신의 매력입니다.', img: unsplash('1456513080510-7bf3a84b82f8') }
+            A: { title: '호기심 많은 모험가 아이', desc: '당신의 내면 아이는 여전히 새로운 세상을 향해 뛰어놀고 싶어 합니다. 지치지 않는 호기심과 활기가 당신의 진정한 힘입니다.', img: unsplash('1534361960057-19889db9621e') },
+            B: { title: '지혜로운 꼬마 학자 아이', desc: '당신의 내면 아이는 세상을 관찰하고 깊이 생각하는 것을 즐깁니다. 통찰력 있는 시선과 차분함이 당신의 가장 큰 매력입니다.', img: unsplash('1456513080510-7bf3a84b82f8') }
+        }
+    },
+    {
+        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: unsplash('1518199266791-5375a83190b7'),
+        questions: [
+            { q: '연인과 가고 싶은 첫 데이트 장소는?', options: [{ text: '북적이는 핫플레이스와 축제', type: 'A' }, { text: '조용하고 분위기 있는 골목 카페', type: 'B' }] },
+            { q: '연락 빈도에 대한 당신의 생각은?', options: [{ text: '일상의 모든 것을 공유하고 싶다', type: 'A' }, { text: '각자의 시간을 존중하는 적당한 연락이 좋다', type: 'B' }] },
+            { q: '연인과 사소한 말다툼을 했다면?', options: [{ text: '그 자리에서 바로 대화로 푼다', type: 'A' }, { text: '잠시 시간을 갖고 감정을 추스른 뒤 대화한다', type: 'B' }] },
+            { q: '기념일에 더 선호하는 선물은?', options: [{ text: '실용적이고 평소 필요했던 물건', type: 'A' }, { text: '정성이 담긴 편지와 추억이 담긴 선물', type: 'B' }] },
+            { q: '연인이 갑자기 집 앞으로 찾아왔다면?', options: [{ text: '설레고 너무 기뻐서 바로 나간다', type: 'A' }, { text: '조금 당황스럽지만 고마운 마음이 든다', type: 'B' }] },
+            { q: '사랑을 표현할 때 더 중요한 것은?', options: [{ text: '자주 말해주는 직접적인 애정 표현', type: 'A' }, { text: '행동으로 보여주는 든든한 배려', type: 'B' }] },
+            { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하고 자극을 주는 열정적인 관계', type: 'A' }, { text: '있는 그대로를 수용해주는 편안한 관계', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '직진하는 불꽃 사랑', desc: '당신은 사랑에 있어 매우 솔직하고 열정적입니다. 상대방에게 확신을 주는 태도가 연인에게 큰 안정감을 줍니다.', img: unsplash('1516589174184-c68d8e5fcc4a') },
+            B: { title: '은은하게 스며드는 사랑', desc: '당신은 서서히 신뢰를 쌓아가는 깊이 있는 사랑을 선호합니다. 한결같은 모습과 세심한 배려가 당신의 연애 무기입니다.', img: unsplash('1494774157365-9e04c6720e47') }
+        }
+    },
+    {
+        id: 'p4', category: '성격', title: '스트레스 방어기제 테스트', desc: '힘든 상황이 닥쳤을 때 당신의 마음이 어떻게 스스로를 보호하는지 알아봅니다.', thumb: unsplash('1506126613408-eca57c42797c'),
+        questions: [
+            { q: '예상치 못한 큰 실수를 저질렀다면?', options: [{ text: '무엇이 잘못되었는지 즉시 원인을 파악한다', type: 'A' }, { text: '일단 기분 전환을 위해 다른 일을 한다', type: 'B' }] },
+            { q: '누군가 나를 이유 없이 비난한다면?', options: [{ text: '당당하게 나의 입장을 논리적으로 설명한다', type: 'A' }, { text: '상대할 가치가 없다고 생각하며 무시한다', type: 'B' }] },
+            { q: '업무나 공부가 너무 쌓여 압박을 느낄 때?', options: [{ text: '우선순위를 정해 계획표를 짠다', type: 'A' }, { text: '잠시 잠을 자거나 휴식을 취하며 잊는다', type: 'B' }] },
+            { q: '친구와 심한 갈등이 생겼을 때?', options: [{ text: '먼저 연락해서 대화를 시도한다', type: 'A' }, { text: '시간이 해결해 줄 것이라 믿고 기다린다', type: 'B' }] },
+            { q: '슬픈 영화를 볼 때 당신의 모습은?', options: [{ text: '감정을 억누르지 않고 펑펑 운다', type: 'A' }, { text: '눈물이 나려 해도 꾹 참는다', type: 'B' }] },
+            { q: '중요한 발표를 앞두고 떨린다면?', options: [{ text: '연습을 반복하며 완벽을 기한다', type: 'A' }, { text: '심호흡을 하며 마인드 컨트롤을 한다', type: 'B' }] },
+            { q: '과거의 창피했던 기억이 떠오르면?', options: [{ text: '그때 왜 그랬을까 분석해본다', type: 'A' }, { text: '머리를 흔들며 강제로 생각을 지운다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '강인한 철벽 방어형', desc: '당신은 스트레스 상황에서 문제를 정면으로 돌파하려는 경향이 있습니다. 현실적인 대처 능력이 매우 뛰어납니다.', img: unsplash('1499209974431-9dac3e5d9774') },
+            B: { title: '유연한 회피 수용형', desc: '당신은 마음의 평화를 유지하기 위해 감정을 조절하고 휴식하는 법을 압니다. 회복탄력성이 높은 편입니다.', img: unsplash('1474418397713-7dedd394996e') }
+        }
+    },
+    {
+        id: 'p5', category: '성격', title: '나만의 여행 DNA', desc: '여행지에서 보여주는 행동을 통해 당신의 숨겨진 성격 특성을 찾아냅니다.', thumb: unsplash('1469854523086-cc02fe5d8800'),
+        questions: [
+            { q: '여행 계획을 세울 때 당신의 스타일은?', options: [{ text: '시간 단위로 꼼꼼하게 동선을 짠다', type: 'A' }, { text: '목적지만 정하고 나머지는 가서 정한다', type: 'B' }] },
+            { q: '공항에 도착했을 때 가장 먼저 드는 기분은?', options: [{ text: '비행기 시간이 늦지 않을지 걱정되고 분주하다', type: 'A' }, { text: '떠난다는 사실 자체로 이미 설레고 즐겁다', type: 'B' }] },
+            { q: '유명 맛집에 줄이 너무 길다면?', options: [{ text: '예약했거나 꼭 가야 한다면 끝까지 기다린다', type: 'A' }, { text: '옆에 있는 다른 식당으로 발길을 돌린다', type: 'B' }] },
+            { q: '여행 중 비가 온다면 당신의 대처는?', options: [{ text: '실내 미술관이나 쇼핑몰로 계획을 수정한다', type: 'A' }, { text: '빗소리를 들으며 숙소에서 여유를 즐긴다', type: 'B' }] },
+            { q: '현지인들이 추천하는 낯선 음식을 본다면?', options: [{ text: '유명한 이유가 있을 테니 도전해본다', type: 'A' }, { text: '내가 아는 익숙한 음식을 선택한다', type: 'B' }] },
+            { q: '여행 사진을 찍을 때 더 중점을 두는 곳은?', options: [{ text: '내가 잘 나온 예쁜 인물 사진', type: 'A' }, { text: '그곳의 분위기가 잘 담긴 풍경 사진', type: 'B' }] },
+            { q: '여행이 끝나고 돌아오는 길에 드는 생각은?', options: [{ text: '집에 가서 쉬고 싶다는 생각', type: 'A' }, { text: '다음엔 어디로 여행 갈까 하는 생각', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '철저한 계획가 트래블러', desc: '당신은 목표 지향적이고 효율적인 성격입니다. 준비된 상황에서 최고의 만족감을 느끼는 스타일입니다.', img: unsplash('1488646953014-85cb44e25828') },
+            B: { title: '자유로운 영혼의 보헤미안', desc: '당신은 현재의 순간과 우연한 만남을 즐길 줄 아는 사람입니다. 적응력이 뛰어나고 여유로운 마음을 가졌습니다.', img: unsplash('1503220317375-aaad61436b1b') }
+        }
+    },
+    {
+        id: 'p6', category: '성격', title: '대화 습관 분석기', desc: '평소 대화 방식을 통해 당신이 타인과 관계를 맺는 핵심적인 특징을 분석합니다.', thumb: unsplash('1521791136364-798a7bc0d26e'),
+        questions: [
+            { q: '친구가 우울하다고 연락이 왔을 때?', options: [{ text: '이유를 물어보고 현실적인 위로를 한다', type: 'A' }, { text: '일단 만나서 기분을 풀어주려 노력한다', type: 'B' }] },
+            { q: '대화 중 침묵이 흐를 때 당신은?', options: [{ text: '어색함을 참지 못하고 먼저 화제를 꺼낸다', type: 'A' }, { text: '침묵을 자연스럽게 받아들이고 기다린다', type: 'B' }] },
+            { q: '나의 이야기를 할 때 당신의 스타일은?', options: [{ text: '결론부터 명확하게 말하는 편이다', type: 'A' }, { text: '상황과 감정을 상세히 설명하는 편이다', type: 'B' }] },
+            { q: '상대방의 의견에 동의하지 않을 때?', options: [{ text: '나의 생각을 솔직하고 분명하게 밝힌다', type: 'A' }, { text: '상대방의 기분을 고려해 완곡하게 표현한다', type: 'B' }] },
+            { q: '모임에서 주로 어떤 역할을 하나요?', options: [{ text: '대화를 주도하고 활기를 불어넣는 역할', type: 'A' }, { text: '이야기를 잘 들어주고 리액션해주는 역할', type: 'B' }] },
+            { q: '비밀을 지켜달라는 부탁을 받으면?', options: [{ text: '어떤 상황에서도 절대 발설하지 않는다', type: 'A' }, { text: '정말 신뢰하는 딱 한 명에게만 고민을 상담한다', type: 'B' }] },
+            { q: '통화와 카톡 중 더 선호하는 것은?', options: [{ text: '목소리로 감정을 느끼는 실시간 통화', type: 'A' }, { text: '생각을 정리해서 보낼 수 있는 메시지', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '명쾌한 소통의 마스터', desc: '당신은 주관이 뚜렷하고 의사전달 능력이 뛰어납니다. 사람들에게 신뢰감을 주는 명확한 화법이 강점입니다.', img: unsplash('1552664730-d307ca884978') },
+            B: { title: '따뜻한 공감의 리스너', desc: '당신은 상대방의 마음을 어루만질 줄 아는 소통가입니다. 당신과 대화한 사람들은 모두 위로와 평온함을 얻습니다.', img: unsplash('1522202176988-66273c2fd55f') }
+        }
+    },
+    {
+        id: 'p7', category: '성격', title: '우정 스타일 리포트', desc: '당신이 친구들 사이에서 어떤 존재인지, 어떤 우정을 지향하는지 분석합니다.', thumb: unsplash('1529156069898-49953e39b30c'),
+        questions: [
+            { q: '친구의 생일이 다가오면 당신은?', options: [{ text: '미리 선물을 준비하고 깜짝 파티를 계획한다', type: 'A' }, { text: '축하 메시지와 함께 친구가 원하는 선물을 묻는다', type: 'B' }] },
+            { q: '오랜만에 연락한 친구가 만나자고 하면?', options: [{ text: '무조건 시간을 비워 반갑게 만난다', type: 'A' }, { text: '나의 스케줄을 확인한 뒤 신중히 약속을 잡는다', type: 'B' }] },
+            { q: '친구가 나와 다른 취미를 갖자고 권하면?', options: [{ text: '친구를 위해서 기꺼이 함께 시도해본다', type: 'A' }, { text: '나와 맞지 않는다면 정중히 거절한다', type: 'B' }] },
+            { q: '여행 중 친구와 의견이 갈린다면?', options: [{ text: '최대한 친구의 의견에 맞춰주려 노력한다', type: 'A' }, { text: '서로 절충안을 찾을 때까지 대화한다', type: 'B' }] },
+            { q: '친구에게 서운한 점이 생겼을 때?', options: [{ text: '나중에 기회를 봐서 웃으며 이야기한다', type: 'A' }, { text: '속으로 삭이며 스스로 감정을 정리한다', type: 'B' }] },
+            { q: '내가 생각하는 진정한 친구의 기준은?', options: [{ text: '매일 연락하고 자주 보는 즐거운 사이', type: 'A' }, { text: '가끔 연락해도 어제 본 것 같은 깊은 사이', type: 'B' }] },
+            { q: '친구가 슬픈 일을 당했을 때 당신은?', options: [{ text: '함께 화내주고 울어주며 감정을 공유한다', type: 'A' }, { text: '든든하게 곁을 지키며 필요한 도움을 준다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '의리 넘치는 분위기 메이커', desc: '당신은 우정을 매우 소중히 여기며 친구들에게 즐거움을 주는 존재입니다. 당신 주변엔 항상 활기가 넘칩니다.', img: unsplash('1511632765486-a01980e01a18') },
+            B: { title: '한결같은 마음의 안식처', desc: '당신은 깊고 단단한 인간관계를 선호하는 사람입니다. 친구들은 당신의 조언과 침착함에서 큰 위안을 얻습니다.', img: unsplash('1543807535-eceef0bc6599') }
+        }
+    },
+    {
+        id: 'p8', category: '성격', title: '결단력 MBTI 테스트', desc: '당신이 선택의 기로에서 보여주는 결단력과 사고의 흐름을 분석합니다.', thumb: unsplash('1454165833762-621f2f57b2d1'),
+        questions: [
+            { q: '점심 메뉴를 정할 때 당신은?', options: [{ text: '먹고 싶은 메뉴를 3초 안에 결정한다', type: 'A' }, { text: '리뷰와 메뉴판을 한참 동안 살펴본다', type: 'B' }] },
+            { q: '물건을 살 때 더 중요한 기준은?', options: [{ text: '디자인과 첫인상', type: 'A' }, { text: '성능과 가성비 비교', type: 'B' }] },
+            { q: '약속 장소에 늦었을 때 당신의 행동은?', options: [{ text: '가장 빠른 택시를 타고 이동한다', type: 'A' }, { text: '지하철과 버스 시간을 비교해 최적 경로를 찾는다', type: 'B' }] },
+            { q: '새로운 전자기기를 샀을 때?', options: [{ text: '일단 전원부터 켜고 이것저것 눌러본다', type: 'A' }, { text: '설명서를 정독한 뒤 기능을 익힌다', type: 'B' }] },
+            { q: '갑작스러운 업무 변경 지시가 내려오면?', options: [{ text: '일단 알겠다고 하고 즉시 실행한다', type: 'A' }, { text: '변경 사유를 묻고 전체 일정을 재검토한다', type: 'B' }] },
+            { q: '영화 선택을 못 하고 있을 때 당신은?', options: [{ text: '제일 상단에 있는 인기 영화를 본다', type: 'A' }, { text: '예고편과 평점을 꼼꼼히 확인한다', type: 'B' }] },
+            { q: '인생의 중대한 결정을 앞두고 있다면?', options: [{ text: '나의 가슴이 시키는 대로 선택한다', type: 'A' }, { text: '장단점 리스트를 적어보고 머리로 판단한다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '단호한 직관주의자', desc: '당신은 빠른 판단력과 실행력을 겸비한 리더 타입입니다. 불필요한 고민보다는 행동으로 결과를 만드는 사람입니다.', img: unsplash('1507679799987-c7377ec486e8') },
+            B: { title: '신중한 전략 분석가', desc: '당신은 돌다리도 두드려보고 건너는 완벽주의 성향을 가졌습니다. 당신의 결정은 언제나 오류가 적고 탄탄합니다.', img: unsplash('1454165833762-621f2f57b2d1') }
+        }
+    },
+    {
+        id: 'p9', category: '성격', title: '워크 스타일 리포트', desc: '일이나 과제를 할 때 나타나는 당신만의 효율성과 협업 방식을 진단합니다.', thumb: unsplash('1497215728101-856f4ea42174'),
+        questions: [
+            { q: '업무가 시작되면 당신이 가장 먼저 하는 일은?', options: [{ text: '전체적인 목표를 머릿속에 그린다', type: 'A' }, { text: 'To-Do 리스트를 문서화한다', type: 'B' }] },
+            { q: '팀 프로젝트 중 의견 충돌이 발생하면?', options: [{ text: '나의 논리가 맞다면 끝까지 설득한다', type: 'A' }, { text: '전체의 화합을 위해 조금씩 양보한다', type: 'B' }] },
+            { q: '집중력이 가장 잘 발휘되는 환경은?', options: [{ text: '적당한 소음이 있는 카페 같은 자유로운 곳', type: 'A' }, { text: '아무런 방해 없는 조용한 독서실 같은 곳', type: 'B' }] },
+            { q: '마감 기한이 코앞으로 다가왔을 때?', options: [{ text: '엄청난 몰입도로 막판 스퍼트를 낸다', type: 'A' }, { text: '평소처럼 침착하게 남은 분량을 처리한다', type: 'B' }] },
+            { q: '나의 업무 책상 스타일은?', options: [{ text: '창의적인 아이디어가 솟는 자유로운 정돈', type: 'A' }, { text: '칼같이 정리된 사무용품의 배치', type: 'B' }] },
+            { q: '새로운 업무 도구를 도입해야 한다면?', options: [{ text: '좋아 보이면 바로 사용해본다', type: 'A' }, { text: '기존 방식보다 확실히 나은지 검증한다', type: 'B' }] },
+            { q: '퇴근 시간이 되었는데 일이 조금 남았다면?', options: [{ text: '내일의 나에게 맡기고 일단 퇴근한다', type: 'A' }, { text: '찝찝하니 남아서 끝까지 마무리한다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '창의적인 해결사', desc: '당신은 정해진 틀에 얽매이지 않고 새로운 길을 찾는 혁신가 타입입니다. 위기 상황에서 빛나는 기지를 발휘합니다.', img: unsplash('1519389950473-47ba0277781c') },
+            B: { title: '성실한 완벽가', desc: '당신은 주어진 역할을 묵묵히, 그리고 완벽하게 수행하는 조직의 기둥 같은 존재입니다. 당신의 책임감은 독보적입니다.', img: unsplash('1486312338219-ce68d2c6f44d') }
+        }
+    },
+    {
+        id: 'p10', category: '성격', title: '자존감 온도 측정기', desc: '당신의 자존감 상태와 외부 자극에 대한 마음의 회복탄력성을 측정합니다.', thumb: unsplash('1516589174184-c68d8e5fcc4a'),
+        questions: [
+            { q: '거울 속 나의 모습을 볼 때 드는 생각은?', options: [{ text: '이 정도면 꽤 괜찮지! 만족한다', type: 'A' }, { text: '자꾸 단점이 보여서 고치고 싶다', type: 'B' }] },
+            { q: '타인에게 칭찬을 받았을 때 당신은?', options: [{ text: '기분 좋게 감사하며 온전히 받아들인다', type: 'A' }, { text: '빈말이 아닐까 의심하거나 쑥스러워한다', type: 'B' }] },
+            { q: '중요한 시험이나 면접에서 떨어졌다면?', options: [{ text: '부족한 점을 보완해 다시 도전할 의지를 다진다', type: 'A' }, { text: '나의 능력 자체에 의문을 가지며 자책한다', type: 'B' }] },
+            { q: '남들이 다 하는 유행을 따라가지 못할 때?', options: [{ text: '나만의 개성이 중요하다고 생각하며 개의치 않는다', type: 'A' }, { text: '왠지 나만 뒤처지는 것 같아 불안함을 느낀다', type: 'B' }] },
+            { q: '친구가 연락이 늦어지면 당신의 생각은?', options: [{ text: '많이 바쁜가 보다 생각하며 넘긴다', type: 'A' }, { text: '내가 뭐 잘못했나 걱정하며 불안해한다', type: 'B' }] },
+            { q: '나의 감정을 타인에게 드러내는 것은?', options: [{ text: '솔직하게 표현하는 것이 건강하다고 믿는다', type: 'A' }, { text: '약점을 잡힐 것 같아 최대한 감추려 한다', type: 'B' }] },
+            { q: '오늘 하루 수고한 나에게 해주고 싶은 말은?', options: [{ text: '정말 고생 많았어, 넌 최고야!', type: 'A' }, { text: '내일은 좀 더 열심히 살아야겠다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '햇살 가득 맑은 하늘형', desc: '당신의 자존감은 매우 건강하고 안정적입니다. 자신을 사랑하는 마음이 타인에게도 긍정적인 영향을 미칩니다.', img: unsplash('1490730141103-6cac27aaab94') },
+            B: { title: '은은한 달빛 구름형', desc: '당신은 섬세하고 사려 깊은 마음을 가졌지만, 때로는 자신에게 너무 엄격할 때가 있습니다. 당신은 충분히 아름다운 사람입니다.', img: unsplash('1532767153582-b1a0e5145009') }
         }
     }
 ];
@@ -54,7 +189,7 @@ const categoryThemes = {
     '재미': ['전생 탐구', '소울푸드', '인생 영화', '반려동물', '능력치 측정', '운명적 직업', '밸런스 게임']
 };
 
-for (let i = 3; i <= 40; i++) {
+for (let i = 11; i <= 40; i++) {
     const categories = Object.keys(categoryThemes);
     const cat = categories[Math.floor((i-1) / 10)];
     const theme = categoryThemes[cat][(i % categoryThemes[cat].length)];
@@ -473,9 +608,6 @@ function renderArcade() {
     updateUI();
 }
 
-// ... renderBoard, renderRanking, renderGuide, renderTestExecution, renderResult, Static Pages 생략 (기존 상세 버전 유지하며 UI만 정리) ...
-// (전체 코드의 일관성을 위해 renderResult 보상 로직만 재확인)
-
 async function renderResult(testId, answers) {
     const test = TESTS.find(t => t.id === testId);
     const result = test.results[answers.filter(x => x==='A').length >= 4 ? 'A' : 'B'];
@@ -510,6 +642,7 @@ function renderPrivacy() { app.innerHTML = `<div class="card legal-page fade-in"
 function renderAbout() { app.innerHTML = `<div class="card guide-container fade-in"><h2>✨ 서비스 소개</h2><p>SevenCheck Studio는 심리 분석과 성장의 재미를 결합한 플랫폼입니다.</p></div>`; }
 function renderTerms() { app.innerHTML = `<div class="card legal-page fade-in"><h2>📜 이용약관</h2><p>이용 규칙을 준수해 주세요.</p></div>`; }
 function renderContact() { app.innerHTML = `<div class="card guide-container fade-in" style="text-align:center;"><h2>📧 문의하기</h2><p>support@sevencheck.studio</p></div>`; }
+
 function renderGuide() {
     app.innerHTML = `
         <div class="guide-page fade-in">
@@ -596,6 +729,37 @@ function renderGuide() {
             </details>
         </div>
     `;
+}
+
+function renderTestExecution(testId) {
+    const test = TESTS.find(t => t.id === testId);
+    if (!test) return;
+    let step = 0;
+    const answers = [];
+
+    const updateStep = () => {
+        if (step >= 7) { renderResult(testId, answers); return; }
+        const qData = test.questions[step];
+        app.innerHTML = `
+            <div class="test-container fade-in">
+                <div class="test-header-info">
+                    <span class="step-counter">Question 0${step + 1} / 07</span>
+                    <div class="progress-mini"><div class="progress-mini-fill" style="width:${((step + 1) / 7) * 100}%"></div></div>
+                </div>
+                <h2 class="test-question">${qData.q}</h2>
+                <div class="options-grid">
+                    ${qData.options.map(opt => `<button class="option-btn" data-type="${opt.type}">${opt.text}</button>`).join('')}
+                </div>
+            </div>`;
+        app.querySelectorAll('.option-btn').forEach(btn => {
+            btn.onclick = () => {
+                answers.push(btn.dataset.type);
+                step++;
+                updateStep();
+            };
+        });
+    };
+    updateStep();
 }
 
 themeToggle.onclick = () => {
