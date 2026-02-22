@@ -102,9 +102,14 @@ onAuthStateChanged(auth, async (user) => {
   currentUser = user;
   isAdmin = false; // Reset admin status
   if (currentUser) {
-    // Get custom claims to check for admin role
-    const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh token
-    isAdmin = idTokenResult.claims.admin || false;
+    try {
+      // Get custom claims to check for admin role
+      const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh token
+      isAdmin = idTokenResult.claims.admin || false;
+    } catch (error) {
+      console.warn('Failed to load auth claims:', error);
+      isAdmin = false;
+    }
   }
   if (currentUser) {
     try {
@@ -534,12 +539,12 @@ function renderLounge() {
       const listHtml = posts.map(post => `
         <div class="post-card" data-id="${post.id}">
           <div class="post-header">
-            <span class="chip small">${post.category}</span>
+            <span class="chip small">${escapeHTML(post.category || '')}</span>
             <span class="date">${new Date(post.date).toLocaleDateString()}</span>
           </div>
-          <h4 class="post-title">${post.title}</h4>
+          <h4 class="post-title">${escapeHTML(post.title || '')}</h4>
           <div class="post-footer">
-            <span>${post.author}</span>
+            <span>${escapeHTML(post.author || '')}</span>
             <span>❤️ ${post.likes}</span>
           </div>
         </div>
@@ -581,7 +586,9 @@ async function fetchDogImg() {
     try {
         const res = await fetch('https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true');
         const data = await res.json();
-        container.innerHTML = `<img src="${data[0]}" alt="Dog" style="width:100%; border-radius:12px; margin-top:0.5rem; border:1px solid var(--border-color);">`;
+        const imageUrl = safeExternalUrl(data[0]);
+        if (!imageUrl) throw new Error('Invalid image URL');
+        container.innerHTML = `<img src="${escapeHTML(imageUrl)}" alt="Dog" style="width:100%; border-radius:12px; margin-top:0.5rem; border:1px solid var(--border-color);">`;
     } catch (e) {
         container.innerHTML = "멍멍! 이미지를 불러오지 못했습니다.";
     }
@@ -614,9 +621,9 @@ function renderCommunity() {
       );
       const listHtml = posts.map((post, idx) => `
         <div class="post-row" data-id="${post.id}">
-          <span class="col-cat"><span class="chip micro">${post.category}</span></span>
-        <span class="col-title">${post.title} <span class="comment-count">[${commentCounts[idx]}]</span></span>
-          <span class="col-author">${post.author}</span>
+          <span class="col-cat"><span class="chip micro">${escapeHTML(post.category || '')}</span></span>
+        <span class="col-title">${escapeHTML(post.title || '')} <span class="comment-count">[${commentCounts[idx]}]</span></span>
+          <span class="col-author">${escapeHTML(post.author || '')}</span>
           <span class="col-meta">${post.views} / ${post.likes}</span>
         </div>
       `).join('');
@@ -729,7 +736,7 @@ async function loadProfileView() {
   const logHtml = logs.length
     ? logs.map(l => `
         <div class="log-row">
-          <span>${formatReason(l.reason)}</span>
+          <span>${escapeHTML(formatReason(l.reason))}</span>
           <span class="${l.delta >= 0 ? 'log-plus' : 'log-minus'}">${l.delta >= 0 ? '+' : ''}${l.delta}P</span>
           <span class="log-date">${new Date(l.date).toLocaleDateString()}</span>
         </div>
@@ -740,7 +747,7 @@ async function loadProfileView() {
     ? leaderboard.map((u, idx) => `
         <div class="leader-row">
           <span class="rank">#${idx + 1}</span>
-          <span class="name">${u.displayName || u.uid?.slice(0, 6) || '팬'}</span>
+          <span class="name">${escapeHTML(u.displayName || u.uid?.slice(0, 6) || '팬')}</span>
           <span class="pts">${u.points || 0}P</span>
         </div>
       `).join('')
@@ -748,8 +755,8 @@ async function loadProfileView() {
 
   document.getElementById('profile-card-loading').innerHTML = `
     <div class="tier-panel">
-      <h3>환영합니다, ${getDisplayName()}!</h3>
-      <p>UID: ${currentUser.uid}</p>
+      <h3>환영합니다, ${escapeHTML(getDisplayName())}!</h3>
+      <p>UID: ${escapeHTML(currentUser.uid)}</p>
       ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
       <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
       <div class="mt-2">
@@ -784,7 +791,7 @@ async function loadProfileView() {
     </div>
     <div class="mt-4">
       <label for="nickname-input">닉네임</label>
-      <input type="text" id="nickname-input" class="input" placeholder="닉네임" value="${currentUser.displayName || ''}">
+      <input type="text" id="nickname-input" class="input" placeholder="닉네임" value="${escapeHTML(currentUser.displayName || '')}">
       <button id="save-nickname-btn" class="btn btn-primary full-width mt-2">닉네임 변경</button>
     </div>
     <button id="logout-btn" class="btn btn-secondary full-width mt-4">로그아웃</button>
@@ -820,7 +827,7 @@ function renderAdmin() {
     app.innerHTML = `
       <section class="admin-section fade-in">
           <h2 class="page-title">⚙️ 관리자 페이지</h2>
-          <p class="text-sub">관리자 ${currentUser.email}님 환영합니다.</p>
+          <p class="text-sub">관리자 ${escapeHTML(currentUser.email || '')}님 환영합니다.</p>
           <div class="admin-dashboard">
               <div class="admin-card card">
                   <h3>게시글 관리</h3>
@@ -880,9 +887,9 @@ async function openWriteModal(type, prefill = {}, refreshCallback = null) {
                 : ['영상', '게임 기록', '심리테스트', '추천', '질문', '공지'].map(c => `<option value="${c}" ${prefill && prefill.category && prefill.category === c ? 'selected' : ''}>${c}</option>`).join('')
             }
         </select>
-        <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill && prefill.title || ''}">
-        <input type="text" id="post-author" class="input" placeholder="닉네임" value="${getDisplayName()}" disabled>
-        <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${prefill && prefill.content || ''}</textarea>
+        <input type="text" id="post-title" class="input" placeholder="제목" value="${escapeHTML(prefill && prefill.title || '')}">
+        <input type="text" id="post-author" class="input" placeholder="닉네임" value="${escapeHTML(getDisplayName())}" disabled>
+        <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${escapeHTML(prefill && prefill.content || '')}</textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" id="submit-post">등록</button>
@@ -920,7 +927,11 @@ async function openPostModal(id) { // Added async
       return;
   }
   
-  await Store.viewPost(id); // Increment view count
+  try {
+    await Store.viewPost(id); // Increment view count
+  } catch (error) {
+    console.warn('Failed to increment views:', error);
+  }
   
   const modal = document.createElement('div');
   modal.className = 'modal-overlay fade-in';
@@ -930,13 +941,13 @@ async function openPostModal(id) { // Added async
     modal.innerHTML = `
       <div class="modal view-modal">
         <div class="modal-header">
-          <span class="chip">${currentPost.category}</span>
+          <span class="chip">${escapeHTML(currentPost.category || '')}</span>
           <button class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <h2 class="view-title">${currentPost.title}</h2>
+          <h2 class="view-title">${escapeHTML(currentPost.title || '')}</h2>
           <div class="view-meta">
-            <span>${currentPost.author}</span> · <span>${new Date(currentPost.date).toLocaleDateString()}</span>
+            <span>${escapeHTML(currentPost.author || '')}</span> · <span>${new Date(currentPost.date).toLocaleDateString()}</span>
             <span class="right">👀 ${currentPost.views} ❤️ <span id="like-count">${currentPost.likes}</span></span>
           </div>
           <div class="view-content">${renderPostContent(currentPost.content)}</div>
@@ -946,15 +957,15 @@ async function openPostModal(id) { // Added async
               <div id="comment-list">
                 ${comments.map(c => `
                   <div class="comment">
-                      <strong>${c.author}</strong> <span class="date">${new Date(c.date).toLocaleTimeString()}</span>
-                      <p>${c.content}</p>
+                      <strong>${escapeHTML(c.author || '')}</strong> <span class="date">${new Date(c.date).toLocaleTimeString()}</span>
+                      <p>${escapeHTML(c.content || '')}</p>
                       ${(currentUser && (currentUser.uid === c.authorId || isAdmin)) 
                         ? `<button class="btn btn-danger btn-sm delete-comment-btn" data-comment-id="${c.id}">삭제</button>` : ''}
                   </div>
                 `).join('')}
               </div>
               <div class="comment-form">
-                  <input type="text" id="comment-author" placeholder="닉네임" class="input small" value="${currentUser ? getDisplayName() : ''}" ${currentUser ? 'disabled' : ''}>
+                  <input type="text" id="comment-author" placeholder="닉네임" class="input small" value="${currentUser ? escapeHTML(getDisplayName()) : ''}" ${currentUser ? 'disabled' : ''}>
                   <input type="text" id="comment-text" placeholder="댓글 내용" class="input">
                   <button id="submit-comment" class="btn btn-secondary" ${currentUser ? '' : 'disabled'}>등록</button>
               </div>
@@ -977,10 +988,14 @@ async function openPostModal(id) { // Added async
     
     const likeBtn = modal.querySelector('#like-btn');
     if (likeBtn) likeBtn.addEventListener('click', async () => {
-       const newLikes = await Store.likePost(id);
-       currentPost.likes = newLikes; // update local ref
-       await awardPoints(POINTS.like, 'like');
-       renderModalContent(currentPost); // re-render to update like count
+       try {
+         const newLikes = await Store.likePost(id);
+         currentPost.likes = newLikes; // update local ref
+         await awardPoints(POINTS.like, 'like');
+         renderModalContent(currentPost); // re-render to update like count
+       } catch (error) {
+         alert('좋아요 처리에 실패했습니다. 로그인 상태를 확인해주세요.');
+       }
     });
 
     const deletePostBtn = modal.querySelector('#delete-post-btn');
@@ -1084,13 +1099,13 @@ async function loadLatestVideos() {
     const items = (data.items || []).slice(0, 6);
     const cards = items.map((item) => {
       const title = item.title || 'Untitled';
-      const link = item.link || CHANNEL_URL;
+      const link = safeExternalUrl(item.link) || CHANNEL_URL;
       const published = item.pubDate || '';
-      const thumb = item.thumbnail || '';
+      const thumb = safeExternalUrl(item.thumbnail) || '';
       const dateText = published ? new Date(published).toLocaleDateString() : '';
       return `
-        <a class="video-card" href="${link}" target="_blank" rel="noreferrer">
-          <div class="thumb" style="background-image:url('${thumb}')"></div>
+        <a class="video-card" href="${escapeHTML(link)}" target="_blank" rel="noreferrer noopener">
+          <div class="thumb" style="background-image:url('${escapeHTML(thumb)}')"></div>
           <div class="video-meta">
             <h4>${escapeHTML(title)}</h4>
             <span>${dateText}</span>
@@ -1112,10 +1127,15 @@ function escapeHTML(str = '') {
 }
 
 function renderPostContent(raw = '') {
-  const text = escapeHTML(raw);
+  const text = escapeHTML(raw).replace(/\n/g, '<br>');
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const urls = raw.match(urlRegex) || [];
-  let html = text.replace(urlRegex, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
+  let html = text.replace(urlRegex, (url) => {
+    const safeUrl = safeExternalUrl(url);
+    if (!safeUrl) return escapeHTML(url);
+    const encoded = escapeHTML(safeUrl);
+    return `<a href="${encoded}" target="_blank" rel="noreferrer noopener">${encoded}</a>`;
+  });
   const embeds = urls
     .map((u) => buildYouTubeEmbed(u))
     .filter(Boolean)
@@ -1127,14 +1147,28 @@ function renderPostContent(raw = '') {
 function buildYouTubeEmbed(url) {
   try {
     const u = new URL(url);
+    const host = u.hostname.toLowerCase();
+    const isShortHost = host === 'youtu.be' || host.endsWith('.youtu.be');
+    const isYouTubeHost = host === 'youtube.com' || host === 'www.youtube.com' || host.endsWith('.youtube.com');
     let id = '';
-    if (u.hostname.includes('youtu.be')) {
+    if (isShortHost) {
       id = u.pathname.slice(1);
-    } else if (u.searchParams.get('v')) {
+    } else if (isYouTubeHost && u.searchParams.get('v')) {
       id = u.searchParams.get('v');
     }
+    if (id && !/^[A-Za-z0-9_-]{11}$/.test(id)) return '';
     if (!id) return '';
     return `https://www.youtube.com/embed/${id}`;
+  } catch {
+    return '';
+  }
+}
+
+function safeExternalUrl(value = '') {
+  try {
+    const parsed = new URL(String(value));
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') return '';
+    return parsed.toString();
   } catch {
     return '';
   }

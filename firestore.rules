@@ -1,30 +1,117 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function isValidTier(value) {
+      return value in ['Rookie', 'Bronze', 'Silver', 'Gold', 'Platinum', 'Diamond'];
+    }
+
+    function isPostShape(data) {
+      return data.keys().hasOnly(['type', 'category', 'title', 'content', 'author', 'date', 'likes', 'views', 'authorId'])
+        && data.keys().hasAll(['type', 'category', 'title', 'content', 'author', 'date', 'likes', 'views', 'authorId']);
+    }
+
+    function isPostCounterUpdate() {
+      return (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])
+        && request.resource.data.likes == resource.data.likes + 1
+        && request.resource.data.views == resource.data.views
+      ) || (
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
+        && request.resource.data.views == resource.data.views + 1
+        && request.resource.data.likes == resource.data.likes
+      );
+    }
+
+    function isPointDeltaAllowed(newPoints, oldPoints) {
+      return newPoints == oldPoints + 1
+        || newPoints == oldPoints + 5
+        || newPoints == oldPoints + 8
+        || newPoints == oldPoints + 15;
+    }
+
     match /posts/{postId} {
       allow read: if true;
-      allow create: if request.auth != null;
-      allow update: if request.auth != null;
-      allow delete: if request.auth != null
-        && (request.auth.uid == resource.data.authorId || request.auth.token.admin == true);
+      allow create: if isSignedIn()
+        && isPostShape(request.resource.data)
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.likes == 0
+        && request.resource.data.views == 0
+        && request.resource.data.type in ['community', 'lounge'];
+      allow update: if isSignedIn()
+        && isPostShape(request.resource.data)
+        && (
+          (
+            (request.auth.uid == resource.data.authorId || isAdmin())
+            && request.resource.data.authorId == resource.data.authorId
+          )
+          || isPostCounterUpdate()
+        );
+      allow delete: if isSignedIn()
+        && (request.auth.uid == resource.data.authorId || isAdmin());
     }
 
     match /comments/{commentId} {
       allow read: if true;
-      allow create: if request.auth != null;
+      allow create: if isSignedIn()
+        && request.resource.data.keys().hasOnly(['postId', 'author', 'content', 'authorId', 'date'])
+        && request.resource.data.keys().hasAll(['postId', 'author', 'content', 'authorId', 'date'])
+        && request.resource.data.authorId == request.auth.uid;
       allow update: if false;
-      allow delete: if request.auth != null
-        && (request.auth.uid == resource.data.authorId || request.auth.token.admin == true);
+      allow delete: if isSignedIn()
+        && (request.auth.uid == resource.data.authorId || isAdmin());
     }
 
     match /users/{userId} {
+      function isUserDocShape(data) {
+        return data.keys().hasOnly(['uid', 'displayName', 'points', 'tier', 'lastLoginDate', 'createdAt'])
+          && data.keys().hasAll(['uid', 'points', 'tier']);
+      }
+
+      function isProfileUpdate() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['displayName', 'lastLoginDate']);
+      }
+
+      function isPointsUpdate() {
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['points', 'tier'])
+          && request.resource.data.points is int
+          && resource.data.points is int
+          && isPointDeltaAllowed(request.resource.data.points, resource.data.points)
+          && isValidTier(request.resource.data.tier);
+      }
+
       allow read: if true;
-      allow create, update: if request.auth != null && request.auth.uid == userId;
+      allow create: if isOwner(userId)
+        && isUserDocShape(request.resource.data)
+        && request.resource.data.uid == userId
+        && request.resource.data.points == 0
+        && request.resource.data.tier == 'Rookie';
+      allow update: if isOwner(userId)
+        && isUserDocShape(request.resource.data)
+        && request.resource.data.uid == resource.data.uid
+        && request.resource.data.createdAt == resource.data.createdAt
+        && (isProfileUpdate() || isPointsUpdate());
       allow delete: if false;
     }
 
     match /users/{userId}/points/{logId} {
-      allow read, create: if request.auth != null && request.auth.uid == userId;
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['delta', 'reason', 'date'])
+        && request.resource.data.keys().hasAll(['delta', 'reason', 'date'])
+        && request.resource.data.delta in [1, 5, 8, 15]
+        && request.resource.data.reason in ['post', 'comment', 'like', 'daily_login'];
       allow update, delete: if false;
     }
   }

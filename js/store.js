@@ -70,7 +70,6 @@ export const Store = {
 
   async addPoints(uid, delta, tier) {
     const userRef = doc(usersCol, uid);
-    await setDoc(userRef, { uid }, { merge: true });
     await updateDoc(userRef, {
       points: increment(delta),
       tier
@@ -136,27 +135,35 @@ export const Store = {
 
   // Posts (Community & Lounge) - Now using Firestore
   async getPosts(type = null, category = null, orderByField = 'date', orderDirection = 'desc') {
-    let q = query(postsCol, orderBy(orderByField, orderDirection));
-
-    const useClientTypeFilter = !!type;
-    const useClientCategoryFilter = category && category !== '전체';
-    
-    const querySnapshot = await getDocs(q);
-    let posts = querySnapshot.docs.map(doc => {
+    const useCategoryFilter = category && category !== '전체';
+    const constraints = [];
+    if (type) constraints.push(where('type', '==', type));
+    if (useCategoryFilter) constraints.push(where('category', '==', category));
+    constraints.push(orderBy(orderByField, orderDirection));
+    const q = query(postsCol, ...constraints);
+    const toPosts = (snapshot) => snapshot.docs.map(doc => {
       const data = doc.data();
       const legacyId = data.id;
       if (legacyId) delete data.id;
       return { id: doc.id, legacyId, ...data };
     });
-
-    if (useClientTypeFilter) {
-      posts = posts.filter(p => p.type === type);
+    let posts = [];
+    try {
+      const querySnapshot = await getDocs(q);
+      posts = toPosts(querySnapshot);
+    } catch (error) {
+      // If required composite indexes are missing, fallback to broad query.
+      const fallbackSnapshot = await getDocs(query(postsCol, orderBy(orderByField, orderDirection)));
+      posts = toPosts(fallbackSnapshot);
+      if (type) posts = posts.filter(p => p.type === type);
+      if (useCategoryFilter) posts = posts.filter(p => p.category === category);
+      console.warn('Fell back to client-side filtering for posts query:', error);
     }
-    if (useClientCategoryFilter) {
-      posts = posts.filter(p => p.category === category);
-    }
 
-    if (posts.length === 0) { // If no posts, seed initial data to Firestore
+    if (posts.length === 0) {
+      // Seed only when the entire posts collection is empty.
+      const hasAnyPosts = await getDocs(query(postsCol, limit(1)));
+      if (!hasAnyPosts.empty) return posts;
         console.log("Seeding initial posts...");
         for (const p of initialPosts) {
             await addDoc(postsCol, p);
@@ -169,12 +176,6 @@ export const Store = {
           if (legacyId) delete data.id;
           return { id: doc.id, legacyId, ...data };
         });
-        if (useClientTypeFilter) {
-          posts = posts.filter(p => p.type === type);
-        }
-        if (useClientCategoryFilter) {
-          posts = posts.filter(p => p.category === category);
-        }
     }
 
     return posts;
@@ -240,27 +241,18 @@ export const Store = {
 
   async viewPost(id) {
     const postRef = doc(db, "posts", id);
-    const postSnap = await getDoc(postRef);
-    if (postSnap.exists()) {
-      const currentViews = postSnap.data().views || 0;
-      await updateDoc(postRef, {
-        views: currentViews + 1
-      });
-    }
+    await updateDoc(postRef, {
+      views: increment(1)
+    });
   },
 
   async likePost(id) {
     const postRef = doc(db, "posts", id);
-    const postSnap = await getDoc(postRef);
-    if (postSnap.exists()) {
-      const currentLikes = postSnap.data().likes || 0;
-      const newLikes = currentLikes + 1;
-      await updateDoc(postRef, {
-        likes: newLikes
-      });
-      return newLikes;
-    }
-    return 0;
+    await updateDoc(postRef, {
+      likes: increment(1)
+    });
+    const updatedSnap = await getDoc(postRef);
+    return updatedSnap.exists() ? (updatedSnap.data().likes || 0) : 0;
   },
 
   async deletePost(id) {
