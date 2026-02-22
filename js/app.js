@@ -1,6 +1,6 @@
 // js/app.js
 import { Store } from './store.js';
-import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame } from './games.js';
+import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame, MathGame, RpsGame, PersonalityTest, NumberMemoryGame, TypingGame, ReflexGame, MazeGame, DodgeGame } from './games.js';
 import { auth, db } from '../index.html'; // Import auth and db instances
 import { 
   createUserWithEmailAndPassword, 
@@ -90,14 +90,14 @@ function renderHome() {
     </section>
 
     <div class="notice-banner fade-in">
-      <strong>📢 공지</strong> 2026.02.22 - 새로운 미니게임 4종이 추가되었습니다!
+      <strong>📢 공지</strong> 2026.02.22 - 신규 미니게임과 심리테스트가 추가되었습니다!
     </div>
 
     <div class="card-grid fade-in">
       <a href="#games" class="card entry-card">
         <div class="card-icon">🎮</div>
         <h3>미니게임</h3>
-        <p>반응속도, 기억력, 리듬, 퍼즐 게임을 즐겨보세요.</p>
+        <p>반응속도, 기억력, 리듬, 퍼즐 + 신규 게임과 심리테스트까지!</p>
       </a>
       <a href="#lounge" class="card entry-card">
         <div class="card-icon">💬</div>
@@ -122,6 +122,14 @@ function renderGames() {
         <button class="tab-btn" data-game="memory">기억력</button>
         <button class="tab-btn" data-game="rhythm">리듬</button>
         <button class="tab-btn" data-game="puzzle">퍼즐</button>
+        <button class="tab-btn" data-game="math">스피드 합산</button>
+        <button class="tab-btn" data-game="rps">가위바위보</button>
+        <button class="tab-btn" data-game="number">숫자 기억력</button>
+        <button class="tab-btn" data-game="typing">타이핑</button>
+        <button class="tab-btn" data-game="reflex">반사신경</button>
+        <button class="tab-btn" data-game="maze">미로</button>
+        <button class="tab-btn" data-game="dodge">낙하 피하기</button>
+        <button class="tab-btn" data-game="test">심리테스트</button>
       </div>
       <div id="game-container" class="game-container"></div>
     </div>
@@ -144,6 +152,14 @@ function renderGames() {
       if (gameType === 'memory') new MemoryGame(container);
       if (gameType === 'rhythm') new RhythmGame(container);
       if (gameType === 'puzzle') new PuzzleGame(container);
+      if (gameType === 'math') new MathGame(container);
+      if (gameType === 'rps') new RpsGame(container);
+      if (gameType === 'number') new NumberMemoryGame(container);
+      if (gameType === 'typing') new TypingGame(container);
+      if (gameType === 'reflex') new ReflexGame(container);
+      if (gameType === 'maze') new MazeGame(container);
+      if (gameType === 'dodge') new DodgeGame(container);
+      if (gameType === 'test') new PersonalityTest(container);
     });
   });
 }

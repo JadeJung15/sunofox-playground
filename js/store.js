@@ -23,6 +23,13 @@ const initialGameRecords = {
   memory: null,   // turns (lower is better)
   rhythm: 0,      // score (higher is better)
   puzzle: null,   // seconds (lower is better)
+  math: 0,        // score (higher is better)
+  rps: 0,         // win streak (higher is better)
+  number: 0,      // max length (higher is better)
+  typing: 0,      // wpm (higher is better)
+  reflex: 0,      // score (higher is better)
+  maze: 0,        // score (higher is better)
+  dodge: 0,       // score (higher is better)
 };
 
 export const Store = {

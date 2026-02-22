@@ -675,42 +675,84 @@ export class PersonalityTest {
         this.questions = [
             { q: '주말에 가장 하고 싶은 일은?', options: [
                 { t: 'A', text: '혼자 조용히 쉬기' },
-                { t: 'B', text: '친구들과 약속 잡기' },
+                { t: 'B', text: '친구들과 수다' },
                 { t: 'C', text: '새로운 취미 도전' },
+                { t: 'D', text: '즉흥 나들이' },
+                { t: 'E', text: '감성 충전(카페/전시)' },
+            ]},
+            { q: '중요한 결정을 할 때 나는?', options: [
+                { t: 'A', text: '차분히 혼자 정리' },
+                { t: 'B', text: '주변 의견을 참고' },
+                { t: 'C', text: '새로운 가능성을 탐색' },
+                { t: 'D', text: '빠르게 실행' },
+                { t: 'E', text: '감정에 따라 선택' },
             ]},
             { q: '스트레스를 받으면 나는?', options: [
                 { t: 'A', text: '집에서 혼자 정리한다' },
                 { t: 'B', text: '사람들과 이야기한다' },
-                { t: 'C', text: '밖으로 나간다' },
+                { t: 'C', text: '몸을 움직인다' },
+                { t: 'D', text: '새로운 환경으로 간다' },
+                { t: 'E', text: '음악/콘텐츠에 몰입' },
             ]},
             { q: '여행 스타일은?', options: [
                 { t: 'A', text: '느긋하게 휴식' },
                 { t: 'B', text: '맛집/사람 위주' },
                 { t: 'C', text: '활동적인 일정' },
-            ]},
-            { q: '집에 도착하면 먼저 하는 일은?', options: [
-                { t: 'A', text: '샤워 후 휴식' },
-                { t: 'B', text: '메신저 확인' },
-                { t: 'C', text: '운동이나 산책' },
+                { t: 'D', text: '즉흥 스팟 탐험' },
+                { t: 'E', text: '사진/감성 기록' },
             ]},
             { q: '새로운 모임에서 나는?', options: [
                 { t: 'A', text: '관찰하며 적응' },
                 { t: 'B', text: '먼저 말 걸기' },
-                { t: 'C', text: '분위기 띄우기' },
+                { t: 'C', text: '게임/활동 제안' },
+                { t: 'D', text: '분위기 띄우기' },
+                { t: 'E', text: '조용히 분위기 즐기기' },
             ]},
             { q: '가장 끌리는 선물은?', options: [
                 { t: 'A', text: '향초/디퓨저' },
                 { t: 'B', text: '사진 앨범' },
                 { t: 'C', text: '액티비티 티켓' },
+                { t: 'D', text: '여행/체험 쿠폰' },
+                { t: 'E', text: '감성 소품' },
+            ]},
+            { q: '좋아하는 음악 분위기는?', options: [
+                { t: 'A', text: '잔잔한 로파이' },
+                { t: 'B', text: '신나는 팝' },
+                { t: 'C', text: '리듬감 있는 EDM' },
+                { t: 'D', text: '강렬한 락' },
+                { t: 'E', text: '감성 발라드' },
+            ]},
+            { q: '일할 때 선호하는 스타일은?', options: [
+                { t: 'A', text: '혼자 집중' },
+                { t: 'B', text: '팀과 협업' },
+                { t: 'C', text: '새로운 시도' },
+                { t: 'D', text: '빠르게 실행' },
+                { t: 'E', text: '아이디어 스케치' },
+            ]},
+            { q: '에너지를 충전하는 방법은?', options: [
+                { t: 'A', text: '혼자 쉬기' },
+                { t: 'B', text: '사람들과 만나기' },
+                { t: 'C', text: '움직이기' },
+                { t: 'D', text: '즉흥 여행' },
+                { t: 'E', text: '감성 콘텐츠' },
+            ]},
+            { q: '이상적인 카페 분위기는?', options: [
+                { t: 'A', text: '조용하고 편안' },
+                { t: 'B', text: '사람 북적이는 곳' },
+                { t: 'C', text: '힙하고 트렌디' },
+                { t: 'D', text: '새로운 콘셉트' },
+                { t: 'E', text: '감성 인테리어' },
             ]},
         ];
         this.results = {
-            A: { title: '🍃 고요한 힐링러', desc: '혼자만의 시간을 즐기며 재충전하는 타입입니다. 느긋한 루틴이 최고의 휴식이에요.' },
-            B: { title: '✨ 소셜 에너지러', desc: '사람들과의 교류가 에너지입니다. 함께 웃고 떠드는 시간이 최고의 회복제!' },
-            C: { title: '🔥 액티브 챌린저', desc: '새로운 경험과 활동에서 힐링을 느낍니다. 움직일수록 기분이 좋아져요.' },
+            A: { title: '🌙 고요한 관찰자', desc: '차분하고 깊이 있는 에너지를 가진 타입입니다. 혼자만의 시간이 가장 큰 회복 포인트!' },
+            B: { title: '☀️ 소셜 리더', desc: '사람들과의 교류에서 힘을 얻는 타입입니다. 함께할수록 에너지가 올라가요.' },
+            C: { title: '⚡ 활력 도전자', desc: '새로운 도전과 액션에서 즐거움을 느낍니다. 움직일수록 기분이 UP!' },
+            D: { title: '🚀 즉흥 탐험가', desc: '즉흥적인 선택에 강하고 변화에 두려움이 없는 타입입니다.' },
+            E: { title: '🎨 감성 크리에이터', desc: '분위기와 감성에 민감한 타입입니다. 아름다운 것에 둘러싸일 때 힘을 얻어요.' },
         };
         this.index = 0;
-        this.score = { A: 0, B: 0, C: 0 };
+        this.score = { A: 0, B: 0, C: 0, D: 0, E: 0 };
         this.render();
     }
 
@@ -778,7 +820,515 @@ export class PersonalityTest {
 
     reset() {
         this.index = 0;
-        this.score = { A: 0, B: 0, C: 0 };
+        this.score = { A: 0, B: 0, C: 0, D: 0, E: 0 };
         this.renderQuestion();
+    }
+}
+
+export class NumberMemoryGame {
+    constructor(element) {
+        this.container = element;
+        this.sequence = [];
+        this.level = 3;
+        this.isShowing = false;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">🔢 숫자 기억력</h3>
+                <span class="number-status">Level: 3 (Best: ${Store.getGameRecord('number') || 0})</span>
+            </div>
+            <div class="number-area">
+                <div class="number-sequence">시작 버튼을 눌러주세요</div>
+                <input type="text" class="input number-input" placeholder="숫자를 입력하세요" inputmode="numeric" />
+                <div class="number-feedback"></div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="start-number">시작</button>
+                <button class="btn btn-secondary" id="check-number">확인</button>
+                <button class="btn btn-secondary" id="reset-number">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.number-status');
+        this.sequenceEl = this.container.querySelector('.number-sequence');
+        this.inputEl = this.container.querySelector('.number-input');
+        this.feedbackEl = this.container.querySelector('.number-feedback');
+
+        this.container.querySelector('#start-number').addEventListener('click', () => this.start());
+        this.container.querySelector('#check-number').addEventListener('click', () => this.check());
+        this.container.querySelector('#reset-number').addEventListener('click', () => {
+            Store.saveGameRecord('number', 0);
+            this.feedbackEl.textContent = '기록 초기화됨.';
+            alert('기록이 초기화되었습니다.');
+        });
+    }
+
+    start() {
+        if (this.isShowing) return;
+        this.sequence = Array.from({ length: this.level }, () => Math.floor(Math.random() * 9) + 1);
+        this.inputEl.value = '';
+        this.feedbackEl.textContent = '';
+        this.showSequence();
+    }
+
+    showSequence() {
+        this.isShowing = true;
+        let index = 0;
+        this.sequenceEl.textContent = '';
+        const timer = setInterval(() => {
+            this.sequenceEl.textContent = this.sequence[index];
+            index += 1;
+            if (index >= this.sequence.length) {
+                clearInterval(timer);
+                setTimeout(() => {
+                    this.sequenceEl.textContent = '입력하세요!';
+                    this.isShowing = false;
+                    this.inputEl.focus();
+                }, 600);
+            }
+        }, 700);
+    }
+
+    check() {
+        if (this.isShowing) return;
+        const value = this.inputEl.value.trim();
+        const answer = this.sequence.join('');
+        if (!value) return;
+
+        if (value === answer) {
+            this.level += 1;
+            this.feedbackEl.textContent = '정답! 다음 레벨로!';
+            const isBest = Store.saveGameRecord('number', this.level - 1);
+            if (isBest) {
+                this.feedbackEl.textContent += ' (최고 기록!)';
+            }
+            this.updateStatus();
+            this.start();
+        } else {
+            this.feedbackEl.textContent = `오답! 정답은 ${answer}`;
+            this.level = 3;
+            this.updateStatus();
+        }
+    }
+
+    updateStatus() {
+        const best = Store.getGameRecord('number') || 0;
+        this.statusEl.textContent = `Level: ${this.level} (Best: ${best})`;
+    }
+}
+
+export class TypingGame {
+    constructor(element) {
+        this.container = element;
+        this.phrases = [
+            '빠르게 타이핑하면 기록이 올라갑니다',
+            'SunoFox와 함께 즐거운 미니게임',
+            '정확도가 높을수록 점수가 좋아요',
+            '오늘도 멋진 하루 되세요',
+            '속도와 정확도를 모두 잡아보자',
+        ];
+        this.startTime = null;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">⌨️ 타이핑 속도</h3>
+                <span class="typing-status">Best: ${Store.getGameRecord('typing') || 0} WPM</span>
+            </div>
+            <div class="typing-area">
+                <div class="typing-phrase"></div>
+                <textarea class="input typing-input" placeholder="여기에 입력하세요"></textarea>
+                <div class="typing-feedback"></div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="start-typing">문장 시작</button>
+                <button class="btn btn-secondary" id="reset-typing">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.typing-status');
+        this.phraseEl = this.container.querySelector('.typing-phrase');
+        this.inputEl = this.container.querySelector('.typing-input');
+        this.feedbackEl = this.container.querySelector('.typing-feedback');
+
+        this.container.querySelector('#start-typing').addEventListener('click', () => this.start());
+        this.container.querySelector('#reset-typing').addEventListener('click', () => {
+            Store.saveGameRecord('typing', 0);
+            this.updateStatus();
+            alert('기록이 초기화되었습니다.');
+        });
+        this.inputEl.addEventListener('input', () => this.check());
+        this.start();
+    }
+
+    start() {
+        const phrase = this.phrases[Math.floor(Math.random() * this.phrases.length)];
+        this.phraseEl.textContent = phrase;
+        this.inputEl.value = '';
+        this.feedbackEl.textContent = '문장을 정확히 입력하세요.';
+        this.startTime = null;
+        this.inputEl.focus();
+    }
+
+    check() {
+        if (!this.startTime) this.startTime = Date.now();
+        const target = this.phraseEl.textContent;
+        const typed = this.inputEl.value;
+        if (typed === target) {
+            const timeMin = (Date.now() - this.startTime) / 60000;
+            const wpm = Math.round((target.length / 5) / timeMin);
+            const isBest = Store.saveGameRecord('typing', wpm);
+            this.feedbackEl.textContent = `완료! ${wpm} WPM`;
+            if (isBest) this.feedbackEl.textContent += ' (최고 기록!)';
+            this.updateStatus();
+        }
+    }
+
+    updateStatus() {
+        this.statusEl.textContent = `Best: ${Store.getGameRecord('typing') || 0} WPM`;
+    }
+}
+
+export class ReflexGame {
+    constructor(element) {
+        this.container = element;
+        this.score = 0;
+        this.timeLeft = 15;
+        this.timer = null;
+        this.spawnTimer = null;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">⚡ 반사신경</h3>
+                <span class="reflex-status">Time: 15s | Score: 0</span>
+            </div>
+            <div class="reflex-area">
+                <button class="reflex-target">TAP</button>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="start-reflex">게임 시작</button>
+                <button class="btn btn-secondary" id="reset-reflex">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.reflex-status');
+        this.areaEl = this.container.querySelector('.reflex-area');
+        this.targetEl = this.container.querySelector('.reflex-target');
+
+        this.container.querySelector('#start-reflex').addEventListener('click', () => this.start());
+        this.container.querySelector('#reset-reflex').addEventListener('click', () => {
+            Store.saveGameRecord('reflex', 0);
+            this.updateStatus();
+            alert('기록이 초기화되었습니다.');
+        });
+        this.targetEl.addEventListener('click', () => this.hit());
+        this.resetTarget();
+    }
+
+    start() {
+        this.score = 0;
+        this.timeLeft = 15;
+        this.updateStatus();
+        this.resetTarget();
+        clearInterval(this.timer);
+        clearInterval(this.spawnTimer);
+
+        this.timer = setInterval(() => {
+            this.timeLeft -= 1;
+            this.updateStatus();
+            if (this.timeLeft <= 0) this.end();
+        }, 1000);
+
+        this.spawnTimer = setInterval(() => this.resetTarget(), 900);
+    }
+
+    hit() {
+        if (this.timeLeft <= 0) return;
+        this.score += 1;
+        this.updateStatus();
+        this.resetTarget();
+    }
+
+    resetTarget() {
+        const rect = this.areaEl.getBoundingClientRect();
+        const size = 60;
+        const maxX = Math.max(0, rect.width - size);
+        const maxY = Math.max(0, rect.height - size);
+        const x = Math.random() * maxX;
+        const y = Math.random() * maxY;
+        this.targetEl.style.transform = `translate(${x}px, ${y}px)`;
+    }
+
+    updateStatus() {
+        const best = Store.getGameRecord('reflex') || 0;
+        this.statusEl.textContent = `Time: ${this.timeLeft}s | Score: ${this.score} (Best: ${best})`;
+    }
+
+    end() {
+        clearInterval(this.timer);
+        clearInterval(this.spawnTimer);
+        const isBest = Store.saveGameRecord('reflex', this.score);
+        if (isBest) {
+            this.statusEl.textContent += ' (최고 기록!)';
+        }
+    }
+}
+
+export class MazeGame {
+    constructor(element) {
+        this.container = element;
+        this.grid = [
+            [1,1,1,1,1,1,1],
+            [1,0,0,0,1,0,1],
+            [1,0,1,0,1,0,1],
+            [1,0,1,0,0,0,1],
+            [1,0,1,1,1,0,1],
+            [1,0,0,0,0,0,1],
+            [1,1,1,1,1,1,1],
+        ];
+        this.player = { x: 1, y: 1 };
+        this.goal = { x: 5, y: 5 };
+        this.moves = 0;
+        this.startTime = null;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">🧭 미로 탈출</h3>
+                <span class="maze-status">Moves: 0 | Best: ${Store.getGameRecord('maze') || 0}</span>
+            </div>
+            <div class="maze-grid"></div>
+            <div class="maze-controls">
+                <button class="btn btn-secondary" data-dir="up">▲</button>
+                <div class="maze-row">
+                    <button class="btn btn-secondary" data-dir="left">◀</button>
+                    <button class="btn btn-secondary" data-dir="down">▼</button>
+                    <button class="btn btn-secondary" data-dir="right">▶</button>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="reset-maze">다시 시작</button>
+                <button class="btn btn-secondary" id="reset-maze-score">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.maze-status');
+        this.gridEl = this.container.querySelector('.maze-grid');
+        this.draw();
+
+        this.container.querySelectorAll('.maze-controls [data-dir]').forEach(btn => {
+            btn.addEventListener('click', () => this.move(btn.dataset.dir));
+        });
+        this.container.querySelector('#reset-maze').addEventListener('click', () => this.reset());
+        this.container.querySelector('#reset-maze-score').addEventListener('click', () => {
+            Store.saveGameRecord('maze', 0);
+            this.updateStatus();
+            alert('기록이 초기화되었습니다.');
+        });
+        document.addEventListener('keydown', (e) => this.handleKey(e));
+        this.startTime = Date.now();
+    }
+
+    handleKey(e) {
+        if (e.key === 'ArrowUp') this.move('up');
+        if (e.key === 'ArrowDown') this.move('down');
+        if (e.key === 'ArrowLeft') this.move('left');
+        if (e.key === 'ArrowRight') this.move('right');
+    }
+
+    reset() {
+        this.player = { x: 1, y: 1 };
+        this.moves = 0;
+        this.startTime = Date.now();
+        this.draw();
+        this.updateStatus();
+    }
+
+    move(dir) {
+        const delta = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] }[dir];
+        if (!delta) return;
+        const nx = this.player.x + delta[0];
+        const ny = this.player.y + delta[1];
+        if (this.grid[ny][nx] === 1) return;
+        this.player = { x: nx, y: ny };
+        this.moves += 1;
+        this.draw();
+        if (nx === this.goal.x && ny === this.goal.y) this.win();
+        this.updateStatus();
+    }
+
+    draw() {
+        this.gridEl.innerHTML = '';
+        for (let y = 0; y < this.grid.length; y++) {
+            for (let x = 0; x < this.grid[0].length; x++) {
+                const cell = document.createElement('div');
+                cell.className = 'maze-cell';
+                if (this.grid[y][x] === 1) cell.classList.add('wall');
+                if (x === this.goal.x && y === this.goal.y) cell.classList.add('goal');
+                if (x === this.player.x && y === this.player.y) cell.classList.add('player');
+                this.gridEl.appendChild(cell);
+            }
+        }
+    }
+
+    updateStatus() {
+        const best = Store.getGameRecord('maze') || 0;
+        this.statusEl.textContent = `Moves: ${this.moves} | Best: ${best}`;
+    }
+
+    win() {
+        const timeSec = Math.round((Date.now() - this.startTime) / 1000);
+        const score = Math.max(0, 1000 - this.moves * 10 - timeSec * 5);
+        const isBest = Store.saveGameRecord('maze', score);
+        alert(`탈출 성공! 시간: ${timeSec}s, 점수: ${score}`);
+        if (isBest) {
+            window.dispatchEvent(new CustomEvent('gameShareRecord', {
+                detail: { gameName: '미로 탈출', score: `${score}점` }
+            }));
+        }
+    }
+}
+
+export class DodgeGame {
+    constructor(element) {
+        this.container = element;
+        this.width = 280;
+        this.height = 320;
+        this.playerX = 120;
+        this.obstacles = [];
+        this.score = 0;
+        this.timer = null;
+        this.spawnTimer = null;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">☄️ 낙하 피하기</h3>
+                <span class="dodge-status">Score: 0 (Best: ${Store.getGameRecord('dodge') || 0})</span>
+            </div>
+            <div class="dodge-area">
+                <div class="dodge-player"></div>
+            </div>
+            <div class="dodge-controls">
+                <button class="btn btn-secondary" data-move="left">◀</button>
+                <button class="btn btn-secondary" data-move="right">▶</button>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="start-dodge">게임 시작</button>
+                <button class="btn btn-secondary" id="reset-dodge">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.dodge-status');
+        this.areaEl = this.container.querySelector('.dodge-area');
+        this.playerEl = this.container.querySelector('.dodge-player');
+
+        this.container.querySelector('#start-dodge').addEventListener('click', () => this.start());
+        this.container.querySelector('#reset-dodge').addEventListener('click', () => {
+            Store.saveGameRecord('dodge', 0);
+            this.updateStatus();
+            alert('기록이 초기화되었습니다.');
+        });
+        this.container.querySelectorAll('.dodge-controls [data-move]').forEach(btn => {
+            btn.addEventListener('click', () => this.move(btn.dataset.move));
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') this.move('left');
+            if (e.key === 'ArrowRight') this.move('right');
+        });
+        this.updatePlayer();
+    }
+
+    start() {
+        this.obstacles = [];
+        this.score = 0;
+        this.clearObstacles();
+        this.updateStatus();
+        clearInterval(this.timer);
+        clearInterval(this.spawnTimer);
+
+        this.timer = setInterval(() => this.tick(), 50);
+        this.spawnTimer = setInterval(() => this.spawn(), 700);
+    }
+
+    move(dir) {
+        if (dir === 'left') this.playerX -= 20;
+        if (dir === 'right') this.playerX += 20;
+        this.playerX = Math.max(0, Math.min(this.playerX, this.width - 30));
+        this.updatePlayer();
+    }
+
+    updatePlayer() {
+        this.playerEl.style.transform = `translateX(${this.playerX}px)`;
+    }
+
+    spawn() {
+        const x = Math.floor(Math.random() * (this.width - 20));
+        const el = document.createElement('div');
+        el.className = 'dodge-obstacle';
+        el.style.left = `${x}px`;
+        el.style.top = `0px`;
+        this.areaEl.appendChild(el);
+        this.obstacles.push({ el, y: 0, x });
+    }
+
+    tick() {
+        this.score += 1;
+        this.updateStatus();
+        const playerRect = { x: this.playerX, y: this.height - 24, w: 30, h: 18 };
+
+        this.obstacles.forEach(obs => {
+            obs.y += 4;
+            obs.el.style.top = `${obs.y}px`;
+        });
+
+        const remaining = [];
+        for (const obs of this.obstacles) {
+            const hit = this.isHit(playerRect, { x: obs.x, y: obs.y, w: 20, h: 20 });
+            if (hit) {
+                this.end();
+                return;
+            }
+            if (obs.y < this.height) remaining.push(obs);
+            else obs.el.remove();
+        }
+        this.obstacles = remaining;
+    }
+
+    isHit(a, b) {
+        return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    updateStatus() {
+        const best = Store.getGameRecord('dodge') || 0;
+        this.statusEl.textContent = `Score: ${this.score} (Best: ${best})`;
+    }
+
+    clearObstacles() {
+        this.areaEl.querySelectorAll('.dodge-obstacle').forEach(el => el.remove());
+    }
+
+    end() {
+        clearInterval(this.timer);
+        clearInterval(this.spawnTimer);
+        const isBest = Store.saveGameRecord('dodge', this.score);
+        alert(`게임 종료! 점수: ${this.score}`);
+        if (isBest) {
+            window.dispatchEvent(new CustomEvent('gameShareRecord', {
+                detail: { gameName: '낙하 피하기', score: `${this.score}점` }
+            }));
+        }
     }
 }
