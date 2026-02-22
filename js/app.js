@@ -11,7 +11,9 @@ const routes = {
   '#home': renderHome,
   '#games': renderGames,
   '#lounge': renderLounge,
-  '#community': renderCommunity
+  '#community': renderCommunity,
+  '#profile': renderProfile, // New route
+  '#admin': renderAdmin      // New route
 };
 
 function router() {
@@ -51,7 +53,9 @@ function initTheme() {
 
 function updateThemeIcon(theme) {
   const icon = themeToggle.querySelector('.icon');
-  if(icon) icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  if(icon) {
+    icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+  }
 }
 
 // Views
@@ -223,6 +227,66 @@ function renderCommunity() {
   document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', null, renderList));
 }
 
+// NEW: Render Profile Page (Non-functional UI)
+function renderProfile() {
+  app.innerHTML = `
+    <section class="profile-section fade-in">
+        <h2 class="page-title">👤 내 프로필</h2>
+        <div class="profile-card card">
+            <h3>로그인 / 회원가입</h3>
+            <p class="text-sub">이 기능은 백엔드 시스템이 필요합니다. 현재는 비활성화되어 있습니다.</p>
+            <div class="form-group">
+                <label for="username">사용자명</label>
+                <input type="text" id="username" class="input" placeholder="사용자명">
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" class="input" placeholder="비밀번호">
+            </div>
+            <button class="btn btn-primary full-width mt-4">로그인</button>
+            <button class="btn btn-secondary full-width mt-2">회원가입</button>
+        </div>
+        <div class="profile-details card mt-4">
+            <h3>나의 활동</h3>
+            <p class="text-sub">로그인 후 활동 기록을 볼 수 있습니다.</p>
+            <ul>
+                <li>작성한 글: 0개</li>
+                <li>작성한 댓글: 0개</li>
+                <li>최고 게임 기록: -</li>
+            </ul>
+        </div>
+    </section>
+  `;
+}
+
+// NEW: Render Admin Page (Non-functional UI)
+function renderAdmin() {
+  app.innerHTML = `
+    <section class="admin-section fade-in">
+        <h2 class="page-title">⚙️ 관리자 페이지</h2>
+        <div class="admin-dashboard">
+            <div class="admin-card card">
+                <h3>게시글 관리</h3>
+                <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                <button class="btn btn-secondary full-width mt-2">게시글 목록</button>
+                <button class="btn btn-secondary full-width mt-2">신고된 글</button>
+            </div>
+            <div class="admin-card card">
+                <h3>댓글 관리</h3>
+                <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                <button class="btn btn-secondary full-width mt-2">댓글 목록</button>
+            </div>
+            <div class="admin-card card">
+                <h3>사용자 관리</h3>
+                <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                <button class="btn btn-secondary full-width mt-2">사용자 목록</button>
+            </div>
+        </div>
+    </section>
+  `;
+}
+
+
 // Modals
 function openWriteModal(type, prefill = {}, refreshCallback = null) {
   const modal = document.createElement('div');
@@ -343,7 +407,6 @@ function openPostModal(id) {
         if (!author || !content) return;
         
         Store.addComment({ postId: parseInt(id), author, content });
-        contentInput.value = '';
         renderModalContent();
     });
   };
