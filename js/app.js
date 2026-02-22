@@ -555,6 +555,8 @@ function renderCommunity() {
       <div class="toolbar fan-toolbar pulse-panel">
         <h2 class="page-title">팬클럽 뉴스룸</h2>
         <div class="actions">
+          <a href="#lounge" class="btn btn-outline">Lounge</a>
+          <a href="#tests" class="btn btn-outline">Test Lab</a>
           <button id="write-comm-btn" class="btn btn-primary">뉴스룸 글쓰기</button>
         </div>
       </div>
