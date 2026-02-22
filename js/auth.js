@@ -21,14 +21,12 @@ export const UserState = {
     isAdmin: false
 };
 
+// 상점 데이터 정규화
 export const EMOJI_SHOP = {
-    '기본': { '👤': 0, '🏠': 50 },
-    '귀여운 동물': { '🐱': 200, '🐶': 200, '🦊': 300, '🐰': 300, '🐼': 500, '🐨': 500, '🐹': 400, '🐣': 400, '🐸': 300, '🐧': 500, '🐘': 600, '🐬': 700 },
-    '강력한 야수': { '🐯': 800, '🦁': 800, '🐺': 1000, '🐲': 2500, '🦖': 2000, '🦈': 1500, '🦅': 1200, '🐍': 900 },
-    '자연 & 날씨': { '🌸': 300, '🌻': 300, '🍀': 400, '🌿': 200, '☀️': 500, '🌙': 500, '☁️': 200, '❄️': 600, '🌊': 800, '🌈': 1000, '🔥': 1000, '🌌': 2000 },
-    '음식 & 간식': { '🍎': 200, '🍓': 300, '🍇': 300, '🍕': 500, '🍔': 500, '🍣': 800, '🍦': 400, '🍰': 600, '🍩': 400, '☕': 300, '🍺': 500, '🍹': 600 },
-    '판타지 & 스페셜': { '🦄': 1500, '🦋': 800, '🔮': 1200, '🪐': 1500, '🎭': 1000, '🎨': 1200, '🎬': 1000, '🚀': 3000, '🛸': 4000, '👻': 700, '🤖': 1500 },
-    '스페셜 프리미엄': { '✨': 3000, '👑': 5000, '💎': 10000, '🌋': 7000, '⚡': 4000, '🧿': 5000, '🎖️': 3000, '🎗️': 2000 }
+    '귀여운 동물': { '🐱': 200, '🐶': 200, '🦊': 300, '🐰': 300, '🐼': 500, '🐨': 500, '🐹': 400, '🐣': 400, '🐧': 500 },
+    '강력한 야수': { '🐯': 800, '🦁': 800, '🐺': 1000, '🐲': 2500, '🦖': 2000, '🦈': 1500 },
+    '자연 & 날씨': { '🌸': 300, '🌻': 300, '🍀': 400, '☀️': 500, '🌙': 500, '🌈': 1000, '🔥': 1000, '🌌': 2000 },
+    '스페셜 프리미엄': { '✨': 3000, '👑': 5000, '💎': 10000, '⚡': 4000, '🧿': 5000 }
 };
 
 export const ITEM_VALUES = {
@@ -68,6 +66,7 @@ export function initAuth() {
         }
     });
 
+    // Delegated clicks for reliability
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
@@ -102,32 +101,26 @@ async function loadUserData(user) {
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
-    const headerProfile = document.getElementById('header-profile');
-    const userPointsEls = document.querySelectorAll('#user-points');
-    const userNameEls = document.querySelectorAll('#user-name');
-    const userScoreEls = document.querySelectorAll('#user-total-score');
-    const userEmojiEls = document.querySelectorAll('#user-emoji');
-
     if (isLoggedIn && UserState.data) {
         document.getElementById('login-btn')?.classList.add('hidden');
-        if (headerProfile) headerProfile.classList.remove('hidden');
+        document.getElementById('header-profile')?.classList.remove('hidden');
         
         const tier = getTier(UserState.data.totalScore || 0);
         
-        userNameEls.forEach(el => {
+        document.querySelectorAll('#user-name').forEach(el => {
             el.textContent = (UserState.isAdmin ? '👑 ' : '') + UserState.data.nickname;
             el.style.color = UserState.data.nameColor || 'var(--text-main)';
         });
-        userPointsEls.forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
-        userScoreEls.forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
-        userEmojiEls.forEach(el => el.textContent = UserState.data.emoji || '👤');
+        document.querySelectorAll('#user-points').forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
+        document.querySelectorAll('#user-total-score').forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
+        document.querySelectorAll('#user-emoji').forEach(el => el.textContent = UserState.data.emoji || '👤');
         
         document.querySelectorAll('.tier-display').forEach(el => {
             el.innerHTML = `<span class="tier-badge ${tier.class}">${tier.name}</span>`;
         });
     } else {
         document.getElementById('login-btn')?.classList.remove('hidden');
-        if (headerProfile) headerProfile.classList.add('hidden');
+        document.getElementById('header-profile')?.classList.add('hidden');
     }
 }
 
@@ -135,16 +128,14 @@ async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji) return;
     const unlocked = UserState.data.unlockedEmojis || ['👤'];
     if (unlocked.includes(emoji)) {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { emoji: emoji });
+        await updateDoc(doc(db, "users", UserState.user.uid), { emoji: emoji });
         UserState.data.emoji = emoji;
-        updateUI();
-        return;
+        updateUI(); return;
     }
     let price = 0;
     for (const cat in EMOJI_SHOP) { if (EMOJI_SHOP[cat][emoji]) { price = EMOJI_SHOP[cat][emoji]; break; } }
-    if (UserState.data.totalScore < price) return alert("아이템 점수 부족");
-    if (!confirm(`아이템 가치 ${price}점이 차감됩니다. 교환하시겠습니까?`)) return;
+    if (UserState.data.totalScore < price) return alert("아이템 점수가 부족합니다.");
+    if (!confirm(`[${emoji}] 교환 시 아이템 가치 ${price}점이 소모됩니다.`)) return;
 
     try {
         const userRef = doc(db, "users", UserState.user.uid);
@@ -156,17 +147,13 @@ async function handleEmojiExchange(emoji) {
             scoreToDeduct -= ITEM_VALUES[item];
         }
         await updateDoc(userRef, {
-            unlockedEmojis: [...unlocked, emoji],
+            unlockedEmojis: arrayUnion(emoji),
             inventory: currentInv,
             totalScore: increment(-price),
             emoji: emoji
         });
-        UserState.data.unlockedEmojis = [...unlocked, emoji];
-        UserState.data.inventory = currentInv;
-        UserState.data.totalScore -= price;
-        UserState.data.emoji = emoji;
-        updateUI();
-        alert("교환 성공!");
+        UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore -= price; UserState.data.emoji = emoji;
+        updateUI(); alert("교환 완료!");
         if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
     } catch (e) { alert("오류 발생"); }
 }
@@ -174,18 +161,12 @@ async function handleEmojiExchange(emoji) {
 async function changeNameColor(color) {
     const unlocked = UserState.data.unlockedColors || ['#333333'];
     if (unlocked.includes(color)) {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { nameColor: color });
-        UserState.data.nameColor = color;
-        updateUI();
-        return;
+        await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
+        UserState.data.nameColor = color; updateUI(); return;
     }
     if (await usePoints(2000)) {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { unlockedColors: [...unlocked, color], nameColor: color });
-        UserState.data.unlockedColors.push(color);
-        UserState.data.nameColor = color;
-        updateUI();
+        await updateDoc(doc(db, "users", UserState.user.uid), { unlockedColors: arrayUnion(color), nameColor: color });
+        UserState.data.unlockedColors.push(color); UserState.data.nameColor = color; updateUI();
     }
 }
 
@@ -194,56 +175,40 @@ async function changeNickname() {
     const msg = document.getElementById('nickname-msg');
     if (!UserState.user || !input?.value.trim()) return;
     const newName = input.value.trim();
-    if (newName === UserState.data.nickname) return;
     const now = Date.now();
     const lastChange = UserState.data.lastNicknameChange ? (UserState.data.lastNicknameChange.toMillis ? UserState.data.lastNicknameChange.toMillis() : UserState.data.lastNicknameChange) : 0;
-    if (!UserState.isAdmin && (now - lastChange < 30 * 24 * 60 * 60 * 1000)) { alert("30일 제한"); return; }
+    if (!UserState.isAdmin && (now - lastChange < 30 * 24 * 60 * 60 * 1000)) {
+        const days = Math.ceil((lastChange + 30*24*60*60*1000 - now) / (24*60*60*1000));
+        if (msg) msg.textContent = `${days}일 후 변경 가능합니다.`; return;
+    }
     try {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { nickname: newName, lastNicknameChange: serverTimestamp() });
-        UserState.data.nickname = newName; UserState.data.lastNicknameChange = now;
-        updateUI();
-        if (msg) msg.textContent = "변경완료!";
+        await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, lastNicknameChange: serverTimestamp() });
+        UserState.data.nickname = newName; UserState.data.lastNicknameChange = now; updateUI();
+        if (msg) msg.textContent = "변경되었습니다.";
     } catch (e) { console.error(e); }
 }
 
 export async function chargeUserPoints(targetUid, amount) {
-    if (!UserState.isAdmin) {
-        alert("관리자 권한이 없습니다.");
-        return false;
-    }
+    if (!UserState.isAdmin) return false;
     try {
-        const userRef = doc(db, "users", targetUid);
-        await updateDoc(userRef, { points: increment(amount) });
-        
-        // 만약 대상이 본인이면 로컬 데이터도 갱신
-        if (targetUid === UserState.user.uid) {
-            UserState.data.points = (UserState.data.points || 0) + amount;
-            updateUI();
-        }
+        await updateDoc(doc(db, "users", targetUid), { points: increment(amount) });
+        if (targetUid === UserState.user.uid) { UserState.data.points += amount; updateUI(); }
         return true;
-    } catch (e) {
-        console.error("Point charge failed:", e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 export async function addPoints(amount) {
     if (!UserState.user) return false;
-    const userRef = doc(db, "users", UserState.user.uid);
-    await updateDoc(userRef, { points: increment(amount) });
-    UserState.data.points = (UserState.data.points || 0) + amount;
-    updateUI();
-    return true;
+    try {
+        await updateDoc(doc(db, "users", UserState.user.uid), { points: increment(amount) });
+        UserState.data.points += amount; updateUI(); return true;
+    } catch (e) { return false; }
 }
 
 export async function usePoints(amount) {
-    if (!UserState.user || (UserState.data.points || 0) < amount) {
-        alert("포인트가 부족합니다!"); return false;
-    }
-    const userRef = doc(db, "users", UserState.user.uid);
-    await updateDoc(userRef, { points: increment(-amount) });
-    UserState.data.points -= amount;
-    updateUI();
-    return true;
+    if (!UserState.user || UserState.data.points < amount) { alert("포인트 부족"); return false; }
+    try {
+        await updateDoc(doc(db, "users", UserState.user.uid), { points: increment(-amount) });
+        UserState.data.points -= amount; updateUI(); return true;
+    } catch (e) { return false; }
 }
