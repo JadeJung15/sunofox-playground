@@ -519,20 +519,13 @@ function renderCommunity() {
       <section class="sf-hero sf-hero-slim">
         <p class="sf-kicker">Community</p>
         <h1>수노폭스 팬 게시판</h1>
-        <p class="sf-sub">팬 글과 유튜브 커뮤니티 글을 한 화면에서 확인하세요.</p>
+        <p class="sf-sub">팬 글을 모아보는 커뮤니티 공간입니다.</p>
       </section>
       <div class="toolbar sf-card">
         <h2 class="page-title">팬 커뮤니티</h2>
         <div class="actions">
-          <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener" class="btn btn-outline">유튜브 커뮤니티</a>
           <button id="write-comm-btn" class="btn btn-primary">글쓰기</button>
         </div>
-      </div>
-      <div class="section mt-4">
-        <div class="section-head">
-          <h3>유튜브 커뮤니티 게시글</h3>
-        </div>
-        <div id="yt-community-list" class="post-list-table sf-card"></div>
       </div>
       <div class="post-table-header">
         <span class="col-cat">분류</span>
@@ -570,7 +563,6 @@ function renderCommunity() {
   };
 
   renderList();
-  loadYouTubeCommunityPosts();
   document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', null, renderList));
 }
 
@@ -1054,91 +1046,6 @@ async function loadLatestVideos() {
   } catch (error) {
     console.error('Failed to load YouTube RSS:', error);
     container.innerHTML = '<div class="empty">최신 영상을 불러오지 못했습니다.</div>';
-  }
-}
-
-async function loadYouTubeCommunityPosts() {
-  const container = document.getElementById('yt-community-list');
-  if (!container) return;
-  container.innerHTML = '<div class="empty">유튜브 커뮤니티 글을 불러오는 중...</div>';
-
-  try {
-    const endpoints = [
-      'https://r.jina.ai/http://www.youtube.com/@sunofox/community',
-      'https://r.jina.ai/http://www.youtube.com/@sunofox/posts'
-    ];
-    const rawTexts = await Promise.all(endpoints.map(async (endpoint) => {
-      const res = await fetch(endpoint);
-      return res.text();
-    }));
-
-    const merged = rawTexts.map((raw) => {
-      const marker = 'Markdown Content:';
-      const start = raw.indexOf(marker);
-      return start >= 0 ? raw.slice(start + marker.length) : raw;
-    }).join('\n\n');
-
-    const blocks = merged
-      .split(/\nRead more[^\n]*\n/gi)
-      .map((v) => v.trim())
-      .filter((v) => v && v.length > 80)
-      .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'));
-
-    // 커뮤니티 게시글 ID(Ugk...)만 허용해서 동영상/깨진 링크를 차단한다.
-    const parsed = blocks
-      .map((block) => {
-        const idMatch = block.match(/Ugk[0-9A-Za-z_-]{20,}/);
-        const postId = idMatch ? idMatch[0] : '';
-        const url = postId ? `https://www.youtube.com/post/${postId}` : '';
-        const content = block
-          .replace(/\[!\[Image[^\n]*\)\]\([^\n]*\)\n?/g, '')
-          .replace(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g, '$1')
-          .replace(/\s+/g, ' ')
-          .trim();
-        return { content, url, postId };
-      })
-      .filter((item) => item.postId && item.content.length > 20);
-
-    const uniquePosts = [];
-    const seen = new Set();
-    parsed.forEach((p) => {
-      if (seen.has(p.postId)) return;
-      seen.add(p.postId);
-      uniquePosts.push(p);
-    });
-
-    const renderTargets = uniquePosts.slice(0, 8);
-
-    const cards = renderTargets.map((post, idx) => {
-      return `
-        <a class="post-row" href="${escapeHTML(post.url)}" target="_blank" rel="noreferrer noopener">
-          <span class="col-cat"><span class="chip micro">YouTube</span></span>
-          <span class="col-title">${escapeHTML(post.content.slice(0, 220))}${post.content.length > 220 ? '...' : ''}</span>
-          <span class="col-author">수노폭스 채널</span>
-          <span class="col-meta">게시글 ${idx + 1}</span>
-        </a>
-      `;
-    }).join('');
-
-    if (!cards) {
-      container.innerHTML = `
-        <div class="empty">
-          개별 게시글 링크를 찾지 못했습니다.
-          <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener">유튜브 커뮤니티 보기</a>
-        </div>
-      `;
-      return;
-    }
-
-    container.innerHTML = cards;
-  } catch (error) {
-    console.error('Failed to load YouTube community posts:', error);
-    container.innerHTML = `
-      <div class="empty">
-        유튜브 커뮤니티 게시글을 자동으로 불러오지 못했습니다.
-        <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener">직접 보기</a>
-      </div>
-    `;
   }
 }
 
