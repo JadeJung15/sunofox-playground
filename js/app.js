@@ -170,7 +170,7 @@ async function renderHome() {
 
 function renderProfile() {
     if (!UserState.user) {
-        app.innerHTML = `<div class="card" style="text-align:center; padding:4rem;"><h2>👤 로그인이 필요합니다</h2><button id="login-btn" class="btn-primary" style="margin-top:1.5rem;">로그인하기</button></div>`;
+        app.innerHTML = `<div class="card" style="text-align:center; padding:4rem;"><h2>👤 로그인이 필요합니다</h2><button id="login-btn" class="btn-primary" style="margin:1.5rem auto 0;">로그인하기</button></div>`;
         return;
     }
     const inv = UserState.data.inventory || [];
@@ -189,18 +189,33 @@ function renderProfile() {
     const progress = tier === nextTier ? 100 : Math.min(100, (currentScore / nextTier.min) * 100);
 
     app.innerHTML = `
-        <div class="card profile-container fade-in">
-            <div style="text-align:center; margin-bottom:2.5rem;">
-                <div id="user-emoji" style="font-size:4.5rem; margin-bottom:0.5rem;">👤</div>
-                <div class="tier-display"></div>
-                <h2 id="user-name" style="margin:0.5rem 0; font-size:1.8rem;">닉네임</h2>
-                <div class="progress-section" style="max-width:350px; margin:0 auto;">
-                    <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
-                    <p class="text-sub" style="font-size:0.75rem;">Next: ${nextTier.name} (${Math.max(0, nextTier.min - currentScore).toLocaleString()}점 남음)</p>
+        <div class="profile-page fade-in">
+            <div class="card profile-header-card" style="padding: 2.5rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
+                <div class="profile-accent-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); opacity: 0.1;"></div>
+                <div id="user-emoji" style="font-size: 5rem; margin: 0 auto 1rem; position: relative; display: inline-block; background: var(--card-bg); border-radius: 50%; width: 100px; height: 100px; line-height: 100px; box-shadow: var(--shadow-md);">👤</div>
+                <div class="tier-badge" style="background: var(--accent-color); color: #fff; display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.5rem; position: relative;">${tier.name}</div>
+                <h2 id="user-name" style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">닉네임</h2>
+                
+                <div class="progress-container" style="max-width: 400px; margin: 0 auto 2rem;">
+                    <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+                        <span>등급 성장도</span>
+                        <span>${currentScore.toLocaleString()} / ${nextTier.min.toLocaleString()}</span>
+                    </div>
+                    <div class="progress-track" style="height: 10px; background: var(--bg-color); border-radius: 10px; overflow: hidden;">
+                        <div class="progress-fill" style="width: ${progress}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); border-radius: 10px;"></div>
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.5rem;">다음 등급까지 <strong>${Math.max(0, nextTier.min - currentScore).toLocaleString()}P</strong> 남았습니다.</p>
                 </div>
-                <div class="profile-stats" style="margin-top:2rem; display:flex; gap:1rem; background:var(--bg-color); padding:1rem; border-radius:15px;">
-                    <div class="stat-item"><span class="stat-label">랭킹 점수</span><span class="stat-value" id="user-total-score">0</span></div>
-                    <div class="stat-item"><span class="stat-label">보유 포인트</span><span class="stat-value" id="user-points">0</span></div>
+
+                <div class="profile-stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 400px; margin: 0 auto;">
+                    <div class="stat-box" style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.25rem;">누적 랭킹 점수</span>
+                        <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-color);">${currentScore.toLocaleString()}</span>
+                    </div>
+                    <div class="stat-box" style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.25rem;">보유 포인트</span>
+                        <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-secondary);">${(UserState.data.points || 0).toLocaleString()}</span>
+                    </div>
                 </div>
             </div>
 
@@ -228,15 +243,15 @@ function renderProfile() {
             <details class="profile-details">
                 <summary>⚙️ 계정 설정</summary>
                 <div class="content-area">
-                    <div class="setting-item">
-                        <label style="font-size:0.85rem; font-weight:700;">닉네임 변경</label>
-                        <div style="display:flex; gap:0.5rem; margin-top:0.5rem;">
-                            <input type="text" id="nickname-input" style="flex:1; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color);" placeholder="새 닉네임">
-                            <button id="nickname-save" class="btn-primary" style="width:80px; padding:0;">변경</button>
+                    <div class="setting-group" style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                        <label style="display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 0.75rem;">닉네임 변경</label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="text" id="nickname-input" style="flex: 1; padding: 0.8rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.95rem;" placeholder="새 닉네임 입력">
+                            <button id="nickname-save" class="btn-primary" style="padding: 0 1.5rem; font-size: 0.9rem;">변경</button>
                         </div>
-                        <p id="nickname-msg" style="margin-top:0.5rem; font-size:0.8rem;"></p>
+                        <p id="nickname-msg" style="margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600;"></p>
                     </div>
-                    <button id="logout-btn" class="btn-secondary" style="margin-top:2rem; width:100%; color:#ff4757;">로그아웃</button>
+                    <button id="logout-btn" class="btn-secondary" style="width: 100%; padding: 1rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); font-weight: 700;">로그아웃</button>
                 </div>
             </details>
         </div>
