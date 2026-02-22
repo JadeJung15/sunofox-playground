@@ -1070,23 +1070,27 @@ async function loadYouTubeCommunityPosts() {
     const start = raw.indexOf(marker);
     const markdown = start >= 0 ? raw.slice(start + marker.length) : raw;
 
-    const cleaned = markdown
-      .replace(/\[!\[Image[^\n]*\)\]\([^\n]*\)\n?/g, '')
-      .replace(/\n{3,}/g, '\n\n');
-
-    const chunks = cleaned
+    const blocks = markdown
       .split(/\nRead more[^\n]*\n/gi)
       .map((v) => v.trim())
-      .filter((v) => v && v.length > 50)
+      .filter((v) => v && v.length > 80)
       .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'))
-      .map((v) => v.replace(/\s+/g, ' ').trim())
-      .map((v) => {
-        const match = v.match(/https?:\/\/(?:www\.)?youtube\.com\/post\/[A-Za-z0-9_-]+/i);
-        const url = safeExternalUrl(match ? match[0] : '') || `${CHANNEL_URL}/community`;
-        return { content: v, url };
+      .map((block) => {
+        const postMatch = block.match(/https?:\/\/(?:www\.)?youtube\.com\/post\/[A-Za-z0-9_-]+/i);
+        const watchMatch = block.match(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}/i);
+        const shortMatch = block.match(/https?:\/\/(?:www\.)?youtu\.be\/[A-Za-z0-9_-]{11}/i);
+        const url = safeExternalUrl((postMatch && postMatch[0]) || (watchMatch && watchMatch[0]) || (shortMatch && shortMatch[0]) || '') || `${CHANNEL_URL}/community`;
+
+        const content = block
+          .replace(/\[!\[Image[^\n]*\)\]\([^\n]*\)\n?/g, '')
+          .replace(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g, '$1')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        return { content, url };
       });
 
-    const posts = chunks.slice(0, 8);
+    const posts = blocks.slice(0, 8);
 
     const cards = posts.map((post, idx) => {
       return `
