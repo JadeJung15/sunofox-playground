@@ -18,7 +18,8 @@ import {
 export const UserState = {
     user: null,
     data: null,
-    isAdmin: false
+    isAdmin: false,
+    isMaster: false
 };
 
 // 상점 데이터 정규화
@@ -57,11 +58,12 @@ export function initAuth() {
         if (user) {
             UserState.user = user;
             const token = await user.getIdTokenResult();
-            UserState.isAdmin = !!token.claims.admin;
+            UserState.isMaster = user.uid === '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
+            UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
             await loadUserData(user);
             updateUI(true);
         } else {
-            UserState.user = null; UserState.data = null; UserState.isAdmin = false;
+            UserState.user = null; UserState.data = null; UserState.isAdmin = false; UserState.isMaster = false;
             updateUI(false);
         }
     });
@@ -108,7 +110,10 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         const tier = getTier(UserState.data.totalScore || 0);
         
         document.querySelectorAll('#user-name').forEach(el => {
-            el.textContent = (UserState.isAdmin ? '👑 ' : '') + UserState.data.nickname;
+            let prefix = '';
+            if (UserState.isMaster) prefix = '💎 ';
+            else if (UserState.isAdmin) prefix = '👑 ';
+            el.textContent = prefix + UserState.data.nickname;
             el.style.color = UserState.data.nameColor || 'var(--text-main)';
         });
         document.querySelectorAll('#user-points').forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
