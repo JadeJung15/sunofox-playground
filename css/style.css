@@ -265,12 +265,36 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
 .rank-name { flex: 1; font-weight: 700; }
 .rank-score { font-weight: 800; color: var(--accent-color); }
 
-.emoji-btn { font-size: 1.5rem; padding: 0.5rem; border: 1px solid var(--border-color); background: var(--card-bg); border-radius: 10px; cursor: pointer; transition: 0.2s; }
-.emoji-btn:hover { background: var(--bg-color); }
-.emoji-btn.active { border-color: var(--accent-color); background: var(--bg-color); transform: scale(1.1); }
+.emoji-btn { 
+  position: relative;
+  font-size: 1.5rem; 
+  padding: 1rem 0.5rem; 
+  border: 1px solid var(--border-color); 
+  background: var(--card-bg); 
+  border-radius: 12px; 
+  cursor: pointer; 
+  transition: 0.2s; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.emoji-btn.locked { opacity: 0.6; background: #eee; }
+.emoji-btn.owned { border-color: var(--border-color); }
+.emoji-btn.active { border-color: var(--accent-color); background: var(--bg-color); border-width: 2px; }
+.e-price { font-size: 0.65rem; font-weight: 800; color: var(--text-sub); margin-top: 4px; }
+.emoji-btn.locked:hover { transform: scale(1.05); opacity: 1; }
 
 .post-author-info { display: flex; align-items: center; gap: 0.4rem; }
 .author-emoji { font-size: 1.2rem; }
+
+.e-price { font-size: 0.6rem; font-weight: 800; color: #fff; background: var(--accent-color); padding: 1px 4px; border-radius: 4px; margin-top: 4px; }
+.emoji-btn.owned .e-price { display: none; }
+.emoji-btn.owned { background: var(--bg-color); border-color: var(--accent-secondary); }
+.emoji-btn.owned:after { content: '보유'; position: absolute; top: -5px; right: -5px; font-size: 0.5rem; background: var(--accent-secondary); color: white; padding: 2px 4px; border-radius: 4px; }
+
+.game-zone h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-main); }
+.game-zone input[type="number"] { padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; font-size: 1.1rem; text-align: center; }
 
 @media (max-width: 600px) {
   .test-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }

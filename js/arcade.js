@@ -1,16 +1,6 @@
-import { addPoints, usePoints, UserState, updateUI } from './auth.js';
+import { addPoints, usePoints, UserState, updateUI, ITEM_VALUES } from './auth.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-
-export const ITEMS = {
-    '💩 돌멩이': 1,
-    '💊 물약': 20,
-    '🥉 동메달': 50,
-    '🥈 은메달': 150,
-    '🥇 금메달': 500,
-    '🍀 행운의 클로버': 100,
-    '💎 다이아몬드': 2000
-};
 
 let arcadeInitialized = false;
 
@@ -21,19 +11,18 @@ export function initArcade() {
     document.addEventListener('click', async (e) => {
         if (e.target.id === 'gacha-btn') await playGacha();
         if (e.target.id === 'click-game-btn') await playClickGame();
+        if (e.target.id === 'updown-submit') await playUpDown();
     });
 }
 
 async function playGacha() {
     if (!UserState.user) return alert("로그인이 필요합니다!");
-    
     const cost = 100;
-    // usePoints already returns false if not enough
     if (await usePoints(cost)) {
-        const itemNames = Object.keys(ITEMS);
+        const itemNames = Object.keys(ITEM_VALUES);
         const weights = [40, 20, 15, 10, 5, 8, 2];
         const drawnItem = getRandomItem(itemNames, weights);
-        const itemScore = ITEMS[drawnItem];
+        const itemScore = ITEM_VALUES[drawnItem];
 
         try {
             const userRef = doc(db, "users", UserState.user.uid);
@@ -41,20 +30,14 @@ async function playGacha() {
                 inventory: arrayUnion(drawnItem),
                 totalScore: increment(itemScore)
             });
-
             UserState.data.inventory.push(drawnItem);
             UserState.data.totalScore = (UserState.data.totalScore || 0) + itemScore;
-
             const resultEl = document.getElementById('gacha-result');
             if (resultEl) {
-                resultEl.innerHTML = `<div class="gacha-pop">축하합니다!<br><strong>[${drawnItem}]</strong> 획득!<br><span style="font-size:0.8rem; color:var(--text-sub);">아이템 점수 +${itemScore}</span></div>`;
+                resultEl.innerHTML = `<div class="gacha-pop"><strong>[${drawnItem}]</strong> 획득!<br><small>+${itemScore}점</small></div>`;
             }
-            
             updateUI();
-        } catch (e) {
-            console.error(e);
-            alert("아이템 획득 저장에 실패했습니다.");
-        }
+        } catch (e) { alert("저장 실패"); }
     }
 }
 
@@ -71,14 +54,38 @@ function getRandomItem(items, weights) {
 async function playClickGame() {
     const btn = document.getElementById('click-game-btn');
     if (!btn || btn.disabled) return;
-
     btn.disabled = true;
-    const earn = Math.floor(Math.random() * 20) + 5;
+    const earn = Math.floor(Math.random() * 15) + 5;
     btn.textContent = "채굴 중...";
-    
     setTimeout(async () => {
         await addPoints(earn);
         btn.disabled = false;
-        btn.textContent = "채굴하기 (무료)";
-    }, 800);
+        btn.textContent = "무료 포인트 채굴";
+    }, 1000);
+}
+
+// 신규 게임: 숫자 업다운
+let upDownAnswer = Math.floor(Math.random() * 50) + 1;
+export async function playUpDown() {
+    const input = document.getElementById('updown-input');
+    const msg = document.getElementById('updown-msg');
+    if (!input || !UserState.user) return;
+
+    const guess = parseInt(input.value);
+    if (isNaN(guess)) return;
+
+    if (guess === upDownAnswer) {
+        const reward = 50;
+        await addPoints(reward);
+        msg.textContent = `정답! ${reward}P 획득! 숫자가 초기화됩니다.`;
+        msg.style.color = "var(--accent-secondary)";
+        upDownAnswer = Math.floor(Math.random() * 50) + 1;
+        input.value = "";
+    } else if (guess < upDownAnswer) {
+        msg.textContent = "UP! 더 큰 숫자입니다.";
+        msg.style.color = "#ff4757";
+    } else {
+        msg.textContent = "DOWN! 더 작은 숫자입니다.";
+        msg.style.color = "#ff4757";
+    }
 }
