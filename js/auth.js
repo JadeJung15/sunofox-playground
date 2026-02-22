@@ -19,17 +19,8 @@ export const UserState = {
     data: null
 };
 
-// UI Elements
-const loginBtn = document.getElementById('login-btn');
-const userProfile = document.getElementById('user-profile');
-const userNameEl = document.getElementById('user-name');
-const userPointsEl = document.getElementById('user-points');
-const logoutBtn = document.getElementById('logout-btn');
-const nicknameInput = document.getElementById('nickname-input');
-const nicknameSaveBtn = document.getElementById('nickname-save');
-const nicknameMsg = document.getElementById('nickname-msg');
-
 export function initAuth() {
+    // Listen for auth state
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             UserState.user = user;
@@ -42,23 +33,24 @@ export function initAuth() {
         }
     });
 
-    if (loginBtn) {
-        loginBtn.addEventListener('click', () => {
+    // Event Delegation for dynamic elements
+    document.addEventListener('click', async (e) => {
+        if (e.target.id === 'login-btn') {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider).catch((error) => {
                 console.error("Login failed:", error);
                 alert("로그인에 실패했습니다.");
             });
-        });
-    }
+        }
 
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', () => signOut(auth));
-    }
+        if (e.target.id === 'logout-btn') {
+            signOut(auth);
+        }
 
-    if (nicknameSaveBtn) {
-        nicknameSaveBtn.addEventListener('click', changeNickname);
-    }
+        if (e.target.id === 'nickname-save') {
+            await changeNickname();
+        }
+    });
 }
 
 async function loadUserData(user) {
@@ -68,10 +60,9 @@ async function loadUserData(user) {
     if (snap.exists()) {
         UserState.data = snap.data();
     } else {
-        // Initialize new user
         const newData = {
             nickname: user.displayName || '익명',
-            points: 1000, // Welcome bonus
+            points: 1000,
             items: [],
             lastNicknameChange: null,
             createdAt: serverTimestamp()
@@ -81,31 +72,43 @@ async function loadUserData(user) {
     }
 }
 
-function updateUI(isLoggedIn) {
+export function updateUI(isLoggedIn = !!UserState.user) {
+    const loginBtn = document.getElementById('login-btn');
+    const userProfile = document.getElementById('user-profile');
+    const userNameEl = document.getElementById('user-name');
+    const userPointsEl = document.getElementById('user-points');
+    const nicknameInput = document.getElementById('nickname-input');
+
     if (isLoggedIn && UserState.data) {
-        loginBtn.classList.add('hidden');
-        userProfile.classList.remove('hidden');
-        userNameEl.textContent = UserState.data.nickname;
-        userPointsEl.textContent = `${UserState.data.points.toLocaleString()} P`;
-        nicknameInput.value = UserState.data.nickname;
+        if (loginBtn) loginBtn.classList.add('hidden');
+        if (userProfile) userProfile.classList.remove('hidden');
+        if (userNameEl) userNameEl.textContent = UserState.data.nickname;
+        if (userPointsEl) userPointsEl.textContent = `${UserState.data.points.toLocaleString()} P`;
+        if (nicknameInput) nicknameInput.value = UserState.data.nickname;
     } else {
-        loginBtn.classList.remove('hidden');
-        userProfile.classList.add('hidden');
+        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (userProfile) userProfile.classList.add('hidden');
     }
 }
 
 async function changeNickname() {
-    if (!UserState.user || !nicknameInput.value.trim()) return;
+    const nicknameInput = document.getElementById('nickname-input');
+    const nicknameMsg = document.getElementById('nickname-msg');
+    const userNameEl = document.getElementById('user-name');
+
+    if (!UserState.user || !nicknameInput || !nicknameInput.value.trim()) return;
     
     const newName = nicknameInput.value.trim();
     const now = Date.now();
     const lastChange = UserState.data.lastNicknameChange ? UserState.data.lastNicknameChange.toMillis() : 0;
-    const cooldown = 30 * 24 * 60 * 60 * 1000; // 30 days
+    const cooldown = 30 * 24 * 60 * 60 * 1000;
 
     if (now - lastChange < cooldown) {
         const daysLeft = Math.ceil((lastChange + cooldown - now) / (24 * 60 * 60 * 1000));
-        nicknameMsg.textContent = `닉네임은 30일에 한 번만 변경 가능합니다. (${daysLeft}일 남음)`;
-        nicknameMsg.className = 'error-msg';
+        if (nicknameMsg) {
+            nicknameMsg.textContent = `닉네임은 30일에 한 번만 변경 가능합니다. (${daysLeft}일 남음)`;
+            nicknameMsg.className = 'error-msg';
+        }
         return;
     }
 
@@ -116,15 +119,16 @@ async function changeNickname() {
             lastNicknameChange: serverTimestamp()
         });
         UserState.data.nickname = newName;
-        // Update local timestamp roughly to prevent immediate retry without reload
         UserState.data.lastNicknameChange = { toMillis: () => Date.now() }; 
         
-        userNameEl.textContent = newName;
-        nicknameMsg.textContent = "닉네임이 변경되었습니다!";
-        nicknameMsg.className = 'success-msg';
+        if (userNameEl) userNameEl.textContent = newName;
+        if (nicknameMsg) {
+            nicknameMsg.textContent = "닉네임이 변경되었습니다!";
+            nicknameMsg.className = 'success-msg';
+        }
     } catch (e) {
         console.error(e);
-        nicknameMsg.textContent = "오류가 발생했습니다.";
+        if (nicknameMsg) nicknameMsg.textContent = "오류가 발생했습니다.";
     }
 }
 
@@ -133,7 +137,7 @@ export async function addPoints(amount) {
     const userRef = doc(db, "users", UserState.user.uid);
     await updateDoc(userRef, { points: increment(amount) });
     UserState.data.points += amount;
-    userPointsEl.textContent = `${UserState.data.points.toLocaleString()} P`;
+    updateUI();
     return true;
 }
 
@@ -145,6 +149,6 @@ export async function usePoints(amount) {
     const userRef = doc(db, "users", UserState.user.uid);
     await updateDoc(userRef, { points: increment(-amount) });
     UserState.data.points -= amount;
-    userPointsEl.textContent = `${UserState.data.points.toLocaleString()} P`;
+    updateUI();
     return true;
 }
