@@ -127,9 +127,31 @@ main { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
   font-weight: 800;
 }
 
-.test-info { padding: 1rem; text-align: center; }
-.test-card h3 { font-size: 1.1rem; margin-bottom: 0.3rem; }
-.test-card p { font-size: 0.85rem; color: var(--text-sub); }
+.test-info { padding: 1.2rem; text-align: left; }
+.test-category-tag {
+  display: inline-block;
+  background: var(--accent-color);
+  color: white;
+  padding: 2px 10px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  opacity: 0.9;
+}
+.test-card h3 { font-size: 1.15rem; margin-bottom: 0.5rem; letter-spacing: -0.5px; }
+.test-card p { font-size: 0.85rem; color: var(--text-sub); line-height: 1.4; }
+
+/* Portal Hero refinement */
+.portal-hero {
+  text-align: center;
+  padding: 3rem 1rem;
+  background: linear-gradient(180deg, rgba(255,133,162,0.1) 0%, rgba(255,249,251,0) 100%);
+  border-radius: var(--radius);
+  margin-bottom: 2rem;
+}
+.portal-hero h1 { font-size: 2.2rem; margin-bottom: 1rem; color: var(--accent-color); font-weight: 800; }
+.portal-hero p { color: var(--text-sub); font-size: 1rem; }
 
 /* Execution View */
 .test-execution { text-align: center; max-width: 500px; margin: 0 auto; }
