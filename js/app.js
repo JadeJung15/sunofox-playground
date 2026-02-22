@@ -168,7 +168,7 @@ function renderHome() {
           <div class="stream-header">
             <div>
               <div class="news-tag">SunoFox Fanpage</div>
-              <h1 class="stream-title">수노폭스 유튜브 팬을 위한 스트리밍 허브</h1>
+              <h1 class="stream-title">수노폭스 유튜브 팬을<br>위한 스트리밍 허브</h1>
               <p class="stream-meta">최신 영상, 재생목록, 팬 토론을 한 화면에 모았습니다.</p>
             </div>
             <div class="badge"><strong>LIVE</strong> 팬클럽 뉴스룸</div>
