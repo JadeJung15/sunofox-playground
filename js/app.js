@@ -294,10 +294,97 @@ async function renderResult(testId, answers) {
     document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
 }
 
-function renderPrivacy() { app.innerHTML = `<div class="card"><h2>개인정보처리방침</h2><p>정보 보호 지침을 준수합니다.</p></div>`; }
-function renderAbout() { app.innerHTML = `<div class="card"><h2>서비스 소개</h2><p>SevenCheck Studio</p></div>`; }
-function renderTerms() { app.innerHTML = `<div class="card"><h2>이용약관</h2><p>이용 규칙을 준수해 주세요.</p></div>`; }
-function renderContact() { app.innerHTML = `<div class="card"><h2>문의하기</h2><p>support@sevencheck.studio</p></div>`; }
+function renderPrivacy() { 
+    app.innerHTML = `
+        <div class="card legal-page fade-in">
+            <h2>🔒 개인정보처리방침</h2>
+            <p class="text-sub">최종 수정일: 2026년 2월 22일</p>
+            <section class="guide-section">
+                <h3>1. 수집하는 개인정보 항목</h3>
+                <p>SevenCheck는 사용자의 개인정보를 최소한으로 수집합니다. 구글 로그인을 이용할 경우, 구글로부터 제공받는 기본 프로필 정보(이름, 이메일, 프로필 이미지)만을 활용하며, 이는 서비스 내 사용자 식별 및 데이터 저장(포인트, 아이템 등)을 위해서만 사용됩니다.</p>
+            </section>
+            <section class="guide-section">
+                <h3>2. 개인정보의 이용 목적</h3>
+                <p>수집된 정보는 다음과 같은 목적으로 사용됩니다:<br>
+                - 사용자별 테스트 결과 및 포인트/아이템 데이터 유지<br>
+                - 커뮤니티 게시판 내 작성자 식별<br>
+                - 부정 이용 방지 및 서비스 개선을 위한 통계 분석</p>
+            </section>
+            <section class="guide-section">
+                <h3>3. 개인정보의 보유 및 파기</h3>
+                <p>사용자가 회원 탈퇴를 요청하거나 개인정보 수집 동의를 철회할 경우, 해당 정보는 지체 없이 파기됩니다. 단, 관련 법령에 의해 보존할 필요가 있는 경우 일정 기간 보관될 수 있습니다.</p>
+            </section>
+            <section class="guide-section">
+                <h3>4. 쿠키(Cookie)의 사용</h3>
+                <p>본 서비스는 사용자 경험 향상 및 구글 애드센스 광고 최적화를 위해 쿠키를 사용합니다. 사용자는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있습니다.</p>
+            </section>
+        </div>
+    `; 
+}
+
+function renderAbout() { 
+    app.innerHTML = `
+        <div class="card guide-container fade-in">
+            <h2 style="text-align:center; margin-bottom:2rem;">✨ SevenCheck 서비스 소개</h2>
+            <p style="font-size:1.1rem; line-height:1.8; text-align:center; margin-bottom:2rem;">
+                "나를 알아가는 7번의 질문, 그 이상의 가치"<br>
+                <strong>SevenCheck Studio</strong>는 바쁜 일상을 살아가는 당신에게<br>잠시 멈춰 자신을 돌아볼 수 있는 '성찰의 시간'을 제공합니다.
+            </p>
+            <section class="guide-section">
+                <h3>🎨 감성적인 분석 리포트</h3>
+                <p>우리는 단순히 결과를 나열하지 않습니다. 독자적인 심리 분석 알고리즘과 감각적인 아트워크를 결합하여, 당신이 소장하고 싶은 한 장의 '분석 리포트'를 만들어 드립니다.</p>
+            </section>
+            <section class="guide-section">
+                <h3>🕹️ 즐거운 성장 경험</h3>
+                <p>테스트를 통해 포인트를 모으고, 오락실에서 아이템을 수집하며 자신의 계정을 성장시켜 보세요. 당신의 활동은 등급(Tier)으로 기록되며, 커뮤니티 내에서 자신만의 개성을 뽐낼 수 있습니다.</p>
+            </section>
+            <section class="guide-section">
+                <h3>💬 함께하는 커뮤니티</h3>
+                <p>혼자만 알고 있기 아쉬운 결과들, 자유 게시판에서 다른 사용자들과 나누어 보세요. 서로의 다름을 이해하고 공감하는 과정을 통해 진정한 나를 발견하게 될 것입니다.</p>
+            </section>
+        </div>
+    `; 
+}
+
+function renderTerms() { 
+    app.innerHTML = `
+        <div class="card legal-page fade-in">
+            <h2>📜 이용약관</h2>
+            <p class="text-sub">시행일: 2026년 2월 22일</p>
+            <section class="guide-section">
+                <h3>제 1 조 (목적)</h3>
+                <p>본 약관은 SevenCheck Studio(이하 '회사')가 제공하는 웹 서비스 및 관련 제반 서비스의 이용과 관련하여 회사와 회원과의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
+            </section>
+            <section class="guide-section">
+                <h3>제 2 조 (포인트 및 아이템 정책)</h3>
+                <p>1. 포인트는 서비스 내 활동(테스트, 공유 등)을 통해 무상으로 지급되며, 현금으로 환전될 수 없습니다.<br>
+                2. 사용자가 획득한 아이템 및 점수는 랭킹 산정의 기준이 되며, 부정한 방법으로 획득 시 사전 고지 없이 회수될 수 있습니다.<br>
+                3. 이모지 교환 시 소모된 아이템 점수는 복구가 불가능합니다.</p>
+            </section>
+            <section class="guide-section">
+                <h3>제 3 조 (게시물 관리)</h3>
+                <p>회사는 다음 각 호에 해당하는 게시물을 사전 통보 없이 삭제할 수 있습니다:<br>
+                - 타인을 비방하거나 명예를 훼손하는 경우<br>
+                - 공공질서 및 미풍양속에 위반되는 경우<br>
+                - 영리 목적의 광고성 게시물</p>
+            </section>
+        </div>
+    `; 
+}
+
+function renderContact() { 
+    app.innerHTML = `
+        <div class="card guide-container fade-in" style="text-align:center;">
+            <h2>📧 문의하기</h2>
+            <p style="margin:2rem 0;">서비스 이용 중 불편한 점이나 제안하고 싶은 아이디어가 있으신가요?<br>아래 공식 이메일로 보내주시면 빠르게 확인 후 답변 드리겠습니다.</p>
+            <div class="card" style="background:var(--bg-color); padding:2rem; display:inline-block; border:1px solid var(--border-color);">
+                <h3 style="border:none; padding:0; margin-bottom:0.5rem; color:var(--accent-color);">Official Support</h3>
+                <p style="font-size:1.2rem; font-weight:800;">support@sevencheck.studio</p>
+            </div>
+            <p class="text-sub" style="margin-top:2rem;">비즈니스 제휴 및 광고 문의도 환영합니다.<br>평일 기준 48시간 이내에 회신 드립니다.</p>
+        </div>
+    `; 
+}
 
 themeToggle.onclick = () => {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
