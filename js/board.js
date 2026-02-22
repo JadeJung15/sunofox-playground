@@ -87,7 +87,8 @@ async function loadPosts(container) {
         container.innerHTML = snap.docs.map(docSnap => {
             const data = docSnap.data();
             const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString() : "방금 전";
-            const isMine = UserState.user && data.uid === UserState.user.uid;
+            // Admin can delete any post
+            const canDelete = UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin);
             
             return `
                 <div class="post-item ${data.isPremium ? 'premium-post' : ''} fade-in">
@@ -99,7 +100,7 @@ async function loadPosts(container) {
                         <span class="post-date">${date}</span>
                     </div>
                     <div class="post-content">${data.content}</div>
-                    ${isMine ? `<button class="btn-delete" data-id="${docSnap.id}">삭제</button>` : ''}
+                    ${canDelete ? `<button class="btn-delete" data-id="${docSnap.id}">삭제</button>` : ''}
                 </div>
             `;
         }).join('');

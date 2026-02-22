@@ -17,7 +17,8 @@ import {
 
 export const UserState = {
     user: null,
-    data: null
+    data: null,
+    isAdmin: false
 };
 
 export const EMOJI_SHOP = {
@@ -54,10 +55,12 @@ export function initAuth() {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             UserState.user = user;
+            const token = await user.getIdTokenResult();
+            UserState.isAdmin = !!token.claims.admin;
             await loadUserData(user);
             updateUI(true);
         } else {
-            UserState.user = null; UserState.data = null;
+            UserState.user = null; UserState.data = null; UserState.isAdmin = false;
             updateUI(false);
         }
     });
@@ -91,15 +94,8 @@ async function loadUserData(user) {
         };
         await setDoc(userRef, newData);
         snap = await getDoc(userRef);
-    } else {
-        const data = snap.data();
-        // Missing fields migration
-        if (data.boosterCount === undefined) {
-            await updateDoc(userRef, { boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'] });
-            data.boosterCount = 0; data.nameColor = '#333333'; data.unlockedColors = ['#333333'];
-        }
-        UserState.data = data;
     }
+    UserState.data = snap.data();
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
@@ -116,7 +112,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         const tier = getTier(UserState.data.totalScore || 0);
         
         userNameEls.forEach(el => {
-            el.textContent = UserState.data.nickname;
+            el.textContent = (UserState.isAdmin ? '👑 ' : '') + UserState.data.nickname;
             el.style.color = UserState.data.nameColor || 'var(--text-main)';
         });
         userPointsEls.forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
@@ -174,8 +170,6 @@ async function handleEmojiExchange(emoji) {
 
 async function changeNameColor(color) {
     const unlocked = UserState.data.unlockedColors || ['#333333'];
-    const price = 2000;
-    
     if (unlocked.includes(color)) {
         const userRef = doc(db, "users", UserState.user.uid);
         await updateDoc(userRef, { nameColor: color });
@@ -183,17 +177,12 @@ async function changeNameColor(color) {
         updateUI();
         return;
     }
-
-    if (await usePoints(price)) {
+    if (await usePoints(2000)) {
         const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, {
-            unlockedColors: [...unlocked, color],
-            nameColor: color
-        });
+        await updateDoc(userRef, { unlockedColors: [...unlocked, color], nameColor: color });
         UserState.data.unlockedColors.push(color);
         UserState.data.nameColor = color;
         updateUI();
-        alert("색상 구매 및 적용 완료!");
     }
 }
 
@@ -205,7 +194,7 @@ async function changeNickname() {
     if (newName === UserState.data.nickname) return;
     const now = Date.now();
     const lastChange = UserState.data.lastNicknameChange ? (UserState.data.lastNicknameChange.toMillis ? UserState.data.lastNicknameChange.toMillis() : UserState.data.lastNicknameChange) : 0;
-    if (now - lastChange < 30 * 24 * 60 * 60 * 1000) { alert("30일 제한"); return; }
+    if (!UserState.isAdmin && (now - lastChange < 30 * 24 * 60 * 60 * 1000)) { alert("30일 제한"); return; }
     try {
         const userRef = doc(db, "users", UserState.user.uid);
         await updateDoc(userRef, { nickname: newName, lastNicknameChange: serverTimestamp() });
