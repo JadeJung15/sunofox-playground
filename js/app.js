@@ -230,9 +230,76 @@ function renderArcade() {
 function renderGuide() {
     app.innerHTML = `
         <div class="card guide-container fade-in">
-            <h2 style="text-align:center; margin-bottom:2rem;">📜 이용 가이드</h2>
-            <section class="guide-section"><h3>1. 포인트(P) 획득</h3><ul class="guide-list"><li>테스트 완료: +10P (부스터 시 20P)</li><li>링크 공유: +30P</li><li>좋아요 클릭: +5P</li></ul></section>
-            <section class="guide-section"><h3>2. 티어 안내</h3><table class="guide-table"><thead><tr><th>티어</th><th>점수</th></tr></thead><tbody><tr><td>ROOKIE</td><td>0~</td></tr><tr><td>BRONZE</td><td>1,000~</td></tr><tr><td>SILVER</td><td>5,000~</td></tr><tr><td>GOLD</td><td>15,000~</td></tr><tr><td>DIAMOND</td><td>100,000~</td></tr></tbody></table></section>
+            <h2 style="text-align:center; margin-bottom:2rem;">📜 SevenCheck 종합 이용 가이드</h2>
+            
+            <section class="guide-section">
+                <h3>1. 경제 시스템 안내</h3>
+                <p>SevenCheck에는 두 가지 핵심 지표가 있습니다.</p>
+                <ul class="guide-list">
+                    <li><strong>포인트 (P)</strong>: 오락실 게임, 복권 구매, 게시글 강조 등에 사용되는 <strong>소비형 재화</strong>입니다.</li>
+                    <li><strong>아이템 점수</strong>: 보유한 아이템의 가치 총합입니다. 당신의 <strong>랭킹과 티어</strong>를 결정하며, 이모지 교환 시 소모됩니다.</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>2. 포인트(P) 획득 방법</h3>
+                <table class="guide-table">
+                    <thead><tr><th>활동 내용</th><th>지급 포인트</th><th>비고</th></tr></thead>
+                    <tbody>
+                        <tr><td>테스트 완료</td><td>10 P</td><td>부스터 적용 시 20P</td></tr>
+                        <tr><td>테스트 좋아요 클릭</td><td>5 P</td><td>테스트당 1회</td></tr>
+                        <tr><td>테스트 링크 공유</td><td>30 P</td><td>5초 쿨타임</td></tr>
+                        <tr><td>포인트 채굴</td><td>5~15 P</td><td>오락실 무료 게임</td></tr>
+                        <tr><td>숫자 Up & Down</td><td>50 P</td><td>숫자 맞히기 성공 시</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section class="guide-section">
+                <h3>3. 오락실(Arcade) 100% 즐기기</h3>
+                <div class="guide-box" style="background:var(--bg-color); padding:1rem; border-radius:10px; font-size:0.9rem;">
+                    <p><strong>⚡ 슈퍼 포인트 부스터</strong>: 100P로 구매 시 20회 동안 테스트 보상이 2배가 됩니다. 가장 빠르게 포인트를 불릴 수 있는 방법입니다.</p>
+                    <p style="margin-top:0.5rem;"><strong>📦 아이템 뽑기</strong>: 10회 연속 뽑기 시 50P 할인(950P) 혜택이 적용됩니다.</p>
+                    <p style="margin-top:0.5rem;"><strong>🎫 즉석 복권</strong>: 500P를 소모하며, 운이 좋으면 30,000P 혹은 '다이아몬드' 아이템을 획득할 수 있습니다.</p>
+                    <p style="margin-top:0.5rem;"><strong>🔮 아이템 연금술</strong>: 가치가 낮은 아이템 5개와 500P를 써서 고가치 아이템(은메달 이상)을 연성합니다. 티어를 올리기 위한 필수 코스입니다.</p>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>4. 공식 티어(Rank) 시스템</h3>
+                <p class="text-sub">아이템 점수가 높을수록 더 높은 티어의 뱃지를 얻습니다.</p>
+                <div class="tier-table-wrapper">
+                    <table class="guide-table">
+                        <thead><tr><th>티어</th><th>필요 점수</th><th>특징</th></tr></thead>
+                        <tbody>
+                            <tr><td><span class="tier-badge tier-rookie">ROOKIE</span></td><td>0 ~</td><td>새로운 시작</td></tr>
+                            <tr><td><span class="tier-badge tier-bronze">BRONZE</span></td><td>1,000 ~</td><td>성실한 수집가</td></tr>
+                            <tr><td><span class="tier-badge tier-silver">SILVER</span></td><td>5,000 ~</td><td>노련한 분석가</td></tr>
+                            <tr><td><span class="tier-badge tier-gold">GOLD</span></td><td>15,000 ~</td><td>상위권 진입</td></tr>
+                            <tr><td><span class="tier-badge tier-platinum">PLATINUM</span></td><td>50,000 ~</td><td>최정상급 수집가</td></tr>
+                            <tr><td><span class="tier-badge tier-diamond">DIAMOND</span></td><td>100,000 ~</td><td>전설적인 아우라</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="guide-section">
+                <h3>5. 프로필 커스텀 & 교환소</h3>
+                <ul class="guide-list">
+                    <li><strong>이모지 교환</strong>: 보유한 아이템 중 가치가 낮은 것부터 가격만큼 **자동 소모**되어 교환됩니다. <strong>소모된 만큼 아이템 점수와 랭킹이 하락</strong>하니 신중하세요!</li>
+                    <li><strong>닉네임 컬러</strong>: 한 번 구매하면 영구 소장되며, 프로필에서 언제든 변경 가능합니다.</li>
+                    <li><strong>닉네임 변경</strong>: 최초 1회 무료이며, 이후 변경 시 30일의 재변경 대기 시간이 적용됩니다.</li>
+                </ul>
+            </section>
+
+            <section class="guide-section">
+                <h3>6. 커뮤니티 매너</h3>
+                <p class="text-sub">게시판 강조 기능을 통해 자신의 글을 돋보이게 할 수 있습니다.</p>
+                <ul class="guide-list">
+                    <li>비방, 욕설, 도배성 게시글은 관리자에 의해 즉시 삭제될 수 있습니다.</li>
+                    <li>부정한 방법으로 포인트나 아이템을 획득할 경우 계정이 정지될 수 있습니다.</li>
+                </ul>
+            </section>
         </div>
     `;
 }
