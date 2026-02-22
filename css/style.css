@@ -442,6 +442,7 @@ main {
   font-size: 0.75rem;
   font-weight: 700;
   background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+  white-space: nowrap;
 }
 .badge strong {
   color: var(--accent-2);
@@ -789,6 +790,7 @@ main {
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
 .stream-title {
   font-family: 'Manrope', 'Plus Jakarta Sans', 'Pretendard', sans-serif;
