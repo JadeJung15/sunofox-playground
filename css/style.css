@@ -343,6 +343,108 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .lotto-scratcher { animation: pulse 1s infinite; color: #fda085; font-weight: 800; }
 @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
+/* Test Execution Styling */
+.test-container {
+  max-width: 700px;
+  margin: 2rem auto;
+  padding: 3rem 2rem;
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-color);
+  text-align: center;
+}
+
+.test-header-info {
+  margin-bottom: 2.5rem;
+}
+
+.step-counter {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  margin-bottom: 1rem;
+  letter-spacing: 0.1em;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 4px 12px;
+  border-radius: 50px;
+}
+
+.progress-mini {
+  height: 6px;
+  background: var(--bg-color);
+  border-radius: 10px;
+  overflow: hidden;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.progress-mini-fill {
+  height: 100%;
+  background: var(--accent-color);
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.test-question {
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.5;
+  margin-bottom: 3rem;
+  color: var(--text-main);
+  word-break: keep-all;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+.option-btn {
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  border: 2px solid var(--border-color);
+  background: var(--card-bg);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+  line-height: 1.4;
+  position: relative;
+  overflow: hidden;
+}
+
+.option-btn:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent-color);
+  background: rgba(99, 102, 241, 0.02);
+  box-shadow: var(--shadow-md);
+}
+
+.option-btn:active {
+  transform: scale(0.98);
+}
+
+/* Category specific colors for test progress */
+.test-container[data-cat="성격"] .step-counter { color: var(--color-personality); background: rgba(99, 102, 241, 0.1); }
+.test-container[data-cat="성격"] .progress-mini-fill { background: var(--color-personality); }
+.test-container[data-cat="성격"] .option-btn:hover { border-color: var(--color-personality); background: rgba(99, 102, 241, 0.03); }
+
+.test-container[data-cat="얼굴"] .step-counter { color: var(--color-face); background: rgba(236, 72, 153, 0.1); }
+.test-container[data-cat="얼굴"] .progress-mini-fill { background: var(--color-face); }
+.test-container[data-cat="얼굴"] .option-btn:hover { border-color: var(--color-face); background: rgba(236, 72, 153, 0.03); }
+
+.test-container[data-cat="사주"] .step-counter { color: var(--color-fortune); background: rgba(245, 158, 11, 0.1); }
+.test-container[data-cat="사주"] .progress-mini-fill { background: var(--color-fortune); }
+.test-container[data-cat="사주"] .option-btn:hover { border-color: var(--color-fortune); background: rgba(245, 158, 11, 0.03); }
+
+.test-container[data-cat="재미"] .step-counter { color: var(--color-fun); background: rgba(16, 185, 129, 0.1); }
+.test-container[data-cat="재미"] .progress-mini-fill { background: var(--color-fun); }
+.test-container[data-cat="재미"] .option-btn:hover { border-color: var(--color-fun); background: rgba(16, 185, 129, 0.03); }
+
 /* Footer */
 .footer { border-top: 1px solid var(--border-color); padding: 4rem 1.25rem 2rem; background: var(--card-bg); margin-top: 4rem; }
 .footer-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }

@@ -741,14 +741,17 @@ function renderTestExecution(testId) {
         if (step >= 7) { renderResult(testId, answers); return; }
         const qData = test.questions[step];
         app.innerHTML = `
-            <div class="test-container fade-in">
+            <div class="test-container fade-in" data-cat="${test.category}">
                 <div class="test-header-info">
-                    <span class="step-counter">Question 0${step + 1} / 07</span>
+                    <span class="step-counter">Question ${String(step + 1).padStart(2, '0')} / 07</span>
                     <div class="progress-mini"><div class="progress-mini-fill" style="width:${((step + 1) / 7) * 100}%"></div></div>
                 </div>
                 <h2 class="test-question">${qData.q}</h2>
                 <div class="options-grid">
-                    ${qData.options.map(opt => `<button class="option-btn" data-type="${opt.type}">${opt.text}</button>`).join('')}
+                    ${qData.options.map((opt, idx) => `
+                        <button class="option-btn fade-in" style="animation-delay: ${idx * 0.1}s" data-type="${opt.type}">
+                            ${opt.text}
+                        </button>`).join('')}
                 </div>
             </div>`;
         app.querySelectorAll('.option-btn').forEach(btn => {
