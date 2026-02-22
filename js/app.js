@@ -220,7 +220,7 @@ function renderProfile() {
                 </div>
             </div>
 
-            <details class="profile-details">
+            <details class="profile-details" open>
                 <summary>📊 오락실 이용 통계</summary>
                 <div class="content-area">
                     <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
@@ -239,7 +239,7 @@ function renderProfile() {
                 <div class="content-area"><div class="inventory-grid">${invHTML}</div></div>
             </details>
             
-            <details class="profile-details">
+            <details class="profile-details" open>
                 <summary>🏪 이모지 교환소</summary>
                 <div class="content-area shop-wrapper">
                     ${Object.entries(EMOJI_SHOP).map(([cat, emojis]) => `
