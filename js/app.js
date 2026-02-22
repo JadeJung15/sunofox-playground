@@ -112,58 +112,18 @@ function renderProfile() {
                 <div id="user-emoji" style="font-size:4.5rem; margin-bottom:0.5rem;">${UserState.data.emoji || '👤'}</div>
                 <div class="tier-display"></div>
                 <h2 id="user-name" style="margin:0.5rem 0;">${UserState.data.nickname}</h2>
-                
                 <div class="progress-section" style="max-width:300px; margin:0 auto;">
                     <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
                     <p class="text-sub" style="font-size:0.75rem;">다음 등급까지: ${Math.max(0, nextTier.min - currentScore).toLocaleString()} 점 남음</p>
                 </div>
-
                 <div class="profile-stats" style="margin-top:1.5rem;">
                     <div class="stat-item"><span class="stat-label">랭킹 점수</span><span class="stat-value" id="user-total-score">0 점</span></div>
                     <div class="stat-item"><span class="stat-label">보유 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
                 </div>
             </div>
-
-            <details class="profile-details" open>
-                <summary>🎒 내 인벤토리</summary>
-                <div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap:0.5rem;">
-                    ${invHTML}
-                </div>
-            </details>
-
-            <details class="profile-details">
-                <summary>🏪 이모지 교환소 (아이템 소모)</summary>
-                <div class="shop-wrapper">
-                    <p class="text-sub" style="margin-bottom:1rem; font-size:0.8rem; color:#ff4757;">⚠️ 주의: 교환 시 보유 아이템이 소모되어 랭킹 점수가 차감됩니다.</p>
-                    ${Object.entries(EMOJI_SHOP).map(([catName, emojis]) => `
-                        <h4 style="margin-top:1rem; font-size:0.85rem; border-bottom:1px solid var(--border-color); padding-bottom:5px;">${catName}</h4>
-                        <div class="emoji-selector" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap:0.5rem; margin-top:0.8rem;">
-                            ${Object.entries(emojis).map(([e, price]) => {
-                                const isOwn = unlocked.includes(e);
-                                return `<button class="emoji-btn ${isOwn ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
-                                            <span class="e-icon">${e}</span>
-                                            ${!isOwn ? `<span class="e-price">${price}</span>` : ''}
-                                        </button>`;
-                            }).join('')}
-                        </div>
-                    `).join('')}
-                </div>
-            </details>
-
-            <details class="profile-details">
-                <summary>⚙️ 계정 설정</summary>
-                <div class="profile-settings">
-                    <div class="setting-item">
-                        <label style="font-size:0.85rem; font-weight:bold;">닉네임 변경 (월 1회)</label>
-                        <div class="input-row">
-                            <input type="text" id="nickname-input" placeholder="새 닉네임" maxlength="10">
-                            <button id="nickname-save" class="btn-primary" style="width: 80px;">변경</button>
-                        </div>
-                        <p id="nickname-msg" style="margin-top:0.5rem; font-size:0.8rem;"></p>
-                    </div>
-                    <button id="logout-btn" class="btn-secondary" style="margin-top:2rem; color:#ff4757; border-color:#ff4757;">로그아웃</button>
-                </div>
-            </details>
+            <details class="profile-details" open><summary>🎒 내 인벤토리</summary><div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap:0.5rem;">${invHTML}</div></details>
+            <details class="profile-details"><summary>🏪 이모지 교환소 (아이템 소모)</summary><div class="shop-wrapper"><p class="text-sub" style="margin-bottom:1rem; font-size:0.8rem; color:#ff4757;">⚠️ 주의: 교환 시 보유 아이템이 소모되어 랭킹 점수가 차감됩니다.</p>${Object.entries(EMOJI_SHOP).map(([catName, emojis]) => `<h4 style="margin-top:1rem; font-size:0.85rem; border-bottom:1px solid var(--border-color); padding-bottom:5px;">${catName}</h4><div class="emoji-selector" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap:0.5rem; margin-top:0.8rem;">${Object.entries(emojis).map(([e, price]) => {const isOwn = unlocked.includes(e); return `<button class="emoji-btn ${isOwn ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}"><span class="e-icon">${e}</span>${!isOwn ? `<span class="e-price">${price}</span>` : ''}</button>`;}).join('')}</div>`).join('')}</div></details>
+            <details class="profile-details"><summary>⚙️ 계정 설정</summary><div class="profile-settings"><div class="setting-item"><label style="font-size:0.85rem; font-weight:bold;">닉네임 변경 (월 1회)</label><div class="input-row"><input type="text" id="nickname-input" placeholder="새 닉네임" maxlength="10"><button id="nickname-save" class="btn-primary" style="width: 80px;">변경</button></div><p id="nickname-msg" style="margin-top:0.5rem; font-size:0.8rem;"></p></div><button id="logout-btn" class="btn-secondary" style="margin-top:2rem; color:#ff4757; border-color:#ff4757;">로그아웃</button></div></details>
         </div>
     `;
     updateUI();
@@ -178,17 +138,37 @@ function renderArcade() {
                 <div class="stat-item"><span class="stat-label">보유 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
                 <div class="stat-item"><span class="stat-label">아이템 점수</span><span class="stat-value" id="user-total-score">0 점</span></div>
             </div>
+
+            <!-- 베팅 게임 섹션 -->
+            <div class="game-zone card" style="background:#fff3f5; border:1px solid #ffcad4; padding:1.5rem; margin-bottom:1.5rem;">
+                <h3 style="color:#ff4757;">🎲 포인트 베팅 (홀짝 / 고저)</h3>
+                <p class="text-sub">포인트를 걸고 운을 시험해 보세요! (성공 시 2배)</p>
+                
+                <div class="bet-input-area" style="margin:1.5rem 0;">
+                    <label style="font-size:0.8rem; font-weight:bold;">베팅 금액 (최소 10P)</label>
+                    <input type="number" id="bet-amount" value="100" min="10" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color); margin-top:0.5rem; text-align:center; font-size:1.2rem; font-weight:800;">
+                </div>
+
+                <div id="bet-result-msg" style="height:50px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:bold; margin-bottom:1rem;">준비 되셨나요?</div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
+                    <button class="bet-btn btn-primary" data-game="oddeven" data-choice="odd" style="background:#6c5ce7;">홀 (Odd)</button>
+                    <button class="bet-btn btn-primary" data-game="oddeven" data-choice="even" style="background:#a29bfe;">짝 (Even)</button>
+                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="low">주사위 1~3 (저)</button>
+                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="high">주사위 4~6 (고)</button>
+                </div>
+            </div>
             
             <div class="game-zone card" style="background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
-                <h3>📦 아이템 뽑기 (100 P)</h3>
+                <h3>📦 행운의 아이템 뽑기 (100 P)</h3>
                 <div id="gacha-result" class="gacha-box" style="height:100px; display:flex; align-items:center; justify-content:center; margin:1rem 0;">준비 완료!</div>
                 <button id="gacha-btn" class="btn-primary">100P로 뽑기</button>
             </div>
 
             <div class="alchemy-zone card" style="margin-top:1.5rem;">
                 <h3>🔮 아이템 연금술 (500 P)</h3>
-                <p class="text-sub">하위 아이템 5개를 소모하여 무작위 상급 아이템 1개를 만듭니다.</p>
-                <div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center; min-height:20px;">재료를 준비해 주세요.</div>
+                <p class="text-sub">아이템 5개 -> 상급 아이템 1개</p>
+                <div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center;">재료를 준비해 주세요.</div>
                 <button id="alchemy-btn" class="btn-primary" style="background:#fff; color:#6c5ce7;">연금술 시작</button>
             </div>
 
@@ -257,9 +237,9 @@ async function renderResult(testId, answers) {
     document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
 }
 
-function renderPrivacy() { app.innerHTML = `<div class="card"><h2>개인정보처리방침</h2><p>보안 규정을 준수합니다.</p></div>`; }
+function renderPrivacy() { app.innerHTML = `<div class="card"><h2>개인정보처리방침</h2><p>정보는 안전하게 보호됩니다.</p></div>`; }
 function renderAbout() { app.innerHTML = `<div class="card"><h2>서비스 소개</h2><p>SevenCheck Studio</p></div>`; }
-function renderTerms() { app.innerHTML = `<div class="card"><h2>이용약관</h2><p>약관을 확인하세요.</p></div>`; }
+function renderTerms() { app.innerHTML = `<div class="card"><h2>이용약관</h2><p>규칙을 준수해 주세요.</p></div>`; }
 function renderContact() { app.innerHTML = `<div class="card"><h2>문의하기</h2><p>support@sevencheck.studio</p></div>`; }
 
 themeToggle.onclick = () => {
