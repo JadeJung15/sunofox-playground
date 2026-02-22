@@ -70,9 +70,7 @@ export const Store = {
     if (type) {
         q = query(q, where("type", "==", type));
     }
-    if (category && category !== '전체') {
-        q = query(q, where("category", "==", category));
-    }
+    const useClientCategoryFilter = category && category !== '전체';
     
     const querySnapshot = await getDocs(q);
     let posts = querySnapshot.docs.map(doc => {
@@ -81,6 +79,10 @@ export const Store = {
       if (legacyId) delete data.id;
       return { id: doc.id, legacyId, ...data };
     });
+
+    if (useClientCategoryFilter) {
+      posts = posts.filter(p => p.category === category);
+    }
 
     if (posts.length === 0) { // If no posts, seed initial data to Firestore
         console.log("Seeding initial posts...");
@@ -95,6 +97,9 @@ export const Store = {
           if (legacyId) delete data.id;
           return { id: doc.id, legacyId, ...data };
         });
+        if (useClientCategoryFilter) {
+          posts = posts.filter(p => p.category === category);
+        }
     }
 
     return posts;

@@ -485,6 +485,8 @@ async function openPostModal(id) { // Added async
   const post = await Store.getPost(id); // Await the post
   if (!post) {
       console.error("Post not found:", id);
+      alert('해당 게시글을 찾을 수 없습니다. 목록을 새로고침합니다.');
+      router();
       return;
   }
   
