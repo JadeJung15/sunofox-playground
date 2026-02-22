@@ -59,15 +59,17 @@ const LINKTREE_LINKS = [
 // Routing
 const routes = {
   '#home': renderHome,
-  '#videos': renderVideos,
-  '#community': renderCommunity,
+  '#videos': renderHome,
+  '#community': renderHome,
+  '#arcade': renderHome,
   '#profile': renderProfile,
   '#admin': renderAdmin
 };
 
 function router() {
   const hash = window.location.hash || '#home';
-  if (currentRoute === '#arcade' && hash !== '#arcade' && activeGame?.destroy) {
+  const homeHashes = new Set(['#home', '#videos', '#community', '#arcade']);
+  if (!homeHashes.has(hash) && activeGame?.destroy) {
     activeGame.destroy();
     activeGame = null;
   }
@@ -84,6 +86,9 @@ function router() {
   
   app.innerHTML = '';
   renderFn();
+  if (hash === '#videos') document.getElementById('live-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (hash === '#community') document.getElementById('community-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (hash === '#arcade') document.getElementById('play-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   currentRoute = hash;
 }
 
@@ -200,6 +205,61 @@ function renderHome() {
       </div>
     </section>
 
+    <section id="live-section" class="section fade-in">
+      <div class="section-head">
+        <h2>Live</h2>
+        <span>최신 영상</span>
+      </div>
+      <div id="latest-videos" class="video-grid"></div>
+    </section>
+
+    <section id="community-section" class="section fade-in">
+      <div class="toolbar sf-card">
+        <h2 class="page-title">Community</h2>
+        <div class="actions">
+          <button id="write-comm-btn-home" class="btn btn-primary">글쓰기</button>
+        </div>
+      </div>
+      <div class="post-table-header">
+        <span class="col-cat">분류</span>
+        <span class="col-title">제목</span>
+        <span class="col-author">작성자</span>
+        <span class="col-meta">조회/추천</span>
+      </div>
+      <div id="community-list-home" class="post-list-table sf-card"></div>
+    </section>
+
+    <section id="play-section" class="section fade-in">
+      <div class="section-head">
+        <h2>Play</h2>
+        <span>팬 챌린지 아케이드</span>
+      </div>
+      <div class="arcade-meta sf-card">
+        <div>
+          <h3 id="arcade-meta-title">반응속도 테스트</h3>
+          <p id="arcade-meta-desc" class="text-sub">신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.</p>
+        </div>
+        <div class="arcade-meta-grid">
+          <div class="stat-card"><span class="stat-label">난이도</span><strong id="arcade-meta-level">입문</strong></div>
+          <div class="stat-card"><span class="stat-label">조작</span><strong id="arcade-meta-control">클릭 / 스페이스바</strong></div>
+        </div>
+      </div>
+      <div class="game-tabs">
+        <button class="tab-btn active" data-game="reaction">반응속도</button>
+        <button class="tab-btn" data-game="memory">기억력</button>
+        <button class="tab-btn" data-game="rhythm">리듬</button>
+        <button class="tab-btn" data-game="puzzle">퍼즐</button>
+        <button class="tab-btn" data-game="math">스피드 합산</button>
+        <button class="tab-btn" data-game="rps">블랙잭</button>
+        <button class="tab-btn" data-game="number">숫자 기억력</button>
+        <button class="tab-btn" data-game="typing">타이핑</button>
+        <button class="tab-btn" data-game="reflex">반사신경</button>
+        <button class="tab-btn" data-game="maze">미로</button>
+        <button class="tab-btn" data-game="dodge">낙하 피하기</button>
+      </div>
+      <div id="game-container" class="game-container"></div>
+    </section>
+
     <section class="section fade-in">
       <div class="section-head">
         <h2>공식 링크</h2>
@@ -210,6 +270,95 @@ function renderHome() {
     </section>
   `;
   fetchAdvice();
+  loadLatestVideos();
+  setupHomeCommunityList();
+  setupHomeArcade();
+}
+
+function setupHomeCommunityList() {
+  const renderList = async () => {
+    try {
+      const posts = await Store.getPosts('community');
+      const commentCounts = await Promise.all(
+        posts.map(p => Store.getComments(p.id, p.legacyId).then(c => c.length).catch(() => 0))
+      );
+      const listHtml = posts.map((post, idx) => `
+        <div class="post-row" data-id="${post.id}">
+          <span class="col-cat"><span class="chip micro">${escapeHTML(post.category || '')}</span></span>
+          <span class="col-title">${escapeHTML(post.title || '')} <span class="comment-count">[${commentCounts[idx]}]</span></span>
+          <span class="col-author">${escapeHTML(post.author || '')}</span>
+          <span class="col-meta">${post.views} / ${post.likes}</span>
+        </div>
+      `).join('');
+      const container = document.getElementById('community-list-home');
+      if (!container) return;
+      container.innerHTML = listHtml || '<div class="empty">게시글이 없습니다.</div>';
+      container.querySelectorAll('.post-row').forEach(item => {
+        item.addEventListener('click', () => openPostModal(item.dataset.id));
+      });
+    } catch (error) {
+      const container = document.getElementById('community-list-home');
+      if (container) container.innerHTML = '<div class="empty">게시글을 불러오지 못했습니다.</div>';
+    }
+  };
+  renderList();
+  document.getElementById('write-comm-btn-home')?.addEventListener('click', () => openWriteModal('community', null, renderList));
+}
+
+function setupHomeArcade() {
+  const gameMeta = {
+    reaction: { title: '반응속도 테스트', level: '입문', control: '클릭 / 스페이스바', desc: '신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.' },
+    memory: { title: '기억력', level: '입문', control: '마우스 클릭', desc: '카드를 맞추며 기억력과 정확도를 테스트합니다.' },
+    rhythm: { title: '리듬 레인 러시', level: '중급', control: 'A / S / D', desc: '3개 레인을 정확한 타이밍으로 타격해 콤보를 유지하세요.' },
+    puzzle: { title: '2048 챌린지', level: '중급', control: '방향키', desc: '타일을 합쳐 256 목표를 달성하세요.' },
+    math: { title: '스피드 합산', level: '중급', control: '키보드 입력', desc: '수학 문제를 빠르게 풀어 점수를 올리세요.' },
+    rps: { title: '블랙잭 러시', level: '중급', control: '히트 / 스탠드', desc: '21을 넘기지 않으면서 딜러를 이겨보세요.' },
+    number: { title: '숫자 기억력', level: '중급', control: '키보드 입력', desc: '점점 길어지는 숫자 시퀀스를 기억하세요.' },
+    typing: { title: '타이핑', level: '중급', control: '키보드 입력', desc: '정확도와 WPM을 동시에 겨루는 타이핑 게임입니다.' },
+    reflex: { title: '리플렉스 듀얼', level: '중급', control: '← / →', desc: '표시된 방향을 빠르게 입력하세요.' },
+    maze: { title: '미로', level: '중급', control: '방향키 / 버튼', desc: '최단 동선으로 미로를 탈출하세요.' },
+    dodge: { title: '낙하 피하기', level: '상급', control: '좌/우 방향키', desc: '떨어지는 장애물을 오래 피하세요.' }
+  };
+
+  const container = document.getElementById('game-container');
+  const tabs = document.querySelectorAll('.game-tabs .tab-btn');
+  const metaTitle = document.getElementById('arcade-meta-title');
+  const metaDesc = document.getElementById('arcade-meta-desc');
+  const metaLevel = document.getElementById('arcade-meta-level');
+  const metaControl = document.getElementById('arcade-meta-control');
+  if (!container || !metaTitle || !metaDesc || !metaLevel || !metaControl) return;
+
+  const setGame = (type) => {
+    if (activeGame?.destroy) activeGame.destroy();
+    container.innerHTML = '';
+    const meta = gameMeta[type];
+    if (meta) {
+      metaTitle.textContent = meta.title;
+      metaDesc.textContent = meta.desc;
+      metaLevel.textContent = meta.level;
+      metaControl.textContent = meta.control;
+    }
+    if (type === 'reaction') activeGame = new ReactionGame(container);
+    if (type === 'memory') activeGame = new MemoryGame(container);
+    if (type === 'rhythm') activeGame = new RhythmGame(container);
+    if (type === 'puzzle') activeGame = new PuzzleGame(container);
+    if (type === 'math') activeGame = new MathGame(container);
+    if (type === 'rps') activeGame = new RpsGame(container);
+    if (type === 'number') activeGame = new NumberMemoryGame(container);
+    if (type === 'typing') activeGame = new TypingGame(container);
+    if (type === 'reflex') activeGame = new ReflexGame(container);
+    if (type === 'maze') activeGame = new MazeGame(container);
+    if (type === 'dodge') activeGame = new DodgeGame(container);
+  };
+
+  setGame('reaction');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', (e) => {
+      tabs.forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      setGame(e.target.dataset.game);
+    });
+  });
 }
 
 async function fetchAdvice() {
