@@ -3,16 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Generator</title>
+    <title>Professional Lotto Number Generator | Reliable Random Tools</title>
+    <meta name="description" content="Generate your lucky lotto numbers with our advanced random number generator. Fast, fair, and mobile-friendly tool for lottery enthusiasts.">
+    <meta name="keywords" content="lotto generator, random number, lucky numbers, lottery tool, fair randomizer">
+    <!-- Open Graph for Social Media -->
+    <meta property="og:title" content="Professional Lotto Number Generator">
+    <meta property="og:description" content="Get your random lucky numbers today with our high-quality generation tool.">
+    <meta property="og:type" content="website">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <button class="theme-toggle" id="theme-toggle">Dark Mode</button>
-    <div class="container">
-        <lotto-generator></lotto-generator>
+    <header>
+        <button class="theme-toggle" id="theme-toggle">Dark Mode</button>
+        <nav class="nav-bar">
+            <div class="logo">LottoGen Pro</div>
+            <ul class="nav-links">
+                <li><a href="#generator">Generator</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#tips">Gaming Tips</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#privacy">Privacy</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Main Tool Section -->
+        <section id="generator" class="tool-section">
+            <lotto-generator></lotto-generator>
+        </section>
+
+        <!-- High-Value Content: About the Tool -->
+        <section id="about" class="info-section">
+            <h2 class="section-title">About Our Lotto Generator</h2>
+            <div class="content-text">
+                <p>Our Professional Lotto Number Generator uses a cryptographically secure pseudo-random number generation approach to ensure that every number set produced is unique and unbiased. Whether you are playing for fun or looking for a fresh set of numbers, our tool provides a clean and interactive experience.</p>
+                <p>We believe in transparency and fairness, which is why our algorithm is designed to prevent duplicates and maintain a truly random distribution within the standard 1-45 range.</p>
+            </div>
+        </section>
+
+        <!-- High-Value Content: Tips & Value Add -->
+        <section id="tips" class="info-section highlight">
+            <h2 class="section-title">Tips for Responsible Gaming</h2>
+            <div class="content-text">
+                <ul>
+                    <li><strong>Play for Fun:</strong> Lottery should be treated as a form of entertainment, not a reliable way to make money.</li>
+                    <li><strong>Set a Budget:</strong> Never spend more than you can afford to lose.</li>
+                    <li><strong>Randomness is Key:</strong> Remember that every draw is independent. Our generator helps you avoid human bias when picking numbers.</li>
+                </ul>
+            </div>
+        </section>
         
-        <section class="contact-section">
+        <!-- Partnership Inquiry -->
+        <section id="contact" class="contact-section">
             <h2 class="section-title">Partnership Inquiry</h2>
+            <p class="section-subtitle">Interested in collaborating? Send us a message below.</p>
             <form action="https://formspree.io/f/mqedyyaa" method="POST" class="contact-form">
                 <div class="form-group">
                     <label for="name">Name</label>
@@ -30,19 +75,22 @@
             </form>
         </section>
 
+        <!-- Essential for AdSense: Privacy Policy -->
+        <section id="privacy" class="info-section privacy-policy">
+            <h2 class="section-title">Privacy Policy</h2>
+            <div class="content-text small">
+                <p>This Privacy Policy explains how we handle your information. We do not collect personal data unless you voluntarily provide it through our contact form. We use third-party services like Disqus for comments and Formspree for inquiries.</p>
+                <p><strong>Cookies:</strong> Third-party vendors, including Google, use cookies to serve ads based on a user's prior visits to your website or other websites. Google's use of advertising cookies enables it and its partners to serve ads to your users based on their visit to your sites and/or other sites on the Internet.</p>
+                <p>Users may opt out of personalized advertising by visiting Ads Settings.</p>
+            </div>
+        </section>
+
+        <!-- Interactive Section -->
         <section class="comments-section">
+            <h2 class="section-title">Community Discussion</h2>
             <div id="disqus_thread"></div>
             <script>
-                /**
-                *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
-                *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables    */
-                /*
-                var disqus_config = function () {
-                this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
-                this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
-                };
-                */
-                (function() { // DON'T EDIT BELOW THIS LINE
+                (function() {
                 var d = document, s = d.createElement('script');
                 s.src = 'https://sunofox-1.disqus.com/embed.js';
                 s.setAttribute('data-timestamp', +new Date());
@@ -51,7 +99,13 @@
             </script>
             <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
         </section>
-    </div>
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 LottoGen Pro. All rights reserved.</p>
+        <p>Providing high-quality utility tools for the global community.</p>
+    </footer>
+
     <script src="main.js"></script>
     <script>
         const toggleBtn = document.getElementById('theme-toggle');
@@ -65,6 +119,16 @@
                 html.setAttribute('data-theme', 'dark');
                 toggleBtn.textContent = 'Light Mode';
             }
+        });
+
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
         });
     </script>
 </body>
