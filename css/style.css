@@ -429,6 +429,19 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
   z-index: 2;
 }
 
+.lotto-card { font-size: 1.2rem; transition: all 0.3s ease; }
+.lotto-scratcher { animation: pulse 1s infinite; }
+.lotto-final { font-size: 1.1rem; animation: pop 0.4s ease-out; }
+.lotto-final.win { color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+.lotto-final.even { color: #fff; }
+.lotto-final.lose { color: rgba(255,255,255,0.7); }
+
+@keyframes pulse {
+  0% { opacity: 0.6; transform: scale(0.98); }
+  50% { opacity: 1; transform: scale(1); }
+  100% { opacity: 0.6; transform: scale(0.98); }
+}
+
 @media (max-width: 600px) {
   .test-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
   .test-card h3 { font-size: 0.95rem; }

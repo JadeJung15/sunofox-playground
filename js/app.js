@@ -139,23 +139,27 @@ function renderArcade() {
                 <div class="stat-item"><span class="stat-label">아이템 점수</span><span class="stat-value" id="user-total-score">0 점</span></div>
             </div>
 
+            <!-- 복권 섹션 -->
+            <div class="game-zone card lotto-section" style="background:linear-gradient(135deg, #f6d365 0%, #fda085 100%); color:white; padding:1.5rem; margin-bottom:1.5rem; border:none;">
+                <h3 style="color:white;">🎫 인생역전! 럭키 복권</h3>
+                <p class="text-sub" style="color:rgba(255,255,255,0.9);">한 장당 500P - 1등 당첨금 30,000P!</p>
+                <div id="lotto-result" class="lotto-card" style="background:rgba(255,255,255,0.2); height:100px; display:flex; align-items:center; justify-content:center; margin:1rem 0; border-radius:10px; border:2px dashed #fff; font-weight:bold;">행운을 빌어요!</div>
+                <button id="lotto-btn" class="btn-primary" style="background:white; color:#fda085;">복권 구매하기 (500P)</button>
+            </div>
+
             <!-- 베팅 게임 섹션 -->
             <div class="game-zone card" style="background:#fff3f5; border:1px solid #ffcad4; padding:1.5rem; margin-bottom:1.5rem;">
                 <h3 style="color:#ff4757;">🎲 포인트 베팅 (홀짝 / 고저)</h3>
-                <p class="text-sub">포인트를 걸고 운을 시험해 보세요! (성공 시 2배)</p>
-                
                 <div class="bet-input-area" style="margin:1.5rem 0;">
                     <label style="font-size:0.8rem; font-weight:bold;">베팅 금액 (최소 10P)</label>
                     <input type="number" id="bet-amount" value="100" min="10" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color); margin-top:0.5rem; text-align:center; font-size:1.2rem; font-weight:800;">
                 </div>
-
                 <div id="bet-result-msg" style="height:50px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:bold; margin-bottom:1rem;">준비 되셨나요?</div>
-
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
                     <button class="bet-btn btn-primary" data-game="oddeven" data-choice="odd" style="background:#6c5ce7;">홀 (Odd)</button>
                     <button class="bet-btn btn-primary" data-game="oddeven" data-choice="even" style="background:#a29bfe;">짝 (Even)</button>
-                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="low">주사위 1~3 (저)</button>
-                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="high">주사위 4~6 (고)</button>
+                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="low">주사위 저 (1-3)</button>
+                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="high">주사위 고 (4-6)</button>
                 </div>
             </div>
             
@@ -237,9 +241,9 @@ async function renderResult(testId, answers) {
     document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
 }
 
-function renderPrivacy() { app.innerHTML = `<div class="card"><h2>개인정보처리방침</h2><p>정보는 안전하게 보호됩니다.</p></div>`; }
+function renderPrivacy() { app.innerHTML = `<div class="card"><h2>개인정보처리방침</h2><p>보안 규정을 준수합니다.</p></div>`; }
 function renderAbout() { app.innerHTML = `<div class="card"><h2>서비스 소개</h2><p>SevenCheck Studio</p></div>`; }
-function renderTerms() { app.innerHTML = `<div class="card"><h2>이용약관</h2><p>규칙을 준수해 주세요.</p></div>`; }
+function renderTerms() { app.innerHTML = `<div class="card"><h2>이용약관</h2><p>약관을 확인하세요.</p></div>`; }
 function renderContact() { app.innerHTML = `<div class="card"><h2>문의하기</h2><p>support@sevencheck.studio</p></div>`; }
 
 themeToggle.onclick = () => {

@@ -14,17 +14,17 @@ export function initArcade() {
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'updown-submit') await playUpDown();
         if (target.id === 'alchemy-btn') await playAlchemy();
+        if (target.id === 'lotto-btn') await playLottery();
         
-        // 베팅 게임 이벤트
         if (target.classList.contains('bet-btn')) {
-            const gameType = target.dataset.game; // 'oddeven' or 'dice'
+            const gameType = target.dataset.game;
             const choice = target.dataset.choice;
             await playBettingGame(gameType, choice);
         }
     });
 }
 
-// 기존 게임 로직들 (Gacha, Click, UpDown, Alchemy) 유지...
+// ... 기존 게임 로직들 생략 (유지됨) ...
 async function playGacha() {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     const cost = 100;
@@ -44,14 +44,12 @@ async function playGacha() {
         } catch (e) { alert("저장 실패"); }
     }
 }
-
 function getRandomItem(items, weights) {
     const totalWeight = weights.reduce((a, b) => a + b, 0);
     let random = Math.random() * totalWeight;
     for (let i = 0; i < items.length; i++) { if (random < weights[i]) return items[i]; random -= weights[i]; }
     return items[0];
 }
-
 async function playClickGame() {
     const btn = document.getElementById('click-game-btn');
     if (!btn || btn.disabled) return;
@@ -60,7 +58,6 @@ async function playClickGame() {
     btn.textContent = "채굴 중...";
     setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "포인트 채굴"; }, 1000);
 }
-
 let upDownAnswer = Math.floor(Math.random() * 50) + 1;
 async function playUpDown() {
     const input = document.getElementById('updown-input');
@@ -75,7 +72,6 @@ async function playUpDown() {
         input.value = "";
     } else { msg.textContent = guess < upDownAnswer ? "UP!" : "DOWN!"; }
 }
-
 async function playAlchemy() {
     if (!UserState.user) return;
     const costPoints = 500;
@@ -101,56 +97,81 @@ async function playAlchemy() {
         } catch (e) { alert("연금술 실패"); }
     }
 }
-
-// =================================================================
-// 신규 베팅 게임 로직
-// =================================================================
-
 async function playBettingGame(type, choice) {
     const amountInput = document.getElementById('bet-amount');
     const msgEl = document.getElementById('bet-result-msg');
     const betAmount = parseInt(amountInput.value);
-
-    if (isNaN(betAmount) || betAmount < 10) {
-        alert("최소 베팅 금액은 10P입니다.");
-        return;
-    }
-
-    if (UserState.data.points < betAmount) {
-        alert("보유 포인트가 부족합니다.");
-        return;
-    }
-
-    // 포인트 차감
+    if (isNaN(betAmount) || betAmount < 10) { alert("최소 10P"); return; }
+    if (UserState.data.points < betAmount) { alert("포인트 부족"); return; }
     if (await usePoints(betAmount)) {
         msgEl.textContent = "결과 확인 중...";
-        msgEl.className = "bet-msg-processing";
-
         setTimeout(async () => {
-            let win = false;
-            let resultText = "";
-            let multiplier = 2;
-
+            let win = false; let resultText = "";
             if (type === 'oddeven') {
                 const num = Math.floor(Math.random() * 100) + 1;
-                const isEven = num % 2 === 0;
-                win = (choice === 'even' && isEven) || (choice === 'odd' && !isEven);
-                resultText = `숫자 [${num}]이(가) 나왔습니다! (${isEven ? '짝' : '홀'})`;
+                win = (choice === 'even' && num % 2 === 0) || (choice === 'odd' && num % 2 !== 0);
+                resultText = `숫자 [${num}]!`;
             } else if (type === 'dice') {
                 const dice = Math.floor(Math.random() * 6) + 1;
                 win = (choice === 'high' && dice > 3) || (choice === 'low' && dice <= 3);
-                resultText = `주사위 [${dice}]이(가) 나왔습니다! (${dice > 3 ? '고' : '저'})`;
+                resultText = `주사위 [${dice}]!`;
+            }
+            if (win) { await addPoints(betAmount * 2); msgEl.innerHTML = `<span style="color:var(--accent-secondary)">🎉 성공! ${betAmount*2}P 획득!</span><br><small>${resultText}</small>`; }
+            else { msgEl.innerHTML = `<span style="color:#ff4757">💀 실패...</span><br><small>${resultText}</small>`; }
+        }, 800);
+    }
+}
+
+// =================================================================
+// 🎫 복권(Lottery) 로직 추가
+// =================================================================
+
+async function playLottery() {
+    if (!UserState.user) return alert("로그인이 필요합니다.");
+    const cost = 500;
+    const resultEl = document.getElementById('lotto-result');
+
+    if (!confirm(`복권 1장을 ${cost}P에 구매하시겠습니까?\n대박 당첨의 기회!`)) return;
+
+    if (await usePoints(cost)) {
+        resultEl.innerHTML = `<div class="lotto-scratcher">긁는 중... ✨</div>`;
+        
+        setTimeout(async () => {
+            const rand = Math.random() * 1000; // 0~999
+            let rewardMsg = "";
+            let rewardType = "none"; // points or item
+
+            if (rand < 1) { // 0.1% 대박 1등
+                const winPoints = 30000;
+                await addPoints(winPoints);
+                rewardMsg = `🎊 1등 당첨!! ${winPoints}P 획득!`;
+                rewardType = "win";
+            } else if (rand < 10) { // 1% 2등
+                const winItem = '💎 다이아몬드';
+                const itemScore = ITEM_VALUES[winItem];
+                const userRef = doc(db, "users", UserState.user.uid);
+                await updateDoc(userRef, { inventory: arrayUnion(winItem), totalScore: increment(itemScore) });
+                UserState.data.inventory.push(winItem);
+                UserState.data.totalScore += itemScore;
+                rewardMsg = `💎 2등 당첨! [${winItem}] 획득!`;
+                rewardType = "win";
+            } else if (rand < 100) { // 10% 3등
+                const winPoints = 1500;
+                await addPoints(winPoints);
+                rewardMsg = `✨ 3등 당첨! ${winPoints}P 획득!`;
+                rewardType = "win";
+            } else if (rand < 300) { // 20% 4등
+                const winPoints = 500; // 본전
+                await addPoints(winPoints);
+                rewardMsg = `🍀 4등! ${winPoints}P (본전!)`;
+                rewardType = "even";
+            } else {
+                rewardMsg = `💀 아쉽네요.. 다음 기회에!`;
+                rewardType = "lose";
             }
 
-            if (win) {
-                const reward = Math.floor(betAmount * multiplier);
-                await addPoints(reward);
-                msgEl.innerHTML = `<span style="color:var(--accent-secondary)">🎉 성공! ${reward}P 획득!</span><br><small>${resultText}</small>`;
-                msgEl.className = "bet-msg-win";
-            } else {
-                msgEl.innerHTML = `<span style="color:#ff4757">💀 실패... ${betAmount}P를 잃었습니다.</span><br><small>${resultText}</small>`;
-                msgEl.className = "bet-msg-lose";
-            }
-        }, 1000);
+            resultEl.innerHTML = `<div class="lotto-final ${rewardType}">${rewardMsg}</div>`;
+            updateUI();
+        }, 1500);
     }
 }
