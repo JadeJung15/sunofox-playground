@@ -404,7 +404,7 @@ function renderArcade() {
     rhythm: { title: '리듬', level: '중급', control: '스페이스 / 터치', desc: '노트 타이밍을 맞춰 콤보를 쌓고 고득점에 도전하세요.' },
     puzzle: { title: '퍼즐', level: '중급', control: '클릭 / 방향키', desc: '15퍼즐을 최소 이동으로 정렬해 최고 기록을 경신하세요.' },
     math: { title: '스피드 합산', level: '중급', control: '키보드 입력', desc: '덧셈/뺄셈/곱셈을 빠르게 풀어 콤보 점수를 획득하세요.' },
-    rps: { title: '가위바위보', level: '입문', control: '클릭 / R,P,S 키', desc: '연승과 승률을 동시에 관리하며 기록을 쌓아보세요.' },
+    rps: { title: '블랙잭 러시', level: '중급', control: '히트 / 스탠드', desc: '21을 넘기지 않으면서 딜러를 이겨 연승 기록을 쌓아보세요.' },
     number: { title: '숫자 기억력', level: '중급', control: '키보드 입력', desc: '레벨이 오를수록 숫자 노출 속도가 빨라집니다.' },
     typing: { title: '타이핑', level: '중급', control: '키보드 입력', desc: '정확도와 WPM을 동시에 끌어올리는 집중형 게임입니다.' },
     reflex: { title: '반사신경', level: '중급', control: '클릭 / 터치', desc: '목표를 빠르게 터치해 타이머 내 최대 점수를 기록하세요.' },
@@ -435,7 +435,7 @@ function renderArcade() {
         <button class="tab-btn" data-game="rhythm">리듬</button>
         <button class="tab-btn" data-game="puzzle">퍼즐</button>
         <button class="tab-btn" data-game="math">스피드 합산</button>
-        <button class="tab-btn" data-game="rps">가위바위보</button>
+        <button class="tab-btn" data-game="rps">블랙잭</button>
         <button class="tab-btn" data-game="number">숫자 기억력</button>
         <button class="tab-btn" data-game="typing">타이핑</button>
         <button class="tab-btn" data-game="reflex">반사신경</button>
