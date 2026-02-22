@@ -61,17 +61,17 @@ header {
 .logo span { color: var(--accent-color); font-weight: 900; }
 
 .header-profile {
-  display: flex; align-items: center; gap: 0.75rem;
-  background: var(--card-bg); padding: 0.4rem 0.9rem;
+  display: flex; align-items: center; gap: 0.5rem;
+  background: var(--card-bg); padding: 0.35rem 0.8rem;
   border-radius: 50px; border: 1px solid var(--border-color);
   box-shadow: var(--shadow-sm); cursor: pointer;
   transition: all 0.2s ease;
 }
 .header-profile:hover { border-color: var(--accent-color); transform: translateY(-1px); }
 .header-profile:active { transform: scale(0.96); }
-.h-emoji { font-size: 1.2rem; }
-.h-name { font-size: 0.85rem; font-weight: 700; }
-.h-points { font-size: 0.8rem; font-weight: 800; color: var(--accent-color); display: flex; align-items: center; gap: 4px; }
+.h-emoji { font-size: 1.1rem; line-height: 1; }
+.h-name { font-size: 0.8rem; font-weight: 700; white-space: nowrap; max-width: 80px; overflow: hidden; text-overflow: ellipsis; line-height: 1; }
+.h-points { font-size: 0.8rem; font-weight: 800; color: var(--accent-color); display: flex; align-items: center; gap: 2px; line-height: 1; }
 
 .theme-toggle {
   background: var(--card-bg); border: 1px solid var(--border-color);
@@ -276,7 +276,6 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .inventory-grid { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
   .emoji-grid { grid-template-columns: repeat(4, 1fr); }
   .logo { font-size: 1.3rem; }
-  .h-name { display: none; }
   .card { padding: 1.25rem; }
   .result-card { padding: 1.5rem; }
 }
