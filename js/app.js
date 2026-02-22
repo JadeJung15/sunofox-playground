@@ -167,128 +167,49 @@ function renderHome() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="stream-hero fade-in">
-      <div class="stream-grid">
-        <div class="stream-card">
-          <div class="stream-header">
-            <div>
-              <div class="news-tag">SunoFox Fanpage</div>
-              <h1 class="stream-title">수노폭스 유튜브 팬을<br>위한 스트리밍 허브</h1>
-              <p class="stream-meta">최신 영상, 재생목록, 팬 토론을 한 화면에 모았습니다.</p>
-            </div>
-            <div class="badge"><strong>LIVE</strong> 팬클럽 뉴스룸</div>
-          </div>
-          <div class="hero-actions">
-            <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 구독하기</a>
-            <a class="btn btn-secondary" href="#videos">최신 영상 보기</a>
-            <a class="btn btn-outline" href="#community">팬 토론 참여</a>
-          </div>
-          <div class="stat-grid mt-4">
-            <div class="stat-card">
-              <span class="stat-label">팬페이지</span>
-              <strong>수노폭스 전용 허브</strong>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">영상 업데이트</span>
-              <strong>최신 업로드 자동 수집</strong>
-            </div>
-            <div class="stat-card">
-              <span class="stat-label">팬클럽</span>
-              <strong>리뷰 · 토론 · 질문</strong>
-            </div>
-          </div>
-        </div>
-        <div class="stream-card">
+    <section class="hub-hero fade-in">
+      <div class="hub-eyebrow">SunoFox Streaming Hub</div>
+      <h1>수노폭스 유튜브 팬을 위한<br>스트리밍 허브</h1>
+      <p>최신 영상, 플레이리스트, 팬 커뮤니티를 한 화면에서 빠르게 연결합니다.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 바로가기</a>
+        <a class="btn btn-outline" href="#videos">최신 영상 보기</a>
+      </div>
+    </section>
+
+    <section class="section fade-in">
+      <div class="hub-grid">
+        <article class="stream-card">
           <div class="section-head">
-            <h2>Now Playing</h2>
+            <h2>Now Streaming</h2>
             <span>대표 플레이리스트</span>
           </div>
           <div class="embed">
-            <iframe
-              class="frame"
-              title="SunoFox Playlist"
-              src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen></iframe>
+            <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
           </div>
-          <div class="hero-actions mt-2">
-            <a class="btn btn-outline full-width" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 바로가기</a>
+        </article>
+        <article class="stream-card">
+          <div class="section-head">
+            <h2>Hub Guide</h2>
+            <span>빠른 이동</span>
+          </div>
+          <div class="hub-strip">
+            <a href="#videos" class="rail-tile clickable"><strong>영상</strong><span>최신 업로드와 재생목록</span></a>
+            <a href="#community" class="rail-tile clickable"><strong>커뮤니티</strong><span>리뷰, 질문, 추천 공유</span></a>
+            <a href="#arcade" class="rail-tile clickable"><strong>게임</strong><span>팬 참여형 미니게임</span></a>
           </div>
         </div>
       </div>
     </section>
 
-    <div id="advice-section" class="section fade-in">
+    <section class="section fade-in">
+      <div class="section-head">
+        <h2>Today</h2>
+        <span>한 줄 메시지</span>
+      </div>
+      <div id="advice-section">
         <div class="advice-card">
-            <span class="news-tag">Today's Advice</span>
-            <p id="advice-text">로딩 중...</p>
-        </div>
-    </div>
-
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>Latest Drops</h2>
-        <span>팬들이 바로 확인하는 영상</span>
-      </div>
-      <div class="rail-grid">
-        <a href="#videos" class="rail-tile clickable">
-          <strong>최신 업로드</strong>
-          <span>신규 영상이 올라오면 가장 먼저 확인하세요.</span>
-        </a>
-        <a href="https://www.youtube.com/@sunofox/playlists" target="_blank" class="rail-tile clickable">
-          <strong>시리즈 재생목록</strong>
-          <span>장기 시리즈를 한 번에 정주행합니다.</span>
-        </a>
-        <a href="#community" class="rail-tile clickable">
-          <strong>팬 추천 클립</strong>
-          <span>팬들이 추천한 장면을 큐레이션합니다.</span>
-        </a>
-        <a href="#community" class="rail-tile clickable">
-          <strong>하이라이트 토론</strong>
-          <span>감상 포인트를 뉴스룸처럼 공유합니다.</span>
-        </a>
-      </div>
-    </section>
-
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>Fanclub Newsroom</h2>
-        <span>팬들이 만드는 실시간 소식</span>
-      </div>
-      <div class="newsroom-feed">
-        <div class="feed-item" onclick="location.hash='#community'">
-          <div class="feed-header">
-            <div class="feed-user">
-              <span class="user-avatar">🦊</span>
-              <span class="user-name">관리자</span>
-            </div>
-            <span class="feed-date">Now</span>
-          </div>
-          <h4>팬클럽 뉴스룸이 새롭게 개편되었습니다!</h4>
-          <p>더 깔끔한 디자인으로 팬들의 소식을 확인하세요. 자유로운 토론과 영상 공유를 환영합니다.</p>
-          <div class="feed-footer">
-            <span class="news-tag">NOTICE</span>
-            <div class="feed-actions">
-              <span>❤️ 12</span> <span>💬 5</span>
-            </div>
-          </div>
-        </div>
-        <div class="feed-item" onclick="location.hash='#arcade'">
-          <div class="feed-header">
-            <div class="feed-user">
-              <span class="user-avatar">🎮</span>
-              <span class="user-name">게임마스터</span>
-            </div>
-            <span class="feed-date">Today</span>
-          </div>
-          <h4>이번 주 게임 챌린지: 반응속도 테스트!</h4>
-          <p>지금 바로 참여하고 여러분의 신기록을 커뮤니티에 공유해보세요. 랭킹에 도전하세요!</p>
-          <div class="feed-footer">
-            <span class="news-tag">EVENT</span>
-            <div class="feed-actions">
-              <span>❤️ 8</span> <span>💬 3</span>
-            </div>
-          </div>
+          <p id="advice-text">로딩 중...</p>
         </div>
       </div>
     </section>
@@ -296,9 +217,9 @@ function renderHome() {
     <section class="section fade-in">
       <div class="section-head">
         <h2>Listen & Follow</h2>
-        <span>수노폭스 공식 링크 모음</span>
+        <span>공식 링크</span>
       </div>
-      <div class="link-grid">
+      <div class="hub-link-list">
         ${linkButtons}
       </div>
     </section>
@@ -323,76 +244,58 @@ function renderVideos() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <div class="fade-in">
-      <div class="section-head">
-        <h2>🎬 수노폭스 유튜브 영상</h2>
-        <span>${CHANNEL_URL.replace('https://', '')}</span>
+    <section class="hub-hero slim fade-in">
+      <div class="hub-eyebrow">Video Hub</div>
+      <h1>영상 탐색을 더 빠르게</h1>
+      <p>대표 플레이리스트와 최신 업로드를 한 화면에서 확인하세요.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 방문</a>
+        <a class="btn btn-outline" href="#community">팬 토론 열기</a>
       </div>
-      <div class="stream-grid">
+    </section>
+
+    <section class="section fade-in">
+      <div class="hub-grid">
         <div class="stream-card">
-          <div class="stream-header">
-            <div>
-              <div class="news-tag">FEATURED</div>
-              <h3>대표 플레이리스트</h3>
-              <p class="text-sub">팬들이 사랑하는 영상 모음입니다.</p>
-            </div>
-            <div class="badge"><strong>CURATED</strong> 팬 선택</div>
+          <div class="section-head">
+            <h2>Featured Playlist</h2>
+            <span>${CHANNEL_URL.replace('https://', '')}</span>
           </div>
           <div class="embed">
-            <iframe
-              class="frame"
-              title="SunoFox Playlist"
-              src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowfullscreen></iframe>
-          </div>
-          <div class="hero-actions mt-2">
-            <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널 방문</a>
-            <a class="btn btn-outline" href="#community">팬 토론 참여</a>
+            <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
           </div>
         </div>
         <div class="stream-card">
           <div class="section-head">
-            <h2>Fan Highlights</h2>
-            <span>뉴스룸 하이라이트</span>
+            <h2>Quick Links</h2>
+            <span>바로가기</span>
           </div>
-          <div class="newsroom-grid">
-            <a href="#community" class="news-card">
-              <div class="news-tag">REVIEW</div>
-              <h4>최신 영상 리뷰</h4>
-              <p>팬들이 남긴 리뷰와 해석을 모읍니다.</p>
-            </a>
-            <a href="#videos" class="news-card">
-              <div class="news-tag">ARCHIVE</div>
-              <h4>시리즈 정주행</h4>
-              <p>시리즈별 재생목록을 한 번에 확인하세요.</p>
-            </a>
-            <a href="#community" class="news-card">
-              <div class="news-tag">REQUEST</div>
-              <h4>다음 주제 제안</h4>
-              <p>팬이 원하는 영상 주제를 투표합니다.</p>
-            </a>
-            <a href="#community" class="news-card">
-              <div class="news-tag">MEMORY</div>
-              <h4>명장면 기록</h4>
-              <p>베스트 장면과 사운드 포인트를 공유합니다.</p>
-            </a>
+          <div class="hub-strip">
+            <a href="https://www.youtube.com/@sunofox/playlists" target="_blank" class="rail-tile clickable"><strong>재생목록</strong><span>시리즈 정주행</span></a>
+            <a href="#community" class="rail-tile clickable"><strong>리뷰</strong><span>팬 리뷰와 추천</span></a>
+            <a href="#community" class="rail-tile clickable"><strong>토론</strong><span>하이라이트 이야기</span></a>
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="section fade-in">
       <div class="section-head">
         <h2>최신 업로드</h2>
         <span>자동 업데이트</span>
       </div>
       <div id="latest-videos" class="video-grid"></div>
+    </section>
+
+    <section class="section fade-in">
       <div class="section-head">
         <h2>Listen & Follow</h2>
-        <span>수노폭스 공식 링크 모음</span>
+        <span>공식 링크</span>
       </div>
-      <div class="link-grid">
+      <div class="hub-link-list">
         ${linkButtons}
       </div>
-    </div>
+    </section>
   `;
   loadLatestVideos();
 }
@@ -401,13 +304,13 @@ function renderArcade() {
   const gameMeta = {
     reaction: { title: '반응속도', level: '입문', control: '클릭 / 스페이스바', desc: '신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.' },
     memory: { title: '기억력', level: '입문', control: '마우스 클릭', desc: '카드를 맞추며 기억력과 정확도를 테스트합니다.' },
-    rhythm: { title: '리듬', level: '중급', control: '스페이스 / 터치', desc: '노트 타이밍을 맞춰 콤보를 쌓고 고득점에 도전하세요.' },
-    puzzle: { title: '퍼즐', level: '중급', control: '클릭 / 방향키', desc: '15퍼즐을 최소 이동으로 정렬해 최고 기록을 경신하세요.' },
+    rhythm: { title: '리듬 레인 러시', level: '중급', control: 'A / S / D', desc: '3개 레인을 정확한 타이밍으로 타격해 콤보를 유지하세요.' },
+    puzzle: { title: '2048 챌린지', level: '중급', control: '방향키', desc: '타일을 합쳐 256 목표를 달성하세요. 적은 이동 수가 핵심입니다.' },
     math: { title: '스피드 합산', level: '중급', control: '키보드 입력', desc: '덧셈/뺄셈/곱셈을 빠르게 풀어 콤보 점수를 획득하세요.' },
     rps: { title: '블랙잭 러시', level: '중급', control: '히트 / 스탠드', desc: '21을 넘기지 않으면서 딜러를 이겨 연승 기록을 쌓아보세요.' },
     number: { title: '숫자 기억력', level: '중급', control: '키보드 입력', desc: '레벨이 오를수록 숫자 노출 속도가 빨라집니다.' },
     typing: { title: '타이핑', level: '중급', control: '키보드 입력', desc: '정확도와 WPM을 동시에 끌어올리는 집중형 게임입니다.' },
-    reflex: { title: '반사신경', level: '중급', control: '클릭 / 터치', desc: '목표를 빠르게 터치해 타이머 내 최대 점수를 기록하세요.' },
+    reflex: { title: '리플렉스 듀얼', level: '중급', control: '← / →', desc: '표시된 방향을 제한 시간 안에 빠르게 입력해 점수를 쌓으세요.' },
     maze: { title: '미로', level: '중급', control: '방향키 / 버튼', desc: '이동 횟수와 시간 효율을 함께 고려한 미로 탈출 챌린지.' },
     dodge: { title: '낙하 피하기', level: '상급', control: '좌/우 방향키', desc: '시간이 지날수록 속도가 빨라지는 장애물을 회피하세요.' }
   };
