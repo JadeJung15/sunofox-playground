@@ -167,48 +167,54 @@ function renderHome() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="hub-hero fade-in">
-      <div class="hub-eyebrow">SunoFox Streaming Hub</div>
-      <h1>수노폭스 유튜브 팬을 위한<br>스트리밍 허브</h1>
-      <p>최신 영상, 플레이리스트, 팬 커뮤니티를 한 화면에서 빠르게 연결합니다.</p>
+    <section class="fan-hero fade-in">
+      <div class="fan-eyebrow">SunoFox Fan Streaming Hub</div>
+      <h1>수노폭스 팬들이<br>실시간으로 모이는 공간</h1>
+      <p>영상 시청, 게임 챌린지, 팬 토론을 한 흐름으로 연결한 커뮤니티 허브입니다.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 바로가기</a>
-        <a class="btn btn-outline" href="#videos">최신 영상 보기</a>
+        <a class="btn btn-outline" href="#community">팬 대화 시작</a>
+      </div>
+      <div class="fan-kpi-grid">
+        <div class="fan-kpi"><span>오늘의 미션</span><strong>영상 1개 + 게임 1판</strong></div>
+        <div class="fan-kpi"><span>핫 토픽</span><strong>#신곡반응 #블랙잭</strong></div>
+        <div class="fan-kpi"><span>권장 루트</span><strong>영상 → 라운지 → 챌린지</strong></div>
       </div>
     </section>
 
     <section class="section fade-in">
-      <div class="hub-grid">
-        <article class="stream-card">
+      <div class="fan-layout-grid">
+        <article class="fan-card">
           <div class="section-head">
-            <h2>Now Streaming</h2>
-            <span>대표 플레이리스트</span>
+            <h2>지금 재생 중</h2>
+            <span>팬 추천 플레이리스트</span>
           </div>
           <div class="embed">
             <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
           </div>
         </article>
-        <article class="stream-card">
+        <article class="fan-card">
           <div class="section-head">
-            <h2>Hub Guide</h2>
-            <span>빠른 이동</span>
+            <h2>팬 액션 보드</h2>
+            <span>원클릭 이동</span>
           </div>
-          <div class="hub-strip">
-            <a href="#videos" class="rail-tile clickable"><strong>영상</strong><span>최신 업로드와 재생목록</span></a>
-            <a href="#community" class="rail-tile clickable"><strong>커뮤니티</strong><span>리뷰, 질문, 추천 공유</span></a>
-            <a href="#arcade" class="rail-tile clickable"><strong>게임</strong><span>팬 참여형 미니게임</span></a>
+          <div class="fan-quick-list">
+            <a href="#videos" class="fan-quick clickable"><strong>영상 라운지</strong><span>최신 업로드와 하이라이트 탐색</span></a>
+            <a href="#lounge" class="fan-quick clickable"><strong>팬 토론</strong><span>자유 대화, 질문, 후기 공유</span></a>
+            <a href="#arcade" class="fan-quick clickable"><strong>게임 챌린지</strong><span>반응속도, 블랙잭, 퍼즐 도전</span></a>
+            <a href="#tests" class="fan-quick clickable"><strong>팬 성향 테스트</strong><span>결과를 커뮤니티에 바로 공유</span></a>
           </div>
-        </div>
+        </article>
       </div>
     </section>
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>Today</h2>
-        <span>한 줄 메시지</span>
+        <h2>오늘의 한마디</h2>
+        <span>팬 응원 메시지</span>
       </div>
-      <div id="advice-section">
-        <div class="advice-card">
+      <div id="advice-section" class="fan-single">
+        <div class="fan-card advice-card">
           <p id="advice-text">로딩 중...</p>
         </div>
       </div>
@@ -216,8 +222,8 @@ function renderHome() {
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>Listen & Follow</h2>
-        <span>공식 링크</span>
+        <h2>공식 채널 모음</h2>
+        <span>스트리밍/음원 플랫폼</span>
       </div>
       <div class="hub-link-list">
         ${linkButtons}
@@ -244,36 +250,36 @@ function renderVideos() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="hub-hero slim fade-in">
-      <div class="hub-eyebrow">Video Hub</div>
-      <h1>영상 탐색을 더 빠르게</h1>
-      <p>대표 플레이리스트와 최신 업로드를 한 화면에서 확인하세요.</p>
+    <section class="fan-hero fan-hero-compact fade-in">
+      <div class="fan-eyebrow">Video Hub</div>
+      <h1>팬이 큐레이션한<br>수노폭스 영상 허브</h1>
+      <p>대표 재생목록, 최신 업로드, 팬 추천 링크를 한 화면에서 제공합니다.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 방문</a>
-        <a class="btn btn-outline" href="#community">팬 토론 열기</a>
+        <a class="btn btn-outline" href="#lounge">감상 공유하기</a>
       </div>
     </section>
 
     <section class="section fade-in">
-      <div class="hub-grid">
-        <div class="stream-card">
+      <div class="fan-layout-grid">
+        <div class="fan-card">
           <div class="section-head">
-            <h2>Featured Playlist</h2>
+            <h2>대표 플레이리스트</h2>
             <span>${CHANNEL_URL.replace('https://', '')}</span>
           </div>
           <div class="embed">
             <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
           </div>
         </div>
-        <div class="stream-card">
+        <div class="fan-card">
           <div class="section-head">
-            <h2>Quick Links</h2>
-            <span>바로가기</span>
+            <h2>탐색 바로가기</h2>
+            <span>팬 추천 동선</span>
           </div>
-          <div class="hub-strip">
-            <a href="https://www.youtube.com/@sunofox/playlists" target="_blank" class="rail-tile clickable"><strong>재생목록</strong><span>시리즈 정주행</span></a>
-            <a href="#community" class="rail-tile clickable"><strong>리뷰</strong><span>팬 리뷰와 추천</span></a>
-            <a href="#community" class="rail-tile clickable"><strong>토론</strong><span>하이라이트 이야기</span></a>
+          <div class="fan-quick-list">
+            <a href="https://www.youtube.com/@sunofox/playlists" target="_blank" class="fan-quick clickable"><strong>재생목록 몰아보기</strong><span>시리즈 정주행</span></a>
+            <a href="#community" class="fan-quick clickable"><strong>뉴스룸 리뷰</strong><span>영상 후기/요약 공유</span></a>
+            <a href="#lounge" class="fan-quick clickable"><strong>팬 자유토론</strong><span>클립·밈·잡담</span></a>
           </div>
         </div>
       </div>
@@ -282,14 +288,14 @@ function renderVideos() {
     <section class="section fade-in">
       <div class="section-head">
         <h2>최신 업로드</h2>
-        <span>자동 업데이트</span>
+        <span>YouTube 자동 동기화</span>
       </div>
       <div id="latest-videos" class="video-grid"></div>
     </section>
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>Listen & Follow</h2>
+        <h2>공식 링크</h2>
         <span>공식 링크</span>
       </div>
       <div class="hub-link-list">
@@ -316,15 +322,19 @@ function renderArcade() {
   };
 
   app.innerHTML = `
-    <div class="fade-in">
-      <h2 class="page-title">🕹️ 팬클럽 챌린지</h2>
-      <div class="game-intro">
-        <p class="text-sub">팬들이 함께 즐기는 이벤트 공간입니다. 기록을 공유하고 하이라이트에 도전하세요.</p>
-        <div class="badge"><strong>EVENT</strong> 이번 주 랭킹 도전전</div>
+    <div class="fade-in fan-arcade">
+      <div class="fan-hero fan-hero-compact">
+        <div class="fan-eyebrow">Fan Arcade</div>
+        <h1>게임으로 소통하는<br>팬 챌린지 아레나</h1>
+        <p>가볍게 플레이하고 기록을 올려 팬들과 경쟁하세요.</p>
+        <div class="hero-actions">
+          <a class="btn btn-outline" href="#community">기록 공유하기</a>
+          <a class="btn btn-outline" href="#lounge">전략 이야기</a>
+        </div>
       </div>
-      <div class="arcade-meta card">
+      <div class="arcade-meta fan-card">
         <div>
-          <h3 id="arcade-meta-title">반응속도</h3>
+          <h3 id="arcade-meta-title">반응속도 테스트</h3>
           <p id="arcade-meta-desc" class="text-sub">신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.</p>
         </div>
         <div class="arcade-meta-grid">
@@ -395,11 +405,16 @@ function renderArcade() {
 function renderTests() {
   app.innerHTML = `
     <div class="fade-in">
+      <section class="fan-hero fan-hero-compact">
+        <div class="fan-eyebrow">Fan Test Lab</div>
+        <h1>내 팬 성향을 분석하고<br>결과를 공유해보세요</h1>
+        <p>짧은 테스트로 취향을 확인하고 커뮤니티에서 비교할 수 있습니다.</p>
+      </section>
       <div class="section-head">
         <h2>🧪 팬클럽 테스트</h2>
-        <span>팬 참여 콘텐츠</span>
+        <span>팬 참여형 인터랙션</span>
       </div>
-      <div class="panel test-panel">
+      <div class="panel test-panel fan-card">
         <div>
           <h3>나의 수노폭스 감상 타입</h3>
           <p class="text-sub">팬들이 함께 즐기는 짧은 참여형 테스트입니다.</p>
@@ -407,16 +422,16 @@ function renderTests() {
         </div>
         <div id="test-container" class="game-container"></div>
       </div>
-      <div class="grid-three">
-        <div class="card feature-card">
+      <div class="grid-three fan-feature-grid">
+        <div class="card feature-card fan-card">
           <h3>🎼 팬 추천 카드</h3>
           <p>팬들이 추천한 콘텐츠를 확인합니다.</p>
         </div>
-        <div class="card feature-card">
+        <div class="card feature-card fan-card">
           <h3>📣 결과 공유</h3>
           <p>팬클럽 뉴스룸에 테스트 결과를 올려주세요.</p>
         </div>
-        <div class="card feature-card">
+        <div class="card feature-card fan-card">
           <h3>🗳️ 팬 투표</h3>
           <p>다음 콘텐츠 주제를 함께 정하세요.</p>
         </div>
@@ -435,21 +450,22 @@ function renderLounge() {
 
   app.innerHTML = `
     <div class="lounge-layout fade-in">
-      <aside class="sidebar">
-        <div class="sidebar-box dog-api-box">
-            <span class="news-tag">Daily Dog</span>
+      <aside class="sidebar fan-card">
+        <div class="sidebar-box dog-api-box fan-card-lite">
+            <span class="news-tag">Daily Mood</span>
             <div id="dog-img-container" class="dog-img-container">로딩 중...</div>
         </div>
-        <div class="sidebar-box advice-box">
-            <span class="news-tag">Kanye's Wisdom</span>
+        <div class="sidebar-box advice-box fan-card-lite">
+            <span class="news-tag">Daily Quote</span>
             <p id="kanye-quote" class="text-sub" style="font-style: italic; margin-top: 0.5rem;">로딩 중...</p>
         </div>
         <h3>토픽</h3>
         <div class="category-list" id="category-list"></div>
-        <button id="write-lounge-btn" class="btn btn-primary full-width mt-4">글쓰기</button>
+        <button id="write-lounge-btn" class="btn btn-primary full-width mt-4">팬 라운지 글쓰기</button>
       </aside>
-      <section class="content">
+      <section class="content fan-card">
         <h2 class="page-title">팬 라운지 <small id="current-cat-title">/ 전체</small></h2>
+        <p class="text-sub">팬들이 자유롭게 소통하고 놀이 콘텐츠를 공유하는 공간입니다.</p>
         <div id="lounge-list" class="post-list-grid"></div>
       </section>
     </div>
@@ -535,19 +551,24 @@ async function fetchDogImg() {
 function renderCommunity() {
   app.innerHTML = `
     <div class="community-layout fade-in">
-      <div class="toolbar">
+      <section class="fan-hero fan-hero-compact">
+        <div class="fan-eyebrow">Fan Newsroom</div>
+        <h1>공지, 리뷰, 질문을 모아보는<br>팬 뉴스룸</h1>
+        <p>정리된 글 목록으로 빠르게 확인하고 댓글로 의견을 남기세요.</p>
+      </section>
+      <div class="toolbar fan-toolbar">
         <h2 class="page-title">팬클럽 뉴스룸</h2>
         <div class="actions">
-          <button id="write-comm-btn" class="btn btn-primary">글쓰기</button>
+          <button id="write-comm-btn" class="btn btn-primary">뉴스룸 글쓰기</button>
         </div>
       </div>
-      <div class="post-table-header">
+      <div class="post-table-header fan-card-lite">
         <span class="col-cat">분류</span>
         <span class="col-title">제목</span>
         <span class="col-author">작성자</span>
         <span class="col-meta">조회/추천</span>
       </div>
-      <div id="community-list" class="post-list-table"></div>
+      <div id="community-list" class="post-list-table fan-card"></div>
     </div>
   `;
 
@@ -586,7 +607,7 @@ function renderProfile() {
     app.innerHTML = `
       <section class="profile-section fade-in">
         <h2 class="page-title">👤 내 프로필</h2>
-        <div class="profile-card card" id="profile-card-loading">
+        <div class="profile-card card fan-card" id="profile-card-loading">
           <p class="text-sub">프로필 정보를 불러오는 중...</p>
         </div>
       </section>
@@ -596,8 +617,13 @@ function renderProfile() {
     // Logged out view
     app.innerHTML = `
       <section class="profile-section fade-in">
+          <section class="fan-hero fan-hero-compact">
+            <div class="fan-eyebrow">Fan Passport</div>
+            <h1>팬 계정으로 로그인하고<br>포인트를 쌓아보세요</h1>
+            <p>커뮤니티 글쓰기, 댓글, 게임 활동으로 팬 등급이 올라갑니다.</p>
+          </section>
           <h2 class="page-title">👤 내 프로필</h2>
-          <div class="profile-card card">
+          <div class="profile-card card fan-card">
               <h3>로그인 / 회원가입</h3>
               <div class="form-group">
                   <label for="email">이메일</label>
@@ -615,7 +641,7 @@ function renderProfile() {
                   Google로 로그인
               </button>
           </div>
-          <div class="profile-details card mt-4">
+          <div class="profile-details card fan-card mt-4">
               <h3>나의 활동</h3>
               <p class="text-sub">로그인 후 활동 기록을 볼 수 있습니다.</p>
           </div>
@@ -764,21 +790,21 @@ function renderAdmin() {
   if (isAdmin) { // Check isAdmin flag from custom claims
     app.innerHTML = `
       <section class="admin-section fade-in">
-          <h2 class="page-title">⚙️ 관리자 페이지</h2>
+          <h2 class="page-title">⚙️ 운영 센터</h2>
           <p class="text-sub">관리자 ${escapeHTML(currentUser.email || '')}님 환영합니다.</p>
           <div class="admin-dashboard">
-              <div class="admin-card card">
+              <div class="admin-card card fan-card">
                   <h3>게시글 관리</h3>
                   <p class="text-sub">여기에 게시글 목록을 불러와 삭제/공지 지정 등의 작업을 할 수 있습니다.</p>
                   <button class="btn btn-secondary full-width mt-2">게시글 목록</button>
                   <button class="btn btn-secondary full-width mt-2">신고된 글</button>
               </div>
-              <div class="admin-card card">
+              <div class="admin-card card fan-card">
                   <h3>댓글 관리</h3>
                   <p class="text-sub">여기에 댓글 목록을 불러와 삭제 등의 작업을 할 수 있습니다.</p>
                   <button class="btn btn-secondary full-width mt-2">댓글 목록</button>
               </div>
-              <div class="admin-card card">
+              <div class="admin-card card fan-card">
                   <h3>사용자 관리</h3>
                   <p class="text-sub">여기에 사용자 목록을 불러와 권한 변경 등의 작업을 할 수 있습니다.</p>
                   <button class="btn btn-secondary full-width mt-2">사용자 목록</button>
@@ -789,9 +815,9 @@ function renderAdmin() {
   } else {
     app.innerHTML = `
       <section class="admin-section fade-in">
-        <h2 class="page-title">⚙️ 관리자 페이지</h2>
+        <h2 class="page-title">⚙️ 운영 센터</h2>
         <p class="text-sub">관리자만 접근할 수 있는 페이지입니다.</p>
-        <div class="profile-card card">
+        <div class="profile-card card fan-card">
             <h3>접근 권한 없음</h3>
             <p>관리자 권한이 있는 계정으로 로그인해주세요.</p>
             <a href="#profile" class="btn btn-primary full-width mt-4">로그인 페이지로 이동</a>

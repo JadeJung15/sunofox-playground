@@ -2420,3 +2420,275 @@ main {
     grid-template-columns: 1fr;
   }
 }
+
+/* SunoFox Fan Hub 2026 Redesign Override */
+:root {
+  --fan-bg: #f2f4f8;
+  --fan-surface: #ffffff;
+  --fan-surface-2: #e9eef7;
+  --fan-text: #111827;
+  --fan-sub: #4b5563;
+  --fan-line: rgba(17, 24, 39, 0.14);
+  --fan-brand: #0a66ff;
+  --fan-brand-2: #0f8fff;
+  --fan-shadow: 0 24px 52px rgba(17, 24, 39, 0.12);
+}
+
+[data-theme='dark'] {
+  --fan-bg: #0b1220;
+  --fan-surface: #111a2b;
+  --fan-surface-2: #1a2740;
+  --fan-text: #e8eefb;
+  --fan-sub: #95a8c8;
+  --fan-line: rgba(232, 238, 251, 0.16);
+  --fan-brand: #69a1ff;
+  --fan-brand-2: #4db8ff;
+  --fan-shadow: 0 30px 60px rgba(0, 0, 0, 0.35);
+}
+
+body {
+  font-family: 'Pretendard Variable', 'SUIT Variable', 'Noto Sans KR', sans-serif;
+  color: var(--fan-text);
+  background:
+    radial-gradient(1000px 460px at 8% -12%, color-mix(in srgb, var(--fan-brand) 16%, transparent), transparent 68%),
+    radial-gradient(900px 420px at 98% 0%, color-mix(in srgb, var(--fan-brand-2) 16%, transparent), transparent 68%),
+    linear-gradient(180deg, color-mix(in srgb, var(--fan-bg) 88%, #ffffff 12%), var(--fan-bg));
+}
+
+header {
+  background: color-mix(in srgb, var(--fan-surface) 82%, transparent);
+  border-bottom: 1px solid var(--fan-line);
+  backdrop-filter: blur(14px);
+}
+
+.logo {
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.nav-tabs {
+  background: color-mix(in srgb, var(--fan-surface) 85%, transparent);
+  border: 1px solid var(--fan-line);
+}
+
+.nav-link {
+  border-radius: 999px;
+}
+
+.nav-link.active,
+.nav-link:hover {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fan-brand) 18%, transparent), color-mix(in srgb, var(--fan-brand-2) 14%, transparent));
+  border-color: color-mix(in srgb, var(--fan-brand) 34%, var(--fan-line));
+}
+
+main {
+  max-width: 1280px;
+}
+
+.fan-hero {
+  border: 1px solid var(--fan-line);
+  border-radius: 28px;
+  padding: clamp(2rem, 4vw, 4rem);
+  background:
+    linear-gradient(145deg, color-mix(in srgb, var(--fan-surface) 96%, transparent), color-mix(in srgb, var(--fan-surface-2) 88%, transparent)),
+    radial-gradient(1200px 360px at 50% -40%, color-mix(in srgb, var(--fan-brand) 20%, transparent), transparent 70%);
+  box-shadow: var(--fan-shadow);
+}
+
+.fan-hero-compact {
+  margin-bottom: 1rem;
+  border-radius: 24px;
+}
+
+.fan-eyebrow {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fan-sub);
+}
+
+.fan-hero h1 {
+  margin: 0.55rem 0 0.8rem;
+  font-size: clamp(2rem, 5vw, 4.2rem);
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+}
+
+.fan-hero p {
+  margin: 0;
+  max-width: 62ch;
+  color: var(--fan-sub);
+}
+
+.fan-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.fan-kpi {
+  border: 1px solid var(--fan-line);
+  border-radius: 16px;
+  padding: 0.85rem 0.95rem;
+  background: color-mix(in srgb, var(--fan-surface) 86%, transparent);
+}
+
+.fan-kpi span {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--fan-sub);
+  margin-bottom: 0.18rem;
+}
+
+.fan-layout-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+
+.fan-card {
+  border: 1px solid var(--fan-line);
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--fan-surface) 97%, transparent);
+  box-shadow: var(--fan-shadow);
+}
+
+.fan-card-lite {
+  border: 1px solid var(--fan-line);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--fan-surface) 94%, transparent);
+}
+
+.fan-single .fan-card,
+.fan-card.advice-card,
+.fan-card.stream-card,
+.fan-card.profile-card,
+.fan-card.admin-card,
+.fan-card.content,
+.fan-card.sidebar {
+  padding: 1rem;
+}
+
+.fan-quick-list {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.fan-quick {
+  border: 1px solid var(--fan-line);
+  border-radius: 14px;
+  padding: 0.8rem 0.9rem;
+  background: color-mix(in srgb, var(--fan-surface-2) 70%, transparent);
+  display: grid;
+  gap: 0.2rem;
+}
+
+.fan-quick strong {
+  font-size: 0.95rem;
+}
+
+.fan-quick span {
+  color: var(--fan-sub);
+  font-size: 0.84rem;
+}
+
+.fan-toolbar {
+  margin: 0.9rem 0;
+  padding: 0.4rem;
+  border-radius: 16px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--fan-brand), var(--fan-brand-2));
+  border: 0;
+  color: #ffffff;
+}
+
+.btn-outline {
+  border-color: var(--fan-line);
+  color: var(--fan-text);
+}
+
+.link-btn {
+  border: 1px solid var(--fan-line);
+  background: color-mix(in srgb, var(--fan-surface) 97%, transparent);
+  color: var(--fan-text);
+}
+
+.link-btn:hover {
+  border-color: color-mix(in srgb, var(--fan-brand) 42%, var(--fan-line));
+}
+
+/* 게임 섹션 라이트/다크 공통 표준화 (검정 배경 강제 방지) */
+#game-container,
+#game-container .game-area,
+#game-container .reaction-area,
+#game-container .memory-grid,
+#game-container .rhythm-stage,
+#game-container .puzzle-board,
+#game-container .game-controls,
+#test-container,
+#test-container .game-area {
+  background: var(--fan-surface) !important;
+  color: var(--fan-text) !important;
+  border-color: var(--fan-line) !important;
+}
+
+[data-theme='dark'] #game-container,
+[data-theme='dark'] #game-container .game-area,
+[data-theme='dark'] #game-container .reaction-area,
+[data-theme='dark'] #game-container .memory-grid,
+[data-theme='dark'] #game-container .rhythm-stage,
+[data-theme='dark'] #game-container .puzzle-board,
+[data-theme='dark'] #game-container .game-controls,
+[data-theme='dark'] #test-container,
+[data-theme='dark'] #test-container .game-area {
+  background: var(--fan-surface) !important;
+}
+
+.game-tabs .tab-btn.active {
+  background: linear-gradient(135deg, var(--fan-brand), var(--fan-brand-2));
+  color: #ffffff;
+  border-color: transparent;
+}
+
+.post-row,
+.post-card,
+.profile-card,
+.admin-card,
+.panel,
+.card,
+.stream-card,
+.sidebar,
+.content,
+.post-list-table {
+  border-color: var(--fan-line);
+}
+
+@media (max-width: 1040px) {
+  .fan-layout-grid,
+  .lounge-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .fan-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .fan-hero {
+    border-radius: 20px;
+    padding: 1.2rem;
+  }
+
+  .fan-hero h1 {
+    font-size: clamp(1.6rem, 8vw, 2.2rem);
+  }
+
+  .hero-actions {
+    grid-template-columns: 1fr;
+  }
+}
