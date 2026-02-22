@@ -1984,6 +1984,93 @@ main {
   transition: width 0.25s ease;
 }
 
+.rhythm-lanes {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  align-items: stretch;
+  min-height: 300px;
+}
+
+.rhythm-lane {
+  position: relative;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--input-bg) 72%, transparent);
+  overflow: hidden;
+}
+
+.rhythm-hitline {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 84%;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--accent-color);
+}
+
+.lane-note {
+  position: absolute;
+  height: 16px;
+  border-radius: 10px;
+  background: linear-gradient(120deg, var(--accent-color), var(--accent-2));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--accent-color) 42%, transparent);
+}
+
+.p2048-grid {
+  width: min(340px, 92vw);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.45rem;
+  margin: 0.8rem auto 0;
+  background: color-mix(in srgb, var(--input-bg) 64%, transparent);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  padding: 0.55rem;
+}
+
+.p2048-cell {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+}
+
+.p2048-0 { color: transparent; }
+.p2048-2 { background: #e4efff; color: #2d3f60; }
+.p2048-4 { background: #d4e8ff; color: #203657; }
+.p2048-8 { background: #8dd3ff; color: #12253d; }
+.p2048-16 { background: #6ac6ff; color: #102039; }
+.p2048-32 { background: #52b8ff; color: #0d1a30; }
+.p2048-64 { background: #2da6f2; color: #f3fbff; }
+.p2048-128 { background: #1f8fda; color: #f3fbff; font-size: 1rem; }
+.p2048-256, .p2048-512, .p2048-1024, .p2048-2048 {
+  background: linear-gradient(120deg, #0c8e74, #24c89f);
+  color: #f5fffc;
+  font-size: 0.95rem;
+}
+
+.blackjack-area {
+  display: grid;
+  gap: 0.5rem;
+  width: min(620px, 100%);
+  text-align: left;
+  margin: 0 auto;
+}
+
+.reflex-duel-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 190px;
+}
+
 .tab-btn {
   border: 0;
   border-radius: 999px;
