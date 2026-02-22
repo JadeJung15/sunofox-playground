@@ -1,5 +1,5 @@
 // js/app.js
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
@@ -140,11 +140,59 @@ function renderProfile() {
 
             <details class="profile-details"><summary>🏪 이모지 교환소 (아이템 소모)</summary><div class="shop-wrapper"><p class="text-sub" style="margin-bottom:1rem; font-size:0.8rem; color:#ff4757;">⚠️ 주의: 교환 시 보유 아이템이 소모되어 랭킹 점수가 차감됩니다.</p>${Object.entries(EMOJI_SHOP).map(([catName, emojis]) => `<h4 style="margin-top:1rem; font-size:0.85rem; border-bottom:1px solid var(--border-color); padding-bottom:5px;">${catName}</h4><div class="emoji-selector" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap:0.5rem; margin-top:0.8rem;">${Object.entries(emojis).map(([e, price]) => {const isOwn = unlocked.includes(e); return `<button class="emoji-btn ${isOwn ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}"><span class="e-icon">${e}</span>${!isOwn ? `<span class="e-price">${price}</span>` : ''}</button>`;}).join('')}</div>`).join('')}</div></details>
             
-            <details class="profile-details"><summary>⚙️ 계정 설정</summary><div class="profile-settings"><div class="setting-item"><label style="font-size:0.85rem; font-weight:bold;">닉네임 변경 (월 1회)</label><div class="input-row"><input type="text" id="nickname-input" placeholder="새 닉네임" maxlength="10"><button id="nickname-save" class="btn-primary" style="width: 80px;">변경</button></div><p id="nickname-msg" style="margin-top:0.5rem; font-size:0.8rem;"></p></div><button id="logout-btn" class="btn-secondary" style="margin-top:2rem; color:#ff4757; border-color:#ff4757;">로그아웃</button></div></details>
-        </div>
-    `;
-    updateUI();
-}
+                        <details class="profile-details">
+                            <summary>⚙️ 계정 설정</summary>
+                            <div class="profile-settings">
+                                <div class="setting-item">
+                                    <label style="font-size:0.85rem; font-weight:bold;">닉네임 변경 (월 1회)</label>
+                                    <div class="input-row">
+                                        <input type="text" id="nickname-input" placeholder="새 닉네임" maxlength="10">
+                                        <button id="nickname-save" class="btn-primary" style="width: 80px;">변경</button>
+                                    </div>
+                                    <p id="nickname-msg" style="margin-top:0.5rem; font-size:0.8rem;"></p>
+                                </div>
+                                <button id="logout-btn" class="btn-secondary" style="margin-top:2rem; color:#ff4757; border-color:#ff4757;">로그아웃</button>
+                            </div>
+                        </details>
+            
+                        ${UserState.isAdmin ? `
+                        <details class="profile-details">
+                            <summary>🛠️ 관리자 전용 도구</summary>
+                            <div class="admin-panel" style="padding:1rem 0;">
+                                <label style="font-size:0.8rem; font-weight:bold;">포인트 강제 충전</label>
+                                <div class="input-row" style="flex-direction:column; gap:0.5rem; margin-top:0.5rem;">
+                                    <input type="text" id="admin-target-uid" placeholder="대상 유저 UID (비우면 본인)" style="font-size:0.8rem;">
+                                    <input type="number" id="admin-charge-amount" placeholder="충전할 포인트 양" value="1000">
+                                    <button id="admin-charge-btn" class="btn-primary" style="background:#2f3542;">즉시 충전</button>
+                                </div>
+                                <p style="font-size:0.7rem; color:var(--text-sub); margin-top:1rem;">본인 UID: ${UserState.user.uid}</p>
+                            </div>
+                        </details>
+                        ` : ''}
+                    </div>
+                `;
+                updateUI();
+            
+                // 관리자 버튼 바인딩
+                if (UserState.isAdmin) {
+                    const chargeBtn = document.getElementById('admin-charge-btn');
+                    if (chargeBtn) {
+                        chargeBtn.onclick = async () => {
+                            const targetUid = document.getElementById('admin-target-uid').value.trim() || UserState.user.uid;
+                            const amount = parseInt(document.getElementById('admin-charge-amount').value);
+                            if (isNaN(amount)) return alert("금액을 확인하세요.");
+                            chargeBtn.disabled = true;
+                            chargeBtn.textContent = "충전 중...";
+                            const success = await chargeUserPoints(targetUid, amount);
+                            if (success) { alert(`${amount}P 충전 완료!`); renderProfile(); }
+                            else { alert("충전 실패. UID를 확인하세요."); }
+                            chargeBtn.disabled = false;
+                            chargeBtn.textContent = "즉시 충전";
+                        };
+                    }
+                }
+            }
+            
 
 function renderArcade() {
     if (!UserState.user) { renderProfile(); return; }

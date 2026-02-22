@@ -204,6 +204,27 @@ async function changeNickname() {
     } catch (e) { console.error(e); }
 }
 
+export async function chargeUserPoints(targetUid, amount) {
+    if (!UserState.isAdmin) {
+        alert("관리자 권한이 없습니다.");
+        return false;
+    }
+    try {
+        const userRef = doc(db, "users", targetUid);
+        await updateDoc(userRef, { points: increment(amount) });
+        
+        // 만약 대상이 본인이면 로컬 데이터도 갱신
+        if (targetUid === UserState.user.uid) {
+            UserState.data.points = (UserState.data.points || 0) + amount;
+            updateUI();
+        }
+        return true;
+    } catch (e) {
+        console.error("Point charge failed:", e);
+        return false;
+    }
+}
+
 export async function addPoints(amount) {
     if (!UserState.user) return false;
     const userRef = doc(db, "users", UserState.user.uid);
