@@ -3,46 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>테스트 허브 | 성격·얼굴·그외·사주</title>
-    <meta name="description" content="여러가지 심리/재미 테스트를 한 곳에서 즐기는 테스트 허브. 성격, 얼굴, 그외, 사주 테스트를 제공합니다.">
-    <meta name="theme-color" content="#0b0c10">
-    <link rel="stylesheet" href="css/style.css?v=20260222d">
-
+    <title>심플 테스트 - 모든 재미를 한곳에</title>
+    <meta name="description" content="성격 테스트, 얼굴 테스트, 오늘의 운세 등 다양한 재미있는 테스트를 즐겨보세요.">
+    <link rel="stylesheet" href="css/style.css">
+    <!-- 구글 애드센스 코드가 여기에 들어갑니다 -->
 </head>
 <body>
-    <a href="#home" class="skip-link">콘텐츠로 바로가기</a>
-    <div class="noise-layer" aria-hidden="true"></div>
     <header>
         <div class="nav-container">
-            <a href="#home" class="logo">Test Hub</a>
+            <a href="#home" class="logo">SimpleTest</a>
             <nav class="nav-tabs">
-                <a href="#home" class="nav-link">🏠 홈</a>
-                <a href="#personality" class="nav-link">🧠 성격</a>
-                <a href="#face" class="nav-link">🙂 얼굴</a>
-                <a href="#fun" class="nav-link">🎉 그외</a>
-                <a href="#fortune" class="nav-link">🔮 사주</a>
-                <a href="#profile" class="nav-link">👤 Account</a>
-                <a href="#admin" class="nav-link admin-only">⚙️ 관리자</a>
+                <a href="#home" class="nav-link active" data-filter="전체">🏠 전체</a>
+                <a href="#personality" class="nav-link" data-filter="성격">🧠 성격</a>
+                <a href="#face" class="nav-link" data-filter="얼굴">✨ 얼굴</a>
+                <a href="#fun" class="nav-link" data-filter="그외">🎈 그외</a>
+                <a href="#fortune" class="nav-link" data-filter="사주">🔮 사주</a>
             </nav>
             <div class="nav-right">
-                <span class="status-pill"><span class="status-dot"></span>TEST LIVE</span>
-                <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">
-                    <span class="icon">🌙</span>
-                </button>
+                <button id="theme-toggle" class="theme-toggle">🌙</button>
             </div>
         </div>
     </header>
 
     <main id="app">
-        <!-- Content will be injected here by app.js -->
-        <div style="text-align:center; padding: 2rem;">로딩중...</div>
+        <!-- 콘텐츠가 주입되는 영역 -->
     </main>
 
-    <footer style="text-align:center; padding: 2rem; color: var(--text-sub); font-size: 0.8rem;">
-        &copy; 2026 Test Hub. All rights reserved.
+    <footer class="footer">
+        <p>&copy; 2026 SimpleTest Portal. All rights reserved.</p>
+        <div class="footer-links">
+            <a href="#">개인정보처리방침</a> | <a href="#">문의하기</a>
+        </div>
     </footer>
 
-    <script type="module" src="js/firebase-init.js?v=20260222d"></script>
-    <script type="module" src="js/app.js?v=20260222d"></script>
+    <script type="module" src="js/firebase-init.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
