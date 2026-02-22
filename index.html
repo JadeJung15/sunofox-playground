@@ -20,10 +20,12 @@
                 <div class="nav-right">
                     <div id="header-profile" class="header-profile hidden" onclick="location.hash='#profile'">
                         <span id="user-emoji" class="h-emoji">👤</span>
-                        <span id="user-name" class="h-name">닉네임</span>
-                        <div class="h-points">
-                            <span class="p-icon">💰</span>
-                            <span id="user-points">0</span>
+                        <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                            <span id="user-name" class="h-name">닉네임</span>
+                            <div class="h-points">
+                                <span id="user-points">0</span>
+                                <span style="font-size: 0.65rem; opacity: 0.8;">P</span>
+                            </div>
                         </div>
                     </div>
                     <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">✨</button>

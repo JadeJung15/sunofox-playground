@@ -151,8 +151,10 @@ async function renderHome() {
                 const likes = testLikesData[t.id] || 0;
                 return `
                 <div class="test-card fade-in" onclick="location.hash='#test/${t.id}'">
-                    <div class="test-thumb" style="background-image: url('${t.thumb}')">
-                        <div class="like-badge">❤️ ${likes}</div>
+                    <div class="thumb-wrapper">
+                        <div class="test-thumb" style="background-image: url('${t.thumb}')">
+                            <div class="like-badge">❤️ ${likes}</div>
+                        </div>
                     </div>
                     <div class="test-info">
                         <span class="test-category-tag">${t.category}</span>
