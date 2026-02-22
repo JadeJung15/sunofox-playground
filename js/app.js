@@ -62,8 +62,6 @@ const routes = {
   '#games': renderArcade,
   '#arcade': renderArcade,
   '#videos': renderVideos,
-  '#tests': renderTests,
-  '#lounge': renderLounge,
   '#community': renderCommunity,
   '#profile': renderProfile,
   '#admin': renderAdmin
@@ -71,7 +69,7 @@ const routes = {
 
 function router() {
   const hash = window.location.hash || '#home';
-  if ((currentRoute === '#games' || currentRoute === '#arcade' || currentRoute === '#tests') && hash !== currentRoute && activeGame?.destroy) {
+  if ((currentRoute === '#games' || currentRoute === '#arcade') && hash !== currentRoute && activeGame?.destroy) {
     activeGame.destroy();
     activeGame = null;
   }
@@ -173,7 +171,7 @@ function renderHome() {
       <p>시청, 채팅, 게임, 후기 작성을 끊김 없이 이어주는 실시간 팬 플랫폼.</p>
       <div class="pulse-cta">
         <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">지금 시청</a>
-        <a class="btn btn-outline" href="#lounge">팬들과 대화</a>
+        <a class="btn btn-outline" href="#community">팬들과 대화</a>
       </div>
     </section>
 
@@ -193,19 +191,19 @@ function renderHome() {
         </div>
       </article>
       <article class="pulse-panel">
-        <h3>팬 미션 보드</h3>
+        <h3>팬 트렌드 보드</h3>
         <ul class="pulse-list">
-          <li><a href="#videos">오늘 영상 1개 감상</a></li>
-          <li><a href="#arcade">아케이드 최고점 도전</a></li>
-          <li><a href="#community">뉴스룸 후기 작성</a></li>
-          <li><a href="#tests">팬 성향 테스트 공유</a></li>
+          <li><a href="#videos">이번 주 인기 업로드 모아보기</a></li>
+          <li><a href="#arcade">게임 상위권 기록 확인</a></li>
+          <li><a href="#community">팬 리뷰·질문·추천글 탐색</a></li>
+          <li><a href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널 커뮤니티 바로가기</a></li>
         </ul>
       </article>
       <article class="pulse-panel">
         <h3>추천 이동</h3>
         <div class="pulse-route">
           <a href="#videos">스트리밍</a>
-          <a href="#lounge">라운지</a>
+          <a href="#community">커뮤니티</a>
           <a href="#arcade">아케이드</a>
         </div>
       </article>
@@ -235,15 +233,17 @@ function renderHome() {
 }
 
 async function fetchAdvice() {
-    const el = document.getElementById('advice-text');
-    if (!el) return;
-    try {
-        const res = await fetch('https://api.adviceslip.com/advice');
-        const data = await res.json();
-        el.textContent = `"${data.slip.advice}"`;
-    } catch (error) {
-        el.textContent = "행복한 하루 되세요! (API 로딩 실패)";
-    }
+  const el = document.getElementById('advice-text');
+  if (!el) return;
+  const comments = [
+    '오늘도 수노폭스와 함께 좋은 리듬으로 시작해요.',
+    '짧게 웃고 길게 즐기자, 팬 허브 오픈!',
+    '좋아하는 장면은 커뮤니티에 바로 공유해 주세요.',
+    '이번 주 목표: 영상 1편 감상 + 게임 1판 클리어.',
+    '응원 한마디가 팬 허브 분위기를 바꿉니다.'
+  ];
+  const idx = Math.floor(Math.random() * comments.length);
+  el.textContent = comments[idx];
 }
 
 function renderVideos() {
@@ -275,7 +275,7 @@ function renderVideos() {
         <h3>빠른 이동</h3>
         <ul class="pulse-list">
           <li><a href="https://www.youtube.com/@sunofox/playlists" target="_blank">재생목록 정주행</a></li>
-          <li><a href="#lounge">팬 클립 공유</a></li>
+          <li><a href="#community">팬 클립 공유</a></li>
           <li><a href="#community">리뷰/요약 글 보기</a></li>
         </ul>
       </div>
@@ -284,7 +284,7 @@ function renderVideos() {
     <section class="section fade-in">
       <div class="section-head">
         <h2>최신 업로드</h2>
-        <span>YouTube 자동 동기화</span>
+        <span>YouTube 자동 동기화 · 더 많은 목록</span>
       </div>
       <div id="latest-videos" class="video-grid"></div>
     </section>
@@ -325,7 +325,7 @@ function renderArcade() {
         <p>각 게임 최고 기록을 만들고 커뮤니티에서 결과를 공유하세요.</p>
         <div class="pulse-cta">
           <a class="btn btn-outline" href="#community">기록 공유하기</a>
-          <a class="btn btn-outline" href="#lounge">전략 이야기</a>
+          <a class="btn btn-outline" href="#community">전략 이야기</a>
         </div>
       </div>
       <div class="arcade-meta pulse-panel">
@@ -555,10 +555,16 @@ function renderCommunity() {
       <div class="toolbar fan-toolbar pulse-panel">
         <h2 class="page-title">팬클럽 뉴스룸</h2>
         <div class="actions">
-          <a href="#lounge" class="btn btn-outline">Lounge</a>
-          <a href="#tests" class="btn btn-outline">Test Lab</a>
+          <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener" class="btn btn-outline">유튜브 커뮤니티</a>
           <button id="write-comm-btn" class="btn btn-primary">뉴스룸 글쓰기</button>
         </div>
+      </div>
+      <div class="section mt-4">
+        <div class="section-head">
+          <h3>유튜브 커뮤니티 게시글</h3>
+          <span>채널 커뮤니티 동기화</span>
+        </div>
+        <div id="yt-community-list" class="post-list-table pulse-panel"></div>
       </div>
       <div class="post-table-header pulse-mini">
         <span class="col-cat">분류</span>
@@ -596,6 +602,7 @@ function renderCommunity() {
   };
 
   renderList();
+  loadYouTubeCommunityPosts();
   document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', null, renderList));
 }
 
@@ -1058,7 +1065,7 @@ async function loadLatestVideos() {
     const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
     const res = await fetch(apiUrl);
     const data = await res.json();
-    const items = (data.items || []).slice(0, 6);
+    const items = (data.items || []).slice(0, 12);
     const cards = items.map((item) => {
       const title = item.title || 'Untitled';
       const link = safeExternalUrl(item.link) || CHANNEL_URL;
@@ -1079,6 +1086,42 @@ async function loadLatestVideos() {
   } catch (error) {
     console.error('Failed to load YouTube RSS:', error);
     container.innerHTML = '<div class="empty">최신 영상을 불러오지 못했습니다.</div>';
+  }
+}
+
+async function loadYouTubeCommunityPosts() {
+  const container = document.getElementById('yt-community-list');
+  if (!container) return;
+  container.innerHTML = '<div class="empty">유튜브 커뮤니티 글을 불러오는 중...</div>';
+
+  try {
+    const endpoint = `https://yt.lemnoslife.com/noKey/channel?part=community&id=${CHANNEL_ID}`;
+    const res = await fetch(endpoint);
+    const data = await res.json();
+    const posts = data?.items?.[0]?.community?.items || [];
+    const cards = posts.slice(0, 8).map((post) => {
+      const content = post?.content || '';
+      const published = post?.publishedTimeText || '';
+      const url = safeExternalUrl(post?.url || `${CHANNEL_URL}/community`) || `${CHANNEL_URL}/community`;
+      return `
+        <a class="post-row" href="${escapeHTML(url)}" target="_blank" rel="noreferrer noopener">
+          <span class="col-cat"><span class="chip micro">YouTube</span></span>
+          <span class="col-title">${escapeHTML(content || '커뮤니티 게시글')}</span>
+          <span class="col-author">수노폭스 채널</span>
+          <span class="col-meta">${escapeHTML(published || '')}</span>
+        </a>
+      `;
+    }).join('');
+
+    container.innerHTML = cards || '<div class="empty">가져올 수 있는 커뮤니티 게시글이 없습니다.</div>';
+  } catch (error) {
+    console.error('Failed to load YouTube community posts:', error);
+    container.innerHTML = `
+      <div class="empty">
+        유튜브 커뮤니티 게시글을 자동으로 불러오지 못했습니다.
+        <a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener">직접 보기</a>
+      </div>
+    `;
   }
 }
 
