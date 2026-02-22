@@ -631,9 +631,10 @@ main {
     width: 100%;
     max-width: 400px; /* Constrain width */
     height: 250px; /* Reduced height */
-    background: #111;
+    background: color-mix(in srgb, var(--bg-ink) 72%, var(--card-bg));
     overflow: hidden;
     border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
 }
 .rhythm-note { width: 40px; height: 15px; } /* Smaller notes */
 
@@ -1380,6 +1381,18 @@ main {
 [data-theme='light'] .game-container {
     background: color-mix(in srgb, #ffffff 96%, transparent);
     box-shadow: 0 18px 44px rgba(44, 72, 113, 0.14);
+}
+
+[data-theme='light'] .game-area,
+[data-theme='light'] .reaction-area,
+[data-theme='light'] .math-area {
+    background: color-mix(in srgb, #f7fbff 94%, transparent);
+    color: var(--text-color);
+}
+
+[data-theme='light'] .rhythm-area {
+    background: color-mix(in srgb, #eaf2ff 86%, transparent);
+    border-color: #bfd0ea;
 }
 
 [data-theme='light'] .memory-card .front {
