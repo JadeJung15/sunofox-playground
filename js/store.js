@@ -3,6 +3,7 @@ import { db } from './firebase-init.js'; // Import db instance from new module
 import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit, writeBatch, setDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const STORAGE_KEY_SETTINGS = 'sunofox_settings';
+const STORAGE_KEY_THEME_EXPLICIT = 'sunofox_theme_explicit';
 const STORAGE_KEY_GAMES = 'sunofox_games';
 // Removed STORAGE_KEY_POSTS and STORAGE_KEY_COMMENTS as they will be in Firestore
 
@@ -99,10 +100,22 @@ export const Store = {
   },
   // Settings
   getTheme() {
-    return localStorage.getItem(STORAGE_KEY_SETTINGS) || 'dark';
+    const saved = localStorage.getItem(STORAGE_KEY_SETTINGS);
+    const isExplicit = localStorage.getItem(STORAGE_KEY_THEME_EXPLICIT) === '1';
+    if (!saved) return 'light';
+    if (saved !== 'dark' && saved !== 'light') return 'light';
+
+    // Migrate old default-dark users who never explicitly selected a theme.
+    if (!isExplicit && saved === 'dark') {
+      localStorage.setItem(STORAGE_KEY_SETTINGS, 'light');
+      return 'light';
+    }
+    return saved;
   },
   setTheme(theme) {
-    localStorage.setItem(STORAGE_KEY_SETTINGS, theme);
+    const next = theme === 'dark' ? 'dark' : 'light';
+    localStorage.setItem(STORAGE_KEY_SETTINGS, next);
+    localStorage.setItem(STORAGE_KEY_THEME_EXPLICIT, '1');
   },
 
   // Games (Still using localStorage for now)

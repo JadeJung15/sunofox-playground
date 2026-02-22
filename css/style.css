@@ -1156,9 +1156,9 @@ main {
 
 /* Modern Game UI Improvements */
 .game-container {
-    background: #0f121a;
+    background: color-mix(in srgb, var(--card-bg) 94%, transparent);
     border: 2px solid var(--border-color);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    box-shadow: var(--shadow-md);
     position: relative;
     overflow: hidden;
 }
@@ -1180,7 +1180,7 @@ main {
 .game-title {
     margin: 0;
     font-size: 1.4rem;
-    background: linear-gradient(120deg, #fff, var(--text-sub));
+    background: linear-gradient(120deg, var(--text-color), var(--text-sub));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -1201,10 +1201,10 @@ main {
     font-weight: 800;
     font-size: 1.5rem;
     transition: all 0.1s ease;
-    border: 4px solid rgba(255,255,255,0.05);
+    border: 4px solid color-mix(in srgb, var(--border-color) 90%, transparent);
 }
-.reaction-area.waiting { background: #ff4757; box-shadow: 0 0 40px rgba(255, 71, 87, 0.3); }
-.reaction-area.ready { background: #2ed573; box-shadow: 0 0 40px rgba(46, 213, 115, 0.3); }
+.reaction-area.waiting { background: #ff4757; box-shadow: 0 0 40px rgba(255, 71, 87, 0.25); }
+.reaction-area.ready { background: #2ed573; box-shadow: 0 0 40px rgba(46, 213, 115, 0.25); }
 .reaction-area.error { background: #ffa502; }
 
 /* Memory Grid Fix */
@@ -1215,21 +1215,22 @@ main {
 .memory-card {
     border-radius: 12px;
     font-size: 2rem;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
-    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border-color);
 }
 .memory-card .front {
-    background: linear-gradient(135deg, #2c3e50, #000);
+    background: linear-gradient(135deg, color-mix(in srgb, var(--bg-ink) 88%, var(--card-bg)), var(--bg-ink));
     color: var(--accent-color);
     font-weight: bold;
 }
 
 /* Math Area Fix */
 .math-area {
-    background: rgba(255,255,255,0.03);
+    background: color-mix(in srgb, var(--input-bg) 55%, transparent);
     padding: 2rem;
     border-radius: 20px;
     width: 100%;
+    border: 1px solid var(--border-color);
 }
 .math-question {
     font-size: 2.5rem;
@@ -1266,11 +1267,11 @@ main {
 
 /* High-Quality Arcade Styling */
 .game-container {
-    background: #0a0c14;
-    border: 2px solid #1f2937;
+    background: color-mix(in srgb, var(--card-bg) 96%, transparent);
+    border: 2px solid color-mix(in srgb, var(--border-color) 92%, transparent);
     border-radius: 24px;
     padding: 2.5rem;
-    box-shadow: 0 0 40px rgba(72, 169, 255, 0.15), inset 0 0 20px rgba(0,0,0,0.5);
+    box-shadow: 0 0 40px color-mix(in srgb, var(--accent-color) 18%, transparent), inset 0 0 20px color-mix(in srgb, var(--bg-ink) 18%, transparent);
     transition: all 0.3s ease;
 }
 
@@ -1278,20 +1279,20 @@ main {
     font-size: 1.8rem;
     font-weight: 800;
     letter-spacing: -0.03em;
-    background: linear-gradient(to right, #fff, var(--accent-color));
+    background: linear-gradient(to right, var(--text-color), var(--accent-color));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
 }
 
 .game-score, .math-status, .rps-status, .maze-status, .dodge-status {
-    background: rgba(72, 169, 255, 0.1);
+    background: color-mix(in srgb, var(--accent-color) 12%, var(--card-bg));
     padding: 0.5rem 1rem;
     border-radius: 999px;
     font-family: 'Manrope', sans-serif;
     font-weight: 700;
     color: var(--accent-color);
-    border: 1px solid rgba(72, 169, 255, 0.2);
+    border: 1px solid color-mix(in srgb, var(--accent-color) 30%, var(--border-color));
 }
 
 /* Specific Game UI Polish */
@@ -1316,7 +1317,7 @@ main {
     display: grid;
     grid-template-columns: repeat(7, 40px);
     gap: 4px;
-    background: #1a1f2e;
+    background: color-mix(in srgb, var(--input-bg) 72%, transparent);
     padding: 8px;
     border-radius: 12px;
     margin: 0 auto 2rem;
@@ -1326,7 +1327,7 @@ main {
     height: 40px;
     border-radius: 4px;
 }
-.maze-cell.wall { background: #374151; }
+.maze-cell.wall { background: color-mix(in srgb, var(--bg-ink) 72%, var(--card-bg)); }
 .maze-cell.player { 
     background: var(--accent-color); 
     box-shadow: 0 0 15px var(--accent-color);
@@ -1338,8 +1339,8 @@ main {
 .dodge-area {
     width: 280px;
     height: 320px;
-    background: #05070a;
-    border: 2px solid #1f2937;
+    background: color-mix(in srgb, var(--bg-ink) 72%, var(--card-bg));
+    border: 2px solid var(--border-color);
     position: relative;
     overflow: hidden;
     margin: 0 auto 1.5rem;
@@ -1356,15 +1357,15 @@ main {
 .dodge-obstacle {
     width: 20px;
     height: 20px;
-    background: #ef4444;
+    background: var(--accent-3);
     position: absolute;
     border-radius: 50%;
-    box-shadow: 0 0 10px #ef4444;
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent-3) 70%, transparent);
 }
 
 /* Sidebar Box Improvements */
 .sidebar-box {
-    background: rgba(255,255,255,0.02);
+    background: color-mix(in srgb, var(--card-bg) 90%, transparent);
     border: 1px solid var(--border-color);
     padding: 1.2rem;
     border-radius: 18px;
@@ -1374,6 +1375,29 @@ main {
 }
 .dog-img-container img:hover {
     transform: scale(1.05);
+}
+
+[data-theme='light'] .game-container {
+    background: color-mix(in srgb, #ffffff 96%, transparent);
+    box-shadow: 0 18px 44px rgba(44, 72, 113, 0.14);
+}
+
+[data-theme='light'] .memory-card .front {
+    background: linear-gradient(135deg, #f8fbff, #e7eefb);
+    color: var(--accent-color);
+}
+
+[data-theme='light'] .maze-grid {
+    background: #e9f1ff;
+}
+
+[data-theme='light'] .maze-cell.wall {
+    background: #90a2be;
+}
+
+[data-theme='light'] .dodge-area {
+    background: #f4f8ff;
+    border-color: #c2d2ea;
 }
 
 /* Pulse Animation for hit */
