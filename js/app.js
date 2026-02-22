@@ -85,8 +85,8 @@ async function handleLike(testId) {
         
         sessionStorage.setItem(`liked_${testId}`, "true");
         testLikesData[testId] = (testLikesData[testId] || 0) + 1;
-        await addPoints(10); // 보너스 포인트 (10P로 상향)
-        alert("좋아요가 반영되었습니다! (+10P)");
+        await addPoints(5); // 보너스 포인트 (5P로 수정)
+        alert("좋아요가 반영되었습니다! (+5P)");
         
         // UI 즉시 업데이트 (현재 결과 화면인 경우)
         const likeCounter = document.getElementById(`like-count-${testId}`);
@@ -229,7 +229,7 @@ function renderGuide() {
     app.innerHTML = `
         <div class="card guide-container fade-in">
             <h2 style="text-align:center; margin-bottom:2rem;">📜 이용 가이드</h2>
-            <section class="guide-section"><h3>1. 포인트(P) 획득</h3><ul class="guide-list"><li>테스트 완료: +10P (부스터 시 20P)</li><li>링크 공유: +30P</li><li>좋아요 클릭: +10P</li></ul></section>
+            <section class="guide-section"><h3>1. 포인트(P) 획득</h3><ul class="guide-list"><li>테스트 완료: +10P (부스터 시 20P)</li><li>링크 공유: +30P</li><li>좋아요 클릭: +5P</li></ul></section>
             <section class="guide-section"><h3>2. 티어 안내</h3><table class="guide-table"><thead><tr><th>티어</th><th>점수</th></tr></thead><tbody><tr><td>ROOKIE</td><td>0~</td></tr><tr><td>BRONZE</td><td>1,000~</td></tr><tr><td>SILVER</td><td>5,000~</td></tr><tr><td>GOLD</td><td>15,000~</td></tr><tr><td>DIAMOND</td><td>100,000~</td></tr></tbody></table></section>
         </div>
     `;
