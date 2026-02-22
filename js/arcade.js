@@ -10,7 +10,10 @@ export function initArcade() {
 
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button') || e.target;
-        if (target.id === 'gacha-btn') await playGacha();
+        if (target.id === 'gacha-btn') await playGacha(1, 100);
+        if (target.id === 'gacha-5-btn') await playGacha(5, 500);
+        if (target.id === 'gacha-10-btn') await playGacha(10, 950);
+        
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'updown-submit') await playUpDown();
         if (target.id === 'alchemy-btn') await playAlchemy();
@@ -24,32 +27,61 @@ export function initArcade() {
     });
 }
 
-// ... 기존 게임 로직들 생략 (유지됨) ...
-async function playGacha() {
+async function playGacha(count, cost) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
-    const cost = 100;
+    
     if (await usePoints(cost)) {
         const itemNames = Object.keys(ITEM_VALUES);
         const weights = [40, 20, 15, 10, 5, 8, 2];
-        const drawnItem = getRandomItem(itemNames, weights);
-        const itemScore = ITEM_VALUES[drawnItem];
+        
+        const drawnItems = [];
+        let totalAddedScore = 0;
+
+        for (let i = 0; i < count; i++) {
+            const item = getRandomItem(itemNames, weights);
+            drawnItems.push(item);
+            totalAddedScore += ITEM_VALUES[item];
+        }
+
         try {
             const userRef = doc(db, "users", UserState.user.uid);
-            await updateDoc(userRef, { inventory: arrayUnion(drawnItem), totalScore: increment(itemScore) });
-            UserState.data.inventory.push(drawnItem);
-            UserState.data.totalScore = (UserState.data.totalScore || 0) + itemScore;
+            await updateDoc(userRef, {
+                inventory: UserState.data.inventory ? arrayUnion(...drawnItems) : drawnItems,
+                totalScore: increment(totalAddedScore)
+            });
+
+            // 로컬 상태 갱신
+            UserState.data.inventory = [...(UserState.data.inventory || []), ...drawnItems];
+            UserState.data.totalScore = (UserState.data.totalScore || 0) + totalAddedScore;
+
             const resultEl = document.getElementById('gacha-result');
-            if (resultEl) resultEl.innerHTML = `<strong>[${drawnItem}]</strong> 획득!<br><small>+${itemScore}점</small>`;
+            if (resultEl) {
+                if (count === 1) {
+                    resultEl.innerHTML = `<strong>[${drawnItems[0]}]</strong> 획득!<br><small>+${totalAddedScore}점</small>`;
+                } else {
+                    const summary = drawnItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                    const resultText = Object.entries(summary).map(([name, num]) => `${name} x${num}`).join('<br>');
+                    resultEl.innerHTML = `<div style="font-size:0.85rem; line-height:1.4;"><strong>총 ${count}회 뽑기 결과:</strong><br>${resultText}<br><span style="color:var(--accent-color); font-weight:800;">총 +${totalAddedScore}점</span></div>`;
+                }
+            }
             updateUI();
-        } catch (e) { alert("저장 실패"); }
+        } catch (e) {
+            console.error(e);
+            alert("저장 중 오류가 발생했습니다.");
+        }
     }
 }
+
 function getRandomItem(items, weights) {
     const totalWeight = weights.reduce((a, b) => a + b, 0);
     let random = Math.random() * totalWeight;
-    for (let i = 0; i < items.length; i++) { if (random < weights[i]) return items[i]; random -= weights[i]; }
+    for (let i = 0; i < items.length; i++) {
+        if (random < weights[i]) return items[i];
+        random -= weights[i];
+    }
     return items[0];
 }
+
 async function playClickGame() {
     const btn = document.getElementById('click-game-btn');
     if (!btn || btn.disabled) return;
@@ -58,6 +90,7 @@ async function playClickGame() {
     btn.textContent = "채굴 중...";
     setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "포인트 채굴"; }, 1000);
 }
+
 let upDownAnswer = Math.floor(Math.random() * 50) + 1;
 async function playUpDown() {
     const input = document.getElementById('updown-input');
@@ -72,6 +105,7 @@ async function playUpDown() {
         input.value = "";
     } else { msg.textContent = guess < upDownAnswer ? "UP!" : "DOWN!"; }
 }
+
 async function playAlchemy() {
     if (!UserState.user) return;
     const costPoints = 500;
@@ -97,6 +131,7 @@ async function playAlchemy() {
         } catch (e) { alert("연금술 실패"); }
     }
 }
+
 async function playBettingGame(type, choice) {
     const amountInput = document.getElementById('bet-amount');
     const msgEl = document.getElementById('bet-result-msg');
@@ -122,54 +157,31 @@ async function playBettingGame(type, choice) {
     }
 }
 
-// =================================================================
-// 🎫 복권(Lottery) 로직 추가
-// =================================================================
-
 async function playLottery() {
     if (!UserState.user) return alert("로그인이 필요합니다.");
     const cost = 500;
     const resultEl = document.getElementById('lotto-result');
-
     if (!confirm(`복권 1장을 ${cost}P에 구매하시겠습니까?\n대박 당첨의 기회!`)) return;
-
     if (await usePoints(cost)) {
         resultEl.innerHTML = `<div class="lotto-scratcher">긁는 중... ✨</div>`;
-        
         setTimeout(async () => {
-            const rand = Math.random() * 1000; // 0~999
-            let rewardMsg = "";
-            let rewardType = "none"; // points or item
-
-            if (rand < 1) { // 0.1% 대박 1등
-                const winPoints = 30000;
-                await addPoints(winPoints);
-                rewardMsg = `🎊 1등 당첨!! ${winPoints}P 획득!`;
-                rewardType = "win";
-            } else if (rand < 10) { // 1% 2등
-                const winItem = '💎 다이아몬드';
-                const itemScore = ITEM_VALUES[winItem];
-                const userRef = doc(db, "users", UserState.user.uid);
-                await updateDoc(userRef, { inventory: arrayUnion(winItem), totalScore: increment(itemScore) });
-                UserState.data.inventory.push(winItem);
-                UserState.data.totalScore += itemScore;
-                rewardMsg = `💎 2등 당첨! [${winItem}] 획득!`;
-                rewardType = "win";
-            } else if (rand < 100) { // 10% 3등
-                const winPoints = 1500;
-                await addPoints(winPoints);
-                rewardMsg = `✨ 3등 당첨! ${winPoints}P 획득!`;
-                rewardType = "win";
-            } else if (rand < 300) { // 20% 4등
-                const winPoints = 500; // 본전
-                await addPoints(winPoints);
-                rewardMsg = `🍀 4등! ${winPoints}P (본전!)`;
-                rewardType = "even";
-            } else {
-                rewardMsg = `💀 아쉽네요.. 다음 기회에!`;
-                rewardType = "lose";
-            }
-
+            const rand = Math.random() * 1000;
+            let rewardMsg = ""; let rewardType = "none";
+            if (rand < 1) {
+                const winPoints = 30000; await addPoints(winPoints);
+                rewardMsg = `🎊 1등 당첨!! ${winPoints}P 획득!`; rewardType = "win";
+            } else if (rand < 10) {
+                const winItem = '💎 다이아몬드'; const itemScore = ITEM_VALUES[winItem];
+                await updateDoc(doc(db, "users", UserState.user.uid), { inventory: arrayUnion(winItem), totalScore: increment(itemScore) });
+                UserState.data.inventory.push(winItem); UserState.data.totalScore += itemScore;
+                rewardMsg = `💎 2등 당첨! [${winItem}] 획득!`; rewardType = "win";
+            } else if (rand < 100) {
+                const winPoints = 1500; await addPoints(winPoints);
+                rewardMsg = `✨ 3등 당첨! ${winPoints}P 획득!`; rewardType = "win";
+            } else if (rand < 300) {
+                const winPoints = 500; await addPoints(winPoints);
+                rewardMsg = `🍀 4등! ${winPoints}P (본전!)`; rewardType = "even";
+            } else { rewardMsg = `💀 아쉽네요.. 다음 기회에!`; rewardType = "lose"; }
             resultEl.innerHTML = `<div class="lotto-final ${rewardType}">${rewardMsg}</div>`;
             updateUI();
         }, 1500);
