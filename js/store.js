@@ -1,5 +1,5 @@
 // js/store.js
-import { db } from '../index.html'; // Import db instance from index.html
+import { db } from './firebase-init.js'; // Import db instance from new module
 import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const STORAGE_KEY_SETTINGS = 'sunofox_settings';
@@ -23,13 +23,6 @@ const initialGameRecords = {
   memory: null,   // turns (lower is better)
   rhythm: 0,      // score (higher is better)
   puzzle: null,   // seconds (lower is better)
-  math: 0,        // score (higher is better)
-  rps: 0,         // win streak (higher is better)
-  number: 0,      // max length (higher is better)
-  typing: 0,      // wpm (higher is better)
-  reflex: 0,      // score (higher is better)
-  maze: 0,        // score (higher is better)
-  dodge: 0,       // score (higher is better)
 };
 
 export const Store = {
@@ -89,7 +82,7 @@ export const Store = {
             await addDoc(postsCol, p);
         }
         const seededSnapshot = await getDocs(q);
-        posts = seededSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        posts = seededSnapshot.docs.map(doc => ({ id: seededSnapshot.docs[i].id, ...p })); // Fix: Map with actual doc IDs after seeding
     }
 
     return posts;
@@ -112,7 +105,6 @@ export const Store = {
       date: new Date().toISOString(),
       likes: 0,
       views: 0,
-      // authorId: postData.authorId || 'anonymous' // Ensure authorId is saved - this is already handled by app.js
     });
     return { id: newPostRef.id, ...postData };
   },
@@ -146,7 +138,7 @@ export const Store = {
     const postRef = doc(db, "posts", id);
     await deleteDoc(postRef);
     // Optionally delete associated comments if they are not sub-collections
-    const q = query(commentsCol, where("postId", "==", id)); // Note: postId is now string
+    const q = query(commentsCol, where("postId", "==", id));
     const querySnapshot = await getDocs(q);
     const batch = db.batch(); // Use batch for multiple deletes
     querySnapshot.forEach((doc) => {
@@ -158,7 +150,7 @@ export const Store = {
 
   // Comments - Now using Firestore
   async getComments(postId) {
-    const q = query(commentsCol, where("postId", "==", postId), orderBy("date", "asc")); // postId is now string
+    const q = query(commentsCol, where("postId", "==", postId), orderBy("date", "asc"));
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   },
@@ -167,7 +159,6 @@ export const Store = {
     const newCommentRef = await addDoc(commentsCol, {
       ...commentData,
       date: new Date().toISOString(),
-      // authorId: commentData.authorId || 'anonymous' // This is handled by app.js
     });
     return { id: newCommentRef.id, ...commentData };
   },
