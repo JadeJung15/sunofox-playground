@@ -169,7 +169,23 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
   aspect-ratio: 16/10;
   background-size: cover;
   background-position: center;
+  position: relative;
 }
+.like-badge {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 50px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+}
+
+#like-btn { transition: transform 0.2s; }
+#like-btn:active { transform: scale(1.2); color: #ff4757; }
 
 .test-info { padding: 1rem; text-align: left; }
 .test-category-tag {
