@@ -99,7 +99,7 @@ async function loadUserData(user) {
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
-    const headerPoints = document.getElementById('header-points');
+    const headerProfile = document.getElementById('header-profile');
     const userPointsEls = document.querySelectorAll('#user-points');
     const userNameEls = document.querySelectorAll('#user-name');
     const userScoreEls = document.querySelectorAll('#user-total-score');
@@ -108,7 +108,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
     if (isLoggedIn && UserState.data) {
         document.getElementById('login-btn')?.classList.add('hidden');
         document.getElementById('user-profile')?.classList.remove('hidden');
-        if (headerPoints) headerPoints.classList.remove('hidden');
+        if (headerProfile) headerProfile.classList.remove('hidden');
         
         const tier = getTier(UserState.data.totalScore || 0);
         
@@ -123,7 +123,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
     } else {
         document.getElementById('login-btn')?.classList.remove('hidden');
         document.getElementById('user-profile')?.classList.add('hidden');
-        if (headerPoints) headerPoints.classList.add('hidden');
+        if (headerProfile) headerProfile.classList.add('hidden');
     }
 }
 

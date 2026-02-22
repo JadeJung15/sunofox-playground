@@ -26,9 +26,13 @@
                 <a href="#profile" class="nav-link" data-filter="프로필">프로필</a>
             </nav>
             <div class="nav-right">
-                <div id="header-points" class="header-points hidden">
-                    <span class="p-icon">💰</span>
-                    <span id="user-points">0</span>P
+                <div id="header-profile" class="header-profile hidden" onclick="location.hash='#profile'">
+                    <span id="user-emoji" class="h-emoji">👤</span>
+                    <span id="user-name" class="h-name">닉네임</span>
+                    <div class="h-points">
+                        <span class="p-icon">💰</span>
+                        <span id="user-points">0</span>
+                    </div>
                 </div>
                 <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">✨</button>
             </div>
