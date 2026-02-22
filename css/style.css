@@ -885,6 +885,61 @@ main {
 .tier-platinum { color: #7fe0d8; border-color: rgba(127, 224, 216, 0.6); }
 .tier-diamond { color: #9eb7ff; border-color: rgba(158, 183, 255, 0.6); }
 
+.tier-panel {
+  position: relative;
+  overflow: hidden;
+}
+.tier-panel::before {
+  content: '';
+  position: absolute;
+  inset: -40% 50% auto -40%;
+  height: 140%;
+  opacity: 0.18;
+  transform: rotate(-6deg);
+  background: radial-gradient(circle at top left, rgba(72, 169, 255, 0.7), transparent 60%);
+  pointer-events: none;
+}
+.tier-panel::after {
+  content: '';
+  position: absolute;
+  inset: auto -30% -40% 45%;
+  height: 120%;
+  opacity: 0.18;
+  transform: rotate(8deg);
+  background: radial-gradient(circle at bottom right, rgba(56, 242, 194, 0.6), transparent 60%);
+  pointer-events: none;
+}
+
+.log-list, .leader-list {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+.log-row, .leader-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.6rem;
+  align-items: center;
+  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+  font-size: 0.85rem;
+}
+.leader-row {
+  grid-template-columns: auto 1fr auto;
+}
+.rank {
+  font-weight: 700;
+  color: var(--accent-2);
+}
+.pts {
+  font-weight: 700;
+}
+.log-plus { color: var(--accent-2); font-weight: 700; }
+.log-minus { color: var(--accent-3); font-weight: 700; }
+.log-date { color: var(--text-sub); font-size: 0.75rem; }
+
 /* Modals */
 .modal-overlay {
   position: fixed;

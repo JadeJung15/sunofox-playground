@@ -10,6 +10,7 @@ const STORAGE_KEY_GAMES = 'sunofox_games';
 const postsCol = collection(db, "posts");
 const commentsCol = collection(db, "comments");
 const usersCol = collection(db, "users");
+const pointsCol = collection(db, "points");
 
 // Initial Setup & Dummy Data (for Firestore, only if collection is empty)
 // Removed manual 'id' from initial posts to let Firestore assign them
@@ -75,6 +76,27 @@ export const Store = {
       points: increment(delta),
       tier
     });
+  },
+
+  async addPointLog({ uid, delta, reason }) {
+    await addDoc(pointsCol, {
+      uid,
+      delta,
+      reason,
+      date: new Date().toISOString()
+    });
+  },
+
+  async getPointLogs(uid, limitCount = 20) {
+    const q = query(pointsCol, where("uid", "==", uid), orderBy("date", "desc"), limit(limitCount));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  },
+
+  async getLeaderboard(limitCount = 10) {
+    const q = query(usersCol, orderBy("points", "desc"), limit(limitCount));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => d.data());
   },
   // Settings
   getTheme() {

@@ -648,37 +648,71 @@ function renderProfile() {
 
 async function loadProfileView() {
   if (!currentUser) return;
-  const profile = await Store.getUserProfile(currentUser.uid);
+  const [profile, logs, leaderboard] = await Promise.all([
+    Store.getUserProfile(currentUser.uid),
+    Store.getPointLogs(currentUser.uid, 12),
+    Store.getLeaderboard(8)
+  ]);
   const points = profile?.points || 0;
   const tier = computeTier(points);
   const nextTier = TIERS.find(t => t.min > points);
   const progressText = nextTier ? `${nextTier.min - points}점 더 모으면 ${nextTier.label}` : '최고 등급입니다';
 
+  const logHtml = logs.length
+    ? logs.map(l => `
+        <div class="log-row">
+          <span>${formatReason(l.reason)}</span>
+          <span class="${l.delta >= 0 ? 'log-plus' : 'log-minus'}">${l.delta >= 0 ? '+' : ''}${l.delta}P</span>
+          <span class="log-date">${new Date(l.date).toLocaleDateString()}</span>
+        </div>
+      `).join('')
+    : '<div class="empty">포인트 기록이 없습니다.</div>';
+
+  const leaderboardHtml = leaderboard.length
+    ? leaderboard.map((u, idx) => `
+        <div class="leader-row">
+          <span class="rank">#${idx + 1}</span>
+          <span class="name">${u.displayName || u.uid?.slice(0, 6) || '팬'}</span>
+          <span class="pts">${u.points || 0}P</span>
+        </div>
+      `).join('')
+    : '<div class="empty">랭킹 데이터가 없습니다.</div>';
+
   document.getElementById('profile-card-loading').innerHTML = `
-    <h3>환영합니다, ${getDisplayName()}!</h3>
-    <p>UID: ${currentUser.uid}</p>
-    ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
-    <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
-    <div class="mt-2">
-      <span class="tier-badge ${tier.className}">${tier.label}</span>
-    </div>
-    <div class="stat-grid mt-4">
-      <div class="stat-card">
-        <span class="stat-label">포인트</span>
-        <strong>${points} P</strong>
+    <div class="tier-panel">
+      <h3>환영합니다, ${getDisplayName()}!</h3>
+      <p>UID: ${currentUser.uid}</p>
+      ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
+      <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
+      <div class="mt-2">
+        <span class="tier-badge ${tier.className}">${tier.label}</span>
       </div>
-      <div class="stat-card">
-        <span class="stat-label">등급</span>
-        <strong>${tier.label}</strong>
-      </div>
-      <div class="stat-card">
-        <span class="stat-label">다음 등급</span>
-        <strong>${progressText}</strong>
+      <div class="stat-grid mt-4">
+        <div class="stat-card">
+          <span class="stat-label">포인트</span>
+          <strong>${points} P</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">등급</span>
+          <strong>${tier.label}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">다음 등급</span>
+          <strong>${progressText}</strong>
+        </div>
       </div>
     </div>
     <div class="card mt-4">
       <h4>포인트 규칙</h4>
       <p class="text-sub">게시글 +${POINTS.post} · 댓글 +${POINTS.comment} · 좋아요 +${POINTS.like} · 출석 +${POINTS.dailyLogin}</p>
+    </div>
+    <div class="card mt-4">
+      <h4>포인트 히스토리</h4>
+      <div class="log-list">${logHtml}</div>
+    </div>
+    <div class="card mt-4">
+      <h4>팬클럽 리더보드</h4>
+      <div class="leader-list">${leaderboardHtml}</div>
     </div>
     <div class="mt-4">
       <label for="nickname-input">닉네임</label>
@@ -802,7 +836,7 @@ async function openWriteModal(type, prefill = {}, refreshCallback = null) {
     if (!title || !content || !author) return alert('모든 항목을 입력해주세요.');
 
     await Store.addPost({ type, title, content, author, category, authorId: currentUser.uid });
-    await awardPoints(POINTS.post);
+    await awardPoints(POINTS.post, 'post');
     close();
     if (refreshCallback) refreshCallback();
     else router(); // Re-render current view to show new post
@@ -877,7 +911,7 @@ async function openPostModal(id) { // Added async
     if (likeBtn) likeBtn.addEventListener('click', async () => {
        const newLikes = await Store.likePost(id);
        currentPost.likes = newLikes; // update local ref
-       await awardPoints(POINTS.like);
+       await awardPoints(POINTS.like, 'like');
        renderModalContent(currentPost); // re-render to update like count
     });
 
@@ -938,7 +972,7 @@ async function openPostModal(id) { // Added async
             if (!author || !content) return;
             
             await Store.addComment({ postId: id, author, content, authorId: currentUser.uid }); // Changed parseInt(id) to id
-            await awardPoints(POINTS.comment);
+            await awardPoints(POINTS.comment, 'comment');
             contentInput.value = '';
             renderModalContent(currentPost);
         });
@@ -1044,13 +1078,16 @@ function getDisplayName() {
   return currentUser.displayName || currentUser.email?.split('@')[0] || '팬';
 }
 
-async function awardPoints(delta) {
+async function awardPoints(delta, reason = '') {
   if (!currentUser || !delta) return;
   const profile = await Store.getUserProfile(currentUser.uid);
   const currentPoints = profile?.points || 0;
   const newPoints = currentPoints + delta;
   const tier = computeTier(newPoints);
   await Store.addPoints(currentUser.uid, delta, tier.name);
+  if (reason) {
+    await Store.addPointLog({ uid: currentUser.uid, delta, reason });
+  }
 }
 
 function computeTier(points) {
@@ -1068,6 +1105,16 @@ async function awardDailyLoginPoints() {
   if (!profile) return;
   if (profile.lastLoginDate !== today) {
     await Store.updateUserProfile(currentUser.uid, { lastLoginDate: today });
-    await awardPoints(POINTS.dailyLogin);
+    await awardPoints(POINTS.dailyLogin, 'daily_login');
+  }
+}
+
+function formatReason(reason) {
+  switch (reason) {
+    case 'post': return '게시글 작성';
+    case 'comment': return '댓글 작성';
+    case 'like': return '좋아요';
+    case 'daily_login': return '출석 보너스';
+    default: return '포인트 적립';
   }
 }
