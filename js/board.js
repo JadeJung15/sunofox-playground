@@ -86,21 +86,22 @@ async function loadPosts(container) {
 
         container.innerHTML = snap.docs.map(docSnap => {
             const data = docSnap.data();
-            const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString() : "방금 전";
-            // Admin can delete any post
+            const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
             const canDelete = UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin);
             
             return `
                 <div class="post-item ${data.isPremium ? 'premium-post' : ''} fade-in">
                     <div class="post-header">
                         <div class="post-author-info">
-                            <span class="author-emoji">${data.authorEmoji || '👤'}</span>
-                            <span class="post-author" style="color:${data.authorColor || '#333'}">${data.author}</span>
+                            <div class="author-emoji-circle">${data.authorEmoji || '👤'}</div>
+                            <span class="post-author" style="color:${data.authorColor || 'var(--text-main)'}">${data.author}</span>
                         </div>
                         <span class="post-date">${date}</span>
                     </div>
                     <div class="post-content">${data.content}</div>
-                    ${canDelete ? `<button class="btn-delete" data-id="${docSnap.id}">삭제</button>` : ''}
+                    <div class="post-footer">
+                        ${canDelete ? `<button class="btn-delete" data-id="${docSnap.id}">삭제</button>` : ''}
+                    </div>
                 </div>
             `;
         }).join('');
