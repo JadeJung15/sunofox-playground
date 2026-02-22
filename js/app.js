@@ -167,65 +167,66 @@ function renderHome() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="fan-hero fade-in">
-      <div class="fan-eyebrow">SunoFox Fan Streaming Hub</div>
-      <h1>수노폭스 팬들이<br>실시간으로 모이는 공간</h1>
-      <p>영상 시청, 게임 챌린지, 팬 토론을 한 흐름으로 연결한 커뮤니티 허브입니다.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 바로가기</a>
-        <a class="btn btn-outline" href="#community">팬 대화 시작</a>
-      </div>
-      <div class="fan-kpi-grid">
-        <div class="fan-kpi"><span>오늘의 미션</span><strong>영상 1개 + 게임 1판</strong></div>
-        <div class="fan-kpi"><span>핫 토픽</span><strong>#신곡반응 #블랙잭</strong></div>
-        <div class="fan-kpi"><span>권장 루트</span><strong>영상 → 라운지 → 챌린지</strong></div>
+    <section class="pulse-hero fade-in">
+      <div class="pulse-mark">SunoFox Fan Signal</div>
+      <h1>팬들과 바로 연결되는<br>수노폭스 소통 허브</h1>
+      <p>시청, 채팅, 게임, 후기 작성을 끊김 없이 이어주는 실시간 팬 플랫폼.</p>
+      <div class="pulse-cta">
+        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">지금 시청</a>
+        <a class="btn btn-outline" href="#lounge">팬들과 대화</a>
       </div>
     </section>
 
-    <section class="section fade-in">
-      <div class="fan-layout-grid">
-        <article class="fan-card">
-          <div class="section-head">
-            <h2>지금 재생 중</h2>
-            <span>팬 추천 플레이리스트</span>
-          </div>
-          <div class="embed">
-            <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-          </div>
-        </article>
-        <article class="fan-card">
-          <div class="section-head">
-            <h2>팬 액션 보드</h2>
-            <span>원클릭 이동</span>
-          </div>
-          <div class="fan-quick-list">
-            <a href="#videos" class="fan-quick clickable"><strong>영상 라운지</strong><span>최신 업로드와 하이라이트 탐색</span></a>
-            <a href="#lounge" class="fan-quick clickable"><strong>팬 토론</strong><span>자유 대화, 질문, 후기 공유</span></a>
-            <a href="#arcade" class="fan-quick clickable"><strong>게임 챌린지</strong><span>반응속도, 블랙잭, 퍼즐 도전</span></a>
-            <a href="#tests" class="fan-quick clickable"><strong>팬 성향 테스트</strong><span>결과를 커뮤니티에 바로 공유</span></a>
-          </div>
-        </article>
-      </div>
+    <section class="pulse-marquee fade-in">
+      <span>LIVE NOW</span>
+      <strong>#신곡반응 #팬챌린지 #수노폭스토론 #클립공유</strong>
     </section>
 
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>오늘의 한마디</h2>
-        <span>팬 응원 메시지</span>
-      </div>
-      <div id="advice-section" class="fan-single">
-        <div class="fan-card advice-card">
-          <p id="advice-text">로딩 중...</p>
+    <section class="pulse-grid fade-in">
+      <article class="pulse-panel pulse-panel-wide">
+        <div class="section-head">
+          <h2>메인 스트림</h2>
+          <span>대표 재생목록</span>
         </div>
+        <div class="embed">
+          <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        </div>
+      </article>
+      <article class="pulse-panel">
+        <h3>팬 미션 보드</h3>
+        <ul class="pulse-list">
+          <li><a href="#videos">오늘 영상 1개 감상</a></li>
+          <li><a href="#arcade">아케이드 최고점 도전</a></li>
+          <li><a href="#community">뉴스룸 후기 작성</a></li>
+          <li><a href="#tests">팬 성향 테스트 공유</a></li>
+        </ul>
+      </article>
+      <article class="pulse-panel">
+        <h3>추천 이동</h3>
+        <div class="pulse-route">
+          <a href="#videos">스트리밍</a>
+          <a href="#lounge">라운지</a>
+          <a href="#arcade">아케이드</a>
+        </div>
+      </article>
+    </section>
+
+    <section class="section fade-in">
+      <div class="section-head">
+        <h2>오늘의 코멘트</h2>
+        <span>랜덤 팬 메시지</span>
+      </div>
+      <div id="advice-section" class="pulse-panel">
+        <p id="advice-text">로딩 중...</p>
       </div>
     </section>
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>공식 채널 모음</h2>
-        <span>스트리밍/음원 플랫폼</span>
+        <h2>플랫폼 링크</h2>
+        <span>외부 채널 이동</span>
       </div>
-      <div class="hub-link-list">
+      <div class="hub-link-list pulse-links">
         ${linkButtons}
       </div>
     </section>
@@ -250,38 +251,33 @@ function renderVideos() {
     `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
   )).join('');
   app.innerHTML = `
-    <section class="fan-hero fan-hero-compact fade-in">
-      <div class="fan-eyebrow">Video Hub</div>
-      <h1>팬이 큐레이션한<br>수노폭스 영상 허브</h1>
-      <p>대표 재생목록, 최신 업로드, 팬 추천 링크를 한 화면에서 제공합니다.</p>
-      <div class="hero-actions">
+    <section class="pulse-hero pulse-hero-slim fade-in">
+      <div class="pulse-mark">Streaming Deck</div>
+      <h1>영상 감상부터<br>팬 대화까지 한 번에</h1>
+      <p>최신 영상 확인 후 라운지에서 바로 감상을 나눌 수 있습니다.</p>
+      <div class="pulse-cta">
         <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 방문</a>
-        <a class="btn btn-outline" href="#lounge">감상 공유하기</a>
+        <a class="btn btn-outline" href="#community">후기 보러가기</a>
       </div>
     </section>
 
-    <section class="section fade-in">
-      <div class="fan-layout-grid">
-        <div class="fan-card">
+    <section class="pulse-grid fade-in">
+      <div class="pulse-panel pulse-panel-wide">
           <div class="section-head">
-            <h2>대표 플레이리스트</h2>
+            <h2>플레이리스트</h2>
             <span>${CHANNEL_URL.replace('https://', '')}</span>
           </div>
           <div class="embed">
             <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
           </div>
-        </div>
-        <div class="fan-card">
-          <div class="section-head">
-            <h2>탐색 바로가기</h2>
-            <span>팬 추천 동선</span>
-          </div>
-          <div class="fan-quick-list">
-            <a href="https://www.youtube.com/@sunofox/playlists" target="_blank" class="fan-quick clickable"><strong>재생목록 몰아보기</strong><span>시리즈 정주행</span></a>
-            <a href="#community" class="fan-quick clickable"><strong>뉴스룸 리뷰</strong><span>영상 후기/요약 공유</span></a>
-            <a href="#lounge" class="fan-quick clickable"><strong>팬 자유토론</strong><span>클립·밈·잡담</span></a>
-          </div>
-        </div>
+      </div>
+      <div class="pulse-panel">
+        <h3>빠른 이동</h3>
+        <ul class="pulse-list">
+          <li><a href="https://www.youtube.com/@sunofox/playlists" target="_blank">재생목록 정주행</a></li>
+          <li><a href="#lounge">팬 클립 공유</a></li>
+          <li><a href="#community">리뷰/요약 글 보기</a></li>
+        </ul>
       </div>
     </section>
 
@@ -323,16 +319,16 @@ function renderArcade() {
 
   app.innerHTML = `
     <div class="fade-in fan-arcade">
-      <div class="fan-hero fan-hero-compact">
-        <div class="fan-eyebrow">Fan Arcade</div>
-        <h1>게임으로 소통하는<br>팬 챌린지 아레나</h1>
-        <p>가볍게 플레이하고 기록을 올려 팬들과 경쟁하세요.</p>
-        <div class="hero-actions">
+      <div class="pulse-hero pulse-hero-slim">
+        <div class="pulse-mark">Arcade Sector</div>
+        <h1>실시간 팬 챌린지 아레나</h1>
+        <p>각 게임 최고 기록을 만들고 커뮤니티에서 결과를 공유하세요.</p>
+        <div class="pulse-cta">
           <a class="btn btn-outline" href="#community">기록 공유하기</a>
           <a class="btn btn-outline" href="#lounge">전략 이야기</a>
         </div>
       </div>
-      <div class="arcade-meta fan-card">
+      <div class="arcade-meta pulse-panel">
         <div>
           <h3 id="arcade-meta-title">반응속도 테스트</h3>
           <p id="arcade-meta-desc" class="text-sub">신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.</p>
@@ -405,16 +401,16 @@ function renderArcade() {
 function renderTests() {
   app.innerHTML = `
     <div class="fade-in">
-      <section class="fan-hero fan-hero-compact">
-        <div class="fan-eyebrow">Fan Test Lab</div>
-        <h1>내 팬 성향을 분석하고<br>결과를 공유해보세요</h1>
-        <p>짧은 테스트로 취향을 확인하고 커뮤니티에서 비교할 수 있습니다.</p>
+      <section class="pulse-hero pulse-hero-slim">
+        <div class="pulse-mark">Test Lab</div>
+        <h1>팬 성향 리포트</h1>
+        <p>테스트 결과를 라운지/뉴스룸에 공유하고 비슷한 취향 팬을 찾아보세요.</p>
       </section>
       <div class="section-head">
         <h2>🧪 팬클럽 테스트</h2>
         <span>팬 참여형 인터랙션</span>
       </div>
-      <div class="panel test-panel fan-card">
+      <div class="panel test-panel pulse-panel">
         <div>
           <h3>나의 수노폭스 감상 타입</h3>
           <p class="text-sub">팬들이 함께 즐기는 짧은 참여형 테스트입니다.</p>
@@ -423,15 +419,15 @@ function renderTests() {
         <div id="test-container" class="game-container"></div>
       </div>
       <div class="grid-three fan-feature-grid">
-        <div class="card feature-card fan-card">
+        <div class="card feature-card pulse-panel">
           <h3>🎼 팬 추천 카드</h3>
           <p>팬들이 추천한 콘텐츠를 확인합니다.</p>
         </div>
-        <div class="card feature-card fan-card">
+        <div class="card feature-card pulse-panel">
           <h3>📣 결과 공유</h3>
           <p>팬클럽 뉴스룸에 테스트 결과를 올려주세요.</p>
         </div>
-        <div class="card feature-card fan-card">
+        <div class="card feature-card pulse-panel">
           <h3>🗳️ 팬 투표</h3>
           <p>다음 콘텐츠 주제를 함께 정하세요.</p>
         </div>
@@ -450,12 +446,12 @@ function renderLounge() {
 
   app.innerHTML = `
     <div class="lounge-layout fade-in">
-      <aside class="sidebar fan-card">
-        <div class="sidebar-box dog-api-box fan-card-lite">
+      <aside class="sidebar pulse-panel">
+        <div class="sidebar-box dog-api-box pulse-mini">
             <span class="news-tag">Daily Mood</span>
             <div id="dog-img-container" class="dog-img-container">로딩 중...</div>
         </div>
-        <div class="sidebar-box advice-box fan-card-lite">
+        <div class="sidebar-box advice-box pulse-mini">
             <span class="news-tag">Daily Quote</span>
             <p id="kanye-quote" class="text-sub" style="font-style: italic; margin-top: 0.5rem;">로딩 중...</p>
         </div>
@@ -463,7 +459,7 @@ function renderLounge() {
         <div class="category-list" id="category-list"></div>
         <button id="write-lounge-btn" class="btn btn-primary full-width mt-4">팬 라운지 글쓰기</button>
       </aside>
-      <section class="content fan-card">
+      <section class="content pulse-panel">
         <h2 class="page-title">팬 라운지 <small id="current-cat-title">/ 전체</small></h2>
         <p class="text-sub">팬들이 자유롭게 소통하고 놀이 콘텐츠를 공유하는 공간입니다.</p>
         <div id="lounge-list" class="post-list-grid"></div>
@@ -551,24 +547,24 @@ async function fetchDogImg() {
 function renderCommunity() {
   app.innerHTML = `
     <div class="community-layout fade-in">
-      <section class="fan-hero fan-hero-compact">
-        <div class="fan-eyebrow">Fan Newsroom</div>
-        <h1>공지, 리뷰, 질문을 모아보는<br>팬 뉴스룸</h1>
-        <p>정리된 글 목록으로 빠르게 확인하고 댓글로 의견을 남기세요.</p>
+      <section class="pulse-hero pulse-hero-slim">
+        <div class="pulse-mark">Newsroom Feed</div>
+        <h1>팬 콘텐츠 타임라인</h1>
+        <p>공지, 리뷰, 질문, 게임 기록을 타임라인 형태로 확인하세요.</p>
       </section>
-      <div class="toolbar fan-toolbar">
+      <div class="toolbar fan-toolbar pulse-panel">
         <h2 class="page-title">팬클럽 뉴스룸</h2>
         <div class="actions">
           <button id="write-comm-btn" class="btn btn-primary">뉴스룸 글쓰기</button>
         </div>
       </div>
-      <div class="post-table-header fan-card-lite">
+      <div class="post-table-header pulse-mini">
         <span class="col-cat">분류</span>
         <span class="col-title">제목</span>
         <span class="col-author">작성자</span>
         <span class="col-meta">조회/추천</span>
       </div>
-      <div id="community-list" class="post-list-table fan-card"></div>
+      <div id="community-list" class="post-list-table pulse-panel"></div>
     </div>
   `;
 
