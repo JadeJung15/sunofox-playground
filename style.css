@@ -1,1 +1,57 @@
-/* Add styles here */
+@layer base, components;
+
+@layer base {
+  body {
+    display: grid;
+    place-content: center;
+    min-height: 100vh;
+    font-family: system-ui, sans-serif;
+    background-color: oklch(98.11% 0.0106 248.33);
+    color: oklch(29.23% 0.119 248.33);
+  }
+}
+
+@layer components {
+  lotto-generator {
+    display: grid;
+    gap: 2rem;
+    text-align: center;
+
+    & .title {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    & .numbers {
+      display: flex;
+      gap: 1rem;
+    }
+
+    & .number {
+      display: grid;
+      place-content: center;
+      width: 4rem;
+      height: 4rem;
+      border-radius: 50%;
+      background-color: oklch(85% 0.15 248.33);
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+
+    & button {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 0.5rem;
+      background-color: oklch(56.71% 0.224 248.33);
+      color: oklch(98.11% 0.0106 248.33);
+      font-size: 1.25rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+
+      &:hover {
+        background-color: oklch(50% 0.2 248.33);
+      }
+    }
+  }
+}
