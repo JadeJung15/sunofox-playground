@@ -1,5 +1,5 @@
 /* css/style.css */
-@import url("https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Pretendard:wght@400;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700&family=Pretendard:wght@400;600;700;800&display=swap");
 
 :root {
   --bg-color: #0b0c10;
@@ -118,7 +118,7 @@ body::marker { color: transparent; }
 }
 
 /* Typography */
-h1, h2, h3, h4, h5, h6 { font-family: 'Noto Serif KR', serif; font-weight: 700; line-height: 1.15; margin-bottom: 0.5em; letter-spacing: -0.02em; }
+h1, h2, h3, h4, h5, h6 { font-family: 'Manrope', 'Plus Jakarta Sans', 'Pretendard', sans-serif; font-weight: 700; line-height: 1.2; margin-bottom: 0.5em; letter-spacing: -0.02em; }
 h1 { font-size: var(--font-xxl); }
 h2 { font-size: var(--font-xl); }
 h3 { font-size: var(--font-lg); }
@@ -791,7 +791,7 @@ main {
   margin-bottom: 1rem;
 }
 .stream-title {
-  font-family: 'Noto Serif KR', serif;
+  font-family: 'Manrope', 'Plus Jakarta Sans', 'Pretendard', sans-serif;
   font-size: clamp(2.2rem, 4vw, 3.4rem);
   margin: 0;
 }
