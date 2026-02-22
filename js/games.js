@@ -7,6 +7,7 @@ export class ReactionGame {
     this.state = 'idle'; // idle, waiting, ready, finished
     this.timer = null;
     this.startTime = 0;
+    this.handleClickBound = () => this.handleClick();
     this.render();
   }
 
@@ -25,7 +26,7 @@ export class ReactionGame {
     this.status = this.container.querySelector('.game-status');
     this.result = this.container.querySelector('.game-result');
 
-    this.area.addEventListener('click', () => this.handleClick());
+    this.area.addEventListener('click', this.handleClickBound);
     this.container.querySelector('#reset-reaction').addEventListener('click', () => {
       Store.saveGameRecord('reaction', null);
       this.result.textContent = '기록 초기화됨.';
@@ -82,6 +83,13 @@ export class ReactionGame {
                 } 
             }));
         });
+    }
+  }
+
+  destroy() {
+    clearTimeout(this.timer);
+    if (this.area) {
+      this.area.removeEventListener('click', this.handleClickBound);
     }
   }
 }
@@ -202,6 +210,18 @@ export class RhythmGame {
         this.isPlaying = false;
         this.spawnInterval = null;
         this.gameTimer = null;
+        this.handleKeyDown = (e) => {
+            if (e.code === 'Space' && this.isPlaying) {
+                e.preventDefault(); // Scroll prevent
+                this.hit();
+            }
+        };
+        this.handleTouch = (e) => {
+            if (this.isPlaying) {
+                e.preventDefault();
+                this.hit();
+            }
+        };
         this.render();
     }
 
@@ -232,18 +252,8 @@ export class RhythmGame {
             alert('기록이 초기화되었습니다.');
         });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space' && this.isPlaying) {
-                e.preventDefault(); // Scroll prevent
-                this.hit();
-            }
-        });
-        this.area.addEventListener('touchstart', (e) => {
-             if (this.isPlaying) {
-                e.preventDefault();
-                this.hit();
-             }
-        });
+        document.addEventListener('keydown', this.handleKeyDown);
+        this.area.addEventListener('touchstart', this.handleTouch, { passive: false });
     }
 
     startGame() {
@@ -311,6 +321,16 @@ export class RhythmGame {
                     } 
                 }));
             }
+        }
+    }
+
+    destroy() {
+        this.isPlaying = false;
+        clearInterval(this.spawnInterval);
+        clearTimeout(this.gameTimer);
+        document.removeEventListener('keydown', this.handleKeyDown);
+        if (this.area) {
+            this.area.removeEventListener('touchstart', this.handleTouch);
         }
     }
 }

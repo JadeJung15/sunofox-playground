@@ -145,6 +145,11 @@ main {
 .mt-2 { margin-top: 0.5rem; }
 .mt-4 { margin-top: 1.5rem; }
 .hidden { display: none !important; }
+.text-sub { color: var(--text-sub); }
+.highlight { color: var(--accent-color); font-weight: 700; }
+.btn-danger { background: #e74c3c; color: #fff; border: none; }
+.btn-danger:hover { filter: brightness(1.05); }
+.btn-sm { padding: 0.4rem 0.7rem; font-size: 0.85rem; }
 
 .card {
   background: var(--card-bg);
@@ -399,6 +404,33 @@ main {
 .post-row .col-title { order: 2; font-size: var(--font-lg); font-weight: 600; margin-top: 0.2rem; }
 .post-row .col-author { order: 3; font-size: var(--font-sm); color: var(--text-sub); }
 .post-row .col-meta { order: 4; font-size: var(--font-sm); color: var(--text-sub); margin-top: 0.5rem; }
+
+/* Profile & Admin */
+.profile-section,
+.admin-section {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.profile-card,
+.profile-details,
+.admin-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+}
+.admin-dashboard {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+.empty {
+  text-align: center;
+  color: var(--text-sub);
+  padding: 2rem 0;
+  font-size: var(--font-sm);
+}
 
 /* Modals */
 .modal-overlay {

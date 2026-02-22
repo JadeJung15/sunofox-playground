@@ -1,6 +1,6 @@
 // js/store.js
 import { db } from './firebase-init.js'; // Import db instance from new module
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const STORAGE_KEY_SETTINGS = 'sunofox_settings';
 const STORAGE_KEY_GAMES = 'sunofox_games';
@@ -142,7 +142,7 @@ export const Store = {
     // Optionally delete associated comments if they are not sub-collections
     const q = query(commentsCol, where("postId", "==", id));
     const querySnapshot = await getDocs(q);
-    const batch = db.batch(); // Use batch for multiple deletes
+    const batch = writeBatch(db); // Use batch for multiple deletes
     querySnapshot.forEach((doc) => {
         batch.delete(doc.ref);
     });

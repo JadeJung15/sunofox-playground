@@ -17,6 +17,9 @@ const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 const adminNavLink = document.querySelector('.nav-link.admin-only');
 
+let currentRoute = null;
+let activeGame = null;
+
 let currentUser = null; // To store authenticated user info
 let isAdmin = false;    // To store admin status
 
@@ -32,6 +35,10 @@ const routes = {
 
 function router() {
   const hash = window.location.hash || '#home';
+  if (currentRoute === '#games' && hash !== '#games' && activeGame?.destroy) {
+    activeGame.destroy();
+    activeGame = null;
+  }
   if (hash === '#admin' && !isAdmin) {
     window.location.hash = '#home';
   }
@@ -45,6 +52,7 @@ function router() {
   
   app.innerHTML = '';
   renderFn();
+  currentRoute = hash;
 }
 
 function updateAdminNav() {
@@ -144,20 +152,24 @@ function renderGames() {
   const container = document.getElementById('game-container');
   const tabs = document.querySelectorAll('.game-tabs .tab-btn');
   
+  const setGame = (type) => {
+    if (activeGame?.destroy) activeGame.destroy();
+    container.innerHTML = '';
+    if (type === 'reaction') activeGame = new ReactionGame(container);
+    if (type === 'memory') activeGame = new MemoryGame(container);
+    if (type === 'rhythm') activeGame = new RhythmGame(container);
+    if (type === 'puzzle') activeGame = new PuzzleGame(container);
+  };
+
   // Default game
-  new ReactionGame(container);
+  setGame('reaction');
 
   tabs.forEach(tab => {
     tab.addEventListener('click', (e) => {
       tabs.forEach(t => t.classList.remove('active'));
       e.target.classList.add('active');
       const gameType = e.target.dataset.game;
-      
-      container.innerHTML = ''; // Clear previous game
-      if (gameType === 'reaction') new ReactionGame(container);
-      if (gameType === 'memory') new MemoryGame(container);
-      if (gameType === 'rhythm') new RhythmGame(container);
-      if (gameType === 'puzzle') new PuzzleGame(container);
+      setGame(gameType);
     });
   });
 }
@@ -197,26 +209,31 @@ function renderLounge() {
   };
 
   const renderList = async () => {
-    const posts = await Store.getPosts('lounge', currentCategory === '전체' ? null : currentCategory);
-    const listHtml = posts.map(post => `
-      <div class="post-card" data-id="${post.id}">
-        <div class="post-header">
-          <span class="chip small">${post.category}</span>
-          <span class="date">${new Date(post.date).toLocaleDateString()}</span>
+    try {
+      const posts = await Store.getPosts('lounge', currentCategory === '전체' ? null : currentCategory);
+      const listHtml = posts.map(post => `
+        <div class="post-card" data-id="${post.id}">
+          <div class="post-header">
+            <span class="chip small">${post.category}</span>
+            <span class="date">${new Date(post.date).toLocaleDateString()}</span>
+          </div>
+          <h4 class="post-title">${post.title}</h4>
+          <div class="post-footer">
+            <span>${post.author}</span>
+            <span>❤️ ${post.likes}</span>
+          </div>
         </div>
-        <h4 class="post-title">${post.title}</h4>
-        <div class="post-footer">
-          <span>${post.author}</span>
-          <span>❤️ ${post.likes}</span>
-        </div>
-      </div>
-    `).join('');
-    
-    document.getElementById('lounge-list').innerHTML = listHtml || '<div class="empty">글이 없습니다.</div>';
-    
-    document.querySelectorAll('.post-card').forEach(item => {
-      item.addEventListener('click', () => openPostModal(item.dataset.id));
-    });
+      `).join('');
+      
+      document.getElementById('lounge-list').innerHTML = listHtml || '<div class="empty">글이 없습니다.</div>';
+      
+      document.querySelectorAll('.post-card').forEach(item => {
+        item.addEventListener('click', () => openPostModal(item.dataset.id));
+      });
+    } catch (error) {
+      console.error('Failed to load lounge posts:', error);
+      document.getElementById('lounge-list').innerHTML = '<div class="empty">글을 불러오지 못했습니다.</div>';
+    }
   };
 
   renderCategories();
@@ -244,20 +261,28 @@ function renderCommunity() {
   `;
 
   const renderList = async () => {
-    const posts = await Store.getPosts('community');
-    const listHtml = posts.map(post => `
-      <div class="post-row" data-id="${post.id}">
-        <span class="col-cat"><span class="chip micro">${post.category}</span></span>
-        <span class="col-title">${post.title} <span class="comment-count">[${Store.getComments(post.id).length}]</span></span>
-        <span class="col-author">${post.author}</span>
-        <span class="col-meta">${post.views} / ${post.likes}</span>
-      </div>
-    `).join('');
-    document.getElementById('community-list').innerHTML = listHtml || '<div class="empty">게시글이 없습니다.</div>';
+    try {
+      const posts = await Store.getPosts('community');
+      const commentCounts = await Promise.all(
+        posts.map(p => Store.getComments(p.id).then(c => c.length).catch(() => 0))
+      );
+      const listHtml = posts.map((post, idx) => `
+        <div class="post-row" data-id="${post.id}">
+          <span class="col-cat"><span class="chip micro">${post.category}</span></span>
+          <span class="col-title">${post.title} <span class="comment-count">[${commentCounts[idx]}]</span></span>
+          <span class="col-author">${post.author}</span>
+          <span class="col-meta">${post.views} / ${post.likes}</span>
+        </div>
+      `).join('');
+      document.getElementById('community-list').innerHTML = listHtml || '<div class="empty">게시글이 없습니다.</div>';
 
-    document.querySelectorAll('.post-row').forEach(item => {
-        item.addEventListener('click', () => openPostModal(item.dataset.id));
-    });
+      document.querySelectorAll('.post-row').forEach(item => {
+          item.addEventListener('click', () => openPostModal(item.dataset.id));
+      });
+    } catch (error) {
+      console.error('Failed to load community posts:', error);
+      document.getElementById('community-list').innerHTML = '<div class="empty">게시글을 불러오지 못했습니다.</div>';
+    }
   };
 
   renderList();
