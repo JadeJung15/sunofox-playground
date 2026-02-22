@@ -169,12 +169,12 @@ function renderHome() {
   )).join('');
   app.innerHTML = `
     <section class="sf-hero fade-in">
-      <p class="sf-kicker">SunoFox Fan Page</p>
-      <h1>수노폭스를 좋아하는 팬들을 위한<br>심플 팬페이지</h1>
-      <p class="sf-sub">최신 영상 확인하고, 커뮤니티 글 읽고, 바로 의견 남기기.</p>
+      <p class="sf-kicker">SunoFox Community Hub</p>
+      <h1>수노폭스 팬을 위한<br>공식 커뮤니티 허브</h1>
+      <p class="sf-sub">최신 콘텐츠 탐색, 팬 토론, 커뮤니티 참여를 한 곳에서 연결합니다.</p>
       <div class="hero-actions">
         <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널</a>
-        <a class="btn btn-outline" href="#community">팬 커뮤니티</a>
+        <a class="btn btn-outline" href="#community">커뮤니티 참여</a>
       </div>
     </section>
 
@@ -186,11 +186,11 @@ function renderHome() {
         </div>
       </article>
       <article class="sf-card">
-        <h3>팬 페이지 안내</h3>
+        <h3>커뮤니티 가이드</h3>
         <ul class="sf-list">
-          <li><a href="#videos">최신 영상 보기</a></li>
-          <li><a href="#community">팬 글 읽기/작성</a></li>
-          <li><a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer">유튜브 커뮤니티 보기</a></li>
+          <li><a href="#videos">최신 영상 아카이브 확인</a></li>
+          <li><a href="#community">팬 게시글 작성 및 토론 참여</a></li>
+          <li><a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer">유튜브 커뮤니티 공지 확인</a></li>
         </ul>
       </article>
     </section>
