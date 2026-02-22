@@ -1063,20 +1063,33 @@ async function loadYouTubeCommunityPosts() {
   container.innerHTML = '<div class="empty">유튜브 커뮤니티 글을 불러오는 중...</div>';
 
   try {
-    const endpoint = `https://yt.lemnoslife.com/noKey/channel?part=community&id=${CHANNEL_ID}`;
+    const endpoint = 'https://r.jina.ai/http://www.youtube.com/@sunofox/community';
     const res = await fetch(endpoint);
-    const data = await res.json();
-    const posts = data?.items?.[0]?.community?.items || [];
-    const cards = posts.slice(0, 8).map((post) => {
-      const content = post?.content || '';
-      const published = post?.publishedTimeText || '';
-      const url = safeExternalUrl(post?.url || `${CHANNEL_URL}/community`) || `${CHANNEL_URL}/community`;
+    const raw = await res.text();
+    const marker = 'Markdown Content:';
+    const start = raw.indexOf(marker);
+    const markdown = start >= 0 ? raw.slice(start + marker.length) : raw;
+
+    const cleaned = markdown
+      .replace(/\[!\[Image[^\n]*\)\]\([^\n]*\)\n?/g, '')
+      .replace(/\n{3,}/g, '\n\n');
+
+    const chunks = cleaned
+      .split(/\nRead more[^\n]*\n/gi)
+      .map((v) => v.trim())
+      .filter((v) => v && v.length > 50)
+      .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'))
+      .map((v) => v.replace(/\s+/g, ' ').trim());
+
+    const posts = chunks.slice(0, 8);
+
+    const cards = posts.map((content, idx) => {
       return `
-        <a class="post-row" href="${escapeHTML(url)}" target="_blank" rel="noreferrer noopener">
+        <a class="post-row" href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener">
           <span class="col-cat"><span class="chip micro">YouTube</span></span>
-          <span class="col-title">${escapeHTML(content || '커뮤니티 게시글')}</span>
+          <span class="col-title">${escapeHTML(content.slice(0, 220))}${content.length > 220 ? '...' : ''}</span>
           <span class="col-author">수노폭스 채널</span>
-          <span class="col-meta">${escapeHTML(published || '')}</span>
+          <span class="col-meta">커뮤니티 ${idx + 1}</span>
         </a>
       `;
     }).join('');
