@@ -588,7 +588,7 @@ async function router() {
     else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
     else {
         currentFilter = categoryMap[hash] || '전체';
-        await renderHome();
+        await renderHome(hash);
     }
     window.scrollTo(0, 0);
 }
@@ -597,31 +597,109 @@ async function router() {
 // 3. Page Renders
 // =================================================================
 
-async function renderHome() {
+async function renderHome(hash) {
     await fetchAllLikes();
-    const filtered = currentFilter === '전체' ? TESTS : TESTS.filter(t => t.category === currentFilter);
     
-    app.innerHTML = `
-        <div class="test-grid">
-            ${filtered.map(t => {
-                const likes = testLikesData[t.id] || 0;
-                return `
-                <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'">
-                    <div class="thumb-wrapper">
-                        <div class="test-thumb" style="background-image: url('${t.thumb}')">
-                            <div class="like-badge">❤️ ${likes}</div>
+    // 1. 메인 홈 대시보드 렌더링 (해시가 #home이거나 없을 때)
+    if (hash === '#home' || !hash) {
+        const featuredTests = TESTS.slice(0, 4); // 추천 테스트 4개
+        
+        app.innerHTML = `
+            <div class="dashboard fade-in">
+                <!-- Hero Section -->
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <span class="hero-tag">✨ 7번의 질문으로 찾는 나</span>
+                        <h1>당신이 몰랐던<br>진짜 모습을 확인하세요</h1>
+                        <p>심리학적 기반의 정교한 분석 리포트와<br>즐거운 미니게임이 기다리고 있습니다.</p>
+                        <button class="btn-primary" style="margin: 0 auto; padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#personality'">테스트 시작하기</button>
+                    </div>
+                </div>
+
+                <!-- Quick Menu -->
+                <div class="quick-menu">
+                    <a href="#personality" class="quick-item">
+                        <span class="quick-icon">🧠</span>
+                        <span class="quick-label">성격 분석</span>
+                    </a>
+                    <a href="#face" class="quick-item">
+                        <span class="quick-icon">✨</span>
+                        <span class="quick-label">비주얼</span>
+                    </a>
+                    <a href="#fortune" class="quick-item">
+                        <span class="quick-icon">🔮</span>
+                        <span class="quick-label">오늘 운세</span>
+                    </a>
+                    <a href="#arcade" class="quick-item">
+                        <span class="quick-icon">🎰</span>
+                        <span class="quick-label">오락실</span>
+                    </a>
+                </div>
+
+                <!-- Featured Section -->
+                <div class="section-header">
+                    <h2 class="section-title">🔥 지금 인기 있는 테스트</h2>
+                    <a href="#personality" class="section-more">전체보기</a>
+                </div>
+                <div class="test-grid" style="margin-bottom: 3.5rem;">
+                    ${featuredTests.map(t => renderTestCard(t)).join('')}
+                </div>
+
+                <!-- Banner Section -->
+                <div class="banner-grid">
+                    <div class="arcade-preview-card" onclick="location.hash='#arcade'">
+                        <div style="position:relative; z-index:1;">
+                            <span style="font-size: 0.8rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 50px; margin-bottom: 1rem; display: inline-block;">DAILY MISSION</span>
+                            <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 0.5rem;">세븐 오락실 오픈!</h3>
+                            <p style="font-weight: 600; opacity: 0.9;">매일 출석하고 포인트 채굴해서<br>희귀 이모지를 수집하세요.</p>
+                        </div>
+                        <span style="position:absolute; bottom: -20px; right: -10px; font-size: 8rem; opacity: 0.2;">🎰</span>
+                    </div>
+                    <div class="ranking-preview-card">
+                        <h4 style="font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">🏆 명예의 전당</h4>
+                        <div id="mini-ranking-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <!-- 랭킹 데이터 로드 예정 -->
+                            <p class="text-sub" style="font-size: 0.8rem;">실시간 랭킹 확인하기</p>
+                            <button class="btn-secondary" style="width:100%; padding: 0.5rem; font-size: 0.8rem;" onclick="location.hash='#ranking'">랭킹 보기</button>
                         </div>
                     </div>
-                    <div class="test-info">
-                        <span class="test-category-tag">${t.category}</span>
-                        <h3>${t.title}</h3>
-                        <p>${t.desc}</p>
-                    </div>
-                </div>`;
-            }).join('')}
-        </div>
-    `;
+                </div>
+            </div>
+        `;
+    } 
+    // 2. 카테고리별 테스트 목록 렌더링
+    else {
+        const filtered = TESTS.filter(t => t.category === currentFilter);
+        app.innerHTML = `
+            <div class="category-page fade-in">
+                <div class="section-header" style="margin-bottom: 2rem;">
+                    <h2 class="section-title">${currentFilter} 테스트</h2>
+                    <span class="text-sub" style="font-weight: 700;">총 ${filtered.length}개</span>
+                </div>
+                <div class="test-grid">
+                    ${filtered.map(t => renderTestCard(t)).join('')}
+                </div>
+            </div>
+        `;
+    }
     updateUI();
+}
+
+function renderTestCard(t) {
+    const likes = testLikesData[t.id] || 0;
+    return `
+    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'">
+        <div class="thumb-wrapper">
+            <div class="test-thumb" style="background-image: url('${t.thumb}')">
+                <div class="like-badge">❤️ ${likes}</div>
+            </div>
+        </div>
+        <div class="test-info">
+            <span class="test-category-tag">${t.category}</span>
+            <h3>${t.title}</h3>
+            <p>${t.desc}</p>
+        </div>
+    </div>`;
 }
 
 function renderProfile() {
