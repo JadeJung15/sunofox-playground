@@ -25,6 +25,19 @@ let currentUser = null; // To store authenticated user info
 let isAdmin = false;    // To store admin status
 let adminMaintenanceDone = false;
 
+const TIERS = [
+  { name: 'Rookie', min: 0 },
+  { name: 'Silver', min: 50 },
+  { name: 'Gold', min: 150 },
+  { name: 'Platinum', min: 300 },
+  { name: 'Diamond', min: 600 },
+];
+const POINTS = {
+  post: 10,
+  comment: 3,
+  like: 1
+};
+
 const CHANNEL_URL = 'https://youtube.com/@sunofox';
 const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
 const CHANNEL_ID = 'UC8M-2aXbknDT3tDcN1PMvuQ';
@@ -90,6 +103,13 @@ onAuthStateChanged(auth, async (user) => {
     // Get custom claims to check for admin role
     const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh token
     isAdmin = idTokenResult.claims.admin || false;
+  }
+  if (currentUser) {
+    try {
+      await Store.ensureUserProfile(currentUser.uid, getDisplayName());
+    } catch (error) {
+      console.warn('Failed to ensure user profile:', error);
+    }
   }
   if (isAdmin && !adminMaintenanceDone) {
     adminMaintenanceDone = true;
@@ -547,49 +567,15 @@ function renderCommunity() {
 // NEW: Render Profile Page
 function renderProfile() {
   if (currentUser) {
-    // Logged in view
     app.innerHTML = `
       <section class="profile-section fade-in">
-          <h2 class="page-title">👤 내 프로필</h2>
-          <div class="profile-card card">
-              <h3>환영합니다, ${getDisplayName()}!</h3>
-              <p>UID: ${currentUser.uid}</p>
-              ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
-              <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
-              <div class="mt-4">
-                <label for="nickname-input">닉네임</label>
-                <input type="text" id="nickname-input" class="input" placeholder="닉네임" value="${currentUser.displayName || ''}">
-                <button id="save-nickname-btn" class="btn btn-primary full-width mt-2">닉네임 변경</button>
-              </div>
-              <button id="logout-btn" class="btn btn-secondary full-width mt-4">로그아웃</button>
-          </div>
-          <div class="profile-details card mt-4">
-              <h3>나의 활동 (구현 예정)</h3>
-              <p class="text-sub">로그인 후 활동 기록을 이곳에서 관리할 수 있습니다.</p>
-          </div>
+        <h2 class="page-title">👤 내 프로필</h2>
+        <div class="profile-card card" id="profile-card-loading">
+          <p class="text-sub">프로필 정보를 불러오는 중...</p>
+        </div>
       </section>
     `;
-    document.getElementById('logout-btn').addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-        alert('로그아웃 되었습니다.');
-      } catch (error) {
-        console.error('Logout error:', error);
-        alert('로그아웃 중 오류가 발생했습니다.');
-      }
-    });
-    document.getElementById('save-nickname-btn').addEventListener('click', async () => {
-      const nickname = document.getElementById('nickname-input').value.trim();
-      if (!nickname) return alert('닉네임을 입력해주세요.');
-      try {
-        await updateProfile(currentUser, { displayName: nickname });
-        alert('닉네임이 변경되었습니다.');
-        router();
-      } catch (error) {
-        console.error('Update profile error:', error);
-        alert('닉네임 변경에 실패했습니다.');
-      }
-    });
+    loadProfileView();
   } else {
     // Logged out view
     app.innerHTML = `
@@ -655,6 +641,65 @@ function renderProfile() {
         }
     });
   }
+}
+
+async function loadProfileView() {
+  if (!currentUser) return;
+  const profile = await Store.getUserProfile(currentUser.uid);
+  const points = profile?.points || 0;
+  const tier = computeTier(points);
+  const nextTier = TIERS.find(t => t.min > points);
+  const progressText = nextTier ? `${nextTier.min - points}점 더 모으면 ${nextTier.name}` : '최고 등급입니다';
+
+  document.getElementById('profile-card-loading').innerHTML = `
+    <h3>환영합니다, ${getDisplayName()}!</h3>
+    <p>UID: ${currentUser.uid}</p>
+    ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
+    <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
+    <div class="stat-grid mt-4">
+      <div class="stat-card">
+        <span class="stat-label">포인트</span>
+        <strong>${points} P</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">등급</span>
+        <strong>${tier}</strong>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">다음 등급</span>
+        <strong>${progressText}</strong>
+      </div>
+    </div>
+    <div class="mt-4">
+      <label for="nickname-input">닉네임</label>
+      <input type="text" id="nickname-input" class="input" placeholder="닉네임" value="${currentUser.displayName || ''}">
+      <button id="save-nickname-btn" class="btn btn-primary full-width mt-2">닉네임 변경</button>
+    </div>
+    <button id="logout-btn" class="btn btn-secondary full-width mt-4">로그아웃</button>
+  `;
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    try {
+      await signOut(auth);
+      alert('로그아웃 되었습니다.');
+    } catch (error) {
+      console.error('Logout error:', error);
+      alert('로그아웃 중 오류가 발생했습니다.');
+    }
+  });
+  document.getElementById('save-nickname-btn').addEventListener('click', async () => {
+    const nickname = document.getElementById('nickname-input').value.trim();
+    if (!nickname) return alert('닉네임을 입력해주세요.');
+    try {
+      await updateProfile(currentUser, { displayName: nickname });
+      await Store.updateUserProfile(currentUser.uid, { displayName: nickname });
+      alert('닉네임이 변경되었습니다.');
+      router();
+    } catch (error) {
+      console.error('Update profile error:', error);
+      alert('닉네임 변경에 실패했습니다.');
+    }
+  });
 }
 
 // NEW: Render Admin Page (Now checking `isAdmin` flag)
@@ -747,6 +792,7 @@ async function openWriteModal(type, prefill = {}, refreshCallback = null) {
     if (!title || !content || !author) return alert('모든 항목을 입력해주세요.');
 
     await Store.addPost({ type, title, content, author, category, authorId: currentUser.uid });
+    await awardPoints(POINTS.post);
     close();
     if (refreshCallback) refreshCallback();
     else router(); // Re-render current view to show new post
@@ -821,6 +867,7 @@ async function openPostModal(id) { // Added async
     if (likeBtn) likeBtn.addEventListener('click', async () => {
        const newLikes = await Store.likePost(id);
        currentPost.likes = newLikes; // update local ref
+       await awardPoints(POINTS.like);
        renderModalContent(currentPost); // re-render to update like count
     });
 
@@ -881,6 +928,7 @@ async function openPostModal(id) { // Added async
             if (!author || !content) return;
             
             await Store.addComment({ postId: id, author, content, authorId: currentUser.uid }); // Changed parseInt(id) to id
+            await awardPoints(POINTS.comment);
             contentInput.value = '';
             renderModalContent(currentPost);
         });
@@ -984,4 +1032,21 @@ function buildYouTubeEmbed(url) {
 function getDisplayName() {
   if (!currentUser) return '';
   return currentUser.displayName || currentUser.email?.split('@')[0] || '팬';
+}
+
+async function awardPoints(delta) {
+  if (!currentUser || !delta) return;
+  const profile = await Store.getUserProfile(currentUser.uid);
+  const currentPoints = profile?.points || 0;
+  const newPoints = currentPoints + delta;
+  const tier = computeTier(newPoints);
+  await Store.addPoints(currentUser.uid, delta, tier);
+}
+
+function computeTier(points) {
+  let tier = TIERS[0].name;
+  TIERS.forEach(t => {
+    if (points >= t.min) tier = t.name;
+  });
+  return tier;
 }

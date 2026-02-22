@@ -1,6 +1,6 @@
 // js/store.js
 import { db } from './firebase-init.js'; // Import db instance from new module
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit, writeBatch } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit, writeBatch, setDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const STORAGE_KEY_SETTINGS = 'sunofox_settings';
 const STORAGE_KEY_GAMES = 'sunofox_games';
@@ -9,6 +9,7 @@ const STORAGE_KEY_GAMES = 'sunofox_games';
 // Helper to get collection references
 const postsCol = collection(db, "posts");
 const commentsCol = collection(db, "comments");
+const usersCol = collection(db, "users");
 
 // Initial Setup & Dummy Data (for Firestore, only if collection is empty)
 // Removed manual 'id' from initial posts to let Firestore assign them
@@ -40,6 +41,40 @@ const initialGameRecords = {
 };
 
 export const Store = {
+  async ensureUserProfile(uid, displayName = '') {
+    const userRef = doc(usersCol, uid);
+    const snap = await getDoc(userRef);
+    if (!snap.exists()) {
+      await setDoc(userRef, {
+        uid,
+        displayName,
+        points: 0,
+        tier: 'Rookie',
+        createdAt: new Date().toISOString()
+      });
+    }
+  },
+
+  async getUserProfile(uid) {
+    const userRef = doc(usersCol, uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) return snap.data();
+    return null;
+  },
+
+  async updateUserProfile(uid, data = {}) {
+    const userRef = doc(usersCol, uid);
+    await setDoc(userRef, { ...data, uid }, { merge: true });
+  },
+
+  async addPoints(uid, delta, tier) {
+    const userRef = doc(usersCol, uid);
+    await setDoc(userRef, { uid }, { merge: true });
+    await updateDoc(userRef, {
+      points: increment(delta),
+      tier
+    });
+  },
   // Settings
   getTheme() {
     return localStorage.getItem(STORAGE_KEY_SETTINGS) || 'dark';
