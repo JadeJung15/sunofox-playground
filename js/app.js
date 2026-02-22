@@ -1,10 +1,20 @@
 // js/app.js
 import { Store } from './store.js';
 import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame } from './games.js';
+import { auth, db } from '../index.html'; // Import auth and db instances
+import { 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged 
+} from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
+
+let currentUser = null; // To store authenticated user info
 
 // Routing
 const routes = {
@@ -12,8 +22,8 @@ const routes = {
   '#games': renderGames,
   '#lounge': renderLounge,
   '#community': renderCommunity,
-  '#profile': renderProfile, // New route
-  '#admin': renderAdmin      // New route
+  '#profile': renderProfile,
+  '#admin': renderAdmin
 };
 
 function router() {
@@ -29,6 +39,12 @@ function router() {
   app.innerHTML = '';
   renderFn();
 }
+
+// Listen for auth state changes
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  router(); // Re-render current view to reflect auth state
+});
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', () => {
@@ -159,8 +175,8 @@ function renderLounge() {
     });
   };
 
-  const renderList = () => {
-    const posts = Store.getPosts('lounge', currentCategory === '전체' ? null : currentCategory);
+  const renderList = async () => {
+    const posts = await Store.getPosts('lounge', currentCategory === '전체' ? null : currentCategory);
     const listHtml = posts.map(post => `
       <div class="post-card" data-id="${post.id}">
         <div class="post-header">
@@ -206,8 +222,8 @@ function renderCommunity() {
     </div>
   `;
 
-  const renderList = () => {
-    const posts = Store.getPosts('community');
+  const renderList = async () => {
+    const posts = await Store.getPosts('community');
     const listHtml = posts.map(post => `
       <div class="post-row" data-id="${post.id}">
         <span class="col-cat"><span class="chip micro">${post.category}</span></span>
@@ -227,68 +243,136 @@ function renderCommunity() {
   document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', null, renderList));
 }
 
-// NEW: Render Profile Page (Non-functional UI)
+// NEW: Render Profile Page
 function renderProfile() {
-  app.innerHTML = `
-    <section class="profile-section fade-in">
-        <h2 class="page-title">👤 내 프로필</h2>
-        <div class="profile-card card">
-            <h3>로그인 / 회원가입</h3>
-            <p class="text-sub">이 기능은 백엔드 시스템이 필요합니다. 현재는 비활성화되어 있습니다.</p>
-            <div class="form-group">
-                <label for="username">사용자명</label>
-                <input type="text" id="username" class="input" placeholder="사용자명">
-            </div>
-            <div class="form-group">
-                <label for="password">비밀번호</label>
-                <input type="password" id="password" class="input" placeholder="비밀번호">
-            </div>
-            <button class="btn btn-primary full-width mt-4">로그인</button>
-            <button class="btn btn-secondary full-width mt-2">회원가입</button>
-        </div>
-        <div class="profile-details card mt-4">
-            <h3>나의 활동</h3>
-            <p class="text-sub">로그인 후 활동 기록을 볼 수 있습니다.</p>
-            <ul>
-                <li>작성한 글: 0개</li>
-                <li>작성한 댓글: 0개</li>
-                <li>최고 게임 기록: -</li>
-            </ul>
-        </div>
-    </section>
-  `;
+  if (currentUser) {
+    // Logged in view
+    app.innerHTML = `
+      <section class="profile-section fade-in">
+          <h2 class="page-title">👤 내 프로필</h2>
+          <div class="profile-card card">
+              <h3>환영합니다, ${currentUser.email}!</h3>
+              <p>UID: ${currentUser.uid}</p>
+              <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
+              <button id="logout-btn" class="btn btn-secondary full-width mt-4">로그아웃</button>
+          </div>
+          <div class="profile-details card mt-4">
+              <h3>나의 활동 (구현 예정)</h3>
+              <p class="text-sub">작성 글, 댓글, 게임 기록 등 활동 내역을 이곳에서 관리할 수 있습니다.</p>
+          </div>
+      </section>
+    `;
+    document.getElementById('logout-btn').addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        alert('로그아웃 되었습니다.');
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('로그아웃 중 오류가 발생했습니다.');
+      }
+    });
+  } else {
+    // Logged out view
+    app.innerHTML = `
+      <section class="profile-section fade-in">
+          <h2 class="page-title">👤 내 프로필</h2>
+          <div class="profile-card card">
+              <h3>로그인 / 회원가입</h3>
+              <div class="form-group">
+                  <label for="email">이메일</label>
+                  <input type="email" id="email-input" class="input" placeholder="이메일">
+              </div>
+              <div class="form-group">
+                  <label for="password">비밀번호</label>
+                  <input type="password" id="password-input" class="input" placeholder="비밀번호">
+              </div>
+              <button id="login-btn" class="btn btn-primary full-width mt-4">로그인</button>
+              <button id="signup-btn" class="btn btn-secondary full-width mt-2">회원가입</button>
+          </div>
+          <div class="profile-details card mt-4">
+              <h3>나의 활동</h3>
+              <p class="text-sub">로그인 후 활동 기록을 볼 수 있습니다.</p>
+          </div>
+      </section>
+    `;
+
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const email = document.getElementById('email-input').value;
+      const password = document.getElementById('password-input').value;
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        alert('로그인 성공!');
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('로그인 실패: ' + error.message);
+      }
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', async () => {
+      const email = document.getElementById('email-input').value;
+      const password = document.getElementById('password-input').value;
+      try {
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert('회원가입 성공!');
+      } catch (error) {
+        console.error('Signup error:', error);
+        alert('회원가입 실패: ' + error.message);
+      }
+    });
+  }
 }
 
-// NEW: Render Admin Page (Non-functional UI)
+// NEW: Render Admin Page (Non-functional UI for now, check current user status)
 function renderAdmin() {
-  app.innerHTML = `
-    <section class="admin-section fade-in">
+  if (currentUser && currentUser.email === 'admin@example.com') { // Placeholder for admin check
+    app.innerHTML = `
+      <section class="admin-section fade-in">
+          <h2 class="page-title">⚙️ 관리자 페이지</h2>
+          <p class="text-sub">관리자 ${currentUser.email}님 환영합니다.</p>
+          <div class="admin-dashboard">
+              <div class="admin-card card">
+                  <h3>게시글 관리</h3>
+                  <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                  <button class="btn btn-secondary full-width mt-2">게시글 목록</button>
+                  <button class="btn btn-secondary full-width mt-2">신고된 글</button>
+              </div>
+              <div class="admin-card card">
+                  <h3>댓글 관리</h3>
+                  <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                  <button class="btn btn-secondary full-width mt-2">댓글 목록</button>
+              </div>
+              <div class="admin-card card">
+                  <h3>사용자 관리</h3>
+                  <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                  <button class="btn btn-secondary full-width mt-2">사용자 목록</button>
+              </div>
+          </div>
+      </section>
+    `;
+  } else {
+    app.innerHTML = `
+      <section class="admin-section fade-in">
         <h2 class="page-title">⚙️ 관리자 페이지</h2>
-        <div class="admin-dashboard">
-            <div class="admin-card card">
-                <h3>게시글 관리</h3>
-                <p class="text-sub">백엔드 연동이 필요합니다.</p>
-                <button class="btn btn-secondary full-width mt-2">게시글 목록</button>
-                <button class="btn btn-secondary full-width mt-2">신고된 글</button>
-            </div>
-            <div class="admin-card card">
-                <h3>댓글 관리</h3>
-                <p class="text-sub">백엔드 연동이 필요합니다.</p>
-                <button class="btn btn-secondary full-width mt-2">댓글 목록</button>
-            </div>
-            <div class="admin-card card">
-                <h3>사용자 관리</h3>
-                <p class="text-sub">백엔드 연동이 필요합니다.</p>
-                <button class="btn btn-secondary full-width mt-2">사용자 목록</button>
-            </div>
+        <p class="text-sub">관리자만 접근할 수 있는 페이지입니다.</p>
+        <div class="profile-card card">
+            <h3>접근 권한 없음</h3>
+            <p>관리자 이메일로 로그인해주세요.</p>
+            <a href="#profile" class="btn btn-primary full-width mt-4">로그인 페이지로 이동</a>
         </div>
-    </section>
-  `;
+      </section>
+    `;
+  }
 }
 
 
 // Modals
 function openWriteModal(type, prefill = {}, refreshCallback = null) {
+  if (!currentUser) {
+    alert('로그인 후 이용 가능합니다.');
+    window.location.hash = '#profile';
+    return;
+  }
+
   const modal = document.createElement('div');
   modal.className = 'modal-overlay fade-in';
   modal.innerHTML = `
@@ -305,7 +389,7 @@ function openWriteModal(type, prefill = {}, refreshCallback = null) {
             }
         </select>
         <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill.title || ''}">
-        <input type="text" id="post-author" class="input" placeholder="닉네임">
+        <input type="text" id="post-author" class="input" placeholder="닉네임" value="${currentUser.email.split('@')[0]}" disabled>
         <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${prefill.content || ''}</textarea>
       </div>
       <div class="modal-footer">
@@ -319,15 +403,15 @@ function openWriteModal(type, prefill = {}, refreshCallback = null) {
   modal.querySelector('.close-btn').addEventListener('click', close);
   modal.addEventListener('click', (e) => { if(e.target === modal) close(); });
 
-  modal.querySelector('#submit-post').addEventListener('click', () => {
+  modal.querySelector('#submit-post').addEventListener('click', async () => {
     const title = modal.querySelector('#post-title').value;
     const content = modal.querySelector('#post-content').value;
-    const author = modal.querySelector('#post-author').value;
+    const author = modal.querySelector('#post-author').value; // Get from disabled input
     const category = modal.querySelector('#post-category').value;
 
     if (!title || !content || !author) return alert('모든 항목을 입력해주세요.');
 
-    Store.addPost({ type, title, content, author, category });
+    await Store.addPost({ type, title, content, author, category, authorId: currentUser.uid });
     close();
     if (refreshCallback) refreshCallback();
     else router(); // Re-render current view to show new post
@@ -335,28 +419,31 @@ function openWriteModal(type, prefill = {}, refreshCallback = null) {
 }
 
 function openPostModal(id) {
+  // Store.getPost is async, so this needs to be async or handle promise
   const post = Store.getPost(id);
-  if (!post) return;
-  Store.viewPost(id);
+  if (!post) {
+      console.error("Post not found:", id);
+      return;
+  }
   
   const modal = document.createElement('div');
   modal.className = 'modal-overlay fade-in';
   
-  const renderModalContent = () => {
-    const comments = Store.getComments(id);
+  const renderModalContent = async (currentPost) => {
+    const comments = await Store.getComments(id);
     modal.innerHTML = `
       <div class="modal view-modal">
         <div class="modal-header">
-          <span class="chip">${post.category}</span>
+          <span class="chip">${currentPost.category}</span>
           <button class="close-btn">&times;</button>
         </div>
         <div class="modal-body">
-          <h2 class="view-title">${post.title}</h2>
+          <h2 class="view-title">${currentPost.title}</h2>
           <div class="view-meta">
-            <span>${post.author}</span> · <span>${new Date(post.date).toLocaleDateString()}</span>
-            <span class="right">👀 ${post.views} ❤️ <span id="like-count">${post.likes}</span></span>
+            <span>${currentPost.author}</span> · <span>${new Date(currentPost.date).toLocaleDateString()}</span>
+            <span class="right">👀 ${currentPost.views} ❤️ <span id="like-count">${currentPost.likes}</span></span>
           </div>
-          <div class="view-content">${post.content}</div>
+          <div class="view-content">${currentPost.content}</div>
           
           <div class="comments-section">
               <h4>댓글 (${comments.length})</h4>
@@ -369,9 +456,9 @@ function openPostModal(id) {
                 `).join('')}
               </div>
               <div class="comment-form">
-                  <input type="text" id="comment-author" placeholder="닉네임" class="input small">
+                  <input type="text" id="comment-author" placeholder="닉네임" class="input small" value="${currentUser ? currentUser.email.split('@')[0] : ''}" ${currentUser ? 'disabled' : ''}>
                   <input type="text" id="comment-text" placeholder="댓글 내용" class="input">
-                  <button id="submit-comment" class="btn btn-secondary">등록</button>
+                  <button id="submit-comment" class="btn btn-secondary" ${currentUser ? '' : 'disabled'}>등록</button>
               </div>
           </div>
         </div>
@@ -382,47 +469,67 @@ function openPostModal(id) {
     `;
     
     // Re-attach events
-    const closeBtn = modal.querySelector('.close-btn');
-    if (closeBtn) closeBtn.addEventListener('click', () => modal.remove());
+    const close = () => modal.remove();
+    modal.querySelector('.close-btn').addEventListener('click', close);
+    modal.addEventListener('click', (e) => { if(e.target === modal) close(); });
     
     const likeBtn = modal.querySelector('#like-btn');
-    if (likeBtn) likeBtn.addEventListener('click', () => {
-       const newLikes = Store.likePost(id);
-       post.likes = newLikes; // update local ref
-       renderModalContent(); // re-render to update like count
+    if (likeBtn) likeBtn.addEventListener('click', async () => {
+       const newLikes = await Store.likePost(id);
+       currentPost.likes = newLikes; // update local ref
+       renderModalContent(currentPost); // re-render to update like count
     });
 
     const submitCommentBtn = modal.querySelector('#submit-comment');
-    if (submitCommentBtn) submitCommentBtn.addEventListener('click', () => {
-        const authorInput = modal.querySelector('#comment-author');
-        const contentInput = modal.querySelector('#comment-text');
-        
-        if (!authorInput || !contentInput) {
-            console.error("Comment input elements not found.");
-            return;
-        }
+    if (submitCommentBtn) {
+        if (!currentUser) submitCommentBtn.title = "로그인 후 댓글을 작성할 수 있습니다.";
+        submitCommentBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                alert('로그인 후 댓글을 작성할 수 있습니다.');
+                window.location.hash = '#profile';
+                close();
+                return;
+            }
 
-        const author = authorInput.value;
-        const content = contentInput.value;
-        if (!author || !content) return;
-        
-        Store.addComment({ postId: parseInt(id), author, content });
-        renderModalContent();
-    });
+            const authorInput = modal.querySelector('#comment-author');
+            const contentInput = modal.querySelector('#comment-text');
+            
+            if (!authorInput || !contentInput) {
+                console.error("Comment input elements not found.");
+                return;
+            }
+
+            const author = authorInput.value;
+            const content = contentInput.value;
+            if (!author || !content) return;
+            
+            await Store.addComment({ postId: parseInt(id), author, content, authorId: currentUser.uid });
+            contentInput.value = '';
+            renderModalContent(currentPost);
+        });
+    }
   };
 
   document.body.appendChild(modal);
-  renderModalContent();
-  modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
+  // Initial render, then update views count
+  post.then(p => {
+    Store.viewPost(id); // Increment view count
+    renderModalContent(p);
+  });
 }
 
 // Listen for game share events
 window.addEventListener('gameShareRecord', (e) => {
+    if (!currentUser) {
+        alert('로그인 후 게임 기록을 공유할 수 있습니다.');
+        window.location.hash = '#profile';
+        return;
+    }
     const { gameName, score } = e.detail;
     openWriteModal('community', {
         category: '게임 기록',
-        title: `[${gameName}] 새로운 최고 기록 달성! ${score}`
+        title: `[${gameName}] 새로운 최고 기록 달성! ${score}`,
+        authorId: currentUser.uid
     });
-    // Automatically navigate to community tab after sharing
     window.location.hash = '#community'; 
 });
