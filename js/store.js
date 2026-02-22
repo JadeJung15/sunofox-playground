@@ -13,10 +13,10 @@ const commentsCol = collection(db, "comments");
 // Initial Setup & Dummy Data (for Firestore, only if collection is empty)
 // Removed manual 'id' from initial posts to let Firestore assign them
 const initialPosts = [
-  { type: 'community', category: '잡담', title: '첫 번째 글입니다.', content: '반갑습니다.', author: '익명1', date: new Date().toISOString(), likes: 3, views: 10, authorId: 'anonymous' },
-  { type: 'community', category: '질문', title: '반응속도 게임 0.2초 가능한가요?', content: '너무 어렵네요 ㅠㅠ', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
-  { type: 'lounge', category: '게임', title: '슬라이드 퍼즐 공략 공유', content: '맨 윗줄부터 맞추세요.', author: '고수', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
-  { type: 'lounge', category: '유머', title: '개발자가 좋아하는 숫자는?', content: '0부터 시작해서 모름', author: '유머왕', date: new Date().toISOString(), likes: 20, views: 100, authorId: 'anonymous' },
+  { type: 'community', category: '영상', title: '이번 OST 감정선 어땠나요?', content: '클라이맥스 구간이 특히 좋았어요!', author: '팬1', date: new Date().toISOString(), likes: 8, views: 34, authorId: 'anonymous' },
+  { type: 'community', category: '게임 기록', title: '반응속도 210ms 달성!', content: '다들 기록 어디까지 나오나요?', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
+  { type: 'lounge', category: '심리테스트', title: '나의 OST 무드 타입 결과 공유', content: '저는 감성 크리에이터 나왔어요!', author: '팬2', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
+  { type: 'lounge', category: '추천', title: '다음 영상 아이디어 추천합니다', content: '스토리텔링 OST 제작 과정 보고 싶어요.', author: '팬3', date: new Date().toISOString(), likes: 10, views: 38, authorId: 'anonymous' },
 ];
 
 const initialGameRecords = {
@@ -24,6 +24,13 @@ const initialGameRecords = {
   memory: null,   // turns (lower is better)
   rhythm: 0,      // score (higher is better)
   puzzle: null,   // seconds (lower is better)
+  math: 0,        // score (higher is better)
+  rps: 0,         // win streak (higher is better)
+  number: 0,      // max length (higher is better)
+  typing: 0,      // wpm (higher is better)
+  reflex: 0,      // score (higher is better)
+  maze: 0,        // score (higher is better)
+  dodge: 0,       // score (higher is better)
 };
 
 export const Store = {
@@ -67,9 +74,7 @@ export const Store = {
   async getPosts(type = null, category = null, orderByField = 'date', orderDirection = 'desc') {
     let q = query(postsCol, orderBy(orderByField, orderDirection));
 
-    if (type) {
-        q = query(q, where("type", "==", type));
-    }
+    const useClientTypeFilter = !!type;
     const useClientCategoryFilter = category && category !== '전체';
     
     const querySnapshot = await getDocs(q);
@@ -80,6 +85,9 @@ export const Store = {
       return { id: doc.id, legacyId, ...data };
     });
 
+    if (useClientTypeFilter) {
+      posts = posts.filter(p => p.type === type);
+    }
     if (useClientCategoryFilter) {
       posts = posts.filter(p => p.category === category);
     }
@@ -97,6 +105,9 @@ export const Store = {
           if (legacyId) delete data.id;
           return { id: doc.id, legacyId, ...data };
         });
+        if (useClientTypeFilter) {
+          posts = posts.filter(p => p.type === type);
+        }
         if (useClientCategoryFilter) {
           posts = posts.filter(p => p.category === category);
         }
@@ -179,14 +190,20 @@ export const Store = {
 
   // Comments - Now using Firestore
   async getComments(postId, legacyId = null) {
-    let q;
+    const queries = [
+      query(commentsCol, where("postId", "==", postId), orderBy("date", "asc"))
+    ];
     if (legacyId && legacyId !== postId) {
-      q = query(commentsCol, where("postId", "in", [postId, legacyId]), orderBy("date", "asc"));
-    } else {
-      q = query(commentsCol, where("postId", "==", postId), orderBy("date", "asc"));
+      queries.push(query(commentsCol, where("postId", "==", legacyId), orderBy("date", "asc")));
     }
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const snapshots = await Promise.all(queries.map(q => getDocs(q)));
+    const items = new Map();
+    snapshots.forEach(snapshot => {
+      snapshot.docs.forEach(doc => {
+        items.set(doc.id, { id: doc.id, ...doc.data() });
+      });
+    });
+    return Array.from(items.values()).sort((a, b) => new Date(a.date) - new Date(b.date));
   },
   
   async addComment(commentData) {

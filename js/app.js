@@ -1,6 +1,6 @@
 // js/app.js
 import { Store } from './store.js';
-import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame } from './games.js';
+import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame, MathGame, RpsGame, PersonalityTest, NumberMemoryGame, TypingGame, ReflexGame, MazeGame, DodgeGame } from './games.js';
 import { auth, db } from './firebase-init.js'; // Import auth and db instances from new module
 import { 
   createUserWithEmailAndPassword, 
@@ -23,10 +23,16 @@ let activeGame = null;
 let currentUser = null; // To store authenticated user info
 let isAdmin = false;    // To store admin status
 
+const CHANNEL_URL = 'https://youtube.com/@sunofox';
+const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
+
 // Routing
 const routes = {
   '#home': renderHome,
-  '#games': renderGames,
+  '#games': renderArcade,
+  '#arcade': renderArcade,
+  '#videos': renderVideos,
+  '#tests': renderTests,
   '#lounge': renderLounge,
   '#community': renderCommunity,
   '#profile': renderProfile,
@@ -35,7 +41,7 @@ const routes = {
 
 function router() {
   const hash = window.location.hash || '#home';
-  if (currentRoute === '#games' && hash !== '#games' && activeGame?.destroy) {
+  if ((currentRoute === '#games' || currentRoute === '#arcade' || currentRoute === '#tests') && hash !== currentRoute && activeGame?.destroy) {
     activeGame.destroy();
     activeGame = null;
   }
@@ -106,36 +112,131 @@ function updateThemeIcon(theme) {
 // Views
 function renderHome() {
   app.innerHTML = `
-    <section class="hero fade-in">
-      <h1>SunoFox Playground</h1>
-      <p>미니게임과 커뮤니티가 하나로! 지금 바로 시작하세요.</p>
+    <section class="hero-grid fade-in">
+      <div class="panel hero-main">
+        <p class="section-kicker">SunoFox Community</p>
+        <h1 class="headline">영상 이야기부터 게임 & 심리테스트까지,<br>하나의 라운지에서.</h1>
+        <p class="lead">
+          유튜브 채널을 중심으로 이야기하고, 가벼운 게임과 테스트로 놀고,
+          팬들이 함께 성장하는 커뮤니티를 만듭니다.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#videos">영상 라운지</a>
+          <a class="btn btn-secondary" href="#community">커뮤니티</a>
+          <a class="btn btn-outline" href="#arcade">게임 아케이드</a>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card">
+            <span class="stat-label">오늘의 핫토픽</span>
+            <strong>신작 OST 감상평 모음</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">게임 랭킹</span>
+            <strong>Top 기록을 공유하세요</strong>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">심리테스트</span>
+            <strong>결과를 카드로 공유</strong>
+          </div>
+        </div>
+      </div>
+      <div class="panel hero-side">
+        <div class="spotlight">
+          <div>
+            <p class="section-kicker">Featured Playlist</p>
+            <h3>추천 OST 플레이리스트</h3>
+            <p class="text-sub">유튜브에서 최신 작품과 감성 라인업을 들어보세요.</p>
+          </div>
+          <div class="embed">
+            <iframe
+              class="frame"
+              title="SunoFox Playlist"
+              src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen></iframe>
+          </div>
+          <a class="btn btn-outline full-width" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널로</a>
+        </div>
+      </div>
     </section>
 
-    <div class="notice-banner fade-in">
-      <strong>📢 공지</strong> 2026.02.22 - 새로운 미니게임 4종이 추가되었습니다!
-    </div>
+    <section class="section fade-in">
+      <div class="section-head">
+        <h2>커뮤니티가 이렇게 확장됩니다</h2>
+        <span>영상 · 대화 · 놀이 · 테스트</span>
+      </div>
+      <div class="grid-three">
+        <a href="#videos" class="card feature-card">
+          <div class="card-icon">🎬</div>
+          <h3>영상 라운지</h3>
+          <p>영상별 토론과 감상 포인트를 모아보세요.</p>
+        </a>
+        <a href="#community" class="card feature-card">
+          <div class="card-icon">💬</div>
+          <h3>커뮤니티</h3>
+          <p>자유 토론, 게임 기록, 추천 콘텐츠까지.</p>
+        </a>
+        <a href="#tests" class="card feature-card">
+          <div class="card-icon">🧪</div>
+          <h3>심리테스트</h3>
+          <p>짧고 공유 가능한 결과 카드로 소통하세요.</p>
+        </a>
+      </div>
+    </section>
+  `;
+}
 
-    <div class="card-grid fade-in">
-      <a href="#games" class="card entry-card">
-        <div class="card-icon">🎮</div>
-        <h3>미니게임</h3>
-        <p>반응속도, 기억력, 리듬, 퍼즐 게임을 즐겨보세요.</p>
-      </a>
-      <a href="#lounge" class="card entry-card">
-        <div class="card-icon">💬</div>
-        <h3>라운지</h3>
-        <p>다양한 주제로 자유롭게 대화하세요.</p>
-      </a>
-      <a href="#community" class="card entry-card">
-        <div class="card-icon">📝</div>
-        <h3>커뮤니티</h3>
-        <p>정보 공유와 팁을 얻어가세요.</p>
-      </a>
+function renderVideos() {
+  app.innerHTML = `
+    <div class="fade-in">
+      <div class="section-head">
+        <h2>🎬 영상 라운지</h2>
+        <span>${CHANNEL_URL.replace('https://', '')}</span>
+      </div>
+      <div class="panel video-panel">
+        <div class="video-copy">
+          <h3>오늘의 영상 이야기</h3>
+          <p class="text-sub">
+            최신 영상과 OST 이야기를 나누는 공간입니다. 감상 포인트를 공유하고,
+            다음 콘텐츠 아이디어도 함께 모아주세요.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널 방문</a>
+            <a class="btn btn-outline" href="#community">영상 토론 글쓰기</a>
+          </div>
+        </div>
+        <div class="embed">
+          <iframe
+            class="frame"
+            title="SunoFox Playlist"
+            src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="section-head">
+        <h2>이번 주 핫 토픽</h2>
+        <span>커뮤니티 하이라이트</span>
+      </div>
+      <div class="grid-three">
+        <div class="card feature-card">
+          <h3>🎧 OST 감정선 분석</h3>
+          <p>팬들이 뽑은 명장면과 음악 포인트를 공유합니다.</p>
+        </div>
+        <div class="card feature-card">
+          <h3>📌 다음 영상 아이디어</h3>
+          <p>보고 싶은 콘텐츠를 제안하고 투표하세요.</p>
+        </div>
+        <div class="card feature-card">
+          <h3>🎮 게임 기록 챌린지</h3>
+          <p>게임 기록을 공유하고 랭킹에 도전하세요.</p>
+        </div>
+      </div>
     </div>
   `;
 }
 
-function renderGames() {
+function renderArcade() {
   app.innerHTML = `
     <div class="fade-in">
       <h2 class="page-title">🕹️ 미니게임 아케이드</h2>
@@ -144,6 +245,13 @@ function renderGames() {
         <button class="tab-btn" data-game="memory">기억력</button>
         <button class="tab-btn" data-game="rhythm">리듬</button>
         <button class="tab-btn" data-game="puzzle">퍼즐</button>
+        <button class="tab-btn" data-game="math">스피드 합산</button>
+        <button class="tab-btn" data-game="rps">가위바위보</button>
+        <button class="tab-btn" data-game="number">숫자 기억력</button>
+        <button class="tab-btn" data-game="typing">타이핑</button>
+        <button class="tab-btn" data-game="reflex">반사신경</button>
+        <button class="tab-btn" data-game="maze">미로</button>
+        <button class="tab-btn" data-game="dodge">낙하 피하기</button>
       </div>
       <div id="game-container" class="game-container"></div>
     </div>
@@ -159,6 +267,13 @@ function renderGames() {
     if (type === 'memory') activeGame = new MemoryGame(container);
     if (type === 'rhythm') activeGame = new RhythmGame(container);
     if (type === 'puzzle') activeGame = new PuzzleGame(container);
+    if (type === 'math') activeGame = new MathGame(container);
+    if (type === 'rps') activeGame = new RpsGame(container);
+    if (type === 'number') activeGame = new NumberMemoryGame(container);
+    if (type === 'typing') activeGame = new TypingGame(container);
+    if (type === 'reflex') activeGame = new ReflexGame(container);
+    if (type === 'maze') activeGame = new MazeGame(container);
+    if (type === 'dodge') activeGame = new DodgeGame(container);
   };
 
   // Default game
@@ -174,8 +289,44 @@ function renderGames() {
   });
 }
 
+function renderTests() {
+  app.innerHTML = `
+    <div class="fade-in">
+      <div class="section-head">
+        <h2>🧪 심리테스트</h2>
+        <span>짧고 공유 가능한 결과</span>
+      </div>
+      <div class="panel test-panel">
+        <div>
+          <h3>나의 OST 무드 타입</h3>
+          <p class="text-sub">10문항으로 알아보는 감정선 타입 테스트입니다.</p>
+        </div>
+        <div id="test-container" class="game-container"></div>
+      </div>
+      <div class="grid-three">
+        <div class="card feature-card">
+          <h3>🎼 추천 OST 카드</h3>
+          <p>결과에 맞는 추천 OST를 받아보세요.</p>
+        </div>
+        <div class="card feature-card">
+          <h3>📣 결과 공유</h3>
+          <p>커뮤니티에 테스트 결과를 공유할 수 있습니다.</p>
+        </div>
+        <div class="card feature-card">
+          <h3>🗳️ 팬 취향 투표</h3>
+          <p>다음 테스트 주제를 함께 정하세요.</p>
+        </div>
+      </div>
+    </div>
+  `;
+  const container = document.getElementById('test-container');
+  if (activeGame?.destroy) activeGame.destroy();
+  container.innerHTML = '';
+  activeGame = new PersonalityTest(container);
+}
+
 function renderLounge() {
-  const categories = ['전체', '잡담', '질문', '정보', '후기', '유머', '창작', '게임', 'AI', '취미'];
+  const categories = ['전체', '영상', '게임', '심리테스트', '잡담', '질문', '정보', '후기', '유머', '창작', '추천'];
   let currentCategory = '전체';
 
   app.innerHTML = `
@@ -245,7 +396,7 @@ function renderCommunity() {
   app.innerHTML = `
     <div class="community-layout fade-in">
       <div class="toolbar">
-        <h2 class="page-title">자유 게시판</h2>
+        <h2 class="page-title">커뮤니티</h2>
         <div class="actions">
           <button id="write-comm-btn" class="btn btn-primary">글쓰기</button>
         </div>
@@ -269,7 +420,7 @@ function renderCommunity() {
       const listHtml = posts.map((post, idx) => `
         <div class="post-row" data-id="${post.id}">
           <span class="col-cat"><span class="chip micro">${post.category}</span></span>
-          <span class="col-title">${post.title} <span class="comment-count">[${commentCounts[idx]}]</span></span>
+        <span class="col-title">${post.title} <span class="comment-count">[${commentCounts[idx]}]</span></span>
           <span class="col-author">${post.author}</span>
           <span class="col-meta">${post.views} / ${post.likes}</span>
         </div>
@@ -447,8 +598,8 @@ async function openWriteModal(type, prefill = {}, refreshCallback = null) {
       <div class="modal-body">
         <select id="post-category" class="input">
             ${type === 'lounge' 
-                ? ['잡담', '질문', '정보', '후기', '유머', '창작', '게임', 'AI', '취미'].map(c => `<option value="${c}">${c}</option>`).join('')
-                : ['일반', '질문', '공략', '팁', '게임 기록'].map(c => `<option value="${c}" ${prefill && prefill.category && prefill.category === c ? 'selected' : ''}>${c}</option>`).join('')
+                ? ['영상', '게임', '심리테스트', '잡담', '질문', '정보', '후기', '유머', '창작', '추천'].map(c => `<option value="${c}">${c}</option>`).join('')
+                : ['영상', '게임 기록', '심리테스트', '추천', '질문', '공지'].map(c => `<option value="${c}" ${prefill && prefill.category && prefill.category === c ? 'selected' : ''}>${c}</option>`).join('')
             }
         </select>
         <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill && prefill.title || ''}">

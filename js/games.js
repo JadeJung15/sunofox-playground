@@ -1118,6 +1118,7 @@ export class MazeGame {
         this.goal = { x: 5, y: 5 };
         this.moves = 0;
         this.startTime = null;
+        this.handleKeyDown = (e) => this.handleKey(e);
         this.render();
     }
 
@@ -1155,7 +1156,7 @@ export class MazeGame {
             this.updateStatus();
             alert('기록이 초기화되었습니다.');
         });
-        document.addEventListener('keydown', (e) => this.handleKey(e));
+        document.addEventListener('keydown', this.handleKeyDown);
         this.startTime = Date.now();
     }
 
@@ -1217,6 +1218,10 @@ export class MazeGame {
             }));
         }
     }
+
+    destroy() {
+        document.removeEventListener('keydown', this.handleKeyDown);
+    }
 }
 
 export class DodgeGame {
@@ -1229,6 +1234,10 @@ export class DodgeGame {
         this.score = 0;
         this.timer = null;
         this.spawnTimer = null;
+        this.handleKeyDown = (e) => {
+            if (e.key === 'ArrowLeft') this.move('left');
+            if (e.key === 'ArrowRight') this.move('right');
+        };
         this.render();
     }
 
@@ -1264,10 +1273,7 @@ export class DodgeGame {
         this.container.querySelectorAll('.dodge-controls [data-move]').forEach(btn => {
             btn.addEventListener('click', () => this.move(btn.dataset.move));
         });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft') this.move('left');
-            if (e.key === 'ArrowRight') this.move('right');
-        });
+        document.addEventListener('keydown', this.handleKeyDown);
         this.updatePlayer();
     }
 
@@ -1350,5 +1356,11 @@ export class DodgeGame {
                 detail: { gameName: '낙하 피하기', score: `${this.score}점` }
             }));
         }
+    }
+
+    destroy() {
+        clearInterval(this.timer);
+        clearInterval(this.spawnTimer);
+        document.removeEventListener('keydown', this.handleKeyDown);
     }
 }
