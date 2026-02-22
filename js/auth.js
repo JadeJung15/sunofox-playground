@@ -37,16 +37,12 @@ export function initAuth() {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider).catch((error) => {
                 console.error("Login failed:", error);
-                alert("로그인에 실패했습니다. 팝업이 차단되어 있는지 확인해주세요.");
+                alert("로그인에 실패했습니다.");
             });
         }
-
         if (e.target.id === 'logout-btn') {
-            signOut(auth).then(() => {
-                location.hash = '#home';
-            });
+            signOut(auth).then(() => { location.hash = '#home'; });
         }
-
         if (e.target.id === 'nickname-save') {
             await changeNickname();
         }
@@ -62,11 +58,20 @@ async function loadUserData(user) {
             uid: user.uid,
             nickname: user.displayName || '익명',
             points: 1000,
+            inventory: [],
+            totalScore: 0,
             lastNicknameChange: null,
             createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);
         snap = await getDoc(userRef);
+    } else {
+        // Migration check for old users
+        const data = snap.data();
+        if (data.inventory === undefined) {
+            await updateDoc(userRef, { inventory: [], totalScore: 0 });
+            snap = await getDoc(userRef);
+        }
     }
     UserState.data = snap.data();
 }
@@ -76,6 +81,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
     const userProfile = document.getElementById('user-profile');
     const userNameEls = document.querySelectorAll('#user-name');
     const userPointsEls = document.querySelectorAll('#user-points');
+    const userScoreEls = document.querySelectorAll('#user-total-score');
     const nicknameInput = document.getElementById('nickname-input');
 
     if (isLoggedIn && UserState.data) {
@@ -83,6 +89,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         if (userProfile) userProfile.classList.remove('hidden');
         userNameEls.forEach(el => el.textContent = UserState.data.nickname);
         userPointsEls.forEach(el => el.textContent = `${(UserState.data.points || 0).toLocaleString()} P`);
+        userScoreEls.forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
         if (nicknameInput && !nicknameInput.value) nicknameInput.value = UserState.data.nickname;
     } else {
         if (loginBtn) loginBtn.classList.remove('hidden');
@@ -93,7 +100,6 @@ export function updateUI(isLoggedIn = !!UserState.user) {
 async function changeNickname() {
     const nicknameInput = document.getElementById('nickname-input');
     const nicknameMsg = document.getElementById('nickname-msg');
-
     if (!UserState.user || !nicknameInput || !nicknameInput.value.trim()) return;
     
     const newName = nicknameInput.value.trim();
@@ -115,25 +121,16 @@ async function changeNickname() {
 
     try {
         const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, {
-            nickname: newName,
-            lastNicknameChange: serverTimestamp()
-        });
-        
+        await updateDoc(userRef, { nickname: newName, lastNicknameChange: serverTimestamp() });
         UserState.data.nickname = newName;
         UserState.data.lastNicknameChange = now; 
-        
         updateUI();
         if (nicknameMsg) {
             nicknameMsg.textContent = "닉네임이 성공적으로 변경되었습니다!";
             nicknameMsg.className = "success-msg";
         }
     } catch (e) {
-        console.error("Nickname update error:", e);
-        if (nicknameMsg) {
-            nicknameMsg.textContent = "변경 권한이 없거나 오류가 발생했습니다.";
-            nicknameMsg.className = "error-msg";
-        }
+        if (nicknameMsg) { nicknameMsg.textContent = "오류가 발생했습니다."; nicknameMsg.className = "error-msg"; }
     }
 }
 
@@ -145,10 +142,7 @@ export async function addPoints(amount) {
         UserState.data.points = (UserState.data.points || 0) + amount;
         updateUI();
         return true;
-    } catch (e) {
-        console.error(e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 export async function usePoints(amount) {
@@ -162,8 +156,5 @@ export async function usePoints(amount) {
         UserState.data.points -= amount;
         updateUI();
         return true;
-    } catch (e) {
-        console.error(e);
-        return false;
-    }
+    } catch (e) { return false; }
 }
