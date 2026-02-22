@@ -393,12 +393,12 @@ async function openWriteModal(type, prefill = {}, refreshCallback = null) {
         <select id="post-category" class="input">
             ${type === 'lounge' 
                 ? ['잡담', '질문', '정보', '후기', '유머', '창작', '게임', 'AI', '취미'].map(c => `<option value="${c}">${c}</option>`).join('')
-                : ['일반', '질문', '공략', '팁', '게임 기록'].map(c => `<option value="${c}" ${prefill.category === c ? 'selected' : ''}>${c}</option>`).join('')
+                : ['일반', '질문', '공략', '팁', '게임 기록'].map(c => `<option value="${c}" ${prefill && prefill.category && prefill.category === c ? 'selected' : ''}>${c}</option>`).join('')
             }
         </select>
-        <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill.title || ''}">
+        <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill && prefill.title || ''}">
         <input type="text" id="post-author" class="input" placeholder="닉네임" value="${currentUser.email.split('@')[0]}" disabled>
-        <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${prefill.content || ''}</textarea>
+        <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${prefill && prefill.content || ''}</textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" id="submit-post">등록</button>

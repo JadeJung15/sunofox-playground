@@ -11,11 +11,12 @@ const postsCol = collection(db, "posts");
 const commentsCol = collection(db, "comments");
 
 // Initial Setup & Dummy Data (for Firestore, only if collection is empty)
+// Removed manual 'id' from initial posts to let Firestore assign them
 const initialPosts = [
-  { id: 'initial1', type: 'community', category: '잡담', title: '첫 번째 글입니다.', content: '반갑습니다.', author: '익명1', date: new Date().toISOString(), likes: 3, views: 10, authorId: 'anonymous' },
-  { id: 'initial2', type: 'community', category: '질문', title: '반응속도 게임 0.2초 가능한가요?', content: '너무 어렵네요 ㅠㅠ', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
-  { id: 'initial3', type: 'lounge', category: '게임', title: '슬라이드 퍼즐 공략 공유', content: '맨 윗줄부터 맞추세요.', author: '고수', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
-  { id: 'initial4', type: 'lounge', category: '유머', title: '개발자가 좋아하는 숫자는?', content: '0부터 시작해서 모름', author: '유머왕', date: new Date().toISOString(), likes: 20, views: 100, authorId: 'anonymous' },
+  { type: 'community', category: '잡담', title: '첫 번째 글입니다.', content: '반갑습니다.', author: '익명1', date: new Date().toISOString(), likes: 3, views: 10, authorId: 'anonymous' },
+  { type: 'community', category: '질문', title: '반응속도 게임 0.2초 가능한가요?', content: '너무 어렵네요 ㅠㅠ', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
+  { type: 'lounge', category: '게임', title: '슬라이드 퍼즐 공략 공유', content: '맨 윗줄부터 맞추세요.', author: '고수', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
+  { type: 'lounge', category: '유머', title: '개발자가 좋아하는 숫자는?', content: '0부터 시작해서 모름', author: '유머왕', date: new Date().toISOString(), likes: 20, views: 100, authorId: 'anonymous' },
 ];
 
 const initialGameRecords = {
@@ -81,8 +82,9 @@ export const Store = {
         for (const p of initialPosts) {
             await addDoc(postsCol, p);
         }
+        // After seeding, query again to get the newly added posts with their Firestore IDs
         const seededSnapshot = await getDocs(q);
-        posts = seededSnapshot.docs.map(doc => ({ id: seededSnapshot.docs[i].id, ...p })); // Fix: Map with actual doc IDs after seeding
+        posts = seededSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
 
     return posts;
@@ -94,7 +96,7 @@ export const Store = {
     if (docSnap.exists()) {
         return { id: docSnap.id, ...docSnap.data() };
     } else {
-        console.log("No such document!");
+        console.log("No such document!", id); // Log the missing ID
         return null;
     }
   },
