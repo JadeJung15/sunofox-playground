@@ -63,13 +63,14 @@ const routes = {
   '#videos': renderHome,
   '#community': renderHome,
   '#arcade': renderHome,
+  '#tests': renderHome,
   '#profile': renderProfile,
   '#admin': renderAdmin
 };
 
 function router() {
   const hash = window.location.hash || '#home';
-  const homeHashes = new Set(['#home', '#videos', '#community', '#arcade']);
+  const homeHashes = new Set(['#home', '#videos', '#community', '#arcade', '#tests']);
   if (!homeHashes.has(hash) && activeGame?.destroy) {
     activeGame.destroy();
     activeGame = null;
@@ -90,6 +91,7 @@ function router() {
   if (hash === '#videos') document.getElementById('live-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (hash === '#community') document.getElementById('community-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   if (hash === '#arcade') document.getElementById('play-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (hash === '#tests') document.getElementById('tests-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   currentRoute = hash;
 }
 
@@ -230,6 +232,23 @@ function renderHome() {
       <div id="community-list-home" class="post-list-table sf-card"></div>
     </section>
 
+    <section id="tests-section" class="section fade-in">
+      <div class="section-head">
+        <h2>Tests Hub</h2>
+        <span>성격 · 밸런스 · 스피드 테스트</span>
+      </div>
+      <div class="tests-shell sf-card">
+        <div class="tests-tabs">
+          <button class="tab-btn active" data-test-tab="personality">성격</button>
+          <button class="tab-btn" data-test-tab="balance">밸런스</button>
+          <button class="tab-btn" data-test-tab="speed">스피드</button>
+        </div>
+        <div id="tests-panel-personality" class="tests-panel"></div>
+        <div id="tests-panel-balance" class="tests-panel hidden"></div>
+        <div id="tests-panel-speed" class="tests-panel hidden"></div>
+      </div>
+    </section>
+
     <section id="play-section" class="section fade-in">
       <div class="section-head">
         <h2>Play</h2>
@@ -273,6 +292,7 @@ function renderHome() {
   fetchAdvice();
   loadLatestVideos();
   setupHomeCommunityList();
+  setupHomeTests();
   setupHomeArcade();
 }
 
@@ -358,6 +378,159 @@ function setupHomeArcade() {
       tabs.forEach(t => t.classList.remove('active'));
       e.target.classList.add('active');
       setGame(e.target.dataset.game);
+    });
+  });
+}
+
+function setupHomeTests() {
+  const personalityPanel = document.getElementById('tests-panel-personality');
+  const balancePanel = document.getElementById('tests-panel-balance');
+  const speedPanel = document.getElementById('tests-panel-speed');
+  if (!personalityPanel || !balancePanel || !speedPanel) return;
+
+  const personalityQuestions = [
+    { q: '새 영상이 올라오면?', a: '혼자 먼저 감상한다', b: '바로 커뮤니티 반응을 본다' },
+    { q: '좋아하는 장면이 생기면?', a: '내 플레이리스트에 저장한다', b: '팬들과 바로 공유한다' },
+    { q: '콘텐츠를 고를 때 더 중요한 건?', a: '완성도/분위기', b: '함께 즐길 수 있는 포인트' },
+    { q: '이벤트 참여 스타일은?', a: '관찰 후 신중 참여', b: '오픈되면 바로 참여' },
+    { q: '커뮤니티에서 나는?', a: '정리형 리뷰어', b: '대화형 참여자' }
+  ];
+  let pIndex = 0;
+  let pA = 0;
+  let pB = 0;
+  const renderPersonality = () => {
+    if (pIndex >= personalityQuestions.length) {
+      const type = pA >= pB ? '큐레이터형 팬' : '인터랙터형 팬';
+      const desc = pA >= pB
+        ? '콘텐츠를 깊게 감상하고 핵심 포인트를 정리해 공유하는 성향입니다.'
+        : '실시간 반응과 소통 중심으로 커뮤니티 흐름을 이끄는 성향입니다.';
+      personalityPanel.innerHTML = `
+        <div class="test-card">
+          <h3>결과: ${type}</h3>
+          <p class="text-sub">${desc}</p>
+          <button class="btn btn-secondary" id="personality-restart">다시 하기</button>
+        </div>
+      `;
+      document.getElementById('personality-restart')?.addEventListener('click', () => {
+        pIndex = 0; pA = 0; pB = 0; renderPersonality();
+      });
+      return;
+    }
+    const current = personalityQuestions[pIndex];
+    personalityPanel.innerHTML = `
+      <div class="test-card">
+        <div class="test-progress">${pIndex + 1} / ${personalityQuestions.length}</div>
+        <h3>${escapeHTML(current.q)}</h3>
+        <div class="test-choices">
+          <button class="btn btn-outline" id="p-a">${escapeHTML(current.a)}</button>
+          <button class="btn btn-outline" id="p-b">${escapeHTML(current.b)}</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('p-a')?.addEventListener('click', () => { pA += 1; pIndex += 1; renderPersonality(); });
+    document.getElementById('p-b')?.addEventListener('click', () => { pB += 1; pIndex += 1; renderPersonality(); });
+  };
+
+  const balanceQuestions = [
+    ['신곡 발매 1시간 전 대기', '주말 몰아듣기'],
+    ['가사 분석글 작성', '짧은 한줄 감상 공유'],
+    ['공식 MV 중심', '라이브 클립 중심'],
+    ['개인 감상 기록', '팬 토론 참여'],
+    ['고퀄 헤드폰 감상', '스피커로 함께 감상']
+  ];
+  let bIndex = 0;
+  let leftWins = 0;
+  let rightWins = 0;
+  const renderBalance = () => {
+    if (bIndex >= balanceQuestions.length) {
+      const result = leftWins >= rightWins ? '몰입형 감상파' : '소통형 참여파';
+      balancePanel.innerHTML = `
+        <div class="test-card">
+          <h3>결과: ${result}</h3>
+          <p class="text-sub">선택 성향 ${leftWins}:${rightWins}</p>
+          <button class="btn btn-secondary" id="balance-restart">다시 하기</button>
+        </div>
+      `;
+      document.getElementById('balance-restart')?.addEventListener('click', () => {
+        bIndex = 0; leftWins = 0; rightWins = 0; renderBalance();
+      });
+      return;
+    }
+    const [left, right] = balanceQuestions[bIndex];
+    balancePanel.innerHTML = `
+      <div class="test-card">
+        <div class="test-progress">${bIndex + 1} / ${balanceQuestions.length}</div>
+        <h3>어떤 쪽이 더 나와 가깝나요?</h3>
+        <div class="test-choices">
+          <button class="btn btn-outline" id="b-left">${escapeHTML(left)}</button>
+          <button class="btn btn-outline" id="b-right">${escapeHTML(right)}</button>
+        </div>
+      </div>
+    `;
+    document.getElementById('b-left')?.addEventListener('click', () => { leftWins += 1; bIndex += 1; renderBalance(); });
+    document.getElementById('b-right')?.addEventListener('click', () => { rightWins += 1; bIndex += 1; renderBalance(); });
+  };
+
+  let speedState = 'idle';
+  let speedStarted = 0;
+  const renderSpeed = (message = '시작 버튼을 누르고 초록 신호가 뜨면 즉시 클릭하세요.') => {
+    const best = Store.getGameRecord('reaction');
+    speedPanel.innerHTML = `
+      <div class="test-card">
+        <h3>반응속도 퀵 테스트</h3>
+        <p class="text-sub">${escapeHTML(message)}</p>
+        <div class="speed-box" id="speed-box">${speedState === 'ready' ? '지금 클릭!' : '대기 중'}</div>
+        <div class="test-choices">
+          <button class="btn btn-primary" id="speed-start">시작</button>
+          <button class="btn btn-secondary" id="speed-reset">기록 초기화</button>
+        </div>
+        <p class="text-sub">내 최고 기록: ${best ? `${best}ms` : '없음'}</p>
+      </div>
+    `;
+    document.getElementById('speed-start')?.addEventListener('click', startSpeedTest);
+    document.getElementById('speed-reset')?.addEventListener('click', () => {
+      Store.resetGameRecords();
+      renderSpeed('기록이 초기화되었습니다.');
+    });
+    document.getElementById('speed-box')?.addEventListener('click', onSpeedClick);
+  };
+  const startSpeedTest = () => {
+    if (speedState === 'waiting' || speedState === 'ready') return;
+    speedState = 'waiting';
+    renderSpeed('신호를 기다리는 중... 초록 신호 전 클릭하면 실패입니다.');
+    const delay = 1500 + Math.floor(Math.random() * 2500);
+    setTimeout(() => {
+      if (speedState !== 'waiting') return;
+      speedState = 'ready';
+      speedStarted = Date.now();
+      renderSpeed('지금! 박스를 클릭하세요.');
+    }, delay);
+  };
+  const onSpeedClick = () => {
+    if (speedState === 'waiting') {
+      speedState = 'idle';
+      renderSpeed('너무 빨랐습니다. 다시 시도하세요.');
+      return;
+    }
+    if (speedState === 'ready') {
+      const ms = Date.now() - speedStarted;
+      Store.saveGameRecord('reaction', ms);
+      speedState = 'idle';
+      renderSpeed(`측정 결과: ${ms}ms`);
+    }
+  };
+
+  renderPersonality();
+  renderBalance();
+  renderSpeed();
+
+  document.querySelectorAll('.tests-tabs .tab-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tab = btn.dataset.testTab;
+      document.querySelectorAll('.tests-tabs .tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
+      personalityPanel.classList.toggle('hidden', tab !== 'personality');
+      balancePanel.classList.toggle('hidden', tab !== 'balance');
+      speedPanel.classList.toggle('hidden', tab !== 'speed');
     });
   });
 }

@@ -3251,3 +3251,56 @@ a.post-row {
 #admin-yt-api-key::placeholder {
   color: var(--sf-sub) !important;
 }
+
+/* Tests hub */
+.tests-shell {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.tests-tabs {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.tests-panel {
+  border: 1px solid var(--sf-line);
+  border-radius: 14px;
+  background: var(--sf-surface);
+  padding: 0.8rem;
+}
+
+.test-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.test-progress {
+  font-size: 0.78rem;
+  color: var(--sf-sub);
+}
+
+.test-choices {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.speed-box {
+  border: 1px dashed var(--sf-line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sf-surface) 88%, var(--sf-bg) 12%);
+  min-height: 90px;
+  display: grid;
+  place-items: center;
+  color: var(--sf-text);
+  font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .test-choices {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
