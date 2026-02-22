@@ -14,7 +14,7 @@ import {
 
 export async function renderBoard(container) {
     container.innerHTML = `
-        <div class="card board-container">
+        <div class="card board-container fade-in">
             <h2>💬 자유 게시판</h2>
             <p class="text-sub">테스트 후기나 의견을 자유롭게 남겨주세요!</p>
             
@@ -29,7 +29,6 @@ export async function renderBoard(container) {
         </div>
     `;
 
-    const form = document.getElementById('post-form');
     const submitBtn = document.getElementById('submit-post');
     const contentInput = document.getElementById('post-content');
     const listContainer = document.getElementById('posts-list');
@@ -40,28 +39,32 @@ export async function renderBoard(container) {
         contentInput.placeholder = "로그인 후 이용 가능합니다.";
     }
 
-    // Load posts
     loadPosts(listContainer);
 
     submitBtn.onclick = async () => {
+        if (!UserState.user) return alert("로그인이 필요합니다.");
         const content = contentInput.value.trim();
         if (!content) return alert("내용을 입력해주세요.");
         
         try {
             submitBtn.disabled = true;
+            submitBtn.textContent = "등록 중...";
+            
             await addDoc(collection(db, "posts"), {
                 uid: UserState.user.uid,
-                author: UserState.data.nickname,
+                author: UserState.data.nickname || "익명",
                 content: content,
                 createdAt: serverTimestamp()
             });
+            
             contentInput.value = "";
-            loadPosts(listContainer);
+            await loadPosts(listContainer);
         } catch (e) {
-            console.error(e);
-            alert("게시글 등록에 실패했습니다.");
+            console.error("Post creation error:", e);
+            alert("게시글 등록에 실패했습니다. (권한 문제일 수 있습니다)");
         } finally {
             submitBtn.disabled = false;
+            submitBtn.textContent = "등록하기";
         }
     };
 }
@@ -72,7 +75,7 @@ async function loadPosts(container) {
         const snap = await getDocs(q);
         
         if (snap.empty) {
-            container.innerHTML = `<p class="text-sub" style="text-align:center; padding:2rem;">첫 번째 게시글을 남겨보세요!</p>`;
+            container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">첫 번째 게시글을 남겨보세요! ✨</p>`;
             return;
         }
 
@@ -93,17 +96,21 @@ async function loadPosts(container) {
             `;
         }).join('');
 
-        // Delete logic
         container.querySelectorAll('.btn-delete').forEach(btn => {
             btn.onclick = async () => {
                 if (confirm("정말 삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, "posts", btn.dataset.id));
-                    loadPosts(container);
+                    try {
+                        await deleteDoc(doc(db, "posts", btn.dataset.id));
+                        loadPosts(container);
+                    } catch (e) {
+                        alert("삭제 권한이 없습니다.");
+                    }
                 }
             };
         });
 
     } catch (e) {
-        container.innerHTML = `<p class="error-msg">게시글을 불러오는데 실패했습니다.</p>`;
+        console.error("Load posts error:", e);
+        container.innerHTML = `<p class="error-msg" style="text-align:center; padding:2rem;">게시글을 불러오는 중 오류가 발생했습니다.</p>`;
     }
 }

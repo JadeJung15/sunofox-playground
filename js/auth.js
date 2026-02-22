@@ -20,7 +20,6 @@ export const UserState = {
 };
 
 export function initAuth() {
-    // Listen for auth state
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             UserState.user = user;
@@ -33,18 +32,19 @@ export function initAuth() {
         }
     });
 
-    // Event Delegation for dynamic elements
     document.addEventListener('click', async (e) => {
         if (e.target.id === 'login-btn') {
             const provider = new GoogleAuthProvider();
             signInWithPopup(auth, provider).catch((error) => {
                 console.error("Login failed:", error);
-                alert("로그인에 실패했습니다.");
+                alert("로그인에 실패했습니다. 팝업이 차단되어 있는지 확인해주세요.");
             });
         }
 
         if (e.target.id === 'logout-btn') {
-            signOut(auth);
+            signOut(auth).then(() => {
+                location.hash = '#home';
+            });
         }
 
         if (e.target.id === 'nickname-save') {
@@ -55,36 +55,35 @@ export function initAuth() {
 
 async function loadUserData(user) {
     const userRef = doc(db, "users", user.uid);
-    const snap = await getDoc(userRef);
+    let snap = await getDoc(userRef);
 
-    if (snap.exists()) {
-        UserState.data = snap.data();
-    } else {
+    if (!snap.exists()) {
         const newData = {
+            uid: user.uid,
             nickname: user.displayName || '익명',
             points: 1000,
-            items: [],
             lastNicknameChange: null,
             createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);
-        UserState.data = newData;
+        snap = await getDoc(userRef);
     }
+    UserState.data = snap.data();
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
     const loginBtn = document.getElementById('login-btn');
     const userProfile = document.getElementById('user-profile');
-    const userNameEl = document.getElementById('user-name');
-    const userPointsEl = document.getElementById('user-points');
+    const userNameEls = document.querySelectorAll('#user-name');
+    const userPointsEls = document.querySelectorAll('#user-points');
     const nicknameInput = document.getElementById('nickname-input');
 
     if (isLoggedIn && UserState.data) {
         if (loginBtn) loginBtn.classList.add('hidden');
         if (userProfile) userProfile.classList.remove('hidden');
-        if (userNameEl) userNameEl.textContent = UserState.data.nickname;
-        if (userPointsEl) userPointsEl.textContent = `${UserState.data.points.toLocaleString()} P`;
-        if (nicknameInput) nicknameInput.value = UserState.data.nickname;
+        userNameEls.forEach(el => el.textContent = UserState.data.nickname);
+        userPointsEls.forEach(el => el.textContent = `${(UserState.data.points || 0).toLocaleString()} P`);
+        if (nicknameInput && !nicknameInput.value) nicknameInput.value = UserState.data.nickname;
     } else {
         if (loginBtn) loginBtn.classList.remove('hidden');
         if (userProfile) userProfile.classList.add('hidden');
@@ -94,13 +93,15 @@ export function updateUI(isLoggedIn = !!UserState.user) {
 async function changeNickname() {
     const nicknameInput = document.getElementById('nickname-input');
     const nicknameMsg = document.getElementById('nickname-msg');
-    const userNameEl = document.getElementById('user-name');
 
     if (!UserState.user || !nicknameInput || !nicknameInput.value.trim()) return;
     
     const newName = nicknameInput.value.trim();
+    if (newName === UserState.data.nickname) return;
+
     const now = Date.now();
-    const lastChange = UserState.data.lastNicknameChange ? UserState.data.lastNicknameChange.toMillis() : 0;
+    const lastChangeTs = UserState.data.lastNicknameChange;
+    const lastChange = lastChangeTs ? (lastChangeTs.toMillis ? lastChangeTs.toMillis() : lastChangeTs) : 0;
     const cooldown = 30 * 24 * 60 * 60 * 1000;
 
     if (now - lastChange < cooldown) {
@@ -118,37 +119,51 @@ async function changeNickname() {
             nickname: newName,
             lastNicknameChange: serverTimestamp()
         });
-        UserState.data.nickname = newName;
-        UserState.data.lastNicknameChange = { toMillis: () => Date.now() }; 
         
-        if (userNameEl) userNameEl.textContent = newName;
+        UserState.data.nickname = newName;
+        UserState.data.lastNicknameChange = now; 
+        
+        updateUI();
         if (nicknameMsg) {
-            nicknameMsg.textContent = "닉네임이 변경되었습니다!";
-            nicknameMsg.className = 'success-msg';
+            nicknameMsg.textContent = "닉네임이 성공적으로 변경되었습니다!";
+            nicknameMsg.className = "success-msg";
         }
     } catch (e) {
-        console.error(e);
-        if (nicknameMsg) nicknameMsg.textContent = "오류가 발생했습니다.";
+        console.error("Nickname update error:", e);
+        if (nicknameMsg) {
+            nicknameMsg.textContent = "변경 권한이 없거나 오류가 발생했습니다.";
+            nicknameMsg.className = "error-msg";
+        }
     }
 }
 
 export async function addPoints(amount) {
     if (!UserState.user) return false;
-    const userRef = doc(db, "users", UserState.user.uid);
-    await updateDoc(userRef, { points: increment(amount) });
-    UserState.data.points += amount;
-    updateUI();
-    return true;
+    try {
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, { points: increment(amount) });
+        UserState.data.points = (UserState.data.points || 0) + amount;
+        updateUI();
+        return true;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 }
 
 export async function usePoints(amount) {
-    if (!UserState.user || UserState.data.points < amount) {
+    if (!UserState.user || (UserState.data.points || 0) < amount) {
         alert("포인트가 부족합니다!");
         return false;
     }
-    const userRef = doc(db, "users", UserState.user.uid);
-    await updateDoc(userRef, { points: increment(-amount) });
-    UserState.data.points -= amount;
-    updateUI();
-    return true;
+    try {
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, { points: increment(-amount) });
+        UserState.data.points -= amount;
+        updateUI();
+        return true;
+    } catch (e) {
+        console.error(e);
+        return false;
+    }
 }
