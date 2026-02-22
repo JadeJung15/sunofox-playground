@@ -3304,3 +3304,118 @@ a.post-row {
     grid-template-columns: 1fr;
   }
 }
+
+/* Test portal home (inspired layout, not identical) */
+.portal-hero {
+  border: 1px solid var(--sf-line);
+  border-radius: 22px;
+  background: linear-gradient(140deg, color-mix(in srgb, var(--sf-surface) 94%, transparent), color-mix(in srgb, var(--sf-surface) 84%, var(--sf-bg) 16%));
+  padding: clamp(1.3rem, 3vw, 2.4rem);
+  text-align: center;
+}
+
+.portal-kicker {
+  margin: 0;
+  color: var(--sf-sub);
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.portal-hero h1 {
+  margin: 0.45rem 0 0.55rem;
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  line-height: 1.08;
+}
+
+.portal-hero p {
+  margin: 0;
+  color: var(--sf-sub);
+}
+
+.portal-top-sections {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.55rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.portal-section-link {
+  border: 1px solid var(--sf-line);
+  border-radius: 999px;
+  padding: 0.45rem 0.78rem;
+  background: var(--sf-surface);
+  color: var(--sf-text);
+  font-weight: 600;
+}
+
+.portal-toolbar {
+  border: 1px solid var(--sf-line);
+  border-radius: 16px;
+  background: var(--sf-surface);
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.portal-filter {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.portal-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+
+.test-portal-card {
+  border: 1px solid var(--sf-line);
+  border-radius: 14px;
+  background: var(--sf-surface);
+  color: var(--sf-text);
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.test-portal-card h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.test-portal-card p {
+  margin: 0;
+  color: var(--sf-sub);
+  font-size: 0.9rem;
+}
+
+.test-chip {
+  width: fit-content;
+  border: 1px solid var(--sf-line);
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.73rem;
+  color: var(--sf-sub);
+}
+
+.portal-subpage {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 1.2rem 1rem 2rem;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.portal-subpage h1 {
+  margin: 0;
+}
+
+@media (max-width: 760px) {
+  .portal-toolbar {
+    padding: 0.7rem;
+  }
+}

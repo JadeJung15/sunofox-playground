@@ -167,133 +167,80 @@ function updateThemeIcon(theme) {
 
 // Views
 function renderHome() {
-  const linkButtons = LINKTREE_LINKS.map((item) => (
-    `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
-  )).join('');
+  const tests = [
+    { category: '성격', title: '팬 감상 성향 테스트', desc: '콘텐츠를 감상하는 나만의 스타일을 확인해보세요.', href: 'tests-personality.html#fan-style' },
+    { category: '성격', title: '커뮤니티 대화 타입', desc: '토론형/공감형/리뷰형 중 내 타입은?', href: 'tests-personality.html#community-talk' },
+    { category: '성격', title: '콘텐츠 몰입도 체크', desc: '집중형 팬인지 라이트형 팬인지 분석합니다.', href: 'tests-personality.html#focus-level' },
+    { category: '얼굴', title: '프로필 무드 추천', desc: '오늘의 팬 프로필 분위기를 추천받아보세요.', href: 'tests-face.html#profile-mood' },
+    { category: '얼굴', title: '썸네일 반응 테스트', desc: '어떤 썸네일 스타일에 더 반응하는지 확인합니다.', href: 'tests-face.html#thumb-reaction' },
+    { category: '그외', title: '밸런스 게임: 팬 생활', desc: '둘 중 하나를 고르며 취향을 확인합니다.', href: 'tests-fun.html#balance' },
+    { category: '그외', title: '초간단 반응속도', desc: '빠르게 클릭해 내 반응 속도를 측정합니다.', href: 'tests-fun.html#speed' },
+    { category: '그외', title: '오늘의 추천 루트', desc: '영상/커뮤니티/게임 중 추천 동선을 제공합니다.', href: 'tests-fun.html#route' },
+    { category: '사주', title: '오늘의 팬 운세', desc: '팬 활동 운세를 가볍게 확인해보세요.', href: 'tests-fortune.html#daily-luck' },
+    { category: '사주', title: '콘텐츠 궁합 운세', desc: '오늘 잘 맞는 장르/분위기를 안내합니다.', href: 'tests-fortune.html#content-luck' }
+  ];
+  const cards = tests.map((item) => `
+    <a class="test-portal-card" href="${item.href}" data-category="${item.category}">
+      <span class="test-chip">${item.category}</span>
+      <h3>${escapeHTML(item.title)}</h3>
+      <p>${escapeHTML(item.desc)}</p>
+    </a>
+  `).join('');
+
   app.innerHTML = `
-    <section class="sf-hero fade-in">
-      <p class="sf-kicker">SunoFox Community Hub</p>
-      <h1>수노폭스 팬을 위한<br>공식 커뮤니티 허브</h1>
-      <p class="sf-sub">최신 콘텐츠 탐색, 팬 토론, 커뮤니티 참여를 한 곳에서 연결합니다.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널</a>
-        <a class="btn btn-outline" href="#community">커뮤니티 참여</a>
+    <section class="portal-hero fade-in">
+      <p class="portal-kicker">SunoFox Test Portal</p>
+      <h1>수노폭스 팬 테스트 허브</h1>
+      <p>성격 · 얼굴 · 그외 · 사주 카테고리별 테스트를 모아 제공합니다.</p>
+      <div class="portal-top-sections">
+        <a href="tests-personality.html" class="portal-section-link">성격</a>
+        <a href="tests-face.html" class="portal-section-link">얼굴</a>
+        <a href="tests-fun.html" class="portal-section-link">그외</a>
+        <a href="tests-fortune.html" class="portal-section-link">사주</a>
       </div>
     </section>
 
-    <section class="sf-grid fade-in">
-      <article class="sf-card sf-main">
-        <h2>대표 플레이리스트</h2>
-        <div class="embed">
-          <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-      </article>
-      <article class="sf-card">
-        <h3>커뮤니티 가이드</h3>
-        <ul class="sf-list">
-          <li><a href="#videos">최신 영상 아카이브 확인</a></li>
-          <li><a href="#community">팬 게시글 작성 및 토론 참여</a></li>
-          <li><a href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer">유튜브 커뮤니티 공지 확인</a></li>
-        </ul>
-      </article>
-    </section>
-
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>오늘의 코멘트</h2>
-        <span>팬 메시지</span>
-      </div>
-      <div id="advice-section" class="sf-card">
-        <p id="advice-text">로딩 중...</p>
+    <section class="portal-toolbar fade-in">
+      <input id="test-search-input" class="input" placeholder="테스트 제목 검색">
+      <div class="portal-filter">
+        <button class="tab-btn active" data-filter="전체">전체</button>
+        <button class="tab-btn" data-filter="성격">성격</button>
+        <button class="tab-btn" data-filter="얼굴">얼굴</button>
+        <button class="tab-btn" data-filter="그외">그외</button>
+        <button class="tab-btn" data-filter="사주">사주</button>
       </div>
     </section>
 
-    <section id="live-section" class="section fade-in">
-      <div class="section-head">
-        <h2>Live</h2>
-        <span>최신 영상</span>
-      </div>
-      <div id="latest-videos" class="video-grid"></div>
-    </section>
-
-    <section id="community-section" class="section fade-in">
-      <div class="toolbar sf-card">
-        <h2 class="page-title">Community</h2>
-        <div class="actions">
-          <button id="write-comm-btn-home" class="btn btn-primary">글쓰기</button>
-        </div>
-      </div>
-      <div class="post-table-header">
-        <span class="col-cat">분류</span>
-        <span class="col-title">제목</span>
-        <span class="col-author">작성자</span>
-        <span class="col-meta">조회/추천</span>
-      </div>
-      <div id="community-list-home" class="post-list-table sf-card"></div>
-    </section>
-
-    <section id="tests-section" class="section fade-in">
-      <div class="section-head">
-        <h2>Tests Hub</h2>
-        <span>성격 · 밸런스 · 스피드 테스트</span>
-      </div>
-      <div class="tests-shell sf-card">
-        <div class="tests-tabs">
-          <button class="tab-btn active" data-test-tab="personality">성격</button>
-          <button class="tab-btn" data-test-tab="balance">밸런스</button>
-          <button class="tab-btn" data-test-tab="speed">스피드</button>
-        </div>
-        <div id="tests-panel-personality" class="tests-panel"></div>
-        <div id="tests-panel-balance" class="tests-panel hidden"></div>
-        <div id="tests-panel-speed" class="tests-panel hidden"></div>
-      </div>
-    </section>
-
-    <section id="play-section" class="section fade-in">
-      <div class="section-head">
-        <h2>Play</h2>
-        <span>팬 챌린지 아케이드</span>
-      </div>
-      <div class="arcade-meta sf-card">
-        <div>
-          <h3 id="arcade-meta-title">반응속도 테스트</h3>
-          <p id="arcade-meta-desc" class="text-sub">신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.</p>
-        </div>
-        <div class="arcade-meta-grid">
-          <div class="stat-card"><span class="stat-label">난이도</span><strong id="arcade-meta-level">입문</strong></div>
-          <div class="stat-card"><span class="stat-label">조작</span><strong id="arcade-meta-control">클릭 / 스페이스바</strong></div>
-        </div>
-      </div>
-      <div class="game-tabs">
-        <button class="tab-btn active" data-game="reaction">반응속도</button>
-        <button class="tab-btn" data-game="memory">기억력</button>
-        <button class="tab-btn" data-game="rhythm">리듬</button>
-        <button class="tab-btn" data-game="puzzle">퍼즐</button>
-        <button class="tab-btn" data-game="math">스피드 합산</button>
-        <button class="tab-btn" data-game="rps">블랙잭</button>
-        <button class="tab-btn" data-game="number">숫자 기억력</button>
-        <button class="tab-btn" data-game="typing">타이핑</button>
-        <button class="tab-btn" data-game="reflex">반사신경</button>
-        <button class="tab-btn" data-game="maze">미로</button>
-        <button class="tab-btn" data-game="dodge">낙하 피하기</button>
-      </div>
-      <div id="game-container" class="game-container"></div>
-    </section>
-
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>공식 링크</h2>
-      </div>
-      <div class="hub-link-list">
-        ${linkButtons}
-      </div>
+    <section class="portal-grid fade-in" id="test-cards-grid">
+      ${cards}
     </section>
   `;
-  fetchAdvice();
-  loadLatestVideos();
-  setupHomeCommunityList();
-  setupHomeTests();
-  setupHomeArcade();
+  setupTestLandingFilter();
+}
+
+function setupTestLandingFilter() {
+  const searchInput = document.getElementById('test-search-input');
+  const cards = Array.from(document.querySelectorAll('.test-portal-card'));
+  const filterButtons = Array.from(document.querySelectorAll('.portal-filter .tab-btn'));
+  let currentFilter = '전체';
+  const applyFilter = () => {
+    const keyword = (searchInput?.value || '').trim().toLowerCase();
+    cards.forEach((card) => {
+      const category = card.dataset.category || '';
+      const text = (card.textContent || '').toLowerCase();
+      const okCategory = currentFilter === '전체' || category === currentFilter;
+      const okKeyword = !keyword || text.includes(keyword);
+      card.classList.toggle('hidden', !(okCategory && okKeyword));
+    });
+  };
+  searchInput?.addEventListener('input', applyFilter);
+  filterButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter || '전체';
+      filterButtons.forEach((b) => b.classList.toggle('active', b === btn));
+      applyFilter();
+    });
+  });
 }
 
 function setupHomeCommunityList() {
