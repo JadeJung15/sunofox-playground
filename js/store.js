@@ -50,6 +50,7 @@ export const Store = {
         displayName,
         points: 0,
         tier: 'Rookie',
+        lastLoginDate: new Date().toISOString().slice(0, 10),
         createdAt: new Date().toISOString()
       });
     }

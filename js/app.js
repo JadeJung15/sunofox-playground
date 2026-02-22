@@ -26,16 +26,18 @@ let isAdmin = false;    // To store admin status
 let adminMaintenanceDone = false;
 
 const TIERS = [
-  { name: 'Rookie', min: 0 },
-  { name: 'Silver', min: 50 },
-  { name: 'Gold', min: 150 },
-  { name: 'Platinum', min: 300 },
-  { name: 'Diamond', min: 600 },
+  { name: 'Rookie', label: '루키', min: 0, className: 'tier-rookie' },
+  { name: 'Bronze', label: '브론즈', min: 80, className: 'tier-bronze' },
+  { name: 'Silver', label: '실버', min: 200, className: 'tier-silver' },
+  { name: 'Gold', label: '골드', min: 400, className: 'tier-gold' },
+  { name: 'Platinum', label: '플래티넘', min: 700, className: 'tier-platinum' },
+  { name: 'Diamond', label: '다이아', min: 1100, className: 'tier-diamond' },
 ];
 const POINTS = {
-  post: 10,
-  comment: 3,
-  like: 1
+  post: 15,
+  comment: 5,
+  like: 1,
+  dailyLogin: 8
 };
 
 const CHANNEL_URL = 'https://youtube.com/@sunofox';
@@ -107,6 +109,7 @@ onAuthStateChanged(auth, async (user) => {
   if (currentUser) {
     try {
       await Store.ensureUserProfile(currentUser.uid, getDisplayName());
+      await awardDailyLoginPoints();
     } catch (error) {
       console.warn('Failed to ensure user profile:', error);
     }
@@ -649,13 +652,16 @@ async function loadProfileView() {
   const points = profile?.points || 0;
   const tier = computeTier(points);
   const nextTier = TIERS.find(t => t.min > points);
-  const progressText = nextTier ? `${nextTier.min - points}점 더 모으면 ${nextTier.name}` : '최고 등급입니다';
+  const progressText = nextTier ? `${nextTier.min - points}점 더 모으면 ${nextTier.label}` : '최고 등급입니다';
 
   document.getElementById('profile-card-loading').innerHTML = `
     <h3>환영합니다, ${getDisplayName()}!</h3>
     <p>UID: ${currentUser.uid}</p>
     ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
     <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
+    <div class="mt-2">
+      <span class="tier-badge ${tier.className}">${tier.label}</span>
+    </div>
     <div class="stat-grid mt-4">
       <div class="stat-card">
         <span class="stat-label">포인트</span>
@@ -663,12 +669,16 @@ async function loadProfileView() {
       </div>
       <div class="stat-card">
         <span class="stat-label">등급</span>
-        <strong>${tier}</strong>
+        <strong>${tier.label}</strong>
       </div>
       <div class="stat-card">
         <span class="stat-label">다음 등급</span>
         <strong>${progressText}</strong>
       </div>
+    </div>
+    <div class="card mt-4">
+      <h4>포인트 규칙</h4>
+      <p class="text-sub">게시글 +${POINTS.post} · 댓글 +${POINTS.comment} · 좋아요 +${POINTS.like} · 출석 +${POINTS.dailyLogin}</p>
     </div>
     <div class="mt-4">
       <label for="nickname-input">닉네임</label>
@@ -1040,13 +1050,24 @@ async function awardPoints(delta) {
   const currentPoints = profile?.points || 0;
   const newPoints = currentPoints + delta;
   const tier = computeTier(newPoints);
-  await Store.addPoints(currentUser.uid, delta, tier);
+  await Store.addPoints(currentUser.uid, delta, tier.name);
 }
 
 function computeTier(points) {
-  let tier = TIERS[0].name;
+  let tier = TIERS[0];
   TIERS.forEach(t => {
-    if (points >= t.min) tier = t.name;
+    if (points >= t.min) tier = t;
   });
   return tier;
+}
+
+async function awardDailyLoginPoints() {
+  if (!currentUser) return;
+  const today = new Date().toISOString().slice(0, 10);
+  const profile = await Store.getUserProfile(currentUser.uid);
+  if (!profile) return;
+  if (profile.lastLoginDate !== today) {
+    await Store.updateUserProfile(currentUser.uid, { lastLoginDate: today });
+    await awardPoints(POINTS.dailyLogin);
+  }
 }
