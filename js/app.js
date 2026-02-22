@@ -1,5 +1,5 @@
 // js/app.js - Premium Content & Core Logic
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
@@ -276,14 +276,16 @@ function renderProfile() {
                 <div class="content-area">
                     <div class="admin-tool-group" style="background: rgba(99, 102, 241, 0.05); padding: 1.5rem; border-radius: var(--radius-md); border: 1px dashed var(--accent-color);">
                         <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">👤 사용자 관리</h4>
-                        <button id="admin-search-users" class="btn-secondary" style="width:100%; margin-bottom:1rem; border-color:var(--accent-color); color:var(--accent-color);">전체 사용자 목록 (UID) 검색</button>
+                        <button id="admin-search-users" class="btn-secondary" style="width:100%; margin-bottom:1rem; border-color:var(--accent-color); color:var(--accent-color);">사용자 목록 불러오기</button>
+                        <div id="admin-user-list-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 1.5rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); display: none;"></div>
                         
-                        <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💰 사용자 포인트 관리</h4>
+                        <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💰 사용자 자산 관리</h4>
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                             <input type="text" id="admin-target-uid" style="padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="대상 UID (미입력 시 본인)">
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="number" id="admin-point-amount" style="flex: 1; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="금액 (+ 또는 -)">
-                                <button id="admin-charge-btn" class="btn-primary" style="background: var(--accent-secondary); box-shadow: none;">집행</button>
+                                <input type="number" id="admin-amount" style="flex: 1; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="수량 (+ 또는 -)">
+                                <button id="admin-charge-points-btn" class="btn-primary" style="background: var(--accent-secondary); box-shadow: none; font-size: 0.8rem; padding: 0 10px;">포인트 집행</button>
+                                <button id="admin-charge-score-btn" class="btn-primary" style="background: var(--accent-color); box-shadow: none; font-size: 0.8rem; padding: 0 10px;">점수 집행</button>
                             </div>
                         </div>
                         <p id="admin-msg" style="margin-top: 0.75rem; font-size: 0.8rem; font-weight: 700; color: var(--accent-color);"></p>
@@ -295,22 +297,52 @@ function renderProfile() {
     `;
     updateUI();
     if (UserState.isAdmin) {
-        document.getElementById('admin-charge-btn').onclick = async () => {
+        document.getElementById('admin-charge-points-btn').onclick = async () => {
             const uid = document.getElementById('admin-target-uid').value.trim();
-            const amount = parseInt(document.getElementById('admin-point-amount').value);
+            const amount = parseInt(document.getElementById('admin-amount').value);
             const msg = document.getElementById('admin-msg');
             if (isNaN(amount)) return alert("금액을 정확히 입력하세요.");
             if (await chargeUserPoints(uid, amount)) {
                 msg.textContent = `성공: ${uid || '본인'}에게 ${amount}P 적용 완료.`;
-                document.getElementById('admin-point-amount').value = '';
+                document.getElementById('admin-amount').value = '';
+            } else { msg.textContent = "실패: 사용자 정보를 확인하세요."; }
+        };
+        document.getElementById('admin-charge-score-btn').onclick = async () => {
+            const uid = document.getElementById('admin-target-uid').value.trim();
+            const amount = parseInt(document.getElementById('admin-amount').value);
+            const msg = document.getElementById('admin-msg');
+            if (isNaN(amount)) return alert("수량을 정확히 입력하세요.");
+            if (await chargeUserScore(uid, amount)) {
+                msg.textContent = `성공: ${uid || '본인'}에게 ${amount}점 적용 완료.`;
+                document.getElementById('admin-amount').value = '';
             } else { msg.textContent = "실패: 사용자 정보를 확인하세요."; }
         };
         document.getElementById('admin-search-users').onclick = async () => {
+            const listContainer = document.getElementById('admin-user-list-container');
             try {
                 const snap = await getDocs(collection(db, "users"));
                 const users = [];
-                snap.forEach(d => users.push(`${d.data().nickname} : ${d.id}`));
-                alert(`[전체 사용자 목록]\n\n${users.join('\n')}`);
+                snap.forEach(d => {
+                    const data = d.data();
+                    users.push(`
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.6rem; border-bottom: 1px solid var(--border-color);">
+                            <div style="display:flex; flex-direction:column; overflow:hidden;">
+                                <span style="font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.nickname}</span>
+                                <small style="font-size:0.65rem; color:var(--text-sub);">${d.id}</small>
+                            </div>
+                            <button class="admin-select-user-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem; white-space:nowrap;">등록</button>
+                        </div>
+                    `);
+                });
+                listContainer.innerHTML = users.join('');
+                listContainer.style.display = 'block';
+                
+                listContainer.querySelectorAll('.admin-select-user-btn').forEach(btn => {
+                    btn.onclick = () => {
+                        document.getElementById('admin-target-uid').value = btn.dataset.uid;
+                        alert(`${btn.dataset.uid} 사용자가 선택되었습니다.`);
+                    };
+                });
             } catch (e) { alert("목록 로드 실패"); }
         };
     }

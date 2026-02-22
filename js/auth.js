@@ -206,6 +206,16 @@ export async function chargeUserPoints(targetUid, amount) {
     } catch (e) { return false; }
 }
 
+export async function chargeUserScore(targetUid, amount) {
+    if (!UserState.isAdmin) return false;
+    const finalUid = targetUid || UserState.user.uid;
+    try {
+        await updateDoc(doc(db, "users", finalUid), { totalScore: increment(amount) });
+        if (finalUid === UserState.user.uid) { UserState.data.totalScore += amount; updateUI(); }
+        return true;
+    } catch (e) { return false; }
+}
+
 export async function addPoints(amount) {
     if (!UserState.user) return false;
     try {
