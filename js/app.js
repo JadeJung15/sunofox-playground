@@ -116,54 +116,41 @@ function renderHome() {
     <section class="hero-grid fade-in">
       <div class="panel hero-main">
         <div class="hero-banner">
-          <strong>Community Wave</strong>
-          <div class="hero-pill">🔥 이번 주 팬픽 OST 피드 · 1,248 참여</div>
+          <strong>SunoFox Fanpage</strong>
+          <div class="hero-pill">🎬 유튜브 수노폭스 팬페이지</div>
         </div>
-        <p class="section-kicker">SunoFox Community</p>
-        <h1 class="headline">영상 이야기부터 게임 & 심리테스트까지,<br>하나의 라운지에서.</h1>
+        <p class="section-kicker">SunoFox Fan Lounge</p>
+        <h1 class="headline">수노폭스 유튜브 팬들을 위한<br>영상 허브 & 팬 커뮤니티.</h1>
         <p class="lead">
-          유튜브 채널을 중심으로 이야기하고, 가벼운 게임과 테스트로 놀고,
-          팬들이 함께 성장하는 커뮤니티를 만듭니다.
+          최신 영상, 플레이리스트, 팬 토론을 한 곳에서 모았습니다.
+          팬들이 직접 만든 리뷰와 기록도 공유하세요.
         </p>
         <div class="hero-actions">
-          <a class="btn btn-primary" href="#videos">영상 라운지</a>
-          <a class="btn btn-secondary" href="#community">커뮤니티</a>
-          <a class="btn btn-outline" href="#arcade">게임 아케이드</a>
-        </div>
-        <div class="ticker">
-          <span>라이브 피드</span>
-          <div class="ticker-track">
-            <span>🎧 최신 OST 리뷰 스레드 오픈</span>
-            <span>🕹️ 오늘의 미니게임 챌린지</span>
-            <span>🧪 테스트 결과 공유 이벤트</span>
-            <span>🎬 커뮤니티 하이라이트 업데이트</span>
-            <span>🎧 최신 OST 리뷰 스레드 오픈</span>
-            <span>🕹️ 오늘의 미니게임 챌린지</span>
-            <span>🧪 테스트 결과 공유 이벤트</span>
-            <span>🎬 커뮤니티 하이라이트 업데이트</span>
-          </div>
+          <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 구독하기</a>
+          <a class="btn btn-secondary" href="#videos">최신 영상 보기</a>
+          <a class="btn btn-outline" href="#community">팬 토론 참여</a>
         </div>
         <div class="stat-grid">
           <div class="stat-card">
-            <span class="stat-label">오늘의 핫토픽</span>
-            <strong>신작 OST 감상평 모음</strong>
+            <span class="stat-label">팬페이지 소개</span>
+            <strong>수노폭스 팬 전용 허브</strong>
           </div>
           <div class="stat-card">
-            <span class="stat-label">게임 랭킹</span>
-            <strong>Top 기록을 공유하세요</strong>
+            <span class="stat-label">최신 업데이트</span>
+            <strong>영상 & 토론 자동 모음</strong>
           </div>
           <div class="stat-card">
-            <span class="stat-label">심리테스트</span>
-            <strong>결과를 카드로 공유</strong>
+            <span class="stat-label">팬 참여</span>
+            <strong>리뷰 · 토론 · 기록 공유</strong>
           </div>
         </div>
       </div>
       <div class="panel hero-side">
         <div class="spotlight">
           <div>
-            <p class="section-kicker">Featured Playlist</p>
-            <h3>추천 OST 플레이리스트</h3>
-            <p class="text-sub">유튜브에서 최신 작품과 감성 라인업을 들어보세요.</p>
+            <p class="section-kicker">Featured</p>
+            <h3>수노폭스 대표 플레이리스트</h3>
+            <p class="text-sub">팬들이 가장 좋아하는 영상 모음입니다.</p>
           </div>
           <div class="embed">
             <iframe
@@ -173,10 +160,6 @@ function renderHome() {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen></iframe>
           </div>
-          <div class="spotlight-card">
-            <div class="badge"><strong>NEW</strong> 팬픽 OST 챌린지</div>
-            <p class="text-sub">커뮤니티에서 다음 OST 키워드를 투표해주세요.</p>
-          </div>
           <a class="btn btn-outline full-width" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널로</a>
         </div>
       </div>
@@ -184,53 +167,53 @@ function renderHome() {
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>커뮤니티가 이렇게 확장됩니다</h2>
-        <span>영상 · 대화 · 놀이 · 테스트</span>
+        <h2>팬페이지에서 하는 일</h2>
+        <span>영상 · 토론 · 기록</span>
       </div>
       <div class="grid-three">
         <a href="#videos" class="card feature-card">
           <div class="card-icon">🎬</div>
-          <h3>영상 라운지</h3>
-          <p>영상별 토론과 감상 포인트를 모아보세요.</p>
+          <h3>영상 모아보기</h3>
+          <p>최신 영상과 플레이리스트를 한눈에 정리합니다.</p>
         </a>
         <a href="#community" class="card feature-card">
           <div class="card-icon">💬</div>
-          <h3>커뮤니티</h3>
-          <p>자유 토론, 게임 기록, 추천 콘텐츠까지.</p>
+          <h3>팬 토론</h3>
+          <p>감상 포인트, 다음 콘텐츠 아이디어를 나눠보세요.</p>
         </a>
-        <a href="#tests" class="card feature-card">
-          <div class="card-icon">🧪</div>
-          <h3>심리테스트</h3>
-          <p>짧고 공유 가능한 결과 카드로 소통하세요.</p>
+        <a href="#arcade" class="card feature-card">
+          <div class="card-icon">🕹️</div>
+          <h3>팬 챌린지</h3>
+          <p>기록 공유와 이벤트 참여로 팬덤을 키워요.</p>
         </a>
       </div>
     </section>
 
     <section class="section fade-in">
       <div class="section-head">
-        <h2>채널 맵</h2>
-        <span>커뮤니티 운영 흐름</span>
+        <h2>팬페이지 흐름</h2>
+        <span>수노폭스 팬을 위한 루트</span>
       </div>
       <div class="channel-map">
         <div class="map-card">
           <small>01</small>
           <h4>영상 시청</h4>
-          <p class="text-sub">신규 영상과 플레이리스트를 따라가며 감상을 정리합니다.</p>
+          <p class="text-sub">유튜브 최신 영상과 추천 재생목록을 봅니다.</p>
         </div>
         <div class="map-card">
           <small>02</small>
-          <h4>라운지 토크</h4>
-          <p class="text-sub">감상 포인트와 다음 콘텐츠 아이디어를 공유합니다.</p>
+          <h4>팬 토론</h4>
+          <p class="text-sub">감상 포인트, 인상 깊은 장면을 나눕니다.</p>
         </div>
         <div class="map-card">
           <small>03</small>
-          <h4>게임 챌린지</h4>
-          <p class="text-sub">미니게임 랭킹으로 팬들의 실력을 모아봅니다.</p>
+          <h4>팬 챌린지</h4>
+          <p class="text-sub">이벤트와 기록 공유로 팬 활동을 이어갑니다.</p>
         </div>
         <div class="map-card">
           <small>04</small>
-          <h4>테스트 결과</h4>
-          <p class="text-sub">심리테스트 결과를 카드로 공유하고 토론합니다.</p>
+          <h4>커뮤니티 확장</h4>
+          <p class="text-sub">리뷰, 추천, 질문을 통해 팬덤을 키웁니다.</p>
         </div>
       </div>
     </section>
@@ -241,20 +224,19 @@ function renderVideos() {
   app.innerHTML = `
     <div class="fade-in">
       <div class="section-head">
-        <h2>🎬 영상 라운지</h2>
+        <h2>🎬 수노폭스 유튜브 영상</h2>
         <span>${CHANNEL_URL.replace('https://', '')}</span>
       </div>
       <div class="panel video-panel">
         <div class="video-copy">
-          <h3>오늘의 영상 이야기</h3>
+          <h3>최신 영상과 플레이리스트</h3>
           <p class="text-sub">
-            최신 영상과 OST 이야기를 나누는 공간입니다. 감상 포인트를 공유하고,
-            다음 콘텐츠 아이디어도 함께 모아주세요.
+            수노폭스 채널의 최신 영상과 추천 재생목록을 모아 보여줍니다.
+            팬들의 감상 포인트도 함께 모아보세요.
           </p>
-          <div class="badge"><strong>LIVE</strong> 커뮤니티 피드백 수집 중</div>
           <div class="hero-actions">
             <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널 방문</a>
-            <a class="btn btn-outline" href="#community">영상 토론 글쓰기</a>
+            <a class="btn btn-outline" href="#community">팬 토론 참여</a>
           </div>
         </div>
         <div class="embed">
@@ -267,44 +249,26 @@ function renderVideos() {
         </div>
       </div>
       <div class="section-head">
-        <h2>기획 레일</h2>
-        <span>다음 콘텐츠 미리보기</span>
-      </div>
-      <div class="video-rail">
-        <div class="rail-card">
-          <h4>시그니처 OST 분석</h4>
-          <p>영상에서 사용하는 OST 라인업을 분해해봅니다.</p>
-        </div>
-        <div class="rail-card">
-          <h4>캐릭터 테마 매치</h4>
-          <p>게임 속 캐릭터에 어울리는 음악을 투표하세요.</p>
-        </div>
-        <div class="rail-card">
-          <h4>팬픽 에피소드</h4>
-          <p>커뮤니티 인기 스레드를 영상화합니다.</p>
-        </div>
-      </div>
-      <div class="section-head">
-        <h2>이번 주 핫 토픽</h2>
-        <span>커뮤니티 하이라이트</span>
+        <h2>팬페이지 하이라이트</h2>
+        <span>토론 & 추천</span>
       </div>
       <div class="grid-three">
         <div class="card feature-card">
-          <h3>🎧 OST 감정선 분석</h3>
-          <p>팬들이 뽑은 명장면과 음악 포인트를 공유합니다.</p>
+          <h3>🎧 추천 영상 토론</h3>
+          <p>이번 주 인기 영상 감상평을 모아봅니다.</p>
         </div>
         <div class="card feature-card">
-          <h3>📌 다음 영상 아이디어</h3>
-          <p>보고 싶은 콘텐츠를 제안하고 투표하세요.</p>
+          <h3>📌 다음 콘텐츠 제안</h3>
+          <p>보고 싶은 주제를 팬들이 직접 제안합니다.</p>
         </div>
         <div class="card feature-card">
-          <h3>🎮 게임 기록 챌린지</h3>
-          <p>게임 기록을 공유하고 랭킹에 도전하세요.</p>
+          <h3>💬 팬 토론 모음</h3>
+          <p>영상별 스레드를 만들어 함께 이야기해요.</p>
         </div>
       </div>
       <div class="section-head">
-        <h2>최신 영상</h2>
-        <span>자동 업데이트</span>
+        <h2>최신 업로드</h2>
+        <span>자동 업데이트 (채널 ID 설정 필요)</span>
       </div>
       <div id="latest-videos" class="video-grid"></div>
     </div>
