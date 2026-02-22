@@ -264,7 +264,7 @@ function renderCommunity() {
     try {
       const posts = await Store.getPosts('community');
       const commentCounts = await Promise.all(
-        posts.map(p => Store.getComments(p.id).then(c => c.length).catch(() => 0))
+        posts.map(p => Store.getComments(p.id, p.legacyId).then(c => c.length).catch(() => 0))
       );
       const listHtml = posts.map((post, idx) => `
         <div class="post-row" data-id="${post.id}">
@@ -494,7 +494,7 @@ async function openPostModal(id) { // Added async
   modal.className = 'modal-overlay fade-in';
   
   const renderModalContent = async (currentPost) => { // Added async
-    const comments = await Store.getComments(id); // Await comments
+    const comments = await Store.getComments(id, currentPost.legacyId); // Await comments
     modal.innerHTML = `
       <div class="modal view-modal">
         <div class="modal-header">

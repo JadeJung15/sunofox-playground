@@ -75,7 +75,12 @@ export const Store = {
     }
     
     const querySnapshot = await getDocs(q);
-    let posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    let posts = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      const legacyId = data.id;
+      if (legacyId) delete data.id;
+      return { id: doc.id, legacyId, ...data };
+    });
 
     if (posts.length === 0) { // If no posts, seed initial data to Firestore
         console.log("Seeding initial posts...");
@@ -84,7 +89,12 @@ export const Store = {
         }
         // After seeding, query again to get the newly added posts with their Firestore IDs
         const seededSnapshot = await getDocs(q);
-        posts = seededSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        posts = seededSnapshot.docs.map(doc => {
+          const data = doc.data();
+          const legacyId = data.id;
+          if (legacyId) delete data.id;
+          return { id: doc.id, legacyId, ...data };
+        });
     }
 
     return posts;
@@ -94,11 +104,23 @@ export const Store = {
     const docRef = doc(db, "posts", id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-        return { id: docSnap.id, ...docSnap.data() };
-    } else {
-        console.log("No such document!", id); // Log the missing ID
-        return null;
+        const data = docSnap.data();
+        const legacyId = data.id;
+        if (legacyId) delete data.id;
+        return { id: docSnap.id, legacyId, ...data };
     }
+    // Fallback for legacy docs that stored "id" field
+    const legacyQuery = query(postsCol, where("id", "==", id), limit(1));
+    const legacySnapshot = await getDocs(legacyQuery);
+    if (!legacySnapshot.empty) {
+        const legacyDoc = legacySnapshot.docs[0];
+        const data = legacyDoc.data();
+        const legacyId = data.id;
+        if (legacyId) delete data.id;
+        return { id: legacyDoc.id, legacyId, ...data };
+    }
+    console.log("No such document!", id);
+    return null;
   },
 
   async addPost(postData) {
@@ -151,8 +173,13 @@ export const Store = {
   },
 
   // Comments - Now using Firestore
-  async getComments(postId) {
-    const q = query(commentsCol, where("postId", "==", postId), orderBy("date", "asc"));
+  async getComments(postId, legacyId = null) {
+    let q;
+    if (legacyId && legacyId !== postId) {
+      q = query(commentsCol, where("postId", "in", [postId, legacyId]), orderBy("date", "asc"));
+    } else {
+      q = query(commentsCol, where("postId", "==", postId), orderBy("date", "asc"));
+    }
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   },
