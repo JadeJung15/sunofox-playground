@@ -626,13 +626,13 @@ async function renderHome(hash) {
                         <span class="quick-icon">✨</span>
                         <span class="quick-label">비주얼</span>
                     </a>
+                    <a href="#fun" class="quick-item">
+                        <span class="quick-icon">🎨</span>
+                        <span class="quick-label">재미</span>
+                    </a>
                     <a href="#fortune" class="quick-item">
                         <span class="quick-icon">🔮</span>
                         <span class="quick-label">오늘 운세</span>
-                    </a>
-                    <a href="#arcade" class="quick-item">
-                        <span class="quick-icon">🎰</span>
-                        <span class="quick-label">오락실</span>
                     </a>
                 </div>
 
