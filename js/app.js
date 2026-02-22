@@ -295,20 +295,114 @@ function renderProfile() {
 function renderArcade() {
     if (!UserState.user) { renderProfile(); return; }
     app.innerHTML = `
-        <div class="card arcade-container fade-in">
-            <h2 style="text-align:center; margin-bottom:1.5rem;">🎰 오락실</h2>
-            <div class="profile-stats" style="background:var(--bg-color); padding:1rem; border-radius:15px; margin-bottom:2rem; display:flex; gap:1rem;">
-                <div class="stat-item"><span class="stat-label">내 포인트</span><span class="stat-value" id="user-points">0</span></div>
-                <div class="stat-item"><span class="stat-label">부스터</span><span class="stat-value" style="color:var(--accent-secondary);">${UserState.data.boosterCount || 0}회</span></div>
+        <div class="arcade-page fade-in">
+            <div class="card arcade-header" style="text-align:center; padding: 2.5rem 1.5rem; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); color: #fff; border: none; margin-bottom: 2rem; border-radius: var(--radius-lg); position: relative; overflow: hidden;">
+                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
+                <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; position: relative;">🎰 SEVEN ARCADE</h2>
+                <p style="opacity: 0.9; font-size: 1rem; font-weight: 600; position: relative;">매일 즐거운 게임과 포인트 혜택!</p>
+                <div class="arcade-user-stats" style="display: inline-flex; justify-content: center; gap: 2rem; margin-top: 2rem; background: rgba(255,255,255,0.2); padding: 0.8rem 2rem; border-radius: 50px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); position: relative;">
+                    <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:0.85rem; font-weight:700;">내 포인트:</span><span id="user-points" style="font-weight:900; font-size: 1.1rem;">0</span></div>
+                    <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:0.85rem; font-weight:700;">부스터:</span><span style="font-weight:900; font-size: 1.1rem;">${UserState.data.boosterCount || 0}회</span></div>
+                </div>
             </div>
 
-            <details class="profile-details" open><summary>⛏️ 포인트 채굴</summary><div class="content-area" style="text-align:center;"><p class="text-sub" style="margin-bottom:1rem;">클릭하여 포인트를 채굴하세요! (5~15P)</p><button id="click-game-btn" class="btn-primary" style="width:100%; height:60px; font-size:1.2rem; background:linear-gradient(135deg, #6366f1, #a855f7);">포인트 채굴 시작</button></div></details>
-            <details class="profile-details"><summary>⚡ 슈퍼 부스터 상점</summary><div class="content-area" style="background:rgba(99, 102, 241, 0.05);"><p class="text-sub">구매 시 다음 20회 테스트 보상 2배!</p><button id="buy-booster-btn" class="btn-primary" style="margin-top:1rem; background:#4f46e5;">부스터 구매 (100P)</button></div></details>
-            <details class="profile-details"><summary>🎫 럭키 복권</summary><div class="content-area"><div id="lotto-result" class="lotto-card" style="height:80px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem; border:2px dashed #fda085; border-radius:12px; font-weight:bold;">인생역전의 기회!</div><button id="lotto-btn" class="btn-primary" style="background:#fda085; box-shadow: 0 4px 14px 0 rgba(253, 160, 133, 0.39);">복권 구매 (500P)</button></div></details>
-            <details class="profile-details"><summary>🎲 포인트 베팅</summary><div class="content-area"><input type="number" id="bet-amount" value="100" min="10" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color); text-align:center; font-size:1.2rem; font-weight:800; margin-bottom:1rem;"><div id="bet-result-msg" style="text-align:center; font-weight:bold; margin-bottom:1rem; min-height:40px;">운을 시험해 보세요</div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;"><button class="bet-btn btn-primary" data-game="oddeven" data-choice="odd">홀</button><button class="bet-btn btn-primary" data-game="oddeven" data-choice="even">짝</button><button class="bet-btn btn-secondary" data-game="dice" data-choice="low">저(1-3)</button><button class="bet-btn btn-secondary" data-game="dice" data-choice="high">고(4-6)</button></div></div></details>
-            <details class="profile-details"><summary>📦 아이템 뽑기</summary><div class="content-area"><div id="gacha-result" class="gacha-box" style="min-height:80px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem; border:2px dashed var(--border-color); border-radius:12px; text-align:center;">무엇이 나올까요?</div><button id="gacha-btn" class="btn-primary" style="width:100%; margin-bottom:0.5rem;">1회 (100P)</button><div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;"><button id="gacha-5-btn" class="btn-secondary">5회 (500P)</button><button id="gacha-10-btn" class="btn-secondary" style="color:var(--accent-color); border-color:var(--accent-color);">10회 (950P🔥)</button></div></div></details>
-            <details class="profile-details"><summary>⚗️ 연금술 (합성)</summary><div class="content-area"><p class="text-sub" style="margin-bottom:1rem;">아이템 5개를 소모하여 고가치 아이템 1개를 만듭니다.</p><div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:40px;">현자의 돌을 찾아서...</div><button id="alchemy-btn" class="btn-primary" style="width:100%; background:var(--accent-secondary);">연금술 실행 (500P)</button></div></details>
-            <details class="profile-details"><summary>🔢 UP & DOWN</summary><div class="content-area"><p class="text-sub" style="margin-bottom:1rem;">1~50 사이의 숫자를 맞추고 50P를 받으세요!</p><div style="display:flex; gap:0.5rem;"><input type="number" id="updown-input" style="flex:1; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color); text-align:center;" placeholder="숫자 입력"><button id="updown-submit" class="btn-primary" style="width:80px;">확인</button></div><p id="updown-msg" style="text-align:center; margin-top:1rem; font-weight:800; color:var(--accent-color);"></p></div></details>
+            <div class="arcade-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
+                <!-- 1. 출석체크 -->
+                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">📅 일일 출석체크</h3>
+                        <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">FREE</span>
+                    </div>
+                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">하루 한 번, 클릭만으로 <strong>100P</strong>를 즉시 획득하세요.</p>
+                    <button id="daily-checkin-btn" class="btn-primary" style="width:100%; background:#10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">출석체크 완료하기</button>
+                </div>
+
+                <!-- 2. 포인트 채굴 -->
+                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">⛏️ 포인트 채굴</h3>
+                        <span style="background: rgba(99, 102, 241, 0.1); color: var(--accent-color); padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">LIMITLESS</span>
+                    </div>
+                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">채굴기를 가동하여 무작위 포인트를 생산합니다. (5~15P)</p>
+                    <button id="click-game-btn" class="btn-primary" style="width:100%; height:55px; background:linear-gradient(90deg, var(--accent-color), #8b5cf6);">채굴기 가동 시작</button>
+                </div>
+
+                <!-- 3. 복권 -->
+                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🎫 럭키 복권</h3>
+                        <span style="background: rgba(253, 160, 133, 0.1); color: #fda085; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">JACKPOT</span>
+                    </div>
+                    <div id="lotto-result" class="lotto-card" style="height:70px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed #fda085; border-radius:15px; font-weight:800; font-size:1rem; background:rgba(253,160,133,0.05); color: #fda085;">당신의 행운을 테스트하세요!</div>
+                    <button id="lotto-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3);">복권 구매 (500P)</button>
+                </div>
+
+                <!-- 4. 베팅 -->
+                <div class="card arcade-item-card" style="margin-bottom:0;">
+                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">🎲 포인트 베팅</h3>
+                    <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border: 1px solid var(--border-color);">
+                        <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.5rem;">베팅 금액 설정</label>
+                        <input type="number" id="bet-amount" value="100" min="10" style="width:100%; background: transparent; border: none; text-align:center; font-size:1.5rem; font-weight:900; color: var(--accent-color); outline: none;">
+                    </div>
+                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1rem; min-height:35px; font-size:0.9rem; color: var(--text-sub);">Ready to play?</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
+                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="oddeven" data-choice="odd">홀수</button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="oddeven" data-choice="even">짝수</button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="dice" data-choice="low">1 ~ 3</button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="dice" data-choice="high">4 ~ 6</button>
+                    </div>
+                </div>
+
+                <!-- 5. 아이템 뽑기 -->
+                <div class="card arcade-item-card" style="margin-bottom:0;">
+                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">📦 아이템 뽑기</h3>
+                    <div id="gacha-result" class="gacha-box" style="min-height:75px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed var(--border-color); border-radius:15px; text-align:center; font-size:0.9rem; background:rgba(0,0,0,0.02); font-weight: 600;">희귀 아이템이 쏟아집니다</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
+                        <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); box-shadow: 0 4px 14px rgba(30, 41, 59, 0.2);">1회 (100P)</button>
+                        <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);">10회 (950P 🔥)</button>
+                    </div>
+                </div>
+
+                <!-- 6. 연금술 -->
+                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
+                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
+                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">재료 5개 ➔ 상급 아이템 연성<br><small style="color:var(--accent-color);">(수수료 500P 소모)</small></p>
+                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.9rem;"></div>
+                    <button id="alchemy-btn" class="btn-primary" style="width:100%; background:var(--accent-secondary); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);">연금술 합체!</button>
+                </div>
+
+                <!-- 7. UP DOWN -->
+                <div class="card arcade-item-card" style="margin-bottom:0;">
+                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">🔢 UP & DOWN</h3>
+                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem;">1~50 숫자 맞추기 (보상 <strong>50P</strong>)</p>
+                    <div style="display:flex; gap:0.6rem; background: var(--bg-color); padding: 0.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                        <input type="number" id="updown-input" style="flex:1; background: transparent; border: none; text-align:center; font-size:1.2rem; font-weight:800; outline: none;" placeholder="??">
+                        <button id="updown-submit" class="btn-primary" style="width:80px; height: 45px; padding:0;">확인</button>
+                    </div>
+                    <p id="updown-msg" style="text-align:center; margin-top:1.25rem; font-weight:900; color:var(--accent-color); font-size:1rem; min-height: 24px;"></p>
+                </div>
+
+                <!-- 8. 아이템 판매소 (Market) -->
+                <div class="card arcade-item-card" style="margin-bottom:0; border: 2px solid var(--accent-soft); background: rgba(99, 102, 241, 0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🏪 아이템 중고장터</h3>
+                        <span style="background: var(--accent-color); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">HOT</span>
+                    </div>
+                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem;">보유한 아이템을 포인트로 즉시 환전하세요. (가치의 70% 환급)</p>
+                    <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-color); color:var(--accent-color); font-weight: 800;">판매 목록 열기</button>
+                </div>
+            </div>
+
+            <!-- 부스터는 하단에 별도 배치 -->
+            <div class="card booster-section fade-in" style="margin-top:2.5rem; background:linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border: 2px solid var(--accent-soft); padding: 2rem; border-radius: var(--radius-lg);">
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem;">
+                    <div style="flex: 1; min-width: 250px;">
+                        <h3 style="font-size:1.4rem; font-weight: 900; color:var(--accent-color); margin-bottom:0.5rem; display: flex; align-items: center; gap: 8px;">⚡ 슈퍼 부스터 (Super Booster)</h3>
+                        <p class="text-sub" style="font-size:0.95rem; font-weight: 600;">부스터 활성화 시 모든 테스트 보상 포인트가 <strong>2배(20P)</strong>로 지급됩니다.</p>
+                    </div>
+                    <button id="buy-booster-btn" class="btn-primary" style="background:var(--accent-color); padding: 1rem 2.5rem; font-size: 1rem; border-radius: 50px;">부스터 20회 충전 (100P)</button>
+                </div>
+            </div>
         </div>
     `;
     initArcade(); 
@@ -316,7 +410,7 @@ function renderArcade() {
         if (await usePoints(100)) {
             await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(20) });
             UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
-            updateUI(); alert("구매 완료!"); renderArcade();
+            updateUI(); alert("부스터 충전 완료! 🔥"); renderArcade();
         }
     };
     updateUI();

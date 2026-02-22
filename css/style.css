@@ -251,6 +251,22 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .result-card h2 { font-size: 1.75rem; font-weight: 800; margin-bottom: 1rem; }
 .result-desc { color: var(--text-sub); font-size: 1.05rem; line-height: 1.8; margin-bottom: 2rem; }
 
+/* Arcade Redesign */
+.arcade-page { max-width: 1000px; margin: 0 auto; }
+.arcade-item-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid var(--border-color);
+  position: relative;
+}
+.arcade-item-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--accent-soft);
+}
+
+.lotto-scratcher { animation: pulse 1s infinite; color: #fda085; font-weight: 800; }
+@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
+
 /* Footer */
 .footer { border-top: 1px solid var(--border-color); padding: 4rem 1.25rem 2rem; background: var(--card-bg); margin-top: 4rem; }
 .footer-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }

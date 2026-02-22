@@ -16,11 +16,13 @@ export function initArcade() {
         
         if (target.id === 'alchemy-btn') await playAlchemy(1, 500);
         if (target.id === 'alchemy-5-btn') await playAlchemy(5, 2500);
-        if (target.id === 'alchemy-10-btn') await playAlchemy(10, 4500); // 10회 할인
+        if (target.id === 'alchemy-10-btn') await playAlchemy(10, 4500); 
         
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'updown-submit') await playUpDown();
         if (target.id === 'lotto-btn') await playLottery();
+        if (target.id === 'daily-checkin-btn') await playDailyCheckin();
+        if (target.id === 'market-open-btn') await openMarket();
         
         if (target.classList.contains('bet-btn')) {
             const gameType = target.dataset.game;
@@ -28,6 +30,65 @@ export function initArcade() {
             await playBettingGame(gameType, choice);
         }
     });
+}
+
+async function playDailyCheckin() {
+    if (!UserState.user) return;
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+    const lastCheckin = localStorage.getItem(`last_checkin_${UserState.user.uid}`);
+
+    if (lastCheckin === today) return alert("오늘은 이미 출석체크를 완료했습니다!");
+
+    if (await addPoints(100)) {
+        localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
+        alert("출석체크 완료! 100P가 지급되었습니다. ✨");
+        updateUI();
+    }
+}
+
+async function openMarket() {
+    if (!UserState.user) return;
+    const inv = UserState.data.inventory || [];
+    if (inv.length === 0) return alert("판매할 아이템이 없습니다.");
+
+    const itemCounts = inv.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+    const marketList = Object.entries(itemCounts).map(([name, count]) => {
+        const val = ITEM_VALUES[name] || 0;
+        const sellPrice = Math.floor(val * 0.7); // 70% 가치로 판매
+        return `${name} (가치:${val}P) -> 판매가:${sellPrice}P (보유:${count}개)`;
+    }).join('\n');
+
+    const choice = prompt(`판매할 아이템 이름을 정확히 입력하세요 (취소: 취소)\n\n[내 인벤토리]\n${marketList}`);
+    if (!choice || choice === '취소') return;
+
+    if (itemCounts[choice]) {
+        const val = ITEM_VALUES[choice];
+        const sellPrice = Math.floor(val * 0.7);
+        if (confirm(`[${choice}] 1개를 ${sellPrice}P에 판매하시겠습니까?`)) {
+            try {
+                const userRef = doc(db, "users", UserState.user.uid);
+                let currentInv = [...UserState.data.inventory];
+                const idx = currentInv.indexOf(choice);
+                currentInv.splice(idx, 1);
+
+                await updateDoc(userRef, {
+                    inventory: currentInv,
+                    points: increment(sellPrice),
+                    totalScore: increment(-val)
+                });
+
+                UserState.data.inventory = currentInv;
+                UserState.data.points += sellPrice;
+                UserState.data.totalScore -= val;
+                
+                alert(`판매 완료! ${sellPrice}P가 지급되었습니다.`);
+                updateUI();
+            } catch (e) { alert("판매 실패"); }
+        }
+    } else {
+        alert("아이템 이름을 다시 확인해주세요.");
+    }
 }
 
 // ... gacha, clickGame, updown 등 기존 코드 유지 ...
