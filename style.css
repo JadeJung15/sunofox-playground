@@ -5,6 +5,8 @@
   --accent-hover: oklch(50% 0.2 248.33);
   --number-bg: oklch(85% 0.15 248.33);
   --btn-text: oklch(98.11% 0.0106 248.33);
+  --input-bg: oklch(100% 0 0);
+  --border-color: oklch(80% 0 0);
 }
 
 [data-theme='dark'] {
@@ -14,17 +16,29 @@
   --accent-hover: oklch(75% 0.2 248.33);
   --number-bg: oklch(35% 0.1 248.33);
   --btn-text: oklch(20% 0.05 248.33);
+  --input-bg: oklch(25% 0.04 248.33);
+  --border-color: oklch(40% 0.05 248.33);
 }
 
 body {
-  display: grid;
-  place-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   min-height: 100vh;
   margin: 0;
+  padding: 2rem;
   font-family: system-ui, sans-serif;
   background-color: var(--bg-color);
   color: var(--text-color);
   transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4rem;
+  max-width: 600px;
+  width: 100%;
 }
 
 .theme-toggle {
@@ -37,4 +51,70 @@ body {
   border: 1px solid var(--text-color);
   background: transparent;
   color: var(--text-color);
+  z-index: 10;
+}
+
+.contact-section {
+  padding: 2rem;
+  border-radius: 1rem;
+  background: var(--input-bg);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-size: 1.5rem;
+}
+
+.contact-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-color);
+  color: var(--text-color);
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.submit-btn {
+  padding: 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background-color: var(--accent-color);
+  color: var(--btn-text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.submit-btn:hover {
+  background-color: var(--accent-hover);
+}
+
+.submit-btn:active {
+  transform: scale(0.98);
 }
