@@ -7,7 +7,22 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <button class="theme-toggle" id="theme-toggle">Dark Mode</button>
     <lotto-generator></lotto-generator>
     <script src="main.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+
+        toggleBtn.addEventListener('click', () => {
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                toggleBtn.textContent = 'Dark Mode';
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                toggleBtn.textContent = 'Light Mode';
+            }
+        });
+    </script>
 </body>
 </html>
