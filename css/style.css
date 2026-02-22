@@ -3199,3 +3199,55 @@ body {
     text-align: left;
   }
 }
+
+/* Dark mode text visibility hard-fix */
+.sf-hero,
+.sf-card,
+.admin-console,
+.admin-panel,
+.admin-yt-summary,
+.admin-yt-videos,
+.admin-chart-card,
+.post-row,
+.post-row .col-title,
+.post-row .col-author,
+.post-row .col-meta,
+.post-row .col-cat,
+.page-title,
+.section-head h2,
+.section-head h3 {
+  color: var(--sf-text) !important;
+}
+
+.sf-sub,
+.sf-kicker,
+.text-sub,
+.chart-label,
+.chart-value,
+.post-row .col-author,
+.post-row .col-meta {
+  color: var(--sf-sub) !important;
+}
+
+.sf-card a,
+.admin-panel a,
+.admin-analytics-wrap a,
+.post-row a,
+a.post-row {
+  color: var(--sf-text) !important;
+}
+
+.input,
+.input:focus,
+.admin-search,
+#admin-yt-api-key {
+  color: var(--sf-text) !important;
+  background: color-mix(in srgb, var(--sf-surface) 92%, var(--sf-bg) 8%) !important;
+  border-color: var(--sf-line) !important;
+}
+
+.input::placeholder,
+.admin-search::placeholder,
+#admin-yt-api-key::placeholder {
+  color: var(--sf-sub) !important;
+}
