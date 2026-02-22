@@ -218,6 +218,12 @@ export const Store = {
       await addDoc(postsCol, p);
     }
   },
+
+  async getAllUsers(orderByField = 'points', orderDirection = 'desc') {
+    const q = query(usersCol, orderBy(orderByField, orderDirection), limit(200));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  },
   
   async getPost(id) {
     const docRef = doc(db, "posts", id);
@@ -312,5 +318,11 @@ export const Store = {
     const commentRef = doc(db, "comments", id);
     await deleteDoc(commentRef);
     return true;
+  },
+
+  async getAllComments(limitCount = 200) {
+    const q = query(commentsCol, orderBy("date", "desc"), limit(limitCount));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   }
 };
