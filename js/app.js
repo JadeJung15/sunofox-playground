@@ -168,7 +168,7 @@ function renderHome() {
   )).join('');
   app.innerHTML = `
     <section class="pulse-hero fade-in">
-      <div class="pulse-mark">SunoFox Fan Signal</div>
+      <div class="pulse-mark">Discover</div>
       <h1>팬들과 바로 연결되는<br>수노폭스 소통 허브</h1>
       <p>시청, 채팅, 게임, 후기 작성을 끊김 없이 이어주는 실시간 팬 플랫폼.</p>
       <div class="pulse-cta">
@@ -178,7 +178,7 @@ function renderHome() {
     </section>
 
     <section class="pulse-marquee fade-in">
-      <span>LIVE NOW</span>
+      <span>LIVE</span>
       <strong>#신곡반응 #팬챌린지 #수노폭스토론 #클립공유</strong>
     </section>
 
@@ -252,7 +252,7 @@ function renderVideos() {
   )).join('');
   app.innerHTML = `
     <section class="pulse-hero pulse-hero-slim fade-in">
-      <div class="pulse-mark">Streaming Deck</div>
+      <div class="pulse-mark">Live</div>
       <h1>영상 감상부터<br>팬 대화까지 한 번에</h1>
       <p>최신 영상 확인 후 라운지에서 바로 감상을 나눌 수 있습니다.</p>
       <div class="pulse-cta">
@@ -320,7 +320,7 @@ function renderArcade() {
   app.innerHTML = `
     <div class="fade-in fan-arcade">
       <div class="pulse-hero pulse-hero-slim">
-        <div class="pulse-mark">Arcade Sector</div>
+      <div class="pulse-mark">Play</div>
         <h1>실시간 팬 챌린지 아레나</h1>
         <p>각 게임 최고 기록을 만들고 커뮤니티에서 결과를 공유하세요.</p>
         <div class="pulse-cta">
@@ -548,7 +548,7 @@ function renderCommunity() {
   app.innerHTML = `
     <div class="community-layout fade-in">
       <section class="pulse-hero pulse-hero-slim">
-        <div class="pulse-mark">Newsroom Feed</div>
+        <div class="pulse-mark">Community</div>
         <h1>팬 콘텐츠 타임라인</h1>
         <p>공지, 리뷰, 질문, 게임 기록을 타임라인 형태로 확인하세요.</p>
       </section>
@@ -613,8 +613,8 @@ function renderProfile() {
     // Logged out view
     app.innerHTML = `
       <section class="profile-section fade-in">
-          <section class="fan-hero fan-hero-compact">
-            <div class="fan-eyebrow">Fan Passport</div>
+          <section class="pulse-hero pulse-hero-slim">
+            <div class="pulse-mark">Account</div>
             <h1>팬 계정으로 로그인하고<br>포인트를 쌓아보세요</h1>
             <p>커뮤니티 글쓰기, 댓글, 게임 활동으로 팬 등급이 올라갑니다.</p>
           </section>
