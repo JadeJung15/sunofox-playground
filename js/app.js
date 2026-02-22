@@ -413,6 +413,7 @@ function renderArcade() {
                         <span style="background: var(--accent-color); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">HOT</span>
                     </div>
                     <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem;">보유한 아이템을 포인트로 즉시 환전하세요. (가치의 70% 환급)</p>
+                    <div id="market-ui-container"></div>
                     <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-color); color:var(--accent-color); font-weight: 800;">판매 목록 열기</button>
                 </div>
             </div>

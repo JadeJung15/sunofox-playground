@@ -43,7 +43,6 @@ async function playGacha(count, cost) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     if (await usePoints(cost)) {
         await updateArcadeStat('gacha');
-        // 연금술 전용 아이템 제외
         const exclusiveItems = ['🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루'];
         const itemNames = Object.keys(ITEM_VALUES).filter(name => !exclusiveItems.includes(name));
         const weights = [40, 20, 15, 10, 5, 8, 2];
@@ -90,7 +89,7 @@ async function playClickGame() {
     await updateArcadeStat('mining');
     const earn = Math.floor(Math.random() * 10) + 5;
     btn.textContent = "채굴 중...";
-    setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "포인트 채굴"; }, 1000);
+    setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "채굴기 가동 시작"; }, 1000);
 }
 
 let upDownAnswer = Math.floor(Math.random() * 50) + 1;
@@ -235,44 +234,77 @@ async function playDailyCheckin() {
     }
 }
 
-async function openMarket() {
+export async function openMarket() {
     if (!UserState.user) return;
+    const container = document.getElementById('market-ui-container');
+    if (!container) return;
+
     const inv = UserState.data.inventory || [];
-    if (inv.length === 0) return alert("판매할 아이템이 없습니다.");
+    if (inv.length === 0) {
+        container.innerHTML = '<p class="text-sub" style="font-size:0.85rem; text-align:center; padding: 1rem;">판매할 아이템이 없습니다.</p>';
+        return;
+    }
 
     const itemCounts = inv.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-    const marketList = Object.entries(itemCounts).map(([name, count]) => {
-        const val = ITEM_VALUES[name] || 0;
-        const sellPrice = Math.floor(val * 0.7);
-        return `${name} (가치:${val}P) -> 판매가:${sellPrice}P (보유:${count}개)`;
-    }).join('\n');
+    
+    container.innerHTML = `
+        <div style="background: var(--bg-color); border-radius: 12px; padding: 1rem; border: 1px solid var(--border-color); margin-bottom: 1rem;">
+            <p style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem; text-align: center;">👇 판매할 아이템의 [판매] 버튼을 누르세요</p>
+            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+                ${Object.entries(itemCounts).map(([name, count]) => {
+                    const val = ITEM_VALUES[name] || 0;
+                    const sellPrice = Math.floor(val * 0.7);
+                    return `
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.6rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div style="display:flex; flex-direction:column;">
+                                <span style="font-size:0.85rem; font-weight:700;">${name}</span>
+                                <small style="font-size:0.7rem; color:var(--text-sub);">보유: ${count}개 | 가치: ${val}P</small>
+                            </div>
+                            <button class="sell-item-btn btn-primary" data-name="${name}" style="padding: 4px 12px; font-size: 0.75rem; background: var(--accent-color); border-radius: 6px; box-shadow: none;">${sellPrice}P 판매</button>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+        <button id="market-close-btn" class="btn-secondary" style="width:100%; padding: 0.6rem; font-size: 0.85rem; font-weight: 700; margin-bottom: 1rem;">장터 닫기</button>
+    `;
+    
+    document.getElementById('market-open-btn').style.display = 'none';
 
-    const choice = prompt(`판매할 아이템 이름을 정확히 입력하세요 (취소: 취소)\n\n[내 인벤토리]\n${marketList}`);
-    if (!choice || choice === '취소') return;
+    container.querySelectorAll('.sell-item-btn').forEach(btn => {
+        btn.onclick = async () => {
+            const itemName = btn.dataset.name;
+            await sellItem(itemName);
+            openMarket(); // 목록 새로고침
+        };
+    });
 
-    if (itemCounts[choice]) {
-        const val = ITEM_VALUES[choice];
-        const sellPrice = Math.floor(val * 0.7);
-        if (confirm(`[${choice}] 1개를 ${sellPrice}P에 판매하시겠습니까?`)) {
-            try {
-                const userRef = doc(db, "users", UserState.user.uid);
-                let currentInv = [...UserState.data.inventory];
-                const idx = currentInv.indexOf(choice);
-                currentInv.splice(idx, 1);
+    document.getElementById('market-close-btn').onclick = () => {
+        container.innerHTML = '';
+        document.getElementById('market-open-btn').style.display = 'block';
+    };
+}
 
-                await updateDoc(userRef, {
-                    inventory: currentInv,
-                    points: increment(sellPrice),
-                    totalScore: increment(-val)
-                });
+async function sellItem(itemName) {
+    const val = ITEM_VALUES[itemName];
+    const sellPrice = Math.floor(val * 0.7);
+    if (!confirm(`[${itemName}] 1개를 판매하고 ${sellPrice}P를 받으시겠습니까?`)) return;
 
-                UserState.data.inventory = currentInv;
-                UserState.data.points += sellPrice;
-                UserState.data.totalScore -= val;
-                
-                alert(`판매 완료! ${sellPrice}P가 지급되었습니다.`);
-                updateUI();
-            } catch (e) { alert("판매 실패"); }
+    try {
+        const userRef = doc(db, "users", UserState.user.uid);
+        let currentInv = [...UserState.data.inventory];
+        const idx = currentInv.indexOf(itemName);
+        if (idx > -1) {
+            currentInv.splice(idx, 1);
+            await updateDoc(userRef, {
+                inventory: currentInv,
+                points: increment(sellPrice),
+                totalScore: increment(-val)
+            });
+            UserState.data.inventory = currentInv;
+            UserState.data.points += sellPrice;
+            UserState.data.totalScore -= val;
+            updateUI();
         }
-    } else { alert("아이템 이름을 다시 확인해주세요."); }
+    } catch (e) { alert("판매 실패"); }
 }
