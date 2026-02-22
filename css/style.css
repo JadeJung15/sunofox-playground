@@ -327,6 +327,34 @@ main {
 .video-copy { display: grid; gap: 0.8rem; }
 .test-panel { display: grid; gap: 1rem; }
 
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.video-card {
+  display: grid;
+  gap: 0.8rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--card-bg) 90%, transparent);
+  padding: 0.8rem;
+  color: inherit;
+}
+.thumb {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid var(--border-color);
+}
+.video-meta h4 { margin: 0; font-size: 0.95rem; }
+.video-meta span { font-size: 0.8rem; color: var(--text-sub); }
+
+.post-embeds { margin-top: 1rem; display: grid; gap: 0.8rem; }
+.post-embed { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-color); }
+
 
 /* Games View */
 .game-tabs {

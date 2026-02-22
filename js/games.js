@@ -830,11 +830,15 @@ export class PersonalityTest {
         this.optionsEl.innerHTML = `
             <p class="test-result">${result.desc}</p>
             <button class="btn btn-primary btn-share" id="share-test">결과 공유</button>
+            <button class="btn btn-secondary" id="download-card">결과 카드 저장</button>
         `;
         this.optionsEl.querySelector('#share-test').addEventListener('click', () => {
             window.dispatchEvent(new CustomEvent('gameShareRecord', {
                 detail: { gameName: '심리테스트', score: result.title }
             }));
+        });
+        this.optionsEl.querySelector('#download-card').addEventListener('click', () => {
+            this.downloadResultCard(result);
         });
     }
 
@@ -842,6 +846,64 @@ export class PersonalityTest {
         this.index = 0;
         this.score = { A: 0, B: 0, C: 0, D: 0, E: 0 };
         this.renderQuestion();
+    }
+
+    downloadResultCard(result) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 1080;
+        canvas.height = 1080;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, '#f08a1d');
+        gradient.addColorStop(1, '#2ef2c8');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.fillStyle = 'rgba(255,255,255,0.88)';
+        ctx.fillRect(80, 120, 920, 840);
+
+        ctx.fillStyle = '#1b140f';
+        ctx.font = '700 56px "Pretendard", sans-serif';
+        ctx.fillText('SunoFox 테스트 결과', 140, 220);
+
+        ctx.fillStyle = '#f08a1d';
+        ctx.font = '700 64px "Pretendard", sans-serif';
+        ctx.fillText(result.title, 140, 320);
+
+        ctx.fillStyle = '#5c5248';
+        ctx.font = '400 40px "Pretendard", sans-serif';
+        const lines = this.wrapText(result.desc, 32);
+        lines.forEach((line, i) => {
+            ctx.fillText(line, 140, 420 + i * 54);
+        });
+
+        ctx.fillStyle = '#1b140f';
+        ctx.font = '600 32px "Pretendard", sans-serif';
+        ctx.fillText('youtube.com/@sunofox', 140, 900);
+
+        const link = document.createElement('a');
+        link.download = 'sunofox-test-result.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    }
+
+    wrapText(text, maxLen) {
+        const words = text.split(' ');
+        const lines = [];
+        let line = '';
+        words.forEach(word => {
+            const testLine = line ? `${line} ${word}` : word;
+            if (testLine.length > maxLen) {
+                lines.push(line);
+                line = word;
+            } else {
+                line = testLine;
+            }
+        });
+        if (line) lines.push(line);
+        return lines;
     }
 }
 

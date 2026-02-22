@@ -25,6 +25,7 @@ let isAdmin = false;    // To store admin status
 
 const CHANNEL_URL = 'https://youtube.com/@sunofox';
 const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
+const CHANNEL_ID = '';
 
 // Routing
 const routes = {
@@ -232,8 +233,14 @@ function renderVideos() {
           <p>게임 기록을 공유하고 랭킹에 도전하세요.</p>
         </div>
       </div>
+      <div class="section-head">
+        <h2>최신 영상</h2>
+        <span>자동 업데이트</span>
+      </div>
+      <div id="latest-videos" class="video-grid"></div>
     </div>
   `;
+  loadLatestVideos();
 }
 
 function renderArcade() {
@@ -660,7 +667,7 @@ async function openPostModal(id) { // Added async
             <span>${currentPost.author}</span> · <span>${new Date(currentPost.date).toLocaleDateString()}</span>
             <span class="right">👀 ${currentPost.views} ❤️ <span id="like-count">${currentPost.likes}</span></span>
           </div>
-          <div class="view-content">${currentPost.content}</div>
+          <div class="view-content">${renderPostContent(currentPost.content)}</div>
           
           <div class="comments-section">
               <h4>댓글 (${comments.length})</h4>
@@ -787,3 +794,75 @@ window.addEventListener('gameShareRecord', (e) => {
     });
     window.location.hash = '#community'; 
 });
+
+async function loadLatestVideos() {
+  const container = document.getElementById('latest-videos');
+  if (!container) return;
+  if (!CHANNEL_ID) {
+    container.innerHTML = '<div class="empty">채널 ID 설정이 필요합니다. (YouTube RSS)</div>';
+    return;
+  }
+  try {
+    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
+    const res = await fetch(rssUrl);
+    const text = await res.text();
+    const xml = new DOMParser().parseFromString(text, 'text/xml');
+    const entries = Array.from(xml.getElementsByTagName('entry')).slice(0, 6);
+    const cards = entries.map((entry) => {
+      const title = entry.getElementsByTagName('title')[0]?.textContent || 'Untitled';
+      const link = entry.getElementsByTagName('link')[0]?.getAttribute('href') || CHANNEL_URL;
+      const published = entry.getElementsByTagName('published')[0]?.textContent || '';
+      const videoId = entry.getElementsByTagName('yt:videoId')[0]?.textContent || link.split('v=')[1] || '';
+      const thumb = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : '';
+      const dateText = published ? new Date(published).toLocaleDateString() : '';
+      return `
+        <a class="video-card" href="${link}" target="_blank" rel="noreferrer">
+          <div class="thumb" style="background-image:url('${thumb}')"></div>
+          <div class="video-meta">
+            <h4>${escapeHTML(title)}</h4>
+            <span>${dateText}</span>
+          </div>
+        </a>
+      `;
+    }).join('');
+    container.innerHTML = cards || '<div class="empty">영상이 없습니다.</div>';
+  } catch (error) {
+    console.error('Failed to load YouTube RSS:', error);
+    container.innerHTML = '<div class="empty">최신 영상을 불러오지 못했습니다.</div>';
+  }
+}
+
+function escapeHTML(str = '') {
+  return str.replace(/[&<>"']/g, (m) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[m]);
+}
+
+function renderPostContent(raw = '') {
+  const text = escapeHTML(raw);
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  const urls = raw.match(urlRegex) || [];
+  let html = text.replace(urlRegex, (url) => `<a href="${url}" target="_blank" rel="noreferrer">${url}</a>`);
+  const embeds = urls
+    .map((u) => buildYouTubeEmbed(u))
+    .filter(Boolean)
+    .map((src) => `<div class="post-embed"><iframe class="frame" src="${src}" allowfullscreen></iframe></div>`)
+    .join('');
+  return `${html}${embeds ? `<div class="post-embeds">${embeds}</div>` : ''}`;
+}
+
+function buildYouTubeEmbed(url) {
+  try {
+    const u = new URL(url);
+    let id = '';
+    if (u.hostname.includes('youtu.be')) {
+      id = u.pathname.slice(1);
+    } else if (u.searchParams.get('v')) {
+      id = u.searchParams.get('v');
+    }
+    if (!id) return '';
+    return `https://www.youtube.com/embed/${id}`;
+  } catch {
+    return '';
+  }
+}
