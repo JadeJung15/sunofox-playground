@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko-KR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SevenCheck - 7개의 질문으로 확인하는 모든 것</title>
-    <meta name="description" content="딱 7번의 선택으로 알아보는 나의 성격, 운세, 그리고 운명. 세븐체크에서 확인하세요.">
-    <!-- Open Graph for Sharing -->
-    <meta property="og:title" content="SevenCheck - 7번의 질문">
-    <meta property="og:description" content="7번의 선택으로 나의 결과를 확인해보세요!">
-    <meta property="og:image" content="https://images.unsplash.com/photo-1578632738908-4521c442075a?auto=format&fit=crop&w=800&q=80">
+    <title>SevenCheck - 7번의 질문으로 찾는 나의 본모습</title>
+    <meta name="description" content="심리학적 기반과 감성적 분석을 결합한 7단계 테스트. 성격, 연애, 재물운 등 당신이 궁금한 모든 것을 SevenCheck에서 확인하세요.">
+    <link rel="canonical" href="https://sunofox-test.pages.dev/">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SevenCheck - 전문적인 7단계 심리 분석">
+    <meta property="og:description" content="딱 7번의 선택으로 당신의 잠재력을 확인해보세요.">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -18,24 +18,33 @@
             <nav class="nav-tabs">
                 <a href="#home" class="nav-link active" data-filter="전체">전체</a>
                 <a href="#personality" class="nav-link" data-filter="성격">성격</a>
-                <a href="#face" class="nav-link" data-filter="감성">감성</a>
+                <a href="#emotion" class="nav-link" data-filter="감성">감성</a>
                 <a href="#fortune" class="nav-link" data-filter="사주">사주</a>
             </nav>
             <div class="nav-right">
-                <button id="theme-toggle" class="theme-toggle">✨</button>
+                <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">✨</button>
             </div>
         </div>
     </header>
 
     <main id="app">
-        <!-- 콘텐츠가 주입되는 영역 -->
+        <!-- 콘텐츠 주입 -->
     </main>
 
     <footer class="footer">
-        <p>&copy; 2026 SevenCheck Studio. All rights reserved.</p>
-        <div class="footer-links">
-            <a href="#">7번의 질문 컨셉이란?</a> | <a href="#">제휴 문의</a>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>SevenCheck</h3>
+                <p>7번의 질문으로 끝내는 모든 확인, 세븐체크 스튜디오입니다.</p>
+            </div>
+            <div class="footer-links">
+                <a href="#about">서비스 소개</a> | 
+                <a href="#privacy">개인정보처리방침</a> | 
+                <a href="#terms">이용약관</a> | 
+                <a href="#contact">문의하기</a>
+            </div>
         </div>
+        <p class="copyright">&copy; 2026 SevenCheck Studio. All rights reserved.</p>
     </footer>
 
     <script type="module" src="js/firebase-init.js"></script>
