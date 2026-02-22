@@ -195,7 +195,21 @@ function renderArcade() {
                             </div>
                         </details>
             
-            <details class="profile-details"><summary>🔮 아이템 연금술 (합성)</summary><div class="alchemy-zone" style="border-radius:12px; padding:1.2rem;"><p class="text-sub">아이템 5개 -> 상급 아이템 1개</p><div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center; min-height:20px;">재료를 확인해 주세요.</div><button id="alchemy-btn" class="btn-primary" style="background:#fff; color:#6c5ce7;">연금술 시작 (500P)</button></div></details>
+                        <details class="profile-details">
+                            <summary>🔮 아이템 연금술 (합성)</summary>
+                            <div class="alchemy-zone" style="border-radius:12px; padding:1.2rem;">
+                                <p class="text-sub" style="font-size:0.8rem; margin-bottom:1rem;">하급 아이템 5개를 소모하여 상급 1개를 연성합니다.</p>
+                                <div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center; min-height:40px; display:flex; align-items:center; justify-content:center; border:1px dashed rgba(255,255,255,0.3); border-radius:10px;">재료를 준비해 주세요.</div>
+                                <div style="display:grid; grid-template-columns: 1fr; gap:0.5rem;">
+                                    <button id="alchemy-btn" class="btn-primary" style="background:#fff; color:#6c5ce7;">1회 합성 (500P / 5개)</button>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.5rem;">
+                                        <button id="alchemy-5-btn" class="btn-secondary" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid #fff; font-size:0.85rem;">5회 연속 (2500P / 25개)</button>
+                                        <button id="alchemy-10-btn" class="btn-secondary" style="background:rgba(255,255,255,0.3); color:#fff; border:1px solid #fff; font-size:0.85rem;">10회 연속 (4500P🔥 / 50개)</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </details>
+            
             <details class="profile-details"><summary>⛏️ 단순 포인트 채굴</summary><div class="game-zone" style="background:var(--bg-color); border-radius:12px; padding:1.2rem;"><button id="click-game-btn" class="btn-secondary">클릭해서 채굴</button></div></details>
         </div>
     `;
