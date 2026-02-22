@@ -438,3 +438,347 @@ export class PuzzleGame {
         }
     }
 }
+
+export class MathGame {
+    constructor(element) {
+        this.container = element;
+        this.score = 0;
+        this.timeLeft = 30;
+        this.timer = null;
+        this.answer = null;
+        this.isPlaying = false;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">🔢 스피드 합산</h3>
+                <span class="math-status">Time: 30s | Score: 0</span>
+            </div>
+            <div class="math-area">
+                <div class="math-question">시작 버튼을 눌러주세요</div>
+                <div class="math-input-row">
+                    <input type="number" class="input math-input" placeholder="정답 입력" inputmode="numeric" />
+                    <button class="btn btn-primary" id="math-submit">확인</button>
+                </div>
+                <div class="math-feedback"></div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-primary" id="start-math">게임 시작</button>
+                <button class="btn btn-secondary" id="reset-math">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.math-status');
+        this.questionEl = this.container.querySelector('.math-question');
+        this.feedbackEl = this.container.querySelector('.math-feedback');
+        this.inputEl = this.container.querySelector('.math-input');
+
+        this.container.querySelector('#start-math').addEventListener('click', () => this.startGame());
+        this.container.querySelector('#math-submit').addEventListener('click', () => this.submitAnswer());
+        this.inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') this.submitAnswer();
+        });
+        this.container.querySelector('#reset-math').addEventListener('click', () => {
+            Store.saveGameRecord('math', 0);
+            this.feedbackEl.textContent = '기록 초기화됨.';
+            alert('기록이 초기화되었습니다.');
+        });
+    }
+
+    startGame() {
+        if (this.isPlaying) return;
+        this.isPlaying = true;
+        this.score = 0;
+        this.timeLeft = 30;
+        this.feedbackEl.textContent = '';
+        this.updateStatus();
+        this.nextQuestion();
+        this.inputEl.value = '';
+        this.inputEl.focus();
+
+        clearInterval(this.timer);
+        this.timer = setInterval(() => {
+            this.timeLeft -= 1;
+            this.updateStatus();
+            if (this.timeLeft <= 0) this.endGame();
+        }, 1000);
+    }
+
+    updateStatus() {
+        const best = Store.getGameRecord('math') || 0;
+        this.statusEl.textContent = `Time: ${this.timeLeft}s | Score: ${this.score} (Best: ${best})`;
+    }
+
+    nextQuestion() {
+        const a = Math.floor(Math.random() * 30) + 1;
+        const b = Math.floor(Math.random() * 30) + 1;
+        const c = Math.floor(Math.random() * 10);
+        const useThree = Math.random() < 0.4;
+        this.answer = useThree ? a + b + c : a + b;
+        this.questionEl.textContent = useThree ? `${a} + ${b} + ${c} = ?` : `${a} + ${b} = ?`;
+    }
+
+    submitAnswer() {
+        if (!this.isPlaying) return;
+        const value = parseInt(this.inputEl.value, 10);
+        if (Number.isNaN(value)) return;
+        if (value === this.answer) {
+            this.score += 1;
+            this.feedbackEl.textContent = '정답!';
+        } else {
+            this.feedbackEl.textContent = `틀림! 정답은 ${this.answer}`;
+        }
+        this.inputEl.value = '';
+        this.nextQuestion();
+        this.updateStatus();
+    }
+
+    endGame() {
+        if (!this.isPlaying) return;
+        this.isPlaying = false;
+        clearInterval(this.timer);
+        const isBest = Store.saveGameRecord('math', this.score);
+        const best = Store.getGameRecord('math') || 0;
+        this.questionEl.textContent = '게임 종료!';
+        this.feedbackEl.innerHTML = `점수: ${this.score} / 최고: ${best}`;
+
+        if (isBest) {
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'btn btn-primary btn-share';
+            shareBtn.textContent = '공유하기';
+            shareBtn.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('gameShareRecord', {
+                    detail: { gameName: '스피드 합산', score: `${this.score}점` }
+                }));
+            });
+            this.feedbackEl.appendChild(shareBtn);
+        }
+    }
+}
+
+export class RpsGame {
+    constructor(element) {
+        this.container = element;
+        this.wins = 0;
+        this.losses = 0;
+        this.draws = 0;
+        this.streak = 0;
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">✊ 가위바위보</h3>
+                <span class="rps-status">연승: 0 (Best: ${Store.getGameRecord('rps') || 0})</span>
+            </div>
+            <div class="rps-area">
+                <div class="rps-buttons">
+                    <button class="btn btn-secondary" data-pick="rock">✊ 바위</button>
+                    <button class="btn btn-secondary" data-pick="paper">✋ 보</button>
+                    <button class="btn btn-secondary" data-pick="scissors">✌️ 가위</button>
+                </div>
+                <div class="rps-result">버튼을 눌러 대결하세요!</div>
+                <div class="rps-scoreboard">승 ${this.wins} / 패 ${this.losses} / 무 ${this.draws}</div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-secondary" id="reset-rps">기록 초기화</button>
+            </div>
+        `;
+
+        this.statusEl = this.container.querySelector('.rps-status');
+        this.resultEl = this.container.querySelector('.rps-result');
+        this.scoreEl = this.container.querySelector('.rps-scoreboard');
+
+        this.container.querySelectorAll('.rps-buttons .btn').forEach(btn => {
+            btn.addEventListener('click', () => this.playRound(btn.dataset.pick));
+        });
+        this.container.querySelector('#reset-rps').addEventListener('click', () => {
+            Store.saveGameRecord('rps', 0);
+            this.updateStatus();
+            alert('기록이 초기화되었습니다.');
+        });
+    }
+
+    playRound(player) {
+        const cpu = this.randomPick();
+        const result = this.getResult(player, cpu);
+
+        if (result === 'win') {
+            this.wins += 1;
+            this.streak += 1;
+        } else if (result === 'lose') {
+            this.losses += 1;
+            this.streak = 0;
+        } else {
+            this.draws += 1;
+        }
+
+        const isBest = Store.saveGameRecord('rps', this.streak);
+        this.resultEl.innerHTML = `내 선택: ${this.toKorean(player)} / 컴퓨터: ${this.toKorean(cpu)}<br>${this.resultMessage(result)}`;
+        if (isBest && this.streak > 0) {
+            const shareBtn = document.createElement('button');
+            shareBtn.className = 'btn btn-primary btn-share';
+            shareBtn.textContent = '공유하기';
+            shareBtn.addEventListener('click', () => {
+                window.dispatchEvent(new CustomEvent('gameShareRecord', {
+                    detail: { gameName: '가위바위보', score: `${this.streak}연승` }
+                }));
+            });
+            this.resultEl.appendChild(shareBtn);
+        }
+        this.updateStatus();
+        this.updateScoreboard();
+    }
+
+    updateStatus() {
+        this.statusEl.textContent = `연승: ${this.streak} (Best: ${Store.getGameRecord('rps') || 0})`;
+    }
+
+    updateScoreboard() {
+        this.scoreEl.textContent = `승 ${this.wins} / 패 ${this.losses} / 무 ${this.draws}`;
+    }
+
+    randomPick() {
+        const picks = ['rock', 'paper', 'scissors'];
+        return picks[Math.floor(Math.random() * picks.length)];
+    }
+
+    getResult(player, cpu) {
+        if (player === cpu) return 'draw';
+        if (
+            (player === 'rock' && cpu === 'scissors') ||
+            (player === 'paper' && cpu === 'rock') ||
+            (player === 'scissors' && cpu === 'paper')
+        ) return 'win';
+        return 'lose';
+    }
+
+    resultMessage(result) {
+        if (result === 'win') return '승리! 연승을 이어가세요.';
+        if (result === 'lose') return '패배! 연승이 끊겼습니다.';
+        return '무승부! 다시 도전!';
+    }
+
+    toKorean(pick) {
+        if (pick === 'rock') return '바위';
+        if (pick === 'paper') return '보';
+        return '가위';
+    }
+}
+
+export class PersonalityTest {
+    constructor(element) {
+        this.container = element;
+        this.questions = [
+            { q: '주말에 가장 하고 싶은 일은?', options: [
+                { t: 'A', text: '혼자 조용히 쉬기' },
+                { t: 'B', text: '친구들과 약속 잡기' },
+                { t: 'C', text: '새로운 취미 도전' },
+            ]},
+            { q: '스트레스를 받으면 나는?', options: [
+                { t: 'A', text: '집에서 혼자 정리한다' },
+                { t: 'B', text: '사람들과 이야기한다' },
+                { t: 'C', text: '밖으로 나간다' },
+            ]},
+            { q: '여행 스타일은?', options: [
+                { t: 'A', text: '느긋하게 휴식' },
+                { t: 'B', text: '맛집/사람 위주' },
+                { t: 'C', text: '활동적인 일정' },
+            ]},
+            { q: '집에 도착하면 먼저 하는 일은?', options: [
+                { t: 'A', text: '샤워 후 휴식' },
+                { t: 'B', text: '메신저 확인' },
+                { t: 'C', text: '운동이나 산책' },
+            ]},
+            { q: '새로운 모임에서 나는?', options: [
+                { t: 'A', text: '관찰하며 적응' },
+                { t: 'B', text: '먼저 말 걸기' },
+                { t: 'C', text: '분위기 띄우기' },
+            ]},
+            { q: '가장 끌리는 선물은?', options: [
+                { t: 'A', text: '향초/디퓨저' },
+                { t: 'B', text: '사진 앨범' },
+                { t: 'C', text: '액티비티 티켓' },
+            ]},
+        ];
+        this.results = {
+            A: { title: '🍃 고요한 힐링러', desc: '혼자만의 시간을 즐기며 재충전하는 타입입니다. 느긋한 루틴이 최고의 휴식이에요.' },
+            B: { title: '✨ 소셜 에너지러', desc: '사람들과의 교류가 에너지입니다. 함께 웃고 떠드는 시간이 최고의 회복제!' },
+            C: { title: '🔥 액티브 챌린저', desc: '새로운 경험과 활동에서 힐링을 느낍니다. 움직일수록 기분이 좋아져요.' },
+        };
+        this.index = 0;
+        this.score = { A: 0, B: 0, C: 0 };
+        this.render();
+    }
+
+    render() {
+        this.container.innerHTML = `
+            <div class="game-header">
+                <h3 class="game-title">💬 심리테스트</h3>
+                <span class="test-progress">1 / ${this.questions.length}</span>
+            </div>
+            <div class="test-card">
+                <div class="test-question"></div>
+                <div class="test-options"></div>
+            </div>
+            <div class="game-controls">
+                <button class="btn btn-secondary" id="reset-test">다시 시작</button>
+            </div>
+        `;
+
+        this.progressEl = this.container.querySelector('.test-progress');
+        this.questionEl = this.container.querySelector('.test-question');
+        this.optionsEl = this.container.querySelector('.test-options');
+
+        this.container.querySelector('#reset-test').addEventListener('click', () => this.reset());
+        this.renderQuestion();
+    }
+
+    renderQuestion() {
+        const current = this.questions[this.index];
+        this.progressEl.textContent = `${this.index + 1} / ${this.questions.length}`;
+        this.questionEl.textContent = current.q;
+        this.optionsEl.innerHTML = current.options.map(opt => (
+            `<button class="test-option" data-type="${opt.t}">${opt.text}</button>`
+        )).join('');
+
+        this.optionsEl.querySelectorAll('.test-option').forEach(btn => {
+            btn.addEventListener('click', () => this.pick(btn.dataset.type));
+        });
+    }
+
+    pick(type) {
+        this.score[type] += 1;
+        this.index += 1;
+        if (this.index >= this.questions.length) {
+            this.showResult();
+        } else {
+            this.renderQuestion();
+        }
+    }
+
+    showResult() {
+        const top = Object.entries(this.score).sort((a, b) => b[1] - a[1])[0][0];
+        const result = this.results[top];
+        this.progressEl.textContent = '완료';
+        this.questionEl.innerHTML = `<strong>${result.title}</strong>`;
+        this.optionsEl.innerHTML = `
+            <p class="test-result">${result.desc}</p>
+            <button class="btn btn-primary btn-share" id="share-test">결과 공유</button>
+        `;
+        this.optionsEl.querySelector('#share-test').addEventListener('click', () => {
+            window.dispatchEvent(new CustomEvent('gameShareRecord', {
+                detail: { gameName: '심리테스트', score: result.title }
+            }));
+        });
+    }
+
+    reset() {
+        this.index = 0;
+        this.score = { A: 0, B: 0, C: 0 };
+        this.renderQuestion();
+    }
+}

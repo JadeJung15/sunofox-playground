@@ -1,6 +1,6 @@
 // js/app.js
 import { Store } from './store.js';
-import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame } from './games.js';
+import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame, MathGame, RpsGame, PersonalityTest } from './games.js';
 import { auth, db } from '../index.html'; // Import auth and db instances
 import { 
   createUserWithEmailAndPassword, 
@@ -83,7 +83,7 @@ function renderHome() {
     </section>
 
     <div class="notice-banner fade-in">
-      <strong>📢 공지</strong> 2026.02.22 - 새로운 미니게임 4종이 추가되었습니다!
+      <strong>📢 공지</strong> 2026.02.22 - 신규 미니게임과 심리테스트가 추가되었습니다!
     </div>
 
     <div class="card-grid fade-in">
@@ -115,6 +115,9 @@ function renderGames() {
         <button class="tab-btn" data-game="memory">기억력</button>
         <button class="tab-btn" data-game="rhythm">리듬</button>
         <button class="tab-btn" data-game="puzzle">퍼즐</button>
+        <button class="tab-btn" data-game="math">스피드 합산</button>
+        <button class="tab-btn" data-game="rps">가위바위보</button>
+        <button class="tab-btn" data-game="test">심리테스트</button>
       </div>
       <div id="game-container" class="game-container"></div>
     </div>
@@ -137,6 +140,9 @@ function renderGames() {
       if (gameType === 'memory') new MemoryGame(container);
       if (gameType === 'rhythm') new RhythmGame(container);
       if (gameType === 'puzzle') new PuzzleGame(container);
+      if (gameType === 'math') new MathGame(container);
+      if (gameType === 'rps') new RpsGame(container);
+      if (gameType === 'test') new PersonalityTest(container);
     });
   });
 }

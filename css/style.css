@@ -247,6 +247,52 @@ main {
   text-align: center;
 }
 
+/* New Games */
+.math-area {
+  width: 100%;
+  max-width: 420px;
+  display: grid;
+  gap: 1rem;
+}
+.math-question { font-size: 1.6rem; font-weight: 800; }
+.math-input-row { display: flex; gap: 0.75rem; width: 100%; }
+.math-input { text-align: center; }
+.math-feedback { font-weight: 600; }
+
+.rps-area {
+  width: 100%;
+  max-width: 420px;
+  display: grid;
+  gap: 1rem;
+}
+.rps-buttons { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; }
+.rps-result { font-weight: 600; }
+.rps-scoreboard { font-size: var(--font-sm); color: var(--text-sub); }
+
+.test-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--input-bg);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  display: grid;
+  gap: 1rem;
+}
+.test-question { font-size: 1.2rem; font-weight: 700; }
+.test-options { display: grid; gap: 0.6rem; }
+.test-option {
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  text-align: left;
+}
+.test-option:hover { border-color: var(--accent-color); }
+.test-result { margin: 0; color: var(--text-sub); }
+
 /* Specific Game Styles - Reaction Game */
 .reaction-area {
   width: 100%;
@@ -536,4 +582,9 @@ main {
 
   .comments-section .comment-form { flex-direction: column; gap: 0.8rem; }
   .comment-form .input.small { width: 100%; } /* Full width for nickname input */
+}
+
+@media (max-width: 480px) {
+  .math-input-row { flex-direction: column; }
+  .rps-buttons .btn { flex: 1 1 30%; }
 }
