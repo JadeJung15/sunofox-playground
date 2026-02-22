@@ -1063,38 +1063,46 @@ async function loadYouTubeCommunityPosts() {
   container.innerHTML = '<div class="empty">유튜브 커뮤니티 글을 불러오는 중...</div>';
 
   try {
-    const endpoint = 'https://r.jina.ai/http://www.youtube.com/@sunofox/community';
-    const res = await fetch(endpoint);
-    const raw = await res.text();
-    const marker = 'Markdown Content:';
-    const start = raw.indexOf(marker);
-    const markdown = start >= 0 ? raw.slice(start + marker.length) : raw;
+    const endpoints = [
+      'https://r.jina.ai/http://www.youtube.com/@sunofox/community',
+      'https://r.jina.ai/http://www.youtube.com/@sunofox/posts'
+    ];
+    const rawTexts = await Promise.all(endpoints.map(async (endpoint) => {
+      const res = await fetch(endpoint);
+      return res.text();
+    }));
 
-    const blocks = markdown
+    const merged = rawTexts.map((raw) => {
+      const marker = 'Markdown Content:';
+      const start = raw.indexOf(marker);
+      return start >= 0 ? raw.slice(start + marker.length) : raw;
+    }).join('\n\n');
+
+    const blocks = merged
       .split(/\nRead more[^\n]*\n/gi)
       .map((v) => v.trim())
       .filter((v) => v && v.length > 80)
       .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'))
       .map((block) => {
-        const postMatch = block.match(/https?:\/\/(?:www\.)?youtube\.com\/post\/[A-Za-z0-9_-]+/i);
-        const watchMatch = block.match(/https?:\/\/(?:www\.)?youtube\.com\/watch\?v=[A-Za-z0-9_-]{11}/i);
-        const shortMatch = block.match(/https?:\/\/(?:www\.)?youtu\.be\/[A-Za-z0-9_-]{11}/i);
-        const url = safeExternalUrl((postMatch && postMatch[0]) || (watchMatch && watchMatch[0]) || (shortMatch && shortMatch[0]) || '') || `${CHANNEL_URL}/community`;
-
+        const urls = (block.match(/https?:\/\/[^\s)\]]+/gi) || [])
+          .map((u) => safeExternalUrl(u))
+          .filter(Boolean);
+        const pick = urls.find((u) => /youtube\.com\/post\//i.test(u))
+          || urls.find((u) => /youtube\.com\/watch\?/i.test(u))
+          || urls.find((u) => /youtu\.be\//i.test(u))
+          || '';
         const content = block
           .replace(/\[!\[Image[^\n]*\)\]\([^\n]*\)\n?/g, '')
           .replace(/\[[^\]]+\]\((https?:\/\/[^\s)]+)\)/g, '$1')
           .replace(/\s+/g, ' ')
           .trim();
+        return { content, url: pick };
+      })
+      .filter((item) => item.url);
 
-        return { content, url };
-      });
-
-    const posts = blocks.slice(0, 12);
-    const postsWithValidUrl = posts.filter((p) => p.url && p.url !== `${CHANNEL_URL}/community`);
     const uniquePosts = [];
     const seen = new Set();
-    postsWithValidUrl.forEach((p) => {
+    blocks.forEach((p) => {
       if (seen.has(p.url)) return;
       seen.add(p.url);
       uniquePosts.push(p);
@@ -1108,7 +1116,7 @@ async function loadYouTubeCommunityPosts() {
           <span class="col-cat"><span class="chip micro">YouTube</span></span>
           <span class="col-title">${escapeHTML(post.content.slice(0, 220))}${post.content.length > 220 ? '...' : ''}</span>
           <span class="col-author">수노폭스 채널</span>
-          <span class="col-meta">커뮤니티 ${idx + 1}</span>
+          <span class="col-meta">게시글 ${idx + 1}</span>
         </a>
       `;
     }).join('');
