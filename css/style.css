@@ -3128,3 +3128,74 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.admin-yt-advanced,
+.admin-yt-charts {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.admin-chart-card {
+  border: 1px solid var(--sf-line);
+  border-radius: 12px;
+  background: var(--sf-surface);
+  padding: 0.7rem;
+}
+
+.admin-chart-card h4 {
+  margin: 0 0 0.55rem;
+  font-size: 0.92rem;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 170px 1fr 86px;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.4rem;
+}
+
+.chart-row:last-child {
+  margin-bottom: 0;
+}
+
+.chart-label {
+  font-size: 0.8rem;
+  color: var(--sf-sub);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chart-bar-wrap {
+  height: 10px;
+  border-radius: 999px;
+  border: 1px solid var(--sf-line);
+  background: color-mix(in srgb, var(--sf-surface) 82%, var(--sf-bg) 18%);
+  overflow: hidden;
+}
+
+.chart-bar {
+  height: 100%;
+  background: linear-gradient(135deg, #2f80ed, #56ccf2);
+}
+
+.chart-bar.alt {
+  background: linear-gradient(135deg, #ff6a3d, #ffc371);
+}
+
+.chart-value {
+  font-size: 0.78rem;
+  text-align: right;
+  color: var(--sf-sub);
+}
+
+@media (max-width: 860px) {
+  .chart-row {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-value {
+    text-align: left;
+  }
+}

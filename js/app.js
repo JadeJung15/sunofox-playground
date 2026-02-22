@@ -1039,7 +1039,10 @@ function renderAdmin() {
             <button id="admin-yt-save-key" class="btn btn-secondary">키 저장</button>
             <button id="admin-yt-load" class="btn btn-primary">분석 불러오기</button>
           </div>
+          <div class="text-sub" id="admin-yt-key-hint">${savedKey ? '저장된 API 키가 있어 자동으로 분석을 불러옵니다.' : '한 번 저장하면 이후에는 다시 입력하지 않아도 됩니다.'}</div>
           <div id="admin-yt-summary" class="admin-yt-summary empty">API 키를 입력한 후 분석 불러오기를 눌러주세요.</div>
+          <div id="admin-yt-advanced" class="admin-yt-advanced"></div>
+          <div id="admin-yt-charts" class="admin-yt-charts"></div>
           <div id="admin-yt-videos" class="admin-yt-videos"></div>
         </div>
       `;
@@ -1047,7 +1050,10 @@ function renderAdmin() {
       const keyInput = document.getElementById('admin-yt-api-key');
       const saveBtn = document.getElementById('admin-yt-save-key');
       const loadBtn = document.getElementById('admin-yt-load');
+      const keyHint = document.getElementById('admin-yt-key-hint');
       const summary = document.getElementById('admin-yt-summary');
+      const advanced = document.getElementById('admin-yt-advanced');
+      const charts = document.getElementById('admin-yt-charts');
       const videos = document.getElementById('admin-yt-videos');
 
       const fetchJSON = async (url) => {
@@ -1055,15 +1061,21 @@ function renderAdmin() {
         if (!res.ok) throw new Error(`API ${res.status}`);
         return res.json();
       };
+      const toNum = (v) => Number(v || 0);
+      const fmt = (v) => Number(v || 0).toLocaleString();
 
       const loadAnalytics = async () => {
-        if (!summary || !videos) return;
+        if (!summary || !videos || !advanced || !charts) return;
         const apiKey = (keyInput?.value || '').trim();
         if (!apiKey) {
           summary.innerHTML = '<div class="empty">API 키를 먼저 입력해주세요.</div>';
+          advanced.innerHTML = '';
+          charts.innerHTML = '';
           return;
         }
         summary.innerHTML = '<div class="empty">채널 통계를 불러오는 중...</div>';
+        advanced.innerHTML = '';
+        charts.innerHTML = '';
         videos.innerHTML = '';
         try {
           const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${CHANNEL_ID}&key=${apiKey}`;
@@ -1072,9 +1084,9 @@ function renderAdmin() {
           if (!channel) throw new Error('채널 데이터를 찾을 수 없습니다.');
 
           const stats = channel.statistics || {};
-          const subCount = Number(stats.subscriberCount || 0).toLocaleString();
-          const viewCount = Number(stats.viewCount || 0).toLocaleString();
-          const videoCount = Number(stats.videoCount || 0).toLocaleString();
+          const subCount = fmt(stats.subscriberCount);
+          const viewCount = fmt(stats.viewCount);
+          const videoCount = fmt(stats.videoCount);
 
           summary.innerHTML = `
             <div class="admin-kpi-grid">
@@ -1094,19 +1106,82 @@ function renderAdmin() {
 
           const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`;
           const videosData = await fetchJSON(videosUrl);
-          const rows = (videosData.items || []).map((v) => {
-            const title = v?.snippet?.title || '';
-            const date = v?.snippet?.publishedAt ? new Date(v.snippet.publishedAt).toLocaleDateString() : '';
-            const vCount = Number(v?.statistics?.viewCount || 0).toLocaleString();
-            const likeCount = Number(v?.statistics?.likeCount || 0).toLocaleString();
-            const commentCount = Number(v?.statistics?.commentCount || 0).toLocaleString();
+          const items = videosData.items || [];
+          if (!items.length) {
+            videos.innerHTML = '<div class="empty">영상 성과 데이터를 불러오지 못했습니다.</div>';
+            return;
+          }
+
+          const enriched = items.map((v) => {
+            const views = toNum(v?.statistics?.viewCount);
+            const likes = toNum(v?.statistics?.likeCount);
+            const comments = toNum(v?.statistics?.commentCount);
+            const engagement = views > 0 ? ((likes + comments) / views) * 100 : 0;
+            return {
+              id: v.id,
+              title: v?.snippet?.title || '',
+              publishedAt: v?.snippet?.publishedAt || '',
+              date: v?.snippet?.publishedAt ? new Date(v.snippet.publishedAt).toLocaleDateString() : '',
+              views,
+              likes,
+              comments,
+              engagement
+            };
+          }).sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
+
+          const totalViews = enriched.reduce((sum, v) => sum + v.views, 0);
+          const totalLikes = enriched.reduce((sum, v) => sum + v.likes, 0);
+          const totalComments = enriched.reduce((sum, v) => sum + v.comments, 0);
+          const avgViews = enriched.length ? Math.round(totalViews / enriched.length) : 0;
+          const avgEngagement = totalViews > 0 ? ((totalLikes + totalComments) / totalViews) * 100 : 0;
+          const topVideo = [...enriched].sort((a, b) => b.views - a.views)[0];
+
+          advanced.innerHTML = `
+            <div class="admin-kpi-grid">
+              <div class="stat-card"><span class="stat-label">최근 10개 평균 조회수</span><strong>${fmt(avgViews)}</strong></div>
+              <div class="stat-card"><span class="stat-label">최근 10개 평균 참여율</span><strong>${avgEngagement.toFixed(2)}%</strong></div>
+              <div class="stat-card"><span class="stat-label">조회수 최고 영상</span><strong>${escapeHTML((topVideo?.title || '-').slice(0, 20))}</strong></div>
+            </div>
+          `;
+
+          const maxViews = Math.max(...enriched.map((v) => v.views), 1);
+          const maxEng = Math.max(...enriched.map((v) => v.engagement), 0.01);
+          const viewBars = enriched.map((v) => `
+            <div class="chart-row">
+              <span class="chart-label">${escapeHTML((v.title || '').slice(0, 18))}</span>
+              <div class="chart-bar-wrap"><div class="chart-bar" style="width:${(v.views / maxViews) * 100}%"></div></div>
+              <span class="chart-value">${fmt(v.views)}</span>
+            </div>
+          `).join('');
+          const engBars = [...enriched]
+            .sort((a, b) => b.engagement - a.engagement)
+            .slice(0, 5)
+            .map((v) => `
+              <div class="chart-row">
+                <span class="chart-label">${escapeHTML((v.title || '').slice(0, 18))}</span>
+                <div class="chart-bar-wrap"><div class="chart-bar alt" style="width:${(v.engagement / maxEng) * 100}%"></div></div>
+                <span class="chart-value">${v.engagement.toFixed(2)}%</span>
+              </div>
+            `).join('');
+          charts.innerHTML = `
+            <div class="admin-chart-card">
+              <h4>조회수 추이 (최근 10개)</h4>
+              ${viewBars}
+            </div>
+            <div class="admin-chart-card">
+              <h4>참여율 상위 영상 (좋아요+댓글/조회수)</h4>
+              ${engBars}
+            </div>
+          `;
+
+          const rows = enriched.slice().reverse().map((v) => {
             const href = `https://www.youtube.com/watch?v=${v.id}`;
             return `
               <a class="post-row" href="${href}" target="_blank" rel="noreferrer noopener">
                 <span class="col-cat"><span class="chip micro">영상</span></span>
-                <span class="col-title">${escapeHTML(title)}</span>
-                <span class="col-author">${date}</span>
-                <span class="col-meta">조회 ${vCount} · 좋아요 ${likeCount} · 댓글 ${commentCount}</span>
+                <span class="col-title">${escapeHTML(v.title)}</span>
+                <span class="col-author">${v.date}</span>
+                <span class="col-meta">조회 ${fmt(v.views)} · 좋아요 ${fmt(v.likes)} · 댓글 ${fmt(v.comments)} · 참여율 ${v.engagement.toFixed(2)}%</span>
               </a>
             `;
           }).join('');
@@ -1114,6 +1189,8 @@ function renderAdmin() {
         } catch (error) {
           console.error(error);
           summary.innerHTML = '<div class="empty">분석 데이터를 불러오지 못했습니다. API 키/할당량/권한을 확인해주세요.</div>';
+          advanced.innerHTML = '';
+          charts.innerHTML = '';
           videos.innerHTML = '';
         }
       };
@@ -1125,9 +1202,11 @@ function renderAdmin() {
           return;
         }
         localStorage.setItem(YT_API_KEY_STORAGE, key);
+        if (keyHint) keyHint.textContent = 'API 키가 저장되었습니다. 다음부터 자동으로 분석을 불러옵니다.';
         alert('API 키가 저장되었습니다.');
       });
       loadBtn?.addEventListener('click', loadAnalytics);
+      if (savedKey) loadAnalytics();
     };
 
     const renderAllPanels = () => {
