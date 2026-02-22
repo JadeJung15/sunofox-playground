@@ -1,237 +1,114 @@
 // js/app.js
-import { auth } from './firebase-init.js';
-
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
-// 테스트 데이터베이스 (test-it.co.kr 스타일로 확장)
+// 테스트 데이터베이스 (7문 7답 시스템 & Anime Style)
 const TESTS = [
-    // --- 성격 카테고리 ---
     { 
-        id: 'first-impression', 
+        id: 'anime-soul', 
         category: '성격', 
-        title: '나의 첫인상 테스트', 
-        desc: '남들이 보는 나의 첫인상은 어떨까? 분위기 분석 테스트', 
-        thumb: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60',
+        title: '나의 애니 속 캐릭터 타입', 
+        desc: '7번의 질문으로 알아보는 나의 만화 속 페르소나', 
+        thumb: 'https://images.unsplash.com/photo-1578632738908-4521c442075a?auto=format&fit=crop&w=500&q=80',
         questions: [
-            { q: '새로운 모임에 갔을 때 나는?', options: [{ text: '먼저 말을 건네 분위기를 띄운다', type: '인싸' }, { text: '조용히 상황을 지켜본다', type: '신중' }] },
-            { q: '친구들이 말하는 나의 매력은?', options: [{ text: '다정하고 따뜻함', type: '따뜻' }, { text: '쿨하고 지적인 느낌', type: '냉철' }] }
+            { q: '낯선 세계에서 눈을 떴을 때, 첫 반응은?', options: [{ text: '일단 주변을 탐색하며 동료를 찾는다', type: 'Protagonist' }, { text: '조용히 상황을 파악하며 혼자 움직인다', type: 'Shadow' }] },
+            { q: '위기에 처한 마을을 발견했다. 당신은?', options: [{ text: '주저 없이 앞장서서 도와준다', type: 'Protagonist' }, { text: '효율적인 해결책을 고민한 뒤 움직인다', type: 'Shadow' }] },
+            { q: '가장 소중하게 생각하는 가치는?', options: [{ text: '우정과 유대감', type: 'Protagonist' }, { text: '자유와 실력', type: 'Shadow' }] },
+            { q: '휴식 시간에 하고 싶은 일은?', options: [{ text: '친구들과 시끌벅적 파티', type: 'Protagonist' }, { text: '조용한 숲속에서 명상', type: 'Shadow' }] },
+            { q: '라이벌이 나타났다. 당신의 태도는?', options: [{ text: '선의의 경쟁을 하며 함께 성장한다', type: 'Protagonist' }, { text: '그의 약점을 파악해 압도한다', type: 'Shadow' }] },
+            { q: '어떤 능력을 갖고 싶은가?', options: [{ text: '모두를 지키는 방어력', type: 'Protagonist' }, { text: '누구도 막지 못하는 파괴력', type: 'Shadow' }] },
+            { q: '최종 결전의 순간, 당신의 선택은?', options: [{ text: '희망을 믿고 끝까지 싸운다', type: 'Protagonist' }, { text: '냉정하게 승산이 있는 길을 택한다', type: 'Shadow' }] }
         ]
     },
     { 
-        id: 'love-style', 
-        category: '성격', 
-        title: '연애 스타일 MBTI', 
-        desc: '연애할 때 나는 어떤 모습일까? 나의 연애 세포 분석', 
-        thumb: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=500&q=60',
+        id: 'pastel-mood', 
+        category: '감성', 
+        title: '나의 오늘의 오라(Aura) 컬러', 
+        desc: '7번의 감성 선택으로 확인하는 나의 현재 무드', 
+        thumb: 'https://images.unsplash.com/photo-1528459801416-a9e53bbf4e17?auto=format&fit=crop&w=500&q=80',
         questions: [
-            { q: '데이트 코스를 짤 때 나는?', options: [{ text: '철저하게 시간 단위로 계획', type: 'J' }, { text: '그때그때 기분에 따라', type: 'P' }] },
-            { q: '연인과 갈등이 생기면?', options: [{ text: '논리적으로 잘잘못을 가린다', type: 'T' }, { text: '상대의 감정을 먼저 살핀다', type: 'F' }] }
-        ]
-    },
-    { 
-        id: 'office-type', 
-        category: '성격', 
-        title: '직장인 생존 유형 테스트', 
-        desc: '회사에서 나는 어떤 캐릭터? 사무실 속 나의 모습', 
-        thumb: 'https://images.unsplash.com/photo-1497215728101-856f4ea42174?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '출근하자마자 하는 일은?', options: [{ text: 'To-do 리스트 작성', type: '워크홀릭' }, { text: '커피 마시며 루팡 대기', type: '자유영혼' }] }
-        ]
-    },
-
-    // --- 얼굴 카테고리 ---
-    { 
-        id: 'personal-color', 
-        category: '얼굴', 
-        title: '퍼스널 컬러 자가진단', 
-        desc: '나에게 가장 잘 어울리는 색은? 웜톤 vs 쿨톤 분석', 
-        thumb: 'https://images.unsplash.com/photo-1523260572679-8e2fe22281fe?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '금액세서리 vs 은액세서리?', options: [{ text: '금색이 더 잘 어울린다', type: 'Warm' }, { text: '은색이 더 잘 어울린다', type: 'Cool' }] },
-            { q: '오렌지 립 vs 핑크 립?', options: [{ text: '상큼한 오렌지', type: 'Warm' }, { text: '화사한 핑크', type: 'Cool' }] }
-        ]
-    },
-    { 
-        id: 'animal-look', 
-        category: '얼굴', 
-        title: '닮은꼴 동물 테스트', 
-        desc: '강아지상? 고양이상? 나의 이미지 동물 찾기', 
-        thumb: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '나의 눈매는 어떤 편인가요?', options: [{ text: '동글동글 순한 편', type: '강아지' }, { text: '날카롭고 시크한 편', type: '고양이' }] }
-        ]
-    },
-
-    // --- 사주 카테고리 ---
-    { 
-        id: 'money-luck', 
-        category: '사주', 
-        title: '이번 주 금전운 테스트', 
-        desc: '내 지갑은 두둑해질까? 가볍게 보는 주간 재물운', 
-        thumb: 'https://images.unsplash.com/photo-1580519542036-c47de6196ba5?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '길을 가다 만 원을 줍는다면?', options: [{ text: '오늘 운이 좋네! 맛있는 거 먹자', type: '상승' }, { text: '주인을 찾아줄까? 저축할까?', type: '유지' }] }
-        ]
-    },
-    { 
-        id: 'lucky-place', 
-        category: '사주', 
-        title: '오늘의 행운 장소', 
-        desc: '나의 운기를 높여줄 오늘 최고의 장소는?', 
-        thumb: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '지금 가장 떠오르는 이미지는?', options: [{ text: '나무와 숲', type: 'Nature' }, { text: '화려한 불빛', type: 'City' }] }
-        ]
-    },
-
-    // --- 그외 카테고리 ---
-    { 
-        id: 'balance-game', 
-        category: '그외', 
-        title: '극강의 밸런스 게임', 
-        desc: '도저히 고를 수 없다! 당신의 최종 선택은?', 
-        thumb: 'https://images.unsplash.com/photo-1509228468518-180dd48a5db5?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '평생 하나만 한다면?', options: [{ text: '여름에 에어컨 없이 살기', type: 'A' }, { text: '겨울에 히터 없이 살기', type: 'B' }] },
-            { q: '더 나쁜 상황은?', options: [{ text: '친구랑 절교하기', type: 'A' }, { text: '애인이랑 헤어지기', type: 'B' }] }
-        ]
-    },
-    { 
-        id: 'past-life', 
-        category: '그외', 
-        title: '나의 전생 체험 테스트', 
-        desc: '전생에 나는 왕이었을까? 재미로 보는 전생 찾기', 
-        thumb: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '꿈속에서 당신은 어디에 있나요?', options: [{ text: '거대한 궁궐', type: '왕족' }, { text: '평화로운 시골 마을', type: '평민' }] }
-        ]
-    },
-    { 
-        id: 'dessert-soul', 
-        category: '그외', 
-        title: '디저트로 본 나의 성격', 
-        desc: '달콤한 디저트에 비유한 나의 매력 지수', 
-        thumb: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '가장 좋아하는 맛은?', options: [{ text: '진하고 묵직한 단맛', type: '초코' }, { text: '상큼하고 가벼운 맛', type: '레몬' }] }
-        ]
-    },
-    { 
-        id: 'hobby-finder', 
-        category: '그외', 
-        title: '인생 취미 찾기 테스트', 
-        desc: '무료한 일상, 나에게 딱 맞는 취미를 추천해 드려요.', 
-        thumb: 'https://images.unsplash.com/photo-1520156582985-31368ad1a1b1?auto=format&fit=crop&w=500&q=60',
-        questions: [
-            { q: '몸을 움직이는 걸 좋아하나요?', options: [{ text: '땀 흘리는 운동이 최고', type: 'Active' }, { text: '앉아서 사부작대는 게 최고', type: 'Creative' }] }
+            { q: '가장 끌리는 하늘의 모습은?', options: [{ text: '해 질 녘 노을', type: 'Warm' }, { text: '새벽녘 푸른 빛', type: 'Cool' }] },
+            { q: '어떤 향기가 더 좋은가요?', options: [{ text: '달콤한 꽃향기', type: 'Warm' }, { text: '싱그러운 풀내음', type: 'Cool' }] },
+            { q: '지금 듣고 싶은 음악은?', options: [{ text: '신나는 비트', type: 'Warm' }, { text: '잔잔한 피아노', type: 'Cool' }] },
+            { q: '방 꾸미기를 한다면?', options: [{ text: '따뜻한 노란 조명', type: 'Warm' }, { text: '깔끔한 화이트 톤', type: 'Cool' }] },
+            { q: '여행을 간다면 가고 싶은 곳은?', options: [{ text: '활기찬 휴양지', type: 'Warm' }, { text: '고요한 설산', type: 'Cool' }] },
+            { q: '친구에게 건네는 한마디?', options: [{ text: '힘내! 다 잘 될 거야', type: 'Warm' }, { text: '무슨 일이야? 차근차근 말해봐', type: 'Cool' }] },
+            { q: '오늘의 나에게 어울리는 수식어는?', options: [{ text: '빛나는', type: 'Warm' }, { text: '깊이 있는', type: 'Cool' }] }
         ]
     }
 ];
 
 let currentFilter = '전체';
 
-// 라우터
 function router() {
     const hash = window.location.hash || '#home';
-    
-    // 네비게이션 활성화 표시
     navLinks.forEach(link => {
         const filter = link.dataset.filter;
         link.classList.toggle('active', hash.includes(filter.toLowerCase()) || (hash === '#home' && filter === '전체'));
     });
 
     if (hash.startsWith('#test/')) {
-        const testId = hash.split('/')[1];
-        renderTestExecution(testId);
+        renderTestExecution(hash.split('/')[1]);
     } else {
-        const filterMap = { '#personality': '성격', '#face': '얼굴', '#fun': '그외', '#fortune': '사주' };
+        const filterMap = { '#personality': '성격', '#face': '감성', '#fortune': '사주' };
         currentFilter = filterMap[hash] || '전체';
         renderHome();
     }
     window.scrollTo(0, 0);
 }
 
-// 홈 화면 렌더링
 function renderHome() {
-    const filteredTests = currentFilter === '전체' 
-        ? TESTS 
-        : TESTS.filter(t => t.category === currentFilter);
-
+    const filtered = currentFilter === '전체' ? TESTS : TESTS.filter(t => t.category === currentFilter);
     app.innerHTML = `
-        <div class="ad-slot">상단 광고 (AdSense)</div>
-        
-        <section class="portal-hero fade-in">
-            <h1>심플 테스트 포털</h1>
-            <p>MBTI, 운세, 재미있는 심리테스트를 즐겨보세요!</p>
+        <div class="ad-slot">AD SPACE (TOP)</div>
+        <section class="portal-hero">
+            <h1><span>7</span>Check</h1>
+            <p>7번의 질문으로 확인하는 나의 모든 것</p>
         </section>
-
-        <div class="search-bar fade-in">
-            <input type="text" id="search-input" class="input-search" placeholder="궁금한 테스트를 검색해보세요">
-        </div>
-
         <div class="test-grid">
-            ${filteredTests.map(test => `
-                <a href="#test/${test.id}" class="test-card fade-in">
-                    <div class="test-thumb" style="background-image: url('${test.thumb}')"></div>
+            ${filtered.map(t => `
+                <a href="#test/${t.id}" class="test-card fade-in">
+                    <div class="test-thumb" style="background-image: url('${t.thumb}')"></div>
                     <div class="test-info">
-                        <span class="test-category">${test.category}</span>
-                        <h3>${test.title}</h3>
-                        <p>${test.desc}</p>
+                        <h3>${t.title}</h3>
+                        <p>${t.desc}</p>
                     </div>
                 </a>
             `).join('')}
         </div>
-
-        <div class="ad-slot">하단 광고 (AdSense)</div>
+        <div class="ad-slot">AD SPACE (BOTTOM)</div>
     `;
-
-    document.getElementById('search-input').addEventListener('input', (e) => {
-        const keyword = e.target.value.toLowerCase();
-        const cards = document.querySelectorAll('.test-card');
-        cards.forEach(card => {
-            const title = card.querySelector('h3').textContent.toLowerCase();
-            card.style.display = title.includes(keyword) ? 'block' : 'none';
-        });
-    });
 }
 
-// 테스트 실행 화면
 function renderTestExecution(testId) {
     const test = TESTS.find(t => t.id === testId);
-    if (!test) { window.location.hash = '#home'; return; }
+    if (!test) return location.hash = '#home';
 
     let step = 0;
     const answers = [];
 
     const updateStep = () => {
-        const progress = ((step + 1) / test.questions.length) * 100;
         const currentQ = test.questions[step];
-
         app.innerHTML = `
-            <div class="ad-slot">상단 광고 (AdSense)</div>
+            <div class="ad-slot">AD SPACE (MID)</div>
             <div class="test-execution fade-in">
-                <div class="progress-bar">
-                    <div class="progress-inner" style="width: ${progress}%"></div>
+                <div class="progress-container">
+                    <div class="step-dots">
+                        ${Array.from({length: 7}).map((_, i) => `<div class="dot ${i <= step ? 'active' : ''}"></div>`).join('')}
+                    </div>
                 </div>
-                <div class="q-box">
-                    <span class="test-category">${test.title}</span>
-                    <h2 style="margin-top:1rem;">Q${step + 1}. ${currentQ.q}</h2>
-                </div>
-                <div class="options">
-                    ${currentQ.options.map((opt, idx) => `
-                        <button class="option-btn" data-type="${opt.type}">${opt.text}</button>
-                    `).join('')}
+                <h2>Q${step + 1}. ${currentQ.q}</h2>
+                <div class="options" style="margin-top:2rem;">
+                    ${currentQ.options.map(opt => `<button class="option-btn" data-type="${opt.type}">${opt.text}</button>`).join('')}
                 </div>
             </div>
-            <div class="ad-slot">하단 광고 (AdSense)</div>
         `;
 
         document.querySelectorAll('.option-btn').forEach(btn => {
             btn.onclick = () => {
                 answers.push(btn.dataset.type);
-                if (step < test.questions.length - 1) {
+                if (step < 6) {
                     step++;
                     updateStep();
                 } else {
@@ -240,43 +117,54 @@ function renderTestExecution(testId) {
             };
         });
     };
-
     updateStep();
 }
 
-// 결과 화면
 function renderResult(testId, answers) {
     const test = TESTS.find(t => t.id === testId);
-    const resultType = answers.sort((a, b) => 
-        answers.filter(v => v === a).length - answers.filter(v => v === b).length
-    ).pop();
+    const resultType = answers.sort((a,b) => answers.filter(v => v===a).length - answers.filter(v => v===b).length).pop();
 
     app.innerHTML = `
-        <div class="ad-slot">상단 광고 (AdSense)</div>
-        <div class="result-card test-execution fade-in">
-            <span class="test-category">테스트 완료!</span>
-            <h2 class="result-title">당신은 [${resultType}] 유형!</h2>
-            <p class="result-desc">${test.title} 분석 결과, 당신은 매우 독특하고 긍정적인 에너지를 가진 사람으로 나타났습니다. 친구들에게도 공유해 보세요!</p>
-            <div class="result-actions">
-                <button class="btn btn-primary" style="width:100%; margin-bottom:0.5rem;" onclick="location.hash='#home'">다른 테스트 하러 가기</button>
-                <button class="btn btn-secondary" style="width:100%;" onclick="copyResult()">결과 링크 복사하기</button>
+        <div class="ad-slot">AD SPACE (RESULT TOP)</div>
+        <div class="result-card fade-in">
+            <span class="test-category">7 Check 완료!</span>
+            <h2 style="margin:1rem 0; font-size:2rem;">당신은 [${resultType}] 타입</h2>
+            <p style="color:var(--text-sub);">7번의 질문을 통해 분석한 당신의 가장 가까운 모습입니다. 분석 결과 당신은 조화롭고 창의적인 에너지를 가지고 있습니다.</p>
+            
+            <div class="share-grid">
+                <button class="btn-share" id="share-web">카카오톡 공유</button>
+                <button class="btn-share btn-copy" id="share-copy">링크 복사하기</button>
             </div>
+            
+            <button class="btn-share" style="width:100%; margin-top:1rem; background:#4a4a4a;" onclick="location.hash='#home'">다른 테스트 하기</button>
         </div>
-        <div class="ad-slot">전면 광고 대기 영역</div>
+        <div class="ad-slot">AD SPACE (RESULT BOTTOM)</div>
     `;
+
+    document.getElementById('share-copy').onclick = () => {
+        navigator.clipboard.writeText(window.location.href);
+        alert('링크가 복사되었습니다! 친구들에게 공유해보세요.');
+    };
+
+    document.getElementById('share-web').onclick = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: 'SevenCheck - 결과 확인',
+                    text: `나의 테스트 결과는 [${resultType}]! 당신도 확인해보세요.`,
+                    url: window.location.href,
+                });
+            } catch (err) { console.log('Error sharing', err); }
+        } else {
+            alert('링크를 복사해 공유해 주세요!');
+        }
+    };
 }
 
-function copyResult() {
-    navigator.clipboard.writeText(window.location.href);
-    alert('결과 링크가 복사되었습니다!');
-}
-
-// 테마 변경
 themeToggle.onclick = () => {
-    const current = document.documentElement.getAttribute('data-theme');
-    const next = current === 'dark' ? 'light' : 'dark';
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
-    themeToggle.textContent = next === 'dark' ? '☀️' : '🌙';
+    themeToggle.textContent = next === 'dark' ? '☀️' : '✨';
 };
 
 window.addEventListener('hashchange', router);
