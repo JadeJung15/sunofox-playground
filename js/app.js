@@ -254,9 +254,42 @@ function renderProfile() {
                     <button id="logout-btn" class="btn-secondary" style="width: 100%; padding: 1rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); font-weight: 700;">로그아웃</button>
                 </div>
             </details>
+
+            ${UserState.isAdmin ? `
+            <details class="profile-details admin-only" style="border-color: var(--accent-color);">
+                <summary style="color: var(--accent-color);">🛡️ 관리자 콘솔 (Admin)</summary>
+                <div class="content-area">
+                    <div class="admin-tool-group" style="background: rgba(99, 102, 241, 0.05); padding: 1.5rem; border-radius: var(--radius-md); border: 1px dashed var(--accent-color);">
+                        <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💰 사용자 포인트 수동 관리</h4>
+                        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <input type="text" id="admin-target-uid" style="padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="대상 사용자 UID">
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="number" id="admin-point-amount" style="flex: 1; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="금액 (예: 1000 또는 -500)">
+                                <button id="admin-charge-btn" class="btn-primary" style="background: var(--accent-secondary); box-shadow: none;">집행</button>
+                            </div>
+                        </div>
+                        <p id="admin-msg" style="margin-top: 0.75rem; font-size: 0.8rem; font-weight: 700; color: var(--accent-color);"></p>
+                    </div>
+                </div>
+            </details>
+            ` : ''}
         </div>
     `;
     updateUI();
+    if (UserState.isAdmin) {
+        document.getElementById('admin-charge-btn').onclick = async () => {
+            const uid = document.getElementById('admin-target-uid').value.trim();
+            const amount = parseInt(document.getElementById('admin-point-amount').value);
+            const msg = document.getElementById('admin-msg');
+            if (!uid || isNaN(amount)) return alert("UID와 정확한 금액을 입력하세요.");
+            if (await chargeUserPoints(uid, amount)) {
+                msg.textContent = `성공: ${uid}님에게 ${amount}P 적용 완료.`;
+                document.getElementById('admin-point-amount').value = '';
+            } else {
+                msg.textContent = "실패: 권한이 없거나 존재하지 않는 사용자입니다.";
+            }
+        };
+    }
 }
 
 function renderArcade() {
