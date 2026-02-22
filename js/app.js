@@ -45,6 +45,8 @@ async function router() {
     app.innerHTML = ''; 
     if (hash === '#privacy') renderPrivacy();
     else if (hash === '#about') renderAbout();
+    else if (hash === '#terms') renderTerms();
+    else if (hash === '#contact') renderContact();
     else if (hash === '#arcade') renderArcade();
     else if (hash === '#board') await renderBoard(app);
     else if (hash === '#ranking') await renderRanking(app);
