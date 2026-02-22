@@ -3102,3 +3102,29 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Admin analytics */
+.admin-analytics-wrap {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.admin-analytics-controls {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.5rem;
+}
+
+.admin-yt-summary,
+.admin-yt-videos {
+  border: 1px solid var(--sf-line);
+  border-radius: 12px;
+  background: var(--sf-surface);
+  padding: 0.6rem;
+}
+
+@media (max-width: 860px) {
+  .admin-analytics-controls {
+    grid-template-columns: 1fr;
+  }
+}

@@ -43,6 +43,7 @@ const POINTS = {
 const CHANNEL_URL = 'https://youtube.com/@sunofox';
 const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
 const CHANNEL_ID = 'UC8M-2aXbknDT3tDcN1PMvuQ';
+const YT_API_KEY_STORAGE = 'sunofox_youtube_api_key';
 
 const LINKTREE_LINKS = [
   { label: 'YouTube | 수노폭스', url: 'https://www.youtube.com/@sunofox' },
@@ -926,11 +927,13 @@ function renderAdmin() {
             <button class="tab-btn active" data-panel="posts">게시글</button>
             <button class="tab-btn" data-panel="comments">댓글</button>
             <button class="tab-btn" data-panel="users">사용자</button>
+            <button class="tab-btn" data-panel="analytics">채널 분석</button>
           </div>
 
           <div id="admin-panel-posts" class="admin-panel"></div>
           <div id="admin-panel-comments" class="admin-panel hidden"></div>
           <div id="admin-panel-users" class="admin-panel hidden"></div>
+          <div id="admin-panel-analytics" class="admin-panel hidden"></div>
         </div>
       </section>
     `;
@@ -938,6 +941,7 @@ function renderAdmin() {
     const postsPanel = document.getElementById('admin-panel-posts');
     const commentsPanel = document.getElementById('admin-panel-comments');
     const usersPanel = document.getElementById('admin-panel-users');
+    const analyticsPanel = document.getElementById('admin-panel-analytics');
     const searchInput = document.getElementById('admin-search');
     const refreshBtn = document.getElementById('admin-refresh');
     const kpiPosts = document.getElementById('admin-kpi-posts');
@@ -1021,6 +1025,111 @@ function renderAdmin() {
       usersPanel.innerHTML = rows || '<div class="empty">조건에 맞는 사용자가 없습니다.</div>';
     };
 
+    const renderAnalyticsShell = () => {
+      if (!analyticsPanel) return;
+      const savedKey = localStorage.getItem(YT_API_KEY_STORAGE) || '';
+      analyticsPanel.innerHTML = `
+        <div class="admin-analytics-wrap">
+          <p class="text-sub">
+            공개 통계 기반 채널 분석입니다.
+            <a href="https://studio.youtube.com/channel/${CHANNEL_ID}/analytics" target="_blank" rel="noreferrer noopener">YouTube Studio Analytics 열기</a>
+          </p>
+          <div class="admin-analytics-controls">
+            <input id="admin-yt-api-key" class="input" type="password" placeholder="YouTube Data API Key 입력" value="${escapeHTML(savedKey)}">
+            <button id="admin-yt-save-key" class="btn btn-secondary">키 저장</button>
+            <button id="admin-yt-load" class="btn btn-primary">분석 불러오기</button>
+          </div>
+          <div id="admin-yt-summary" class="admin-yt-summary empty">API 키를 입력한 후 분석 불러오기를 눌러주세요.</div>
+          <div id="admin-yt-videos" class="admin-yt-videos"></div>
+        </div>
+      `;
+
+      const keyInput = document.getElementById('admin-yt-api-key');
+      const saveBtn = document.getElementById('admin-yt-save-key');
+      const loadBtn = document.getElementById('admin-yt-load');
+      const summary = document.getElementById('admin-yt-summary');
+      const videos = document.getElementById('admin-yt-videos');
+
+      const fetchJSON = async (url) => {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`API ${res.status}`);
+        return res.json();
+      };
+
+      const loadAnalytics = async () => {
+        if (!summary || !videos) return;
+        const apiKey = (keyInput?.value || '').trim();
+        if (!apiKey) {
+          summary.innerHTML = '<div class="empty">API 키를 먼저 입력해주세요.</div>';
+          return;
+        }
+        summary.innerHTML = '<div class="empty">채널 통계를 불러오는 중...</div>';
+        videos.innerHTML = '';
+        try {
+          const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${CHANNEL_ID}&key=${apiKey}`;
+          const channelData = await fetchJSON(channelUrl);
+          const channel = channelData?.items?.[0];
+          if (!channel) throw new Error('채널 데이터를 찾을 수 없습니다.');
+
+          const stats = channel.statistics || {};
+          const subCount = Number(stats.subscriberCount || 0).toLocaleString();
+          const viewCount = Number(stats.viewCount || 0).toLocaleString();
+          const videoCount = Number(stats.videoCount || 0).toLocaleString();
+
+          summary.innerHTML = `
+            <div class="admin-kpi-grid">
+              <div class="stat-card"><span class="stat-label">구독자</span><strong>${subCount}</strong></div>
+              <div class="stat-card"><span class="stat-label">총 조회수</span><strong>${viewCount}</strong></div>
+              <div class="stat-card"><span class="stat-label">전체 영상 수</span><strong>${videoCount}</strong></div>
+            </div>
+          `;
+
+          const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${CHANNEL_ID}&order=date&type=video&maxResults=10&key=${apiKey}`;
+          const searchData = await fetchJSON(searchUrl);
+          const ids = (searchData.items || []).map((item) => item?.id?.videoId).filter(Boolean);
+          if (!ids.length) {
+            videos.innerHTML = '<div class="empty">최신 영상 데이터를 불러오지 못했습니다.</div>';
+            return;
+          }
+
+          const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`;
+          const videosData = await fetchJSON(videosUrl);
+          const rows = (videosData.items || []).map((v) => {
+            const title = v?.snippet?.title || '';
+            const date = v?.snippet?.publishedAt ? new Date(v.snippet.publishedAt).toLocaleDateString() : '';
+            const vCount = Number(v?.statistics?.viewCount || 0).toLocaleString();
+            const likeCount = Number(v?.statistics?.likeCount || 0).toLocaleString();
+            const commentCount = Number(v?.statistics?.commentCount || 0).toLocaleString();
+            const href = `https://www.youtube.com/watch?v=${v.id}`;
+            return `
+              <a class="post-row" href="${href}" target="_blank" rel="noreferrer noopener">
+                <span class="col-cat"><span class="chip micro">영상</span></span>
+                <span class="col-title">${escapeHTML(title)}</span>
+                <span class="col-author">${date}</span>
+                <span class="col-meta">조회 ${vCount} · 좋아요 ${likeCount} · 댓글 ${commentCount}</span>
+              </a>
+            `;
+          }).join('');
+          videos.innerHTML = rows || '<div class="empty">영상 성과 데이터를 불러오지 못했습니다.</div>';
+        } catch (error) {
+          console.error(error);
+          summary.innerHTML = '<div class="empty">분석 데이터를 불러오지 못했습니다. API 키/할당량/권한을 확인해주세요.</div>';
+          videos.innerHTML = '';
+        }
+      };
+
+      saveBtn?.addEventListener('click', () => {
+        const key = (keyInput?.value || '').trim();
+        if (!key) {
+          alert('API 키를 입력해주세요.');
+          return;
+        }
+        localStorage.setItem(YT_API_KEY_STORAGE, key);
+        alert('API 키가 저장되었습니다.');
+      });
+      loadBtn?.addEventListener('click', loadAnalytics);
+    };
+
     const renderAllPanels = () => {
       renderPosts();
       renderComments();
@@ -1033,6 +1142,8 @@ function renderAdmin() {
       postsPanel?.classList.toggle('hidden', panel !== 'posts');
       commentsPanel?.classList.toggle('hidden', panel !== 'comments');
       usersPanel?.classList.toggle('hidden', panel !== 'users');
+      analyticsPanel?.classList.toggle('hidden', panel !== 'analytics');
+      if (panel === 'analytics') renderAnalyticsShell();
     };
 
     const reloadAll = async () => {
