@@ -280,13 +280,14 @@ export class RhythmGame {
     }
 
     hit() {
-        const notes = document.querySelectorAll('.rhythm-note');
-        const targetY = this.area.clientHeight - 50; // Approximation
+        const notes = this.notesContainer.querySelectorAll('.rhythm-note');
+        const targetRect = this.container.querySelector('.target-zone').getBoundingClientRect();
         let hitMade = false;
 
         notes.forEach(note => {
-            const noteY = note.offsetTop;
-            if (noteY > targetY - 40 && noteY < targetY + 40) {
+            const noteRect = note.getBoundingClientRect();
+            // Check if note overlaps with target zone
+            if (noteRect.bottom > targetRect.top && noteRect.top < targetRect.bottom) {
                 this.score += 10;
                 this.scoreEl.textContent = `Score: ${this.score} (Best: ${Store.getGameRecord('rhythm') || 0})`;
                 note.classList.add('hit');
@@ -1424,5 +1425,7 @@ export class DodgeGame {
         clearInterval(this.timer);
         clearInterval(this.spawnTimer);
         document.removeEventListener('keydown', this.handleKeyDown);
+        this.obstacles.forEach(obs => obs.el.remove());
+        this.obstacles = [];
     }
 }
