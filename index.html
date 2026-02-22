@@ -15,7 +15,20 @@
 <body>
     <header>
         <div class="nav-container">
-            <a href="#home" class="logo"><span>7</span>Check</a>
+            <div class="nav-top">
+                <a href="#home" class="logo"><span>7</span>Check</a>
+                <div class="nav-right">
+                    <div id="header-profile" class="header-profile hidden" onclick="location.hash='#profile'">
+                        <span id="user-emoji" class="h-emoji">👤</span>
+                        <span id="user-name" class="h-name">닉네임</span>
+                        <div class="h-points">
+                            <span class="p-icon">💰</span>
+                            <span id="user-points">0</span>
+                        </div>
+                    </div>
+                    <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">✨</button>
+                </div>
+            </div>
             <nav class="nav-tabs">
                 <a href="#home" class="nav-link active" data-filter="전체">홈</a>
                 <a href="#personality" class="nav-link" data-filter="성격">성격</a>
