@@ -15,6 +15,7 @@ import {
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
+const adminNavLink = document.querySelector('.nav-link.admin-only');
 
 let currentUser = null; // To store authenticated user info
 let isAdmin = false;    // To store admin status
@@ -31,6 +32,9 @@ const routes = {
 
 function router() {
   const hash = window.location.hash || '#home';
+  if (hash === '#admin' && !isAdmin) {
+    window.location.hash = '#home';
+  }
   const renderFn = routes[hash] || renderHome;
   
   // Update Nav
@@ -43,6 +47,12 @@ function router() {
   renderFn();
 }
 
+function updateAdminNav() {
+  if (!adminNavLink) return;
+  if (isAdmin) adminNavLink.classList.remove('hidden');
+  else adminNavLink.classList.add('hidden');
+}
+
 // Listen for auth state changes
 onAuthStateChanged(auth, async (user) => {
   currentUser = user;
@@ -52,12 +62,14 @@ onAuthStateChanged(auth, async (user) => {
     const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh token
     isAdmin = idTokenResult.claims.admin || false;
   }
+  updateAdminNav();
   router(); // Re-render current view to reflect auth state or admin status
 });
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', () => {
   initTheme();
+  updateAdminNav();
   router();
 });
 
