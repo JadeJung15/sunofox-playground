@@ -1,7 +1,6 @@
 // js/app.js
 import { Store } from './store.js';
-import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame, MathGame, RpsGame, PersonalityTest, NumberMemoryGame, TypingGame, ReflexGame, MazeGame, DodgeGame } from './games.js';
-import { auth, db } from './firebase-init.js'; // Import auth and db instances from new module
+import { auth } from './firebase-init.js'; // Import auth instance from new module
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -19,7 +18,6 @@ const themeToggle = document.getElementById('theme-toggle');
 const adminNavLink = document.querySelector('.nav-link.admin-only');
 
 let currentRoute = null;
-let activeGame = null;
 
 let currentUser = null; // To store authenticated user info
 let isAdmin = false;    // To store admin status
@@ -40,29 +38,13 @@ const POINTS = {
   dailyLogin: 8
 };
 
-const CHANNEL_URL = 'https://youtube.com/@sunofox';
-const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
-const CHANNEL_ID = 'UC8M-2aXbknDT3tDcN1PMvuQ';
-const YT_API_KEY_STORAGE = 'sunofox_youtube_api_key';
-
-const LINKTREE_LINKS = [
-  { label: 'YouTube | 수노폭스', url: 'https://www.youtube.com/@sunofox' },
-  { label: 'Spotify | 수노폭스', url: 'https://open.spotify.com/artist/5fzr4xqw1e0c5cI8dVj11D?si=lYMzkqudQDmpVKgzkG18Kg' },
-  { label: 'Apple Music | 수노폭스', url: 'https://music.apple.com/kr/artist/%EC%88%98%EB%85%B8%ED%8F%AD%EC%8A%A4/1874158480' },
-  { label: 'SunoFox - Topic', url: 'https://music.youtube.com/channel/UCjPuy8z0pdzW3OVUXka0lMw?si=2ljpP0CVll5jXeQe' },
-  { label: 'SoundCloud | 수노폭스', url: 'https://www.soundcloud.com/sunopogseu?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing' },
-  { label: 'FLO | 수노폭스', url: 'https://www.music-flo.com/detail/artist/413342628/track?sortType=POPULARITY&roleType=ALL' },
-  { label: 'Bugs | 수노폭스', url: 'https://music.bugs.co.kr/artist/14591489' },
-  { label: 'VIBE (바이브)', url: 'https://vibe.naver.com/artist/10398991' },
-  { label: 'TIDAL | 수노폭스', url: 'https://tidal.com/artist/73947996/u' }
-];
-
 // Routing
 const routes = {
   '#home': renderHome,
-  '#videos': renderHome,
-  '#community': renderHome,
-  '#arcade': renderHome,
+  '#personality': renderHome,
+  '#face': renderHome,
+  '#fun': renderHome,
+  '#fortune': renderHome,
   '#tests': renderHome,
   '#profile': renderProfile,
   '#admin': renderAdmin
@@ -70,11 +52,6 @@ const routes = {
 
 function router() {
   const hash = window.location.hash || '#home';
-  const homeHashes = new Set(['#home', '#videos', '#community', '#arcade', '#tests']);
-  if (!homeHashes.has(hash) && activeGame?.destroy) {
-    activeGame.destroy();
-    activeGame = null;
-  }
   if (hash === '#admin' && !isAdmin) {
     window.location.hash = '#home';
   }
@@ -88,9 +65,10 @@ function router() {
   
   app.innerHTML = '';
   renderFn();
-  if (hash === '#videos') document.getElementById('live-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  if (hash === '#community') document.getElementById('community-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  if (hash === '#arcade') document.getElementById('play-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (hash === '#personality') document.querySelector('[data-filter=\"성격\"]')?.click();
+  if (hash === '#face') document.querySelector('[data-filter=\"얼굴\"]')?.click();
+  if (hash === '#fun') document.querySelector('[data-filter=\"그외\"]')?.click();
+  if (hash === '#fortune') document.querySelector('[data-filter=\"사주\"]')?.click();
   if (hash === '#tests') document.getElementById('tests-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   currentRoute = hash;
 }
@@ -189,8 +167,8 @@ function renderHome() {
 
   app.innerHTML = `
     <section class="portal-hero fade-in">
-      <p class="portal-kicker">SunoFox Test Portal</p>
-      <h1>수노폭스 팬 테스트 허브</h1>
+      <p class="portal-kicker">Simple Test Portal</p>
+      <h1>심플 테스트 허브</h1>
       <p>성격 · 얼굴 · 그외 · 사주 카테고리별 테스트를 모아 제공합니다.</p>
       <div class="portal-top-sections">
         <a href="tests-personality.html" class="portal-section-link">성격</a>
@@ -241,599 +219,6 @@ function setupTestLandingFilter() {
       applyFilter();
     });
   });
-}
-
-function setupHomeCommunityList() {
-  const renderList = async () => {
-    try {
-      const posts = await Store.getPosts('community');
-      const commentCounts = await Promise.all(
-        posts.map(p => Store.getComments(p.id, p.legacyId).then(c => c.length).catch(() => 0))
-      );
-      const listHtml = posts.map((post, idx) => `
-        <div class="post-row" data-id="${post.id}">
-          <span class="col-cat"><span class="chip micro">${escapeHTML(post.category || '')}</span></span>
-          <span class="col-title">${escapeHTML(post.title || '')} <span class="comment-count">[${commentCounts[idx]}]</span></span>
-          <span class="col-author">${escapeHTML(post.author || '')}</span>
-          <span class="col-meta">${post.views} / ${post.likes}</span>
-        </div>
-      `).join('');
-      const container = document.getElementById('community-list-home');
-      if (!container) return;
-      container.innerHTML = listHtml || '<div class="empty">게시글이 없습니다.</div>';
-      container.querySelectorAll('.post-row').forEach(item => {
-        item.addEventListener('click', () => openPostModal(item.dataset.id));
-      });
-    } catch (error) {
-      const container = document.getElementById('community-list-home');
-      if (container) container.innerHTML = '<div class="empty">게시글을 불러오지 못했습니다.</div>';
-    }
-  };
-  renderList();
-  document.getElementById('write-comm-btn-home')?.addEventListener('click', () => openWriteModal('community', null, renderList));
-}
-
-function setupHomeArcade() {
-  const gameMeta = {
-    reaction: { title: '반응속도 테스트', level: '입문', control: '클릭 / 스페이스바', desc: '신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.' },
-    memory: { title: '기억력', level: '입문', control: '마우스 클릭', desc: '카드를 맞추며 기억력과 정확도를 테스트합니다.' },
-    rhythm: { title: '리듬 레인 러시', level: '중급', control: 'A / S / D', desc: '3개 레인을 정확한 타이밍으로 타격해 콤보를 유지하세요.' },
-    puzzle: { title: '2048 챌린지', level: '중급', control: '방향키', desc: '타일을 합쳐 256 목표를 달성하세요.' },
-    math: { title: '스피드 합산', level: '중급', control: '키보드 입력', desc: '수학 문제를 빠르게 풀어 점수를 올리세요.' },
-    rps: { title: '블랙잭 러시', level: '중급', control: '히트 / 스탠드', desc: '21을 넘기지 않으면서 딜러를 이겨보세요.' },
-    number: { title: '숫자 기억력', level: '중급', control: '키보드 입력', desc: '점점 길어지는 숫자 시퀀스를 기억하세요.' },
-    typing: { title: '타이핑', level: '중급', control: '키보드 입력', desc: '정확도와 WPM을 동시에 겨루는 타이핑 게임입니다.' },
-    reflex: { title: '리플렉스 듀얼', level: '중급', control: '← / →', desc: '표시된 방향을 빠르게 입력하세요.' },
-    maze: { title: '미로', level: '중급', control: '방향키 / 버튼', desc: '최단 동선으로 미로를 탈출하세요.' },
-    dodge: { title: '낙하 피하기', level: '상급', control: '좌/우 방향키', desc: '떨어지는 장애물을 오래 피하세요.' }
-  };
-
-  const container = document.getElementById('game-container');
-  const tabs = document.querySelectorAll('.game-tabs .tab-btn');
-  const metaTitle = document.getElementById('arcade-meta-title');
-  const metaDesc = document.getElementById('arcade-meta-desc');
-  const metaLevel = document.getElementById('arcade-meta-level');
-  const metaControl = document.getElementById('arcade-meta-control');
-  if (!container || !metaTitle || !metaDesc || !metaLevel || !metaControl) return;
-
-  const setGame = (type) => {
-    if (activeGame?.destroy) activeGame.destroy();
-    container.innerHTML = '';
-    const meta = gameMeta[type];
-    if (meta) {
-      metaTitle.textContent = meta.title;
-      metaDesc.textContent = meta.desc;
-      metaLevel.textContent = meta.level;
-      metaControl.textContent = meta.control;
-    }
-    if (type === 'reaction') activeGame = new ReactionGame(container);
-    if (type === 'memory') activeGame = new MemoryGame(container);
-    if (type === 'rhythm') activeGame = new RhythmGame(container);
-    if (type === 'puzzle') activeGame = new PuzzleGame(container);
-    if (type === 'math') activeGame = new MathGame(container);
-    if (type === 'rps') activeGame = new RpsGame(container);
-    if (type === 'number') activeGame = new NumberMemoryGame(container);
-    if (type === 'typing') activeGame = new TypingGame(container);
-    if (type === 'reflex') activeGame = new ReflexGame(container);
-    if (type === 'maze') activeGame = new MazeGame(container);
-    if (type === 'dodge') activeGame = new DodgeGame(container);
-  };
-
-  setGame('reaction');
-  tabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      tabs.forEach(t => t.classList.remove('active'));
-      e.target.classList.add('active');
-      setGame(e.target.dataset.game);
-    });
-  });
-}
-
-function setupHomeTests() {
-  const personalityPanel = document.getElementById('tests-panel-personality');
-  const balancePanel = document.getElementById('tests-panel-balance');
-  const speedPanel = document.getElementById('tests-panel-speed');
-  if (!personalityPanel || !balancePanel || !speedPanel) return;
-
-  const personalityQuestions = [
-    { q: '새 영상이 올라오면?', a: '혼자 먼저 감상한다', b: '바로 커뮤니티 반응을 본다' },
-    { q: '좋아하는 장면이 생기면?', a: '내 플레이리스트에 저장한다', b: '팬들과 바로 공유한다' },
-    { q: '콘텐츠를 고를 때 더 중요한 건?', a: '완성도/분위기', b: '함께 즐길 수 있는 포인트' },
-    { q: '이벤트 참여 스타일은?', a: '관찰 후 신중 참여', b: '오픈되면 바로 참여' },
-    { q: '커뮤니티에서 나는?', a: '정리형 리뷰어', b: '대화형 참여자' }
-  ];
-  let pIndex = 0;
-  let pA = 0;
-  let pB = 0;
-  const renderPersonality = () => {
-    if (pIndex >= personalityQuestions.length) {
-      const type = pA >= pB ? '큐레이터형 팬' : '인터랙터형 팬';
-      const desc = pA >= pB
-        ? '콘텐츠를 깊게 감상하고 핵심 포인트를 정리해 공유하는 성향입니다.'
-        : '실시간 반응과 소통 중심으로 커뮤니티 흐름을 이끄는 성향입니다.';
-      personalityPanel.innerHTML = `
-        <div class="test-card">
-          <h3>결과: ${type}</h3>
-          <p class="text-sub">${desc}</p>
-          <button class="btn btn-secondary" id="personality-restart">다시 하기</button>
-        </div>
-      `;
-      document.getElementById('personality-restart')?.addEventListener('click', () => {
-        pIndex = 0; pA = 0; pB = 0; renderPersonality();
-      });
-      return;
-    }
-    const current = personalityQuestions[pIndex];
-    personalityPanel.innerHTML = `
-      <div class="test-card">
-        <div class="test-progress">${pIndex + 1} / ${personalityQuestions.length}</div>
-        <h3>${escapeHTML(current.q)}</h3>
-        <div class="test-choices">
-          <button class="btn btn-outline" id="p-a">${escapeHTML(current.a)}</button>
-          <button class="btn btn-outline" id="p-b">${escapeHTML(current.b)}</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('p-a')?.addEventListener('click', () => { pA += 1; pIndex += 1; renderPersonality(); });
-    document.getElementById('p-b')?.addEventListener('click', () => { pB += 1; pIndex += 1; renderPersonality(); });
-  };
-
-  const balanceQuestions = [
-    ['신곡 발매 1시간 전 대기', '주말 몰아듣기'],
-    ['가사 분석글 작성', '짧은 한줄 감상 공유'],
-    ['공식 MV 중심', '라이브 클립 중심'],
-    ['개인 감상 기록', '팬 토론 참여'],
-    ['고퀄 헤드폰 감상', '스피커로 함께 감상']
-  ];
-  let bIndex = 0;
-  let leftWins = 0;
-  let rightWins = 0;
-  const renderBalance = () => {
-    if (bIndex >= balanceQuestions.length) {
-      const result = leftWins >= rightWins ? '몰입형 감상파' : '소통형 참여파';
-      balancePanel.innerHTML = `
-        <div class="test-card">
-          <h3>결과: ${result}</h3>
-          <p class="text-sub">선택 성향 ${leftWins}:${rightWins}</p>
-          <button class="btn btn-secondary" id="balance-restart">다시 하기</button>
-        </div>
-      `;
-      document.getElementById('balance-restart')?.addEventListener('click', () => {
-        bIndex = 0; leftWins = 0; rightWins = 0; renderBalance();
-      });
-      return;
-    }
-    const [left, right] = balanceQuestions[bIndex];
-    balancePanel.innerHTML = `
-      <div class="test-card">
-        <div class="test-progress">${bIndex + 1} / ${balanceQuestions.length}</div>
-        <h3>어떤 쪽이 더 나와 가깝나요?</h3>
-        <div class="test-choices">
-          <button class="btn btn-outline" id="b-left">${escapeHTML(left)}</button>
-          <button class="btn btn-outline" id="b-right">${escapeHTML(right)}</button>
-        </div>
-      </div>
-    `;
-    document.getElementById('b-left')?.addEventListener('click', () => { leftWins += 1; bIndex += 1; renderBalance(); });
-    document.getElementById('b-right')?.addEventListener('click', () => { rightWins += 1; bIndex += 1; renderBalance(); });
-  };
-
-  let speedState = 'idle';
-  let speedStarted = 0;
-  const renderSpeed = (message = '시작 버튼을 누르고 초록 신호가 뜨면 즉시 클릭하세요.') => {
-    const best = Store.getGameRecord('reaction');
-    speedPanel.innerHTML = `
-      <div class="test-card">
-        <h3>반응속도 퀵 테스트</h3>
-        <p class="text-sub">${escapeHTML(message)}</p>
-        <div class="speed-box" id="speed-box">${speedState === 'ready' ? '지금 클릭!' : '대기 중'}</div>
-        <div class="test-choices">
-          <button class="btn btn-primary" id="speed-start">시작</button>
-          <button class="btn btn-secondary" id="speed-reset">기록 초기화</button>
-        </div>
-        <p class="text-sub">내 최고 기록: ${best ? `${best}ms` : '없음'}</p>
-      </div>
-    `;
-    document.getElementById('speed-start')?.addEventListener('click', startSpeedTest);
-    document.getElementById('speed-reset')?.addEventListener('click', () => {
-      Store.resetGameRecords();
-      renderSpeed('기록이 초기화되었습니다.');
-    });
-    document.getElementById('speed-box')?.addEventListener('click', onSpeedClick);
-  };
-  const startSpeedTest = () => {
-    if (speedState === 'waiting' || speedState === 'ready') return;
-    speedState = 'waiting';
-    renderSpeed('신호를 기다리는 중... 초록 신호 전 클릭하면 실패입니다.');
-    const delay = 1500 + Math.floor(Math.random() * 2500);
-    setTimeout(() => {
-      if (speedState !== 'waiting') return;
-      speedState = 'ready';
-      speedStarted = Date.now();
-      renderSpeed('지금! 박스를 클릭하세요.');
-    }, delay);
-  };
-  const onSpeedClick = () => {
-    if (speedState === 'waiting') {
-      speedState = 'idle';
-      renderSpeed('너무 빨랐습니다. 다시 시도하세요.');
-      return;
-    }
-    if (speedState === 'ready') {
-      const ms = Date.now() - speedStarted;
-      Store.saveGameRecord('reaction', ms);
-      speedState = 'idle';
-      renderSpeed(`측정 결과: ${ms}ms`);
-    }
-  };
-
-  renderPersonality();
-  renderBalance();
-  renderSpeed();
-
-  document.querySelectorAll('.tests-tabs .tab-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const tab = btn.dataset.testTab;
-      document.querySelectorAll('.tests-tabs .tab-btn').forEach((b) => b.classList.toggle('active', b === btn));
-      personalityPanel.classList.toggle('hidden', tab !== 'personality');
-      balancePanel.classList.toggle('hidden', tab !== 'balance');
-      speedPanel.classList.toggle('hidden', tab !== 'speed');
-    });
-  });
-}
-
-async function fetchAdvice() {
-  const el = document.getElementById('advice-text');
-  if (!el) return;
-  const comments = [
-    '오늘도 수노폭스와 함께 좋은 리듬으로 시작해요.',
-    '짧게 웃고 길게 즐기자, 팬 허브 오픈!',
-    '좋아하는 장면은 커뮤니티에 바로 공유해 주세요.',
-    '이번 주 목표: 영상 1편 감상 + 게임 1판 클리어.',
-    '응원 한마디가 팬 허브 분위기를 바꿉니다.'
-  ];
-  const idx = Math.floor(Math.random() * comments.length);
-  el.textContent = comments[idx];
-}
-
-function renderVideos() {
-  const linkButtons = LINKTREE_LINKS.map((item) => (
-    `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
-  )).join('');
-  app.innerHTML = `
-    <section class="sf-hero sf-hero-slim fade-in">
-      <p class="sf-kicker">Live</p>
-      <h1>최신 영상 모아보기</h1>
-      <p class="sf-sub">수노폭스 최신 업로드를 팬페이지에서 바로 확인합니다.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">채널 방문</a>
-        <a class="btn btn-outline" href="#community">팬 후기 보기</a>
-      </div>
-    </section>
-
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>최신 업로드</h2>
-        <span>YouTube 자동 동기화 · 더 많은 목록</span>
-      </div>
-      <div id="latest-videos" class="video-grid"></div>
-    </section>
-
-    <section class="section fade-in">
-      <div class="sf-card">
-        <h2>대표 플레이리스트</h2>
-        <div class="embed">
-          <iframe class="frame" title="SunoFox Playlist" src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-      </div>
-    </section>
-
-    <section class="section fade-in">
-      <div class="section-head">
-        <h2>공식 링크</h2>
-        <span>공식 링크</span>
-      </div>
-      <div class="hub-link-list">
-        ${linkButtons}
-      </div>
-    </section>
-  `;
-  loadLatestVideos();
-}
-
-function renderArcade() {
-  const gameMeta = {
-    reaction: { title: '반응속도', level: '입문', control: '클릭 / 스페이스바', desc: '신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.' },
-    memory: { title: '기억력', level: '입문', control: '마우스 클릭', desc: '카드를 맞추며 기억력과 정확도를 테스트합니다.' },
-    rhythm: { title: '리듬 레인 러시', level: '중급', control: 'A / S / D', desc: '3개 레인을 정확한 타이밍으로 타격해 콤보를 유지하세요.' },
-    puzzle: { title: '2048 챌린지', level: '중급', control: '방향키', desc: '타일을 합쳐 256 목표를 달성하세요. 적은 이동 수가 핵심입니다.' },
-    math: { title: '스피드 합산', level: '중급', control: '키보드 입력', desc: '덧셈/뺄셈/곱셈을 빠르게 풀어 콤보 점수를 획득하세요.' },
-    rps: { title: '블랙잭 러시', level: '중급', control: '히트 / 스탠드', desc: '21을 넘기지 않으면서 딜러를 이겨 연승 기록을 쌓아보세요.' },
-    number: { title: '숫자 기억력', level: '중급', control: '키보드 입력', desc: '레벨이 오를수록 숫자 노출 속도가 빨라집니다.' },
-    typing: { title: '타이핑', level: '중급', control: '키보드 입력', desc: '정확도와 WPM을 동시에 끌어올리는 집중형 게임입니다.' },
-    reflex: { title: '리플렉스 듀얼', level: '중급', control: '← / →', desc: '표시된 방향을 제한 시간 안에 빠르게 입력해 점수를 쌓으세요.' },
-    maze: { title: '미로', level: '중급', control: '방향키 / 버튼', desc: '이동 횟수와 시간 효율을 함께 고려한 미로 탈출 챌린지.' },
-    dodge: { title: '낙하 피하기', level: '상급', control: '좌/우 방향키', desc: '시간이 지날수록 속도가 빨라지는 장애물을 회피하세요.' }
-  };
-
-  app.innerHTML = `
-    <div class="fade-in fan-arcade">
-      <div class="pulse-hero pulse-hero-slim">
-      <div class="pulse-mark">Play</div>
-        <h1>실시간 팬 챌린지 아레나</h1>
-        <p>각 게임 최고 기록을 만들고 커뮤니티에서 결과를 공유하세요.</p>
-        <div class="pulse-cta">
-          <a class="btn btn-outline" href="#community">기록 공유하기</a>
-          <a class="btn btn-outline" href="#community">전략 이야기</a>
-        </div>
-      </div>
-      <div class="arcade-meta pulse-panel">
-        <div>
-          <h3 id="arcade-meta-title">반응속도 테스트</h3>
-          <p id="arcade-meta-desc" class="text-sub">신호가 뜨는 순간 반응하세요. 최근 평균 기록까지 확인할 수 있어요.</p>
-        </div>
-        <div class="arcade-meta-grid">
-          <div class="stat-card"><span class="stat-label">난이도</span><strong id="arcade-meta-level">입문</strong></div>
-          <div class="stat-card"><span class="stat-label">조작</span><strong id="arcade-meta-control">클릭 / 스페이스바</strong></div>
-        </div>
-      </div>
-      <div class="game-tabs">
-        <button class="tab-btn active" data-game="reaction">반응속도</button>
-        <button class="tab-btn" data-game="memory">기억력</button>
-        <button class="tab-btn" data-game="rhythm">리듬</button>
-        <button class="tab-btn" data-game="puzzle">퍼즐</button>
-        <button class="tab-btn" data-game="math">스피드 합산</button>
-        <button class="tab-btn" data-game="rps">블랙잭</button>
-        <button class="tab-btn" data-game="number">숫자 기억력</button>
-        <button class="tab-btn" data-game="typing">타이핑</button>
-        <button class="tab-btn" data-game="reflex">반사신경</button>
-        <button class="tab-btn" data-game="maze">미로</button>
-        <button class="tab-btn" data-game="dodge">낙하 피하기</button>
-      </div>
-      <div id="game-container" class="game-container"></div>
-    </div>
-  `;
-
-  const container = document.getElementById('game-container');
-  const tabs = document.querySelectorAll('.game-tabs .tab-btn');
-  const metaTitle = document.getElementById('arcade-meta-title');
-  const metaDesc = document.getElementById('arcade-meta-desc');
-  const metaLevel = document.getElementById('arcade-meta-level');
-  const metaControl = document.getElementById('arcade-meta-control');
-  
-  const setGame = (type) => {
-    if (activeGame?.destroy) activeGame.destroy();
-    container.innerHTML = '';
-    const meta = gameMeta[type];
-    if (meta) {
-      metaTitle.textContent = meta.title;
-      metaDesc.textContent = meta.desc;
-      metaLevel.textContent = meta.level;
-      metaControl.textContent = meta.control;
-    }
-    if (type === 'reaction') activeGame = new ReactionGame(container);
-    if (type === 'memory') activeGame = new MemoryGame(container);
-    if (type === 'rhythm') activeGame = new RhythmGame(container);
-    if (type === 'puzzle') activeGame = new PuzzleGame(container);
-    if (type === 'math') activeGame = new MathGame(container);
-    if (type === 'rps') activeGame = new RpsGame(container);
-    if (type === 'number') activeGame = new NumberMemoryGame(container);
-    if (type === 'typing') activeGame = new TypingGame(container);
-    if (type === 'reflex') activeGame = new ReflexGame(container);
-    if (type === 'maze') activeGame = new MazeGame(container);
-    if (type === 'dodge') activeGame = new DodgeGame(container);
-  };
-
-  // Default game
-  setGame('reaction');
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', (e) => {
-      tabs.forEach(t => t.classList.remove('active'));
-      e.target.classList.add('active');
-      const gameType = e.target.dataset.game;
-      setGame(gameType);
-    });
-  });
-}
-
-function renderTests() {
-  app.innerHTML = `
-    <div class="fade-in">
-      <section class="pulse-hero pulse-hero-slim">
-        <div class="pulse-mark">Test Lab</div>
-        <h1>팬 성향 리포트</h1>
-        <p>테스트 결과를 라운지/뉴스룸에 공유하고 비슷한 취향 팬을 찾아보세요.</p>
-      </section>
-      <div class="section-head">
-        <h2>🧪 팬클럽 테스트</h2>
-        <span>팬 참여형 인터랙션</span>
-      </div>
-      <div class="panel test-panel pulse-panel">
-        <div>
-          <h3>나의 수노폭스 감상 타입</h3>
-          <p class="text-sub">팬들이 함께 즐기는 짧은 참여형 테스트입니다.</p>
-          <div class="badge"><strong>TIP</strong> 결과를 팬클럽에 공유하세요</div>
-        </div>
-        <div id="test-container" class="game-container"></div>
-      </div>
-      <div class="grid-three fan-feature-grid">
-        <div class="card feature-card pulse-panel">
-          <h3>🎼 팬 추천 카드</h3>
-          <p>팬들이 추천한 콘텐츠를 확인합니다.</p>
-        </div>
-        <div class="card feature-card pulse-panel">
-          <h3>📣 결과 공유</h3>
-          <p>팬클럽 뉴스룸에 테스트 결과를 올려주세요.</p>
-        </div>
-        <div class="card feature-card pulse-panel">
-          <h3>🗳️ 팬 투표</h3>
-          <p>다음 콘텐츠 주제를 함께 정하세요.</p>
-        </div>
-      </div>
-    </div>
-  `;
-  const container = document.getElementById('test-container');
-  if (activeGame?.destroy) activeGame.destroy();
-  container.innerHTML = '';
-  activeGame = new PersonalityTest(container);
-}
-
-function renderLounge() {
-  const categories = ['전체', '영상', '게임', '심리테스트', '잡담', '질문', '정보', '후기', '유머', '창작', '추천'];
-  let currentCategory = '전체';
-
-  app.innerHTML = `
-    <div class="lounge-layout fade-in">
-      <aside class="sidebar pulse-panel">
-        <div class="sidebar-box dog-api-box pulse-mini">
-            <span class="news-tag">Daily Mood</span>
-            <div id="dog-img-container" class="dog-img-container">로딩 중...</div>
-        </div>
-        <div class="sidebar-box advice-box pulse-mini">
-            <span class="news-tag">Daily Quote</span>
-            <p id="kanye-quote" class="text-sub" style="font-style: italic; margin-top: 0.5rem;">로딩 중...</p>
-        </div>
-        <h3>토픽</h3>
-        <div class="category-list" id="category-list"></div>
-        <button id="write-lounge-btn" class="btn btn-primary full-width mt-4">팬 라운지 글쓰기</button>
-      </aside>
-      <section class="content pulse-panel">
-        <h2 class="page-title">팬 라운지 <small id="current-cat-title">/ 전체</small></h2>
-        <p class="text-sub">팬들이 자유롭게 소통하고 놀이 콘텐츠를 공유하는 공간입니다.</p>
-        <div id="lounge-list" class="post-list-grid"></div>
-      </section>
-    </div>
-  `;
-
-  const renderCategories = () => {
-    const list = document.getElementById('category-list');
-    list.innerHTML = categories.map(c => 
-      `<button class="cat-btn ${c === currentCategory ? 'active' : ''}">${c}</button>`
-    ).join('');
-    
-    list.querySelectorAll('.cat-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        currentCategory = e.target.textContent;
-        document.getElementById('current-cat-title').textContent = `/ ${currentCategory}`;
-        renderCategories(); // Re-render to update active class
-        renderList();
-      });
-    });
-  };
-
-  const renderList = async () => {
-    try {
-      const posts = await Store.getPosts('lounge', currentCategory === '전체' ? null : currentCategory);
-      const listHtml = posts.map(post => `
-        <div class="post-card" data-id="${post.id}">
-          <div class="post-header">
-            <span class="chip small">${escapeHTML(post.category || '')}</span>
-            <span class="date">${new Date(post.date).toLocaleDateString()}</span>
-          </div>
-          <h4 class="post-title">${escapeHTML(post.title || '')}</h4>
-          <div class="post-footer">
-            <span>${escapeHTML(post.author || '')}</span>
-            <span>❤️ ${post.likes}</span>
-          </div>
-        </div>
-      `).join('');
-      
-      document.getElementById('lounge-list').innerHTML = listHtml || '<div class="empty">글이 없습니다.</div>';
-      
-      document.querySelectorAll('.post-card').forEach(item => {
-        item.addEventListener('click', () => openPostModal(item.dataset.id));
-      });
-    } catch (error) {
-      console.error('Failed to load lounge posts:', error);
-      document.getElementById('lounge-list').innerHTML = '<div class="empty">글을 불러오지 못했습니다.</div>';
-    }
-  };
-
-  renderCategories();
-  renderList();
-  document.getElementById('write-lounge-btn').addEventListener('click', () => openWriteModal('lounge', null, renderList));
-  fetchDogImg();
-  fetchKanyeQuote();
-}
-
-async function fetchKanyeQuote() {
-    const el = document.getElementById('kanye-quote');
-    if (!el) return;
-    try {
-        const res = await fetch('https://api.kanye.rest/');
-        const data = await res.json();
-        el.textContent = `"${data.quote}"`;
-    } catch (e) {
-        el.textContent = "Be the best version of yourself.";
-    }
-}
-
-async function fetchDogImg() {
-    const container = document.getElementById('dog-img-container');
-    if (!container) return;
-    try {
-        const res = await fetch('https://shibe.online/api/shibes?count=1&urls=true&httpsUrls=true');
-        const data = await res.json();
-        const imageUrl = safeExternalUrl(data[0]);
-        if (!imageUrl) throw new Error('Invalid image URL');
-        container.innerHTML = `<img src="${escapeHTML(imageUrl)}" alt="Dog" style="width:100%; border-radius:12px; margin-top:0.5rem; border:1px solid var(--border-color);">`;
-    } catch (e) {
-        container.innerHTML = "멍멍! 이미지를 불러오지 못했습니다.";
-    }
-}
-
-function renderCommunity() {
-  app.innerHTML = `
-    <div class="community-layout fade-in sf-community">
-      <section class="sf-hero sf-hero-slim">
-        <p class="sf-kicker">Community</p>
-        <h1>수노폭스 팬 게시판</h1>
-        <p class="sf-sub">팬 글을 모아보는 커뮤니티 공간입니다.</p>
-      </section>
-      <div class="toolbar sf-card">
-        <h2 class="page-title">팬 커뮤니티</h2>
-        <div class="actions">
-          <button id="write-comm-btn" class="btn btn-primary">글쓰기</button>
-        </div>
-      </div>
-      <div class="post-table-header">
-        <span class="col-cat">분류</span>
-        <span class="col-title">제목</span>
-        <span class="col-author">작성자</span>
-        <span class="col-meta">조회/추천</span>
-      </div>
-      <div id="community-list" class="post-list-table sf-card"></div>
-    </div>
-  `;
-
-  const renderList = async () => {
-    try {
-      const posts = await Store.getPosts('community');
-      const commentCounts = await Promise.all(
-        posts.map(p => Store.getComments(p.id, p.legacyId).then(c => c.length).catch(() => 0))
-      );
-      const listHtml = posts.map((post, idx) => `
-        <div class="post-row" data-id="${post.id}">
-          <span class="col-cat"><span class="chip micro">${escapeHTML(post.category || '')}</span></span>
-        <span class="col-title">${escapeHTML(post.title || '')} <span class="comment-count">[${commentCounts[idx]}]</span></span>
-          <span class="col-author">${escapeHTML(post.author || '')}</span>
-          <span class="col-meta">${post.views} / ${post.likes}</span>
-        </div>
-      `).join('');
-      document.getElementById('community-list').innerHTML = listHtml || '<div class="empty">게시글이 없습니다.</div>';
-
-      document.querySelectorAll('.post-row').forEach(item => {
-          item.addEventListener('click', () => openPostModal(item.dataset.id));
-      });
-    } catch (error) {
-      console.error('Failed to load community posts:', error);
-      document.getElementById('community-list').innerHTML = '<div class="empty">게시글을 불러오지 못했습니다.</div>';
-    }
-  };
-
-  renderList();
-  document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', null, renderList));
 }
 
 // NEW: Render Profile Page
@@ -1047,7 +432,7 @@ function renderAdmin() {
             <button class="tab-btn active" data-panel="posts">게시글</button>
             <button class="tab-btn" data-panel="comments">댓글</button>
             <button class="tab-btn" data-panel="users">사용자</button>
-            <button class="tab-btn" data-panel="analytics">채널 분석</button>
+            <button class="tab-btn" data-panel="analytics">사이트 분석</button>
           </div>
 
           <div id="admin-panel-posts" class="admin-panel"></div>
@@ -1147,186 +532,98 @@ function renderAdmin() {
 
     const renderAnalyticsShell = () => {
       if (!analyticsPanel) return;
-      const savedKey = localStorage.getItem(YT_API_KEY_STORAGE) || '';
-      analyticsPanel.innerHTML = `
-        <div class="admin-analytics-wrap">
-          <p class="text-sub">
-            공개 통계 기반 채널 분석입니다.
-            <a href="https://studio.youtube.com/channel/${CHANNEL_ID}/analytics" target="_blank" rel="noreferrer noopener">YouTube Studio Analytics 열기</a>
-          </p>
-          <div class="admin-analytics-controls">
-            <input id="admin-yt-api-key" class="input" type="password" placeholder="YouTube Data API Key 입력" value="${escapeHTML(savedKey)}">
-            <button id="admin-yt-save-key" class="btn btn-secondary">키 저장</button>
-            <button id="admin-yt-load" class="btn btn-primary">분석 불러오기</button>
-          </div>
-          <div class="text-sub" id="admin-yt-key-hint">${savedKey ? '저장된 API 키가 있어 자동으로 분석을 불러옵니다.' : '한 번 저장하면 이후에는 다시 입력하지 않아도 됩니다.'}</div>
-          <div id="admin-yt-summary" class="admin-yt-summary empty">API 키를 입력한 후 분석 불러오기를 눌러주세요.</div>
-          <div id="admin-yt-advanced" class="admin-yt-advanced"></div>
-          <div id="admin-yt-charts" class="admin-yt-charts"></div>
-          <div id="admin-yt-videos" class="admin-yt-videos"></div>
-        </div>
-      `;
-
-      const keyInput = document.getElementById('admin-yt-api-key');
-      const saveBtn = document.getElementById('admin-yt-save-key');
-      const loadBtn = document.getElementById('admin-yt-load');
-      const keyHint = document.getElementById('admin-yt-key-hint');
-      const summary = document.getElementById('admin-yt-summary');
-      const advanced = document.getElementById('admin-yt-advanced');
-      const charts = document.getElementById('admin-yt-charts');
-      const videos = document.getElementById('admin-yt-videos');
-
-      const fetchJSON = async (url) => {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`API ${res.status}`);
-        return res.json();
+      const now = Date.now();
+      const dayMs = 24 * 60 * 60 * 1000;
+      const recent7 = now - (7 * dayMs);
+      const recent30 = now - (30 * dayMs);
+      const toDate = (value) => {
+        const t = new Date(value || 0).getTime();
+        return Number.isFinite(t) ? t : 0;
       };
-      const toNum = (v) => Number(v || 0);
       const fmt = (v) => Number(v || 0).toLocaleString();
 
-      const loadAnalytics = async () => {
-        if (!summary || !videos || !advanced || !charts) return;
-        const apiKey = (keyInput?.value || '').trim();
-        if (!apiKey) {
-          summary.innerHTML = '<div class="empty">API 키를 먼저 입력해주세요.</div>';
-          advanced.innerHTML = '';
-          charts.innerHTML = '';
-          return;
-        }
-        summary.innerHTML = '<div class="empty">채널 통계를 불러오는 중...</div>';
-        advanced.innerHTML = '';
-        charts.innerHTML = '';
-        videos.innerHTML = '';
-        try {
-          const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${CHANNEL_ID}&key=${apiKey}`;
-          const channelData = await fetchJSON(channelUrl);
-          const channel = channelData?.items?.[0];
-          if (!channel) throw new Error('채널 데이터를 찾을 수 없습니다.');
+      const posts7 = cache.posts.filter((p) => toDate(p.date) >= recent7);
+      const comments7 = cache.comments.filter((c) => toDate(c.date) >= recent7);
+      const posts30 = cache.posts.filter((p) => toDate(p.date) >= recent30);
+      const comments30 = cache.comments.filter((c) => toDate(c.date) >= recent30);
 
-          const stats = channel.statistics || {};
-          const subCount = fmt(stats.subscriberCount);
-          const viewCount = fmt(stats.viewCount);
-          const videoCount = fmt(stats.videoCount);
+      const categoryMap = posts30.reduce((acc, post) => {
+        const key = post.category || '기타';
+        acc[key] = (acc[key] || 0) + 1;
+        return acc;
+      }, {});
+      const topCategories = Object.entries(categoryMap)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 5);
+      const maxCategory = Math.max(...topCategories.map(([, count]) => count), 1);
 
-          summary.innerHTML = `
-            <div class="admin-kpi-grid">
-              <div class="stat-card"><span class="stat-label">구독자</span><strong>${subCount}</strong></div>
-              <div class="stat-card"><span class="stat-label">총 조회수</span><strong>${viewCount}</strong></div>
-              <div class="stat-card"><span class="stat-label">전체 영상 수</span><strong>${videoCount}</strong></div>
-            </div>
-          `;
-
-          const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=id&channelId=${CHANNEL_ID}&order=date&type=video&maxResults=10&key=${apiKey}`;
-          const searchData = await fetchJSON(searchUrl);
-          const ids = (searchData.items || []).map((item) => item?.id?.videoId).filter(Boolean);
-          if (!ids.length) {
-            videos.innerHTML = '<div class="empty">최신 영상 데이터를 불러오지 못했습니다.</div>';
-            return;
-          }
-
-          const videosUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${ids.join(',')}&key=${apiKey}`;
-          const videosData = await fetchJSON(videosUrl);
-          const items = videosData.items || [];
-          if (!items.length) {
-            videos.innerHTML = '<div class="empty">영상 성과 데이터를 불러오지 못했습니다.</div>';
-            return;
-          }
-
-          const enriched = items.map((v) => {
-            const views = toNum(v?.statistics?.viewCount);
-            const likes = toNum(v?.statistics?.likeCount);
-            const comments = toNum(v?.statistics?.commentCount);
-            const engagement = views > 0 ? ((likes + comments) / views) * 100 : 0;
-            return {
-              id: v.id,
-              title: v?.snippet?.title || '',
-              publishedAt: v?.snippet?.publishedAt || '',
-              date: v?.snippet?.publishedAt ? new Date(v.snippet.publishedAt).toLocaleDateString() : '',
-              views,
-              likes,
-              comments,
-              engagement
-            };
-          }).sort((a, b) => new Date(a.publishedAt) - new Date(b.publishedAt));
-
-          const totalViews = enriched.reduce((sum, v) => sum + v.views, 0);
-          const totalLikes = enriched.reduce((sum, v) => sum + v.likes, 0);
-          const totalComments = enriched.reduce((sum, v) => sum + v.comments, 0);
-          const avgViews = enriched.length ? Math.round(totalViews / enriched.length) : 0;
-          const avgEngagement = totalViews > 0 ? ((totalLikes + totalComments) / totalViews) * 100 : 0;
-          const topVideo = [...enriched].sort((a, b) => b.views - a.views)[0];
-
-          advanced.innerHTML = `
-            <div class="admin-kpi-grid">
-              <div class="stat-card"><span class="stat-label">최근 10개 평균 조회수</span><strong>${fmt(avgViews)}</strong></div>
-              <div class="stat-card"><span class="stat-label">최근 10개 평균 참여율</span><strong>${avgEngagement.toFixed(2)}%</strong></div>
-              <div class="stat-card"><span class="stat-label">조회수 최고 영상</span><strong>${escapeHTML((topVideo?.title || '-').slice(0, 20))}</strong></div>
-            </div>
-          `;
-
-          const maxViews = Math.max(...enriched.map((v) => v.views), 1);
-          const maxEng = Math.max(...enriched.map((v) => v.engagement), 0.01);
-          const viewBars = enriched.map((v) => `
-            <div class="chart-row">
-              <span class="chart-label">${escapeHTML((v.title || '').slice(0, 18))}</span>
-              <div class="chart-bar-wrap"><div class="chart-bar" style="width:${(v.views / maxViews) * 100}%"></div></div>
-              <span class="chart-value">${fmt(v.views)}</span>
-            </div>
-          `).join('');
-          const engBars = [...enriched]
-            .sort((a, b) => b.engagement - a.engagement)
-            .slice(0, 5)
-            .map((v) => `
-              <div class="chart-row">
-                <span class="chart-label">${escapeHTML((v.title || '').slice(0, 18))}</span>
-                <div class="chart-bar-wrap"><div class="chart-bar alt" style="width:${(v.engagement / maxEng) * 100}%"></div></div>
-                <span class="chart-value">${v.engagement.toFixed(2)}%</span>
-              </div>
-            `).join('');
-          charts.innerHTML = `
-            <div class="admin-chart-card">
-              <h4>조회수 추이 (최근 10개)</h4>
-              ${viewBars}
-            </div>
-            <div class="admin-chart-card">
-              <h4>참여율 상위 영상 (좋아요+댓글/조회수)</h4>
-              ${engBars}
-            </div>
-          `;
-
-          const rows = enriched.slice().reverse().map((v) => {
-            const href = `https://www.youtube.com/watch?v=${v.id}`;
-            return `
-              <a class="post-row" href="${href}" target="_blank" rel="noreferrer noopener">
-                <span class="col-cat"><span class="chip micro">영상</span></span>
-                <span class="col-title">${escapeHTML(v.title)}</span>
-                <span class="col-author">${v.date}</span>
-                <span class="col-meta">조회 ${fmt(v.views)} · 좋아요 ${fmt(v.likes)} · 댓글 ${fmt(v.comments)} · 참여율 ${v.engagement.toFixed(2)}%</span>
-              </a>
-            `;
-          }).join('');
-          videos.innerHTML = rows || '<div class="empty">영상 성과 데이터를 불러오지 못했습니다.</div>';
-        } catch (error) {
-          console.error(error);
-          summary.innerHTML = '<div class="empty">분석 데이터를 불러오지 못했습니다. API 키/할당량/권한을 확인해주세요.</div>';
-          advanced.innerHTML = '';
-          charts.innerHTML = '';
-          videos.innerHTML = '';
-        }
-      };
-
-      saveBtn?.addEventListener('click', () => {
-        const key = (keyInput?.value || '').trim();
-        if (!key) {
-          alert('API 키를 입력해주세요.');
-          return;
-        }
-        localStorage.setItem(YT_API_KEY_STORAGE, key);
-        if (keyHint) keyHint.textContent = 'API 키가 저장되었습니다. 다음부터 자동으로 분석을 불러옵니다.';
-        alert('API 키가 저장되었습니다.');
+      const dailyMap = {};
+      for (let i = 6; i >= 0; i -= 1) {
+        const d = new Date(now - (i * dayMs));
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        dailyMap[key] = { posts: 0, comments: 0 };
+      }
+      posts7.forEach((p) => {
+        const d = new Date(p.date || 0);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        if (dailyMap[key]) dailyMap[key].posts += 1;
       });
-      loadBtn?.addEventListener('click', loadAnalytics);
-      if (savedKey) loadAnalytics();
+      comments7.forEach((c) => {
+        const d = new Date(c.date || 0);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        if (dailyMap[key]) dailyMap[key].comments += 1;
+      });
+      const dailyRows = Object.entries(dailyMap);
+      const maxDaily = Math.max(
+        ...dailyRows.map(([, v]) => Math.max(v.posts, v.comments)),
+        1
+      );
+
+      const estimatedPvMonth = (posts30.length * 18) + (comments30.length * 3) + (cache.users.length * 5);
+      const adUnitCtr = 0.012;
+      const rpm = 2.5;
+      const estimatedRevenueMonth = (estimatedPvMonth * adUnitCtr * rpm) / 1000;
+
+      analyticsPanel.innerHTML = `
+        <div class="admin-analytics-wrap">
+          <p class="text-sub">사이트 내부 활동 데이터를 기반으로 애드센스 운영용 지표를 보여줍니다.</p>
+          <div class="admin-kpi-grid">
+            <div class="stat-card"><span class="stat-label">7일 게시글</span><strong>${fmt(posts7.length)}</strong></div>
+            <div class="stat-card"><span class="stat-label">7일 댓글</span><strong>${fmt(comments7.length)}</strong></div>
+            <div class="stat-card"><span class="stat-label">30일 활동 사용자</span><strong>${fmt(cache.users.length)}</strong></div>
+          </div>
+          <div class="admin-kpi-grid">
+            <div class="stat-card"><span class="stat-label">예상 월 페이지뷰</span><strong>${fmt(estimatedPvMonth)}</strong></div>
+            <div class="stat-card"><span class="stat-label">가정 CTR</span><strong>${(adUnitCtr * 100).toFixed(2)}%</strong></div>
+            <div class="stat-card"><span class="stat-label">예상 월 광고수익</span><strong>$${estimatedRevenueMonth.toFixed(2)}</strong></div>
+          </div>
+          <div class="admin-chart-card">
+            <h4>최근 7일 활동 추이</h4>
+            ${dailyRows.map(([date, v]) => `
+              <div class="chart-row">
+                <span class="chart-label">${date.slice(5)}</span>
+                <div class="chart-bar-wrap"><div class="chart-bar" style="width:${(v.posts / maxDaily) * 100}%"></div></div>
+                <span class="chart-value">글 ${v.posts}</span>
+              </div>
+              <div class="chart-row">
+                <span class="chart-label"></span>
+                <div class="chart-bar-wrap"><div class="chart-bar alt" style="width:${(v.comments / maxDaily) * 100}%"></div></div>
+                <span class="chart-value">댓글 ${v.comments}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="admin-chart-card">
+            <h4>최근 30일 인기 카테고리</h4>
+            ${topCategories.length ? topCategories.map(([name, count]) => `
+              <div class="chart-row">
+                <span class="chart-label">${escapeHTML(name)}</span>
+                <div class="chart-bar-wrap"><div class="chart-bar" style="width:${(count / maxCategory) * 100}%"></div></div>
+                <span class="chart-value">${count}</span>
+              </div>
+            `).join('') : '<div class="empty">데이터가 없습니다.</div>'}
+          </div>
+        </div>
+      `;
     };
 
     const renderAllPanels = () => {
@@ -1614,44 +911,8 @@ window.addEventListener('gameShareRecord', (e) => {
         title: `[${gameName}] 새로운 최고 기록 달성! ${score}`,
         authorId: currentUser.uid
     });
-    window.location.hash = '#community'; 
+    window.location.hash = '#home';
 });
-
-async function loadLatestVideos() {
-  const container = document.getElementById('latest-videos');
-  if (!container) return;
-  if (!CHANNEL_ID) {
-    container.innerHTML = '<div class="empty">채널 ID 설정이 필요합니다. (YouTube RSS)</div>';
-    return;
-  }
-  try {
-    const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
-    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-    const res = await fetch(apiUrl);
-    const data = await res.json();
-    const items = (data.items || []).slice(0, 12);
-    const cards = items.map((item) => {
-      const title = item.title || 'Untitled';
-      const link = safeExternalUrl(item.link) || CHANNEL_URL;
-      const published = item.pubDate || '';
-      const thumb = safeExternalUrl(item.thumbnail) || '';
-      const dateText = published ? new Date(published).toLocaleDateString() : '';
-      return `
-        <a class="video-card" href="${escapeHTML(link)}" target="_blank" rel="noreferrer noopener">
-          <div class="thumb" style="background-image:url('${escapeHTML(thumb)}')"></div>
-          <div class="video-meta">
-            <h4>${escapeHTML(title)}</h4>
-            <span>${dateText}</span>
-          </div>
-        </a>
-      `;
-    }).join('');
-    container.innerHTML = cards || '<div class="empty">영상이 없습니다.</div>';
-  } catch (error) {
-    console.error('Failed to load YouTube RSS:', error);
-    container.innerHTML = '<div class="empty">최신 영상을 불러오지 못했습니다.</div>';
-  }
-}
 
 function escapeHTML(str = '') {
   return str.replace(/[&<>"']/g, (m) => ({
@@ -1662,39 +923,12 @@ function escapeHTML(str = '') {
 function renderPostContent(raw = '') {
   const text = escapeHTML(raw).replace(/\n/g, '<br>');
   const urlRegex = /(https?:\/\/[^\s]+)/g;
-  const urls = raw.match(urlRegex) || [];
-  let html = text.replace(urlRegex, (url) => {
+  return text.replace(urlRegex, (url) => {
     const safeUrl = safeExternalUrl(url);
     if (!safeUrl) return escapeHTML(url);
     const encoded = escapeHTML(safeUrl);
     return `<a href="${encoded}" target="_blank" rel="noreferrer noopener">${encoded}</a>`;
   });
-  const embeds = urls
-    .map((u) => buildYouTubeEmbed(u))
-    .filter(Boolean)
-    .map((src) => `<div class="post-embed"><iframe class="frame" src="${src}" allowfullscreen></iframe></div>`)
-    .join('');
-  return `${html}${embeds ? `<div class="post-embeds">${embeds}</div>` : ''}`;
-}
-
-function buildYouTubeEmbed(url) {
-  try {
-    const u = new URL(url);
-    const host = u.hostname.toLowerCase();
-    const isShortHost = host === 'youtu.be' || host.endsWith('.youtu.be');
-    const isYouTubeHost = host === 'youtube.com' || host === 'www.youtube.com' || host.endsWith('.youtube.com');
-    let id = '';
-    if (isShortHost) {
-      id = u.pathname.slice(1);
-    } else if (isYouTubeHost && u.searchParams.get('v')) {
-      id = u.searchParams.get('v');
-    }
-    if (id && !/^[A-Za-z0-9_-]{11}$/.test(id)) return '';
-    if (!id) return '';
-    return `https://www.youtube.com/embed/${id}`;
-  } catch {
-    return '';
-  }
 }
 
 function safeExternalUrl(value = '') {

@@ -1088,7 +1088,7 @@ export class PersonalityTest {
 
         ctx.fillStyle = '#1b140f';
         ctx.font = '700 56px "Pretendard", sans-serif';
-        ctx.fillText('SunoFox 테스트 결과', 140, 220);
+        ctx.fillText('테스트 결과 카드', 140, 220);
 
         ctx.fillStyle = '#f08a1d';
         ctx.font = '700 64px "Pretendard", sans-serif';
@@ -1103,10 +1103,10 @@ export class PersonalityTest {
 
         ctx.fillStyle = '#1b140f';
         ctx.font = '600 32px "Pretendard", sans-serif';
-        ctx.fillText('youtube.com/@sunofox', 140, 900);
+        ctx.fillText('test-hub.co.kr', 140, 900);
 
         const link = document.createElement('a');
-        link.download = 'sunofox-test-result.png';
+        link.download = 'test-result.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
     }
@@ -1248,7 +1248,7 @@ export class TypingGame {
         this.container = element;
         this.phrases = [
             '빠르게 타이핑하면 기록이 올라갑니다',
-            'SunoFox와 함께 즐거운 미니게임',
+            '테스트 허브와 함께 즐거운 미니게임',
             '정확도가 높을수록 점수가 좋아요',
             '오늘도 멋진 하루 되세요',
             '속도와 정확도를 모두 잡아보자',
