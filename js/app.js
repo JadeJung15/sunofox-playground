@@ -1,7 +1,7 @@
 // js/app.js
 import { Store } from './store.js';
-import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame, MathGame, RpsGame, PersonalityTest, NumberMemoryGame, TypingGame, ReflexGame, MazeGame, DodgeGame } from './games.js';
-import { auth, db } from '../index.html'; // Import auth and db instances
+import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame } from './games.js';
+import { auth, db } from './firebase-init.js'; // Import auth and db instances from new module
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -90,14 +90,14 @@ function renderHome() {
     </section>
 
     <div class="notice-banner fade-in">
-      <strong>📢 공지</strong> 2026.02.22 - 신규 미니게임과 심리테스트가 추가되었습니다!
+      <strong>📢 공지</strong> 2026.02.22 - 새로운 미니게임 4종이 추가되었습니다!
     </div>
 
     <div class="card-grid fade-in">
       <a href="#games" class="card entry-card">
         <div class="card-icon">🎮</div>
         <h3>미니게임</h3>
-        <p>반응속도, 기억력, 리듬, 퍼즐 + 신규 게임과 심리테스트까지!</p>
+        <p>반응속도, 기억력, 리듬, 퍼즐 게임을 즐겨보세요.</p>
       </a>
       <a href="#lounge" class="card entry-card">
         <div class="card-icon">💬</div>
@@ -122,14 +122,6 @@ function renderGames() {
         <button class="tab-btn" data-game="memory">기억력</button>
         <button class="tab-btn" data-game="rhythm">리듬</button>
         <button class="tab-btn" data-game="puzzle">퍼즐</button>
-        <button class="tab-btn" data-game="math">스피드 합산</button>
-        <button class="tab-btn" data-game="rps">가위바위보</button>
-        <button class="tab-btn" data-game="number">숫자 기억력</button>
-        <button class="tab-btn" data-game="typing">타이핑</button>
-        <button class="tab-btn" data-game="reflex">반사신경</button>
-        <button class="tab-btn" data-game="maze">미로</button>
-        <button class="tab-btn" data-game="dodge">낙하 피하기</button>
-        <button class="tab-btn" data-game="test">심리테스트</button>
       </div>
       <div id="game-container" class="game-container"></div>
     </div>
@@ -152,14 +144,6 @@ function renderGames() {
       if (gameType === 'memory') new MemoryGame(container);
       if (gameType === 'rhythm') new RhythmGame(container);
       if (gameType === 'puzzle') new PuzzleGame(container);
-      if (gameType === 'math') new MathGame(container);
-      if (gameType === 'rps') new RpsGame(container);
-      if (gameType === 'number') new NumberMemoryGame(container);
-      if (gameType === 'typing') new TypingGame(container);
-      if (gameType === 'reflex') new ReflexGame(container);
-      if (gameType === 'maze') new MazeGame(container);
-      if (gameType === 'dodge') new DodgeGame(container);
-      if (gameType === 'test') new PersonalityTest(container);
     });
   });
 }
@@ -276,6 +260,7 @@ function renderProfile() {
           <div class="profile-card card">
               <h3>환영합니다, ${currentUser.email}!</h3>
               <p>UID: ${currentUser.uid}</p>
+              ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
               <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
               <button id="logout-btn" class="btn btn-secondary full-width mt-4">로그아웃</button>
           </div>
@@ -476,6 +461,8 @@ async function openPostModal(id) { // Added async
                   <div class="comment">
                       <strong>${c.author}</strong> <span class="date">${new Date(c.date).toLocaleTimeString()}</span>
                       <p>${c.content}</p>
+                      ${(currentUser && (currentUser.uid === c.authorId || isAdmin)) 
+                        ? `<button class="btn btn-danger btn-sm delete-comment-btn" data-comment-id="${c.id}">삭제</button>` : ''}
                   </div>
                 `).join('')}
               </div>
@@ -489,7 +476,7 @@ async function openPostModal(id) { // Added async
         <div class="modal-footer">
             <div class="modal-actions">
                 ${(currentUser && (currentUser.uid === currentPost.authorId || isAdmin)) 
-                    ? `<button id="delete-post-btn" class="btn btn-outline">🗑️ 글 삭제</button>` : ''}
+                    ? `<button id="delete-post-btn" class="btn btn-danger">🗑️ 글 삭제</button>` : ''}
                 <button class="btn btn-outline" id="like-btn">❤️ 좋아요</button>
             </div>
         </div>
@@ -512,12 +499,34 @@ async function openPostModal(id) { // Added async
     if (deletePostBtn) {
         deletePostBtn.addEventListener('click', async () => {
             if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-                await Store.deletePost(id); // Need to implement deletePost in store.js
-                close();
-                router(); // Refresh current view
+                try {
+                    await Store.deletePost(id); 
+                    alert('게시글이 삭제되었습니다.');
+                    close();
+                    router(); // Refresh current view
+                } catch (error) {
+                    console.error("Error deleting post:", error);
+                    alert("게시글 삭제에 실패했습니다. 관리자 권한이 있는지, 보안 규칙이 올바른지 확인해주세요.");
+                }
             }
         });
     }
+
+    modal.querySelectorAll('.delete-comment-btn').forEach(button => {
+        button.addEventListener('click', async (e) => {
+            const commentId = e.target.dataset.commentId;
+            if (confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
+                try {
+                    await Store.deleteComment(commentId);
+                    alert('댓글이 삭제되었습니다.');
+                    renderModalContent(currentPost); // Re-render comments
+                } catch (error) {
+                    console.error("Error deleting comment:", error);
+                    alert("댓글 삭제에 실패했습니다. 관리자 권한이 있는지, 보안 규칙이 올바른지 확인해주세요.");
+                }
+            }
+        });
+    });
 
     const submitCommentBtn = modal.querySelector('#submit-comment');
     if (submitCommentBtn) {
@@ -551,7 +560,7 @@ async function openPostModal(id) { // Added async
 
   document.body.appendChild(modal);
   // Initial render, then update views count
-  Store.viewPost(id); // Increment view count via Store
+  // Store.viewPost(id); // Increment view count via Store
   renderModalContent(post); // Pass the already awaited post
 }
 

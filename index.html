@@ -38,37 +38,7 @@
         &copy; 2026 SunoFox Playground. All rights reserved.
     </footer>
 
-    <script type="module">
-        // Prevent flash of unstyled content
-        document.addEventListener("DOMContentLoaded", () => {
-            document.documentElement.style.visibility = "visible";
-            document.documentElement.style.opacity = "1";
-        });
-
-        // Import the functions you need from the SDKs you need
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-        import { getAuth } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-        // TODO: Add SDKs for Firebase products that you want to use
-        // https://firebase.google.com/docs/web/setup#available-libraries
-
-        // Your web app's Firebase configuration
-        const firebaseConfig = {
-          apiKey: "AIzaSyDhVAOItc5hfBsjHnN6EfJUtKcIiQz3KsM",
-          authDomain: "sunofoxplayground-backend.firebaseapp.com",
-          projectId: "sunofoxplayground-backend",
-          storageBucket: "sunofoxplayground-backend.firebasestorage.app",
-          messagingSenderId: "461172455449",
-          appId: "1:461172455449:web:4bec4914bc86facac49288",
-          measurementId: "G-HYDNVBQJGF"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        export const auth = getAuth(app); // Export auth instance
-        export const db = getFirestore(app); // Export db instance
-        // No analytics for now
-    </script>
+    <script type="module" src="js/firebase-init.js"></script>
     <script type="module" src="js/app.js"></script>
 </body>
 </html>
