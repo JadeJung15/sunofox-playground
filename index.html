@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SunoFox Community - 영상·게임·심리테스트</title>
     <meta name="description" content="SunoFox 커뮤니티: 영상 이야기, 미니게임, 심리테스트가 함께하는 팬 라운지.">
+    <meta name="theme-color" content="#f6f1e8">
     <link rel="stylesheet" href="css/style.css">
 
 </head>
 <body>
+    <a href="#home" class="skip-link">콘텐츠로 바로가기</a>
+    <div class="noise-layer" aria-hidden="true"></div>
     <header>
         <div class="nav-container">
             <a href="#home" class="logo">SunoFox</a>
@@ -21,9 +24,12 @@
                 <a href="#profile" class="nav-link">👤 프로필</a>
                 <a href="#admin" class="nav-link admin-only">⚙️ 관리자</a>
             </nav>
-            <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">
-                <span class="icon">🌙</span>
-            </button>
+            <div class="nav-right">
+                <span class="status-pill"><span class="status-dot"></span>NOW ON AIR</span>
+                <button id="theme-toggle" class="theme-toggle" aria-label="테마 변경">
+                    <span class="icon">🌙</span>
+                </button>
+            </div>
         </div>
     </header>
 

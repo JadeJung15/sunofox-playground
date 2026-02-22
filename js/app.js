@@ -115,6 +115,10 @@ function renderHome() {
   app.innerHTML = `
     <section class="hero-grid fade-in">
       <div class="panel hero-main">
+        <div class="hero-banner">
+          <strong>Community Wave</strong>
+          <div class="hero-pill">🔥 이번 주 팬픽 OST 피드 · 1,248 참여</div>
+        </div>
         <p class="section-kicker">SunoFox Community</p>
         <h1 class="headline">영상 이야기부터 게임 & 심리테스트까지,<br>하나의 라운지에서.</h1>
         <p class="lead">
@@ -125,6 +129,19 @@ function renderHome() {
           <a class="btn btn-primary" href="#videos">영상 라운지</a>
           <a class="btn btn-secondary" href="#community">커뮤니티</a>
           <a class="btn btn-outline" href="#arcade">게임 아케이드</a>
+        </div>
+        <div class="ticker">
+          <span>라이브 피드</span>
+          <div class="ticker-track">
+            <span>🎧 최신 OST 리뷰 스레드 오픈</span>
+            <span>🕹️ 오늘의 미니게임 챌린지</span>
+            <span>🧪 테스트 결과 공유 이벤트</span>
+            <span>🎬 커뮤니티 하이라이트 업데이트</span>
+            <span>🎧 최신 OST 리뷰 스레드 오픈</span>
+            <span>🕹️ 오늘의 미니게임 챌린지</span>
+            <span>🧪 테스트 결과 공유 이벤트</span>
+            <span>🎬 커뮤니티 하이라이트 업데이트</span>
+          </div>
         </div>
         <div class="stat-grid">
           <div class="stat-card">
@@ -156,6 +173,10 @@ function renderHome() {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen></iframe>
           </div>
+          <div class="spotlight-card">
+            <div class="badge"><strong>NEW</strong> 팬픽 OST 챌린지</div>
+            <p class="text-sub">커뮤니티에서 다음 OST 키워드를 투표해주세요.</p>
+          </div>
           <a class="btn btn-outline full-width" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널로</a>
         </div>
       </div>
@@ -184,6 +205,35 @@ function renderHome() {
         </a>
       </div>
     </section>
+
+    <section class="section fade-in">
+      <div class="section-head">
+        <h2>채널 맵</h2>
+        <span>커뮤니티 운영 흐름</span>
+      </div>
+      <div class="channel-map">
+        <div class="map-card">
+          <small>01</small>
+          <h4>영상 시청</h4>
+          <p class="text-sub">신규 영상과 플레이리스트를 따라가며 감상을 정리합니다.</p>
+        </div>
+        <div class="map-card">
+          <small>02</small>
+          <h4>라운지 토크</h4>
+          <p class="text-sub">감상 포인트와 다음 콘텐츠 아이디어를 공유합니다.</p>
+        </div>
+        <div class="map-card">
+          <small>03</small>
+          <h4>게임 챌린지</h4>
+          <p class="text-sub">미니게임 랭킹으로 팬들의 실력을 모아봅니다.</p>
+        </div>
+        <div class="map-card">
+          <small>04</small>
+          <h4>테스트 결과</h4>
+          <p class="text-sub">심리테스트 결과를 카드로 공유하고 토론합니다.</p>
+        </div>
+      </div>
+    </section>
   `;
 }
 
@@ -201,6 +251,7 @@ function renderVideos() {
             최신 영상과 OST 이야기를 나누는 공간입니다. 감상 포인트를 공유하고,
             다음 콘텐츠 아이디어도 함께 모아주세요.
           </p>
+          <div class="badge"><strong>LIVE</strong> 커뮤니티 피드백 수집 중</div>
           <div class="hero-actions">
             <a class="btn btn-primary" href="${CHANNEL_URL}" target="_blank" rel="noreferrer">유튜브 채널 방문</a>
             <a class="btn btn-outline" href="#community">영상 토론 글쓰기</a>
@@ -213,6 +264,24 @@ function renderVideos() {
             src="https://www.youtube.com/embed/videoseries?list=${FEATURED_PLAYLIST}"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowfullscreen></iframe>
+        </div>
+      </div>
+      <div class="section-head">
+        <h2>기획 레일</h2>
+        <span>다음 콘텐츠 미리보기</span>
+      </div>
+      <div class="video-rail">
+        <div class="rail-card">
+          <h4>시그니처 OST 분석</h4>
+          <p>영상에서 사용하는 OST 라인업을 분해해봅니다.</p>
+        </div>
+        <div class="rail-card">
+          <h4>캐릭터 테마 매치</h4>
+          <p>게임 속 캐릭터에 어울리는 음악을 투표하세요.</p>
+        </div>
+        <div class="rail-card">
+          <h4>팬픽 에피소드</h4>
+          <p>커뮤니티 인기 스레드를 영상화합니다.</p>
         </div>
       </div>
       <div class="section-head">
@@ -247,6 +316,10 @@ function renderArcade() {
   app.innerHTML = `
     <div class="fade-in">
       <h2 class="page-title">🕹️ 미니게임 아케이드</h2>
+      <div class="game-intro">
+        <p class="text-sub">기록을 세우고 커뮤니티에 공유해보세요. 상위 랭킹은 주간 하이라이트에 노출됩니다.</p>
+        <div class="badge"><strong>CHALLENGE</strong> 반응속도 0.20s 미만 달성하기</div>
+      </div>
       <div class="game-tabs">
         <button class="tab-btn active" data-game="reaction">반응속도</button>
         <button class="tab-btn" data-game="memory">기억력</button>
@@ -307,6 +380,7 @@ function renderTests() {
         <div>
           <h3>나의 OST 무드 타입</h3>
           <p class="text-sub">10문항으로 알아보는 감정선 타입 테스트입니다.</p>
+          <div class="badge"><strong>TIP</strong> 결과 카드를 커뮤니티에 공유하세요</div>
         </div>
         <div id="test-container" class="game-container"></div>
       </div>
