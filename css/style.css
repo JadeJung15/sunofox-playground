@@ -442,6 +442,16 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
   100% { opacity: 0.6; transform: scale(0.98); }
 }
 
+.post-item.premium-post { 
+  background: linear-gradient(135deg, #fff9fb 0%, #fff0f3 100%); 
+  border: 2px solid var(--accent-color); 
+  box-shadow: 0 4px 12px rgba(255, 133, 162, 0.15); 
+}
+.color-btn.active { 
+  transform: scale(1.2); 
+  box-shadow: 0 0 10px var(--accent-color); 
+}
+
 @media (max-width: 600px) {
   .test-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
   .test-card h3 { font-size: 0.95rem; }

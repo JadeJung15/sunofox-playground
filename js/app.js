@@ -1,9 +1,11 @@
 // js/app.js
-import { initAuth, updateUI, UserState, addPoints, EMOJI_SHOP, getTier, TIERS } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
 import { renderRanking } from './ranking.js';
+import { db } from './firebase-init.js';
+import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -106,23 +108,40 @@ function renderProfile() {
     const nextTier = TIERS[TIERS.indexOf(tier) + 1] || tier;
     const progress = tier === nextTier ? 100 : Math.min(100, (currentScore / nextTier.min) * 100);
 
+    const nameColors = ['#333333', '#ff4757', '#2ed573', '#1e90ff', '#ffa502', '#6c5ce7', '#ff6b81'];
+    const unlockedColors = UserState.data.unlockedColors || ['#333333'];
+
     app.innerHTML = `
         <div class="card profile-container fade-in">
             <div style="text-align:center; margin-bottom:2rem;">
                 <div id="user-emoji" style="font-size:4.5rem; margin-bottom:0.5rem;">${UserState.data.emoji || '👤'}</div>
                 <div class="tier-display"></div>
                 <h2 id="user-name" style="margin:0.5rem 0;">${UserState.data.nickname}</h2>
+                
                 <div class="progress-section" style="max-width:300px; margin:0 auto;">
                     <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
                     <p class="text-sub" style="font-size:0.75rem;">다음 등급까지: ${Math.max(0, nextTier.min - currentScore).toLocaleString()} 점 남음</p>
                 </div>
+
                 <div class="profile-stats" style="margin-top:1.5rem;">
                     <div class="stat-item"><span class="stat-label">랭킹 점수</span><span class="stat-value" id="user-total-score">0 점</span></div>
                     <div class="stat-item"><span class="stat-label">보유 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
                 </div>
             </div>
+
             <details class="profile-details" open><summary>🎒 내 인벤토리</summary><div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap:0.5rem;">${invHTML}</div></details>
+            
+            <details class="profile-details"><summary>✨ 닉네임 컬러 샵 (2000P)</summary>
+                <div class="shop-wrapper">
+                    <div class="color-selector" style="display:flex; flex-wrap:wrap; gap:0.8rem;">
+                        ${nameColors.map(c => `<button class="color-btn ${UserState.data.nameColor === c ? 'active' : ''}" data-color="${c}" style="background:${c}; width:40px; height:40px; border-radius:50%; border:3px solid ${unlockedColors.includes(c) ? 'var(--accent-secondary)' : '#eee'}; cursor:pointer;"></button>`).join('')}
+                    </div>
+                    <p class="text-sub" style="margin-top:1rem; font-size:0.8rem;">미보유 색상 클릭 시 2000P가 소모됩니다.</p>
+                </div>
+            </details>
+
             <details class="profile-details"><summary>🏪 이모지 교환소 (아이템 소모)</summary><div class="shop-wrapper"><p class="text-sub" style="margin-bottom:1rem; font-size:0.8rem; color:#ff4757;">⚠️ 주의: 교환 시 보유 아이템이 소모되어 랭킹 점수가 차감됩니다.</p>${Object.entries(EMOJI_SHOP).map(([catName, emojis]) => `<h4 style="margin-top:1rem; font-size:0.85rem; border-bottom:1px solid var(--border-color); padding-bottom:5px;">${catName}</h4><div class="emoji-selector" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap:0.5rem; margin-top:0.8rem;">${Object.entries(emojis).map(([e, price]) => {const isOwn = unlocked.includes(e); return `<button class="emoji-btn ${isOwn ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}"><span class="e-icon">${e}</span>${!isOwn ? `<span class="e-price">${price}</span>` : ''}</button>`;}).join('')}</div>`).join('')}</div></details>
+            
             <details class="profile-details"><summary>⚙️ 계정 설정</summary><div class="profile-settings"><div class="setting-item"><label style="font-size:0.85rem; font-weight:bold;">닉네임 변경 (월 1회)</label><div class="input-row"><input type="text" id="nickname-input" placeholder="새 닉네임" maxlength="10"><button id="nickname-save" class="btn-primary" style="width: 80px;">변경</button></div><p id="nickname-msg" style="margin-top:0.5rem; font-size:0.8rem;"></p></div><button id="logout-btn" class="btn-secondary" style="margin-top:2rem; color:#ff4757; border-color:#ff4757;">로그아웃</button></div></details>
         </div>
     `;
@@ -136,62 +155,60 @@ function renderArcade() {
             <h2 style="text-align:center;">🎰 오락실</h2>
             <div class="profile-stats" style="margin:1.5rem 0;">
                 <div class="stat-item"><span class="stat-label">보유 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
-                <div class="stat-item"><span class="stat-label">아이템 점수</span><span class="stat-value" id="user-total-score">0 점</span></div>
+                <div class="stat-item"><span class="stat-label">부스터 남음</span><span class="stat-value" style="color:var(--accent-secondary);">${UserState.data.boosterCount || 0}회</span></div>
             </div>
 
-            <!-- 복권 섹션 -->
+            <div class="game-zone card" style="background:#e3f2fd; border:1px solid #bbdefb; padding:1.5rem; margin-bottom:1.5rem;">
+                <h3 style="color:#1976d2;">⚡ 포인트 부스터 (1000P)</h3>
+                <p class="text-sub">구매 시 다음 5번의 테스트 완료 보상이 <strong>2배(20P)</strong>가 됩니다!</p>
+                <button id="buy-booster-btn" class="btn-primary" style="margin-top:1rem; background:#1976d2;">부스터 구매 (1000P)</button>
+            </div>
+
             <div class="game-zone card lotto-section" style="background:linear-gradient(135deg, #f6d365 0%, #fda085 100%); color:white; padding:1.5rem; margin-bottom:1.5rem; border:none;">
                 <h3 style="color:white;">🎫 인생역전! 럭키 복권</h3>
-                <p class="text-sub" style="color:rgba(255,255,255,0.9);">한 장당 500P - 1등 당첨금 30,000P!</p>
                 <div id="lotto-result" class="lotto-card" style="background:rgba(255,255,255,0.2); height:100px; display:flex; align-items:center; justify-content:center; margin:1rem 0; border-radius:10px; border:2px dashed #fff; font-weight:bold;">행운을 빌어요!</div>
                 <button id="lotto-btn" class="btn-primary" style="background:white; color:#fda085;">복권 구매하기 (500P)</button>
             </div>
 
-            <!-- 베팅 게임 섹션 -->
             <div class="game-zone card" style="background:#fff3f5; border:1px solid #ffcad4; padding:1.5rem; margin-bottom:1.5rem;">
-                <h3 style="color:#ff4757;">🎲 포인트 베팅 (홀짝 / 고저)</h3>
+                <h3 style="color:#ff4757;">🎲 포인트 베팅</h3>
                 <div class="bet-input-area" style="margin:1.5rem 0;">
-                    <label style="font-size:0.8rem; font-weight:bold;">베팅 금액 (최소 10P)</label>
-                    <input type="number" id="bet-amount" value="100" min="10" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color); margin-top:0.5rem; text-align:center; font-size:1.2rem; font-weight:800;">
+                    <input type="number" id="bet-amount" value="100" min="10" style="width:100%; padding:0.8rem; border-radius:10px; border:1px solid var(--border-color); text-align:center; font-size:1.2rem; font-weight:800;">
                 </div>
                 <div id="bet-result-msg" style="height:50px; display:flex; align-items:center; justify-content:center; text-align:center; font-weight:bold; margin-bottom:1rem;">준비 되셨나요?</div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.8rem;">
-                    <button class="bet-btn btn-primary" data-game="oddeven" data-choice="odd" style="background:#6c5ce7;">홀 (Odd)</button>
-                    <button class="bet-btn btn-primary" data-game="oddeven" data-choice="even" style="background:#a29bfe;">짝 (Even)</button>
-                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="low">주사위 저 (1-3)</button>
-                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="high">주사위 고 (4-6)</button>
+                    <button class="bet-btn btn-primary" data-game="oddeven" data-choice="odd" style="background:#6c5ce7;">홀</button>
+                    <button class="bet-btn btn-primary" data-game="oddeven" data-choice="even" style="background:#a29bfe;">짝</button>
+                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="low">저 (1-3)</button>
+                    <button class="bet-btn btn-secondary" data-game="dice" data-choice="high">고 (4-6)</button>
                 </div>
             </div>
             
             <div class="game-zone card" style="background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
-                <h3>📦 행운의 아이템 뽑기 (100 P)</h3>
+                <h3>📦 아이템 뽑기 (100 P)</h3>
                 <div id="gacha-result" class="gacha-box" style="height:100px; display:flex; align-items:center; justify-content:center; margin:1rem 0;">준비 완료!</div>
                 <button id="gacha-btn" class="btn-primary">100P로 뽑기</button>
             </div>
 
             <div class="alchemy-zone card" style="margin-top:1.5rem;">
                 <h3>🔮 아이템 연금술 (500 P)</h3>
-                <p class="text-sub">아이템 5개 -> 상급 아이템 1개</p>
-                <div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center;">재료를 준비해 주세요.</div>
+                <div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center;">재료 준비</div>
                 <button id="alchemy-btn" class="btn-primary" style="background:#fff; color:#6c5ce7;">연금술 시작</button>
-            </div>
-
-            <div class="game-zone card" style="margin-top:1.5rem; background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
-                <h3>🔢 숫자 Up & Down (보상: 50P)</h3>
-                <div id="updown-msg" style="margin:1rem 0; font-weight:bold; text-align:center;">숫자 입력 (1-50)</div>
-                <div class="input-row">
-                    <input type="number" id="updown-input" placeholder="1-50" min="1" max="50">
-                    <button id="updown-submit" class="btn-primary" style="width:80px;">확인</button>
-                </div>
-            </div>
-
-            <div class="game-zone card" style="margin-top:1.5rem; background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
-                <h3>⛏️ 포인트 채굴</h3>
-                <button id="click-game-btn" class="btn-secondary">클릭해서 채굴</button>
             </div>
         </div>
     `;
     initArcade(); 
+    
+    document.getElementById('buy-booster-btn').onclick = async () => {
+        if (await usePoints(1000)) {
+            const userRef = doc(db, "users", UserState.user.uid);
+            await updateDoc(userRef, { boosterCount: increment(5) });
+            UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 5;
+            updateUI();
+            alert("부스터 구매 완료! 다음 5번의 테스트 보상이 2배가 됩니다.");
+            renderArcade();
+        }
+    };
     updateUI();
 }
 
@@ -206,7 +223,7 @@ function renderTestExecution(testId) {
                 <div class="progress-container"><div class="step-dots">${Array.from({length: 7}).map((_, i) => `<div class="dot ${i <= step ? 'active' : ''}"></div>`).join('')}</div></div>
                 <h2 style="font-size:1.4rem; margin-bottom:2rem;">Q${step + 1}. ${currentQ.q}</h2>
                 <div class="options">${currentQ.options.map(opt => `<button class="option-btn" data-type="${opt.type}">${opt.text}</button>`).join('')}</div>
-                <button class="btn-share" id="share-link-btn" style="margin-top:2rem; background:var(--text-sub); font-size:0.8rem;">🔗 테스트 링크 공유 (+30P)</button>
+                <button class="btn-share" id="share-link-btn" style="margin-top:2rem; background:var(--text-sub); font-size:0.8rem;">🔗 테스트 공유하기 (+30P)</button>
             </div>`;
         document.querySelectorAll('.option-btn').forEach(btn => {
             btn.onclick = () => {
@@ -223,21 +240,32 @@ function renderTestExecution(testId) {
 async function renderResult(testId, answers) {
     const test = TESTS.find(t => t.id === testId);
     const result = test.results[answers.filter(x => x==='A').length >= 4 ? 'A' : 'B'];
-    if (UserState.user) await addPoints(10);
+    
+    let reward = 10;
+    let boosterMsg = "";
+    if (UserState.user && UserState.data.boosterCount > 0) {
+        reward = 20;
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, { boosterCount: increment(-1) });
+        UserState.data.boosterCount -= 1;
+        boosterMsg = " (부스터 적용 2배!)";
+    }
+    if (UserState.user) await addPoints(reward);
+
     app.innerHTML = `
         <div class="result-card fade-in">
-            <span class="test-category">분석 리포트</span>
+            <span class="test-category">분석 결과</span>
             <div class="result-img" style="background-image: url('${result.img}');"></div>
             <h2 style="color:var(--accent-color);">[${result.title}]</h2>
             <div class="result-desc" style="text-align:left; line-height:1.8;"><p>${result.desc}</p></div>
-            <p class="text-sub" style="margin-top:1rem;">보상 +10P 지급 완료!</p>
+            <p class="text-sub" style="margin-top:1rem; font-weight:bold; color:var(--accent-secondary);">보상 +${reward}P 지급 완료!${boosterMsg}</p>
             <div class="share-grid">
                 <button class="btn-share" id="share-result">결과 공유 (+30P)</button>
                 <button class="btn-share btn-copy" id="share-test">테스트 공유 (+30P)</button>
             </div>
             <button class="btn-secondary" style="width:100%; margin-top:1rem;" onclick="location.hash='#home'">메인으로</button>
         </div>`;
-    document.getElementById('share-result').onclick = () => shareTest(testId, `나의 결과: ${result.title}`);
+    document.getElementById('share-result').onclick = () => shareTest(testId, `결과: ${result.title}`);
     document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
 }
 

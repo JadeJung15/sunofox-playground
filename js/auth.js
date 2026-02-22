@@ -21,10 +21,10 @@ export const UserState = {
 };
 
 export const EMOJI_SHOP = {
-    '귀여운 동물 (200~500점)': { '🐱': 200, '🐶': 200, '🦊': 300, '🐰': 300, '🐼': 500, '🐨': 500, '🐹': 400, '🐣': 400 },
-    '강력한 야수 (800~2500점)': { '🐯': 800, '🦁': 800, '🐺': 1000, '🐲': 2500 },
-    '판타지 & 감성 (800~1500점)': { '🦄': 1500, '🌈': 1200, '🌙': 1000, '🪐': 1500, '🦋': 800, '🔮': 1200 },
-    '스페셜 프리미엄 (3000~10000점)': { '✨': 3000, '🍀': 3000, '👑': 5000, '💎': 10000, '🌋': 7000, '⚡': 4000 }
+    '귀여운 동물': { '🐱': 200, '🐶': 200, '🦊': 300, '🐰': 300, '🐼': 500, '🐨': 500 },
+    '강력한 야수': { '🐯': 800, '🦁': 800, '🐺': 1000, '🐲': 2500 },
+    '판타지 & 감성': { '🦄': 1500, '🌈': 1200, '🌙': 1000, '🪐': 1500 },
+    '스페셜 프리미엄': { '✨': 3000, '🍀': 3000, '👑': 5000, '💎': 10000 }
 };
 
 export const ITEM_VALUES = {
@@ -41,9 +41,7 @@ export const TIERS = [
 ];
 
 export function getTier(score) {
-    for (let i = TIERS.length - 1; i >= 0; i--) {
-        if (score >= TIERS[i].min) return TIERS[i];
-    }
+    for (let i = TIERS.length - 1; i >= 0; i--) { if (score >= TIERS[i].min) return TIERS[i]; }
     return TIERS[0];
 }
 
@@ -73,12 +71,9 @@ export function initAuth() {
         if (target.id === 'logout-btn') {
             signOut(auth).then(() => { location.hash = '#home'; });
         }
-        if (target.id === 'nickname-save') {
-            await changeNickname();
-        }
-        if (target.classList.contains('emoji-btn')) {
-            await handleEmojiExchange(target.dataset.emoji);
-        }
+        if (target.id === 'nickname-save') await changeNickname();
+        if (target.classList.contains('emoji-btn')) await handleEmojiExchange(target.dataset.emoji);
+        if (target.classList.contains('color-btn')) await changeNameColor(target.dataset.color);
     });
 }
 
@@ -90,12 +85,21 @@ async function loadUserData(user) {
         const newData = {
             uid: user.uid, nickname: user.displayName || '익명',
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
-            inventory: [], totalScore: 0, lastNicknameChange: null, createdAt: serverTimestamp()
+            inventory: [], totalScore: 0, lastNicknameChange: null, 
+            boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
+            createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);
         snap = await getDoc(userRef);
+    } else {
+        const data = snap.data();
+        // Missing fields migration
+        if (data.boosterCount === undefined) {
+            await updateDoc(userRef, { boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'] });
+            data.boosterCount = 0; data.nameColor = '#333333'; data.unlockedColors = ['#333333'];
+        }
+        UserState.data = data;
     }
-    UserState.data = snap.data();
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
@@ -107,12 +111,14 @@ export function updateUI(isLoggedIn = !!UserState.user) {
 
     if (isLoggedIn && UserState.data) {
         document.getElementById('login-btn')?.classList.add('hidden');
-        document.getElementById('user-profile')?.classList.remove('hidden');
         if (headerProfile) headerProfile.classList.remove('hidden');
         
         const tier = getTier(UserState.data.totalScore || 0);
         
-        userNameEls.forEach(el => el.textContent = UserState.data.nickname);
+        userNameEls.forEach(el => {
+            el.textContent = UserState.data.nickname;
+            el.style.color = UserState.data.nameColor || 'var(--text-main)';
+        });
         userPointsEls.forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
         userScoreEls.forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
         userEmojiEls.forEach(el => el.textContent = UserState.data.emoji || '👤');
@@ -122,7 +128,6 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         });
     } else {
         document.getElementById('login-btn')?.classList.remove('hidden');
-        document.getElementById('user-profile')?.classList.add('hidden');
         if (headerProfile) headerProfile.classList.add('hidden');
     }
 }
@@ -137,16 +142,10 @@ async function handleEmojiExchange(emoji) {
         updateUI();
         return;
     }
-
     let price = 0;
     for (const cat in EMOJI_SHOP) { if (EMOJI_SHOP[cat][emoji]) { price = EMOJI_SHOP[cat][emoji]; break; } }
-
-    if (UserState.data.totalScore < price) {
-        alert(`아이템 점수가 부족합니다! (필요: ${price}점)`);
-        return;
-    }
-
-    if (!confirm(`[${emoji}] 교환 시 아이템 가치 ${price}점이 소모됩니다. 진행할까요?`)) return;
+    if (UserState.data.totalScore < price) return alert("아이템 점수 부족");
+    if (!confirm(`아이템 가치 ${price}점이 차감됩니다. 교환하시겠습니까?`)) return;
 
     try {
         const userRef = doc(db, "users", UserState.user.uid);
@@ -170,7 +169,32 @@ async function handleEmojiExchange(emoji) {
         updateUI();
         alert("교환 성공!");
         if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
-    } catch (e) { alert("교환 실패"); }
+    } catch (e) { alert("오류 발생"); }
+}
+
+async function changeNameColor(color) {
+    const unlocked = UserState.data.unlockedColors || ['#333333'];
+    const price = 2000;
+    
+    if (unlocked.includes(color)) {
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, { nameColor: color });
+        UserState.data.nameColor = color;
+        updateUI();
+        return;
+    }
+
+    if (await usePoints(price)) {
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, {
+            unlockedColors: [...unlocked, color],
+            nameColor: color
+        });
+        UserState.data.unlockedColors.push(color);
+        UserState.data.nameColor = color;
+        updateUI();
+        alert("색상 구매 및 적용 완료!");
+    }
 }
 
 async function changeNickname() {
@@ -185,8 +209,7 @@ async function changeNickname() {
     try {
         const userRef = doc(db, "users", UserState.user.uid);
         await updateDoc(userRef, { nickname: newName, lastNicknameChange: serverTimestamp() });
-        UserState.data.nickname = newName;
-        UserState.data.lastNicknameChange = now;
+        UserState.data.nickname = newName; UserState.data.lastNicknameChange = now;
         updateUI();
         if (msg) msg.textContent = "변경완료!";
     } catch (e) { console.error(e); }
@@ -203,7 +226,7 @@ export async function addPoints(amount) {
 
 export async function usePoints(amount) {
     if (!UserState.user || (UserState.data.points || 0) < amount) {
-        alert("포인트 부족"); return false;
+        alert("포인트가 부족합니다!"); return false;
     }
     const userRef = doc(db, "users", UserState.user.uid);
     await updateDoc(userRef, { points: increment(-amount) });
