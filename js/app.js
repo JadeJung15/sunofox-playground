@@ -1,6 +1,6 @@
 // js/app.js
 import { Store } from './store.js';
-import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame, MathGame, RpsGame, PersonalityTest } from './games.js';
+import { ReactionGame, MemoryGame, RhythmGame, PuzzleGame } from './games.js';
 import { auth, db } from '../index.html'; // Import auth and db instances
 import { 
   createUserWithEmailAndPassword, 
@@ -15,6 +15,7 @@ const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
 let currentUser = null; // To store authenticated user info
+let isAdmin = false;    // To store admin status
 
 // Routing
 const routes = {
@@ -41,9 +42,15 @@ function router() {
 }
 
 // Listen for auth state changes
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   currentUser = user;
-  router(); // Re-render current view to reflect auth state
+  isAdmin = false; // Reset admin status
+  if (currentUser) {
+    // Get custom claims to check for admin role
+    const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh token
+    isAdmin = idTokenResult.claims.admin || false;
+  }
+  router(); // Re-render current view to reflect auth state or admin status
 });
 
 window.addEventListener('hashchange', router);
@@ -83,7 +90,7 @@ function renderHome() {
     </section>
 
     <div class="notice-banner fade-in">
-      <strong>📢 공지</strong> 2026.02.22 - 신규 미니게임과 심리테스트가 추가되었습니다!
+      <strong>📢 공지</strong> 2026.02.22 - 새로운 미니게임 4종이 추가되었습니다!
     </div>
 
     <div class="card-grid fade-in">
@@ -115,9 +122,6 @@ function renderGames() {
         <button class="tab-btn" data-game="memory">기억력</button>
         <button class="tab-btn" data-game="rhythm">리듬</button>
         <button class="tab-btn" data-game="puzzle">퍼즐</button>
-        <button class="tab-btn" data-game="math">스피드 합산</button>
-        <button class="tab-btn" data-game="rps">가위바위보</button>
-        <button class="tab-btn" data-game="test">심리테스트</button>
       </div>
       <div id="game-container" class="game-container"></div>
     </div>
@@ -140,9 +144,6 @@ function renderGames() {
       if (gameType === 'memory') new MemoryGame(container);
       if (gameType === 'rhythm') new RhythmGame(container);
       if (gameType === 'puzzle') new PuzzleGame(container);
-      if (gameType === 'math') new MathGame(container);
-      if (gameType === 'rps') new RpsGame(container);
-      if (gameType === 'test') new PersonalityTest(container);
     });
   });
 }
@@ -264,7 +265,7 @@ function renderProfile() {
           </div>
           <div class="profile-details card mt-4">
               <h3>나의 활동 (구현 예정)</h3>
-              <p class="text-sub">작성 글, 댓글, 게임 기록 등 활동 내역을 이곳에서 관리할 수 있습니다.</p>
+              <p class="text-sub">로그인 후 활동 기록을 이곳에서 관리할 수 있습니다.</p>
           </div>
       </section>
     `;
@@ -328,9 +329,9 @@ function renderProfile() {
   }
 }
 
-// NEW: Render Admin Page (Non-functional UI for now, check current user status)
+// NEW: Render Admin Page (Now checking `isAdmin` flag)
 function renderAdmin() {
-  if (currentUser && currentUser.email === 'admin@example.com') { // Placeholder for admin check
+  if (isAdmin) { // Check isAdmin flag from custom claims
     app.innerHTML = `
       <section class="admin-section fade-in">
           <h2 class="page-title">⚙️ 관리자 페이지</h2>
@@ -338,18 +339,18 @@ function renderAdmin() {
           <div class="admin-dashboard">
               <div class="admin-card card">
                   <h3>게시글 관리</h3>
-                  <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                  <p class="text-sub">여기에 게시글 목록을 불러와 삭제/공지 지정 등의 작업을 할 수 있습니다.</p>
                   <button class="btn btn-secondary full-width mt-2">게시글 목록</button>
                   <button class="btn btn-secondary full-width mt-2">신고된 글</button>
               </div>
               <div class="admin-card card">
                   <h3>댓글 관리</h3>
-                  <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                  <p class="text-sub">여기에 댓글 목록을 불러와 삭제 등의 작업을 할 수 있습니다.</p>
                   <button class="btn btn-secondary full-width mt-2">댓글 목록</button>
               </div>
               <div class="admin-card card">
                   <h3>사용자 관리</h3>
-                  <p class="text-sub">백엔드 연동이 필요합니다.</p>
+                  <p class="text-sub">여기에 사용자 목록을 불러와 권한 변경 등의 작업을 할 수 있습니다.</p>
                   <button class="btn btn-secondary full-width mt-2">사용자 목록</button>
               </div>
           </div>
@@ -362,7 +363,7 @@ function renderAdmin() {
         <p class="text-sub">관리자만 접근할 수 있는 페이지입니다.</p>
         <div class="profile-card card">
             <h3>접근 권한 없음</h3>
-            <p>관리자 이메일로 로그인해주세요.</p>
+            <p>관리자 권한이 있는 계정으로 로그인해주세요.</p>
             <a href="#profile" class="btn btn-primary full-width mt-4">로그인 페이지로 이동</a>
         </div>
       </section>
@@ -372,7 +373,7 @@ function renderAdmin() {
 
 
 // Modals
-function openWriteModal(type, prefill = {}, refreshCallback = null) {
+async function openWriteModal(type, prefill = {}, refreshCallback = null) {
   if (!currentUser) {
     alert('로그인 후 이용 가능합니다.');
     window.location.hash = '#profile';
@@ -424,19 +425,20 @@ function openWriteModal(type, prefill = {}, refreshCallback = null) {
   });
 }
 
-function openPostModal(id) {
-  // Store.getPost is async, so this needs to be async or handle promise
-  const post = Store.getPost(id);
+async function openPostModal(id) { // Added async
+  const post = await Store.getPost(id); // Await the post
   if (!post) {
       console.error("Post not found:", id);
       return;
   }
   
+  await Store.viewPost(id); // Increment view count
+  
   const modal = document.createElement('div');
   modal.className = 'modal-overlay fade-in';
   
-  const renderModalContent = async (currentPost) => {
-    const comments = await Store.getComments(id);
+  const renderModalContent = async (currentPost) => { // Added async
+    const comments = await Store.getComments(id); // Await comments
     modal.innerHTML = `
       <div class="modal view-modal">
         <div class="modal-header">
@@ -469,7 +471,11 @@ function openPostModal(id) {
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn btn-outline" id="like-btn">❤️ 좋아요</button>
+            <div class="modal-actions">
+                ${(currentUser && (currentUser.uid === currentPost.authorId || isAdmin)) 
+                    ? `<button id="delete-post-btn" class="btn btn-outline">🗑️ 글 삭제</button>` : ''}
+                <button class="btn btn-outline" id="like-btn">❤️ 좋아요</button>
+            </div>
         </div>
       </div>
     `;
@@ -485,6 +491,17 @@ function openPostModal(id) {
        currentPost.likes = newLikes; // update local ref
        renderModalContent(currentPost); // re-render to update like count
     });
+
+    const deletePostBtn = modal.querySelector('#delete-post-btn');
+    if (deletePostBtn) {
+        deletePostBtn.addEventListener('click', async () => {
+            if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
+                await Store.deletePost(id); // Need to implement deletePost in store.js
+                close();
+                router(); // Refresh current view
+            }
+        });
+    }
 
     const submitCommentBtn = modal.querySelector('#submit-comment');
     if (submitCommentBtn) {
@@ -509,7 +526,7 @@ function openPostModal(id) {
             const content = contentInput.value;
             if (!author || !content) return;
             
-            await Store.addComment({ postId: parseInt(id), author, content, authorId: currentUser.uid });
+            await Store.addComment({ postId: id, author, content, authorId: currentUser.uid }); // Changed parseInt(id) to id
             contentInput.value = '';
             renderModalContent(currentPost);
         });
@@ -518,10 +535,8 @@ function openPostModal(id) {
 
   document.body.appendChild(modal);
   // Initial render, then update views count
-  post.then(p => {
-    Store.viewPost(id); // Increment view count
-    renderModalContent(p);
-  });
+  Store.viewPost(id); // Increment view count via Store
+  renderModalContent(post); // Pass the already awaited post
 }
 
 // Listen for game share events

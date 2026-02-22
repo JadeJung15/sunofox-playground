@@ -1,6 +1,6 @@
 // js/store.js
-import { db } from '../index.html'; // Import db instance from index.html (or app.js once migrated)
-import { collection, addDoc, getDocs, doc, getDoc, updateDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { db } from '../index.html'; // Import db instance from index.html
+import { collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const STORAGE_KEY_SETTINGS = 'sunofox_settings';
 const STORAGE_KEY_GAMES = 'sunofox_games';
@@ -12,10 +12,10 @@ const commentsCol = collection(db, "comments");
 
 // Initial Setup & Dummy Data (for Firestore, only if collection is empty)
 const initialPosts = [
-  { id: 1, type: 'community', category: '잡담', title: '첫 번째 글입니다.', content: '반갑습니다.', author: '익명1', date: new Date().toISOString(), likes: 3, views: 10, authorId: 'anonymous' },
-  { id: 2, type: 'community', category: '질문', title: '반응속도 게임 0.2초 가능한가요?', content: '너무 어렵네요 ㅠㅠ', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
-  { id: 3, type: 'lounge', category: '게임', title: '슬라이드 퍼즐 공략 공유', content: '맨 윗줄부터 맞추세요.', author: '고수', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
-  { id: 4, type: 'lounge', category: '유머', title: '개발자가 좋아하는 숫자는?', content: '0부터 시작해서 모름', author: '유머왕', date: new Date().toISOString(), likes: 20, views: 100, authorId: 'anonymous' },
+  { id: 'initial1', type: 'community', category: '잡담', title: '첫 번째 글입니다.', content: '반갑습니다.', author: '익명1', date: new Date().toISOString(), likes: 3, views: 10, authorId: 'anonymous' },
+  { id: 'initial2', type: 'community', category: '질문', title: '반응속도 게임 0.2초 가능한가요?', content: '너무 어렵네요 ㅠㅠ', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
+  { id: 'initial3', type: 'lounge', category: '게임', title: '슬라이드 퍼즐 공략 공유', content: '맨 윗줄부터 맞추세요.', author: '고수', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
+  { id: 'initial4', type: 'lounge', category: '유머', title: '개발자가 좋아하는 숫자는?', content: '0부터 시작해서 모름', author: '유머왕', date: new Date().toISOString(), likes: 20, views: 100, authorId: 'anonymous' },
 ];
 
 const initialGameRecords = {
@@ -23,8 +23,6 @@ const initialGameRecords = {
   memory: null,   // turns (lower is better)
   rhythm: 0,      // score (higher is better)
   puzzle: null,   // seconds (lower is better)
-  math: 0,        // score (higher is better)
-  rps: 0,         // win streak (higher is better)
 };
 
 export const Store = {
@@ -66,7 +64,7 @@ export const Store = {
 
   // Posts (Community & Lounge) - Now using Firestore
   async getPosts(type = null, category = null, orderByField = 'date', orderDirection = 'desc') {
-    let q = query(postsCol);
+    let q = query(postsCol, orderBy(orderByField, orderDirection));
 
     if (type) {
         q = query(q, where("type", "==", type));
@@ -74,12 +72,12 @@ export const Store = {
     if (category && category !== '전체') {
         q = query(q, where("category", "==", category));
     }
-    q = query(q, orderBy(orderByField, orderDirection));
-
+    
     const querySnapshot = await getDocs(q);
     let posts = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
     if (posts.length === 0) { // If no posts, seed initial data to Firestore
+        console.log("Seeding initial posts...");
         for (const p of initialPosts) {
             await addDoc(postsCol, p);
         }
@@ -107,27 +105,29 @@ export const Store = {
       date: new Date().toISOString(),
       likes: 0,
       views: 0,
-      authorId: postData.authorId || 'anonymous' // Ensure authorId is saved
+      // authorId: postData.authorId || 'anonymous' // Ensure authorId is saved - this is already handled by app.js
     });
     return { id: newPostRef.id, ...postData };
   },
 
   async viewPost(id) {
-    const post = await this.getPost(id);
-    if (post) {
-      const docRef = doc(db, "posts", id);
-      await updateDoc(docRef, {
-        views: (post.views || 0) + 1
+    const postRef = doc(db, "posts", id);
+    const postSnap = await getDoc(postRef);
+    if (postSnap.exists()) {
+      const currentViews = postSnap.data().views || 0;
+      await updateDoc(postRef, {
+        views: currentViews + 1
       });
     }
   },
 
   async likePost(id) {
-    const post = await this.getPost(id);
-    if (post) {
-      const docRef = doc(db, "posts", id);
-      const newLikes = (post.likes || 0) + 1;
-      await updateDoc(docRef, {
+    const postRef = doc(db, "posts", id);
+    const postSnap = await getDoc(postRef);
+    if (postSnap.exists()) {
+      const currentLikes = postSnap.data().likes || 0;
+      const newLikes = currentLikes + 1;
+      await updateDoc(postRef, {
         likes: newLikes
       });
       return newLikes;
@@ -135,9 +135,23 @@ export const Store = {
     return 0;
   },
 
+  async deletePost(id) {
+    const postRef = doc(db, "posts", id);
+    await deleteDoc(postRef);
+    // Optionally delete associated comments if they are not sub-collections
+    const q = query(commentsCol, where("postId", "==", id)); // Note: postId is now string
+    const querySnapshot = await getDocs(q);
+    const batch = db.batch(); // Use batch for multiple deletes
+    querySnapshot.forEach((doc) => {
+        batch.delete(doc.ref);
+    });
+    await batch.commit();
+    return true;
+  },
+
   // Comments - Now using Firestore
   async getComments(postId) {
-    const q = query(commentsCol, where("postId", "==", parseInt(postId)), orderBy("date", "asc"));
+    const q = query(commentsCol, where("postId", "==", postId), orderBy("date", "asc")); // postId is now string
     const querySnapshot = await getDocs(q);
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
   },
@@ -146,8 +160,14 @@ export const Store = {
     const newCommentRef = await addDoc(commentsCol, {
       ...commentData,
       date: new Date().toISOString(),
-      authorId: commentData.authorId || 'anonymous' // Ensure authorId is saved
+      // authorId: commentData.authorId || 'anonymous' // This is handled by app.js
     });
     return { id: newCommentRef.id, ...commentData };
+  },
+
+  async deleteComment(id) {
+    const commentRef = doc(db, "comments", id);
+    await deleteDoc(commentRef);
+    return true;
   }
 };
