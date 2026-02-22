@@ -30,15 +30,15 @@ const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
 const CHANNEL_ID = 'UC8M-2aXbknDT3tDcN1PMvuQ';
 
 const LINKTREE_LINKS = [
-  { label: 'YouTube', url: 'https://www.youtube.com/@sunofox' },
-  { label: 'YouTube Music', url: 'https://music.youtube.com/channel/UCjPuy8z0pdzW3OVUXka0lMw?si=2ljpP0CVll5jXeQe' },
-  { label: 'Spotify', url: 'https://open.spotify.com/artist/5fzr4xqw1e0c5cI8dVj11D?si=lYMzkqudQDmpVKgzkG18Kg' },
-  { label: 'Apple Music', url: 'https://music.apple.com/kr/artist/%EC%88%98%EB%85%B8%ED%8F%AD%EC%8A%A4/1874158480' },
-  { label: 'SoundCloud', url: 'https://www.soundcloud.com/sunopogseu?utm_campaign=social_sharing&utm_medium=text&utm_source=clipboard' },
-  { label: 'FLO', url: 'https://www.music-flo.com/detail/artist/413342628/track?roleType=ALL&sortType=POPULARITY' },
-  { label: 'Bugs', url: 'https://music.bugs.co.kr/artist/14591489' },
-  { label: 'VIBE', url: 'https://vibe.naver.com/artist/10398991' },
-  { label: 'TIDAL', url: 'https://tidal.com/artist/73947996/u:' }
+  { label: 'YouTube | 수노폭스', url: 'https://www.youtube.com/@sunofox' },
+  { label: 'Spotify | 수노폭스', url: 'https://open.spotify.com/artist/5fzr4xqw1e0c5cI8dVj11D?si=lYMzkqudQDmpVKgzkG18Kg' },
+  { label: 'Apple Music | 수노폭스', url: 'https://music.apple.com/kr/artist/%EC%88%98%EB%85%B8%ED%8F%AD%EC%8A%A4/1874158480' },
+  { label: 'SunoFox - Topic', url: 'https://music.youtube.com/channel/UCjPuy8z0pdzW3OVUXka0lMw?si=2ljpP0CVll5jXeQe' },
+  { label: 'SoundCloud | 수노폭스', url: 'https://www.soundcloud.com/sunopogseu?utm_source=clipboard&utm_medium=text&utm_campaign=social_sharing' },
+  { label: 'FLO | 수노폭스', url: 'https://www.music-flo.com/detail/artist/413342628/track?sortType=POPULARITY&roleType=ALL' },
+  { label: 'Bugs | 수노폭스', url: 'https://music.bugs.co.kr/artist/14591489' },
+  { label: 'VIBE (바이브)', url: 'https://vibe.naver.com/artist/10398991' },
+  { label: 'TIDAL | 수노폭스', url: 'https://tidal.com/artist/73947996/u' }
 ];
 
 // Routing
