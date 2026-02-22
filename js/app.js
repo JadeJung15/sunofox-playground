@@ -1079,15 +1079,20 @@ async function loadYouTubeCommunityPosts() {
       .map((v) => v.trim())
       .filter((v) => v && v.length > 50)
       .filter((v) => !v.startsWith('Title:') && !v.startsWith('URL Source:'))
-      .map((v) => v.replace(/\s+/g, ' ').trim());
+      .map((v) => v.replace(/\s+/g, ' ').trim())
+      .map((v) => {
+        const match = v.match(/https?:\/\/(?:www\.)?youtube\.com\/post\/[A-Za-z0-9_-]+/i);
+        const url = safeExternalUrl(match ? match[0] : '') || `${CHANNEL_URL}/community`;
+        return { content: v, url };
+      });
 
     const posts = chunks.slice(0, 8);
 
-    const cards = posts.map((content, idx) => {
+    const cards = posts.map((post, idx) => {
       return `
-        <a class="post-row" href="${CHANNEL_URL}/community" target="_blank" rel="noreferrer noopener">
+        <a class="post-row" href="${escapeHTML(post.url)}" target="_blank" rel="noreferrer noopener">
           <span class="col-cat"><span class="chip micro">YouTube</span></span>
-          <span class="col-title">${escapeHTML(content.slice(0, 220))}${content.length > 220 ? '...' : ''}</span>
+          <span class="col-title">${escapeHTML(post.content.slice(0, 220))}${post.content.length > 220 ? '...' : ''}</span>
           <span class="col-author">수노폭스 채널</span>
           <span class="col-meta">커뮤니티 ${idx + 1}</span>
         </a>
