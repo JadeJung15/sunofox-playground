@@ -10,7 +10,7 @@ const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
 // =================================================================
-// 1. Data Store (Content logic remains same, but we import uniqueTests later)
+// 1. Data Store
 // =================================================================
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
 const categories = ['성격', '얼굴', '사주', '재미'];
@@ -25,7 +25,7 @@ for (let i = 0; i < 40; i++) {
         thumb: unsplash(`15${i}123456789`),
         questions: Array.from({length: 7}, (_, qIdx) => ({
             q: `${cat}에 관한 심층 질문입니다. 당신은 어떤 선택을 하시겠습니까?`,
-            options: [{ text: `저는 이 방향을 선호합니다.`, type: 'A' }, { text: `저는 저 방향이 더 끌립니다.`, type: 'B' }]
+            options: [{ text: `A: 저는 이 방향을 선호합니다.`, type: 'A' }, { text: `B: 저는 저 방향이 더 끌립니다.`, type: 'B' }]
         })),
         results: {
             A: { title: '유형 Alpha', desc: '당신은 주도적이며 명확한 가치관을 가진 분이시군요!', img: unsplash(`15${i}987654321`) },
@@ -46,14 +46,11 @@ let currentFilter = '전체';
 
 async function router() {
     const hash = window.location.hash || '#home';
-    
     navLinks.forEach(link => {
         const filter = link.dataset.filter;
         link.classList.toggle('active', (hash === '#home' && filter === '전체') || hash.includes(filter?.toLowerCase()));
     });
-
     app.innerHTML = ''; 
-
     if (hash === '#privacy') renderPrivacy();
     else if (hash === '#about') renderAbout();
     else if (hash === '#arcade') renderArcade();
@@ -86,9 +83,7 @@ function renderHome() {
             }
         </div>
     `;
-
     const filtered = currentFilter === '전체' ? TESTS : TESTS.filter(t => t.category === currentFilter);
-    
     app.innerHTML = authHeader + `
         <div class="test-grid">
             ${filtered.map(t => `
@@ -113,8 +108,19 @@ function renderProfile() {
     }
 
     const inv = UserState.data.inventory || [];
-    const invHTML = inv.length > 0 ? 
-        inv.map(item => `<span class="inv-item">${item}</span>`).join('') : 
+    // Group duplicates
+    const groupedInv = inv.reduce((acc, item) => {
+        acc[item] = (acc[item] || 0) + 1;
+        return acc;
+    }, {});
+
+    const invHTML = Object.entries(groupedInv).length > 0 ? 
+        Object.entries(groupedInv).map(([name, count]) => `
+            <div class="inv-item">
+                <span class="inv-name">${name}</span>
+                <span class="inv-count">x${count}</span>
+            </div>
+        `).join('') : 
         '<p class="text-sub">획득한 아이템이 없습니다.</p>';
 
     app.innerHTML = `
@@ -123,17 +129,17 @@ function renderProfile() {
             <div class="profile-stats">
                 <div class="stat-item">
                     <span class="stat-label">보유 포인트</span>
-                    <span class="stat-value" id="user-points">${UserState.data.points.toLocaleString()} P</span>
+                    <span class="stat-value" id="user-points">0 P</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-label">아이템 점수</span>
-                    <span class="stat-value" id="user-total-score">${(UserState.data.totalScore || 0).toLocaleString()} 점</span>
+                    <span class="stat-value" id="user-total-score">0 점</span>
                 </div>
             </div>
 
             <div class="inventory-section" style="margin-top:2rem;">
                 <h3>🎒 내 인벤토리</h3>
-                <div class="inventory-grid" style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1rem;">
+                <div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap:0.8rem; margin-top:1rem;">
                     ${invHTML}
                 </div>
             </div>
@@ -158,15 +164,12 @@ function renderProfile() {
 
 function renderArcade() {
     if (!UserState.user) { renderProfile(); return; }
-
     app.innerHTML = `
         <div class="card arcade-container fade-in" style="text-align:center; padding:2rem;">
             <h2>🎰 오락실</h2>
-            <p>포인트로 아이템을 뽑고 점수를 올리세요!</p>
             <div class="profile-stats" style="margin:1rem 0;">
                 <div class="stat-item"><span class="stat-label">내 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
             </div>
-            
             <div class="game-zone" style="margin-bottom:2rem; padding:1.5rem; background:var(--bg-color); border-radius:15px; border: 1px solid var(--border-color);">
                 <h3>📦 아이템 뽑기 (100 P)</h3>
                 <div id="gacha-result" class="gacha-box" style="height:120px; display:flex; align-items:center; justify-content:center; margin:1rem 0; font-weight:bold;">
@@ -174,7 +177,6 @@ function renderArcade() {
                 </div>
                 <button id="gacha-btn" class="btn-primary">뽑기!</button>
             </div>
-
             <div class="game-zone" style="padding:1.5rem; background:var(--bg-color); border-radius:15px; border: 1px solid var(--border-color);">
                 <h3>⛏️ 포인트 무료 채굴</h3>
                 <button id="click-game-btn" class="btn-secondary">채굴하기</button>
@@ -189,7 +191,6 @@ function renderTestExecution(testId) {
     const test = TESTS.find(t => t.id === testId);
     if (!test) return location.hash = '#home';
     let step = 0; const answers = [];
-    
     const updateStep = () => {
         const currentQ = test.questions[step];
         app.innerHTML = `
@@ -218,16 +219,13 @@ async function renderResult(testId, answers) {
     const test = TESTS.find(t => t.id === testId);
     const winningType = answers.filter(x => x==='A').length >= 4 ? 'A' : 'B';
     const result = test.results[winningType];
-
-    // Award 10 points for completion
     if (UserState.user) await addPoints(10);
-
     app.innerHTML = `
         <div class="result-card fade-in">
             <span class="test-category">분석 결과</span>
             <div class="result-img" style="background-image: url('${result.img}');"></div>
             <h2 style="color:var(--accent-color); margin-bottom:1rem;">[${result.title}]</h2>
-            <div class="result-desc"><p>${result.desc}</p></div>
+            <div class="result-desc" style="text-align:left; line-height:1.8;"><p>${result.desc}</p></div>
             <p class="text-sub" style="margin-top:1rem;">테스트 완료 보상 +10P 지급!</p>
             <div class="share-grid">
                 <button class="btn-share" id="share-result">결과 공유 (+30P)</button>
@@ -236,14 +234,12 @@ async function renderResult(testId, answers) {
             <button class="btn-secondary" style="width:100%; margin-top:1rem;" onclick="location.hash='#home'">다른 테스트 하러 가기</button>
         </div>
     `;
-
     document.getElementById('share-result').onclick = () => shareTest(testId, `나의 결과: ${result.title}`);
     document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
 }
 
-// Static
 function renderPrivacy() { app.innerHTML = `<div class="card"><h2>개인정보처리방침</h2><p>정보는 안전하게 보호됩니다.</p></div>`; }
-function renderAbout() { app.innerHTML = `<div class="card"><h2>서비스 소개</h2><p>SevenCheck입니다.</p></div>`; }
+function renderAbout() { app.innerHTML = `<div class="card"><h2>서비스 소개</h2><p>SevenCheck Studio입니다.</p></div>`; }
 function renderTerms() { app.innerHTML = `<div class="card"><h2>이용약관</h2><p>규칙을 준수해 주세요.</p></div>`; }
 function renderContact() { app.innerHTML = `<div class="card"><h2>문의하기</h2><p>support@sevencheck.studio</p></div>`; }
 
@@ -252,9 +248,7 @@ themeToggle.onclick = () => {
     document.documentElement.setAttribute('data-theme', next);
     themeToggle.textContent = next === 'dark' ? '☀️' : '✨';
 };
-
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
-
 initAuth();
 router();
