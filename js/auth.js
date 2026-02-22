@@ -31,7 +31,8 @@ export const EMOJI_SHOP = {
 };
 
 export const ITEM_VALUES = {
-    '💩 돌멩이': 1, '💊 물약': 20, '🥉 동메달': 50, '🥈 은메달': 150, '🥇 금메달': 500, '🍀 행운의 클로버': 100, '💎 다이아몬드': 2000
+    '💩 돌멩이': 1, '💊 물약': 20, '🥉 동메달': 50, '🥈 은메달': 150, '🥇 금메달': 500, '🍀 행운의 클로버': 100, '💎 다이아몬드': 2000,
+    '🧪 현자의 돌': 5000, '🧬 인공 생명체': 8000, '⚡ 번개 병': 3500, '🌌 은하수 가루': 12000
 };
 
 export const TIERS = [
@@ -94,12 +95,14 @@ async function loadUserData(user) {
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, lastNicknameChange: null, 
             boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
+            arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
             createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);
         snap = await getDoc(userRef);
     }
     UserState.data = snap.data();
+    if (!UserState.data.arcadeStats) UserState.data.arcadeStats = { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
@@ -195,9 +198,10 @@ async function changeNickname() {
 
 export async function chargeUserPoints(targetUid, amount) {
     if (!UserState.isAdmin) return false;
+    const finalUid = targetUid || UserState.user.uid;
     try {
-        await updateDoc(doc(db, "users", targetUid), { points: increment(amount) });
-        if (targetUid === UserState.user.uid) { UserState.data.points += amount; updateUI(); }
+        await updateDoc(doc(db, "users", finalUid), { points: increment(amount) });
+        if (finalUid === UserState.user.uid) { UserState.data.points += amount; updateUI(); }
         return true;
     } catch (e) { return false; }
 }

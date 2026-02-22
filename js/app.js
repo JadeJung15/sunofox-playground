@@ -187,6 +187,7 @@ function renderProfile() {
     const tier = getTier(currentScore);
     const nextTier = TIERS[TIERS.indexOf(tier) + 1] || tier;
     const progress = tier === nextTier ? 100 : Math.min(100, (currentScore / nextTier.min) * 100);
+    const stats = UserState.data.arcadeStats || { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
 
     app.innerHTML = `
         <div class="profile-page fade-in">
@@ -218,6 +219,20 @@ function renderProfile() {
                     </div>
                 </div>
             </div>
+
+            <details class="profile-details">
+                <summary>📊 오락실 이용 통계</summary>
+                <div class="content-area">
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                        <div><small class="text-sub">⛏️ 채굴</small><p><strong>${stats.mining || 0}</strong></p></div>
+                        <div><small class="text-sub">📦 가챠</small><p><strong>${stats.gacha || 0}</strong></p></div>
+                        <div><small class="text-sub">⚗️ 연금술</small><p><strong>${stats.alchemy || 0}</strong></p></div>
+                        <div><small class="text-sub">🎫 복권</small><p><strong>${stats.lottery || 0}</strong></p></div>
+                        <div><small class="text-sub">🎲 베팅</small><p><strong>${stats.betting || 0}</strong></p></div>
+                        <div><small class="text-sub">📅 출석</small><p><strong>${stats.checkin || 0}</strong></p></div>
+                    </div>
+                </div>
+            </details>
 
             <details class="profile-details" open>
                 <summary>🎒 내 인벤토리</summary>
@@ -260,11 +275,14 @@ function renderProfile() {
                 <summary style="color: var(--accent-color);">🛡️ 관리자 콘솔 (Admin)</summary>
                 <div class="content-area">
                     <div class="admin-tool-group" style="background: rgba(99, 102, 241, 0.05); padding: 1.5rem; border-radius: var(--radius-md); border: 1px dashed var(--accent-color);">
-                        <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💰 사용자 포인트 수동 관리</h4>
+                        <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">👤 사용자 관리</h4>
+                        <button id="admin-search-users" class="btn-secondary" style="width:100%; margin-bottom:1rem; border-color:var(--accent-color); color:var(--accent-color);">전체 사용자 목록 (UID) 검색</button>
+                        
+                        <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💰 사용자 포인트 관리</h4>
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <input type="text" id="admin-target-uid" style="padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="대상 사용자 UID">
+                            <input type="text" id="admin-target-uid" style="padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="대상 UID (미입력 시 본인)">
                             <div style="display: flex; gap: 0.5rem;">
-                                <input type="number" id="admin-point-amount" style="flex: 1; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="금액 (예: 1000 또는 -500)">
+                                <input type="number" id="admin-point-amount" style="flex: 1; padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="금액 (+ 또는 -)">
                                 <button id="admin-charge-btn" class="btn-primary" style="background: var(--accent-secondary); box-shadow: none;">집행</button>
                             </div>
                         </div>
@@ -281,13 +299,19 @@ function renderProfile() {
             const uid = document.getElementById('admin-target-uid').value.trim();
             const amount = parseInt(document.getElementById('admin-point-amount').value);
             const msg = document.getElementById('admin-msg');
-            if (!uid || isNaN(amount)) return alert("UID와 정확한 금액을 입력하세요.");
+            if (isNaN(amount)) return alert("금액을 정확히 입력하세요.");
             if (await chargeUserPoints(uid, amount)) {
-                msg.textContent = `성공: ${uid}님에게 ${amount}P 적용 완료.`;
+                msg.textContent = `성공: ${uid || '본인'}에게 ${amount}P 적용 완료.`;
                 document.getElementById('admin-point-amount').value = '';
-            } else {
-                msg.textContent = "실패: 권한이 없거나 존재하지 않는 사용자입니다.";
-            }
+            } else { msg.textContent = "실패: 사용자 정보를 확인하세요."; }
+        };
+        document.getElementById('admin-search-users').onclick = async () => {
+            try {
+                const snap = await getDocs(collection(db, "users"));
+                const users = [];
+                snap.forEach(d => users.push(`${d.data().nickname} : ${d.id}`));
+                alert(`[전체 사용자 목록]\n\n${users.join('\n')}`);
+            } catch (e) { alert("목록 로드 실패"); }
         };
     }
 }
