@@ -510,7 +510,93 @@ function renderPrivacy() { app.innerHTML = `<div class="card legal-page fade-in"
 function renderAbout() { app.innerHTML = `<div class="card guide-container fade-in"><h2>✨ 서비스 소개</h2><p>SevenCheck Studio는 심리 분석과 성장의 재미를 결합한 플랫폼입니다.</p></div>`; }
 function renderTerms() { app.innerHTML = `<div class="card legal-page fade-in"><h2>📜 이용약관</h2><p>이용 규칙을 준수해 주세요.</p></div>`; }
 function renderContact() { app.innerHTML = `<div class="card guide-container fade-in" style="text-align:center;"><h2>📧 문의하기</h2><p>support@sevencheck.studio</p></div>`; }
-function renderGuide() { /* 기존 상세 가이드 유지 */ }
+function renderGuide() {
+    app.innerHTML = `
+        <div class="guide-page fade-in">
+            <div class="card guide-header" style="text-align:center; padding: 3.5rem 1.5rem; background: linear-gradient(135deg, var(--color-guide), #94a3b8); color: #fff; border: none; margin-bottom: 2rem; border-radius: var(--radius-lg);">
+                <h2 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.75rem;">📖 이용 가이드</h2>
+                <p style="opacity: 0.9; font-size: 1.1rem; font-weight: 600;">SevenCheck을 완벽하게 즐기는 방법을 안내해 드립니다.</p>
+            </div>
+
+            <details class="profile-details" open>
+                <summary>🧠 심리 테스트 및 분석</summary>
+                <div class="content-area">
+                    <p style="margin-bottom: 1.25rem; line-height: 1.7;">SevenCheck의 모든 테스트는 <strong>딱 7번의 질문</strong>으로 당신의 잠재력과 본모습을 정교하게 분석합니다.</p>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                        <div style="background: var(--bg-color); padding: 1.25rem; border-radius: 12px;">
+                            <h4 style="color: var(--color-personality); margin-bottom: 0.5rem;">다양한 카테고리</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">성격, 비주얼, 운세, 재미 등 당신이 궁금한 모든 분야의 리포트를 제공합니다.</p>
+                        </div>
+                        <div style="background: var(--bg-color); padding: 1.25rem; border-radius: 12px;">
+                            <h4 style="color: var(--accent-secondary); margin-bottom: 0.5rem;">참여 보상</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">테스트 완료 시 기본 10P가 지급되며, 부스터 사용 시 20P를 획득합니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="profile-details" open>
+                <summary>💰 포인트 및 부스터 시스템</summary>
+                <div class="content-area">
+                    <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+                        <div>
+                            <h4 style="color: var(--accent-color); margin-bottom: 0.5rem; font-size: 1.1rem;">포인트(P) 활용처</h4>
+                            <p style="font-size: 0.95rem; line-height: 1.6;">모은 포인트는 오락실 게임 참여, 복권 구매, 게시글 강조, 그리고 상점에서 희귀 이모지를 교환하는 데 사용할 수 있습니다.</p>
+                        </div>
+                        <div style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); padding: 1.5rem; border-radius: 15px; border: 2px solid var(--accent-soft);">
+                            <h4 style="color: var(--accent-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">⚡ 슈퍼 부스터 (Super Booster)</h4>
+                            <p style="font-size: 0.9rem; line-height: 1.6; font-weight: 600;">오락실에서 부스터를 충전하면 다음 20회의 테스트 완료 보상이 <strong>무조건 2배(20P)</strong>로 적용됩니다. 빠른 성장을 위한 필수 아이템입니다!</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="profile-details" open>
+                <summary>🎰 세븐 오락실 (Seven Arcade)</summary>
+                <div class="content-area">
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem;">
+                        <div style="border-left: 3px solid var(--accent-color); padding-left: 1rem;">
+                            <h4 style="margin-bottom: 0.4rem;">⛏️ 포인트 채굴</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">별도의 비용 없이 클릭만으로 소량의 포인트를 지속적으로 생산합니다.</p>
+                        </div>
+                        <div style="border-left: 3px solid #fda085; padding-left: 1rem;">
+                            <h4 style="margin-bottom: 0.4rem;">🎫 럭키 복권</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">최대 30,000P 당첨의 기회! 당신의 행운을 시험해 보세요.</p>
+                        </div>
+                        <div style="border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
+                            <h4 style="margin-bottom: 0.4rem;">⚗️ 아이템 연금술</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">아이템 5개를 합성하여 오직 연금술로만 나오는 <strong>초희귀 아이템</strong>을 연성합니다.</p>
+                        </div>
+                        <div style="border-left: 3px solid #f43f5e; padding-left: 1rem;">
+                            <h4 style="margin-bottom: 0.4rem;">🏪 중고장터</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">수집한 아이템이 너무 많다면 장터에 판매하여 즉시 포인트로 환전하세요.</p>
+                        </div>
+                    </div>
+                </div>
+            </details>
+
+            <details class="profile-details" open>
+                <summary>🏆 등급 및 랭킹</summary>
+                <div class="content-area">
+                    <p style="margin-bottom: 1.25rem;">보유한 모든 아이템의 가치를 합산한 <strong>'아이템 점수'</strong>로 당신의 명예가 결정됩니다.</p>
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 1.5rem; border-radius: 12px; font-weight: 800; font-size: 0.85rem; overflow-x: auto; white-space: nowrap; gap: 10px;">
+                        <span>ROOKIE</span> ➔ <span>BRONZE</span> ➔ <span>SILVER</span> ➔ <span>GOLD</span> ➔ <span>PLATINUM</span> ➔ <span style="color: var(--accent-color);">DIAMOND</span>
+                    </div>
+                    <p style="margin-top: 1.25rem; font-size: 0.95rem;">상위 10명의 수집가는 <strong>랭킹</strong> 페이지에 실시간으로 등재되어 모든 사용자에게 공개됩니다.</p>
+                </div>
+            </details>
+
+            <details class="profile-details">
+                <summary>💬 커뮤니티 매너</summary>
+                <div class="content-area" style="line-height: 1.8; font-size: 0.95rem;">
+                    <p>1. 모든 사용자는 서로를 존중하며 따뜻한 언어를 사용해야 합니다.</p>
+                    <p>2. <strong>게시글 강조(Premium)</strong> 기능을 사용하면 리스트 상단에 화려한 효과와 함께 고정됩니다.</p>
+                    <p>3. 도배, 욕설, 광고 등 부적절한 활동은 서비스 이용이 제한될 수 있습니다.</p>
+                </div>
+            </details>
+        </div>
+    `;
+}
 
 themeToggle.onclick = () => {
     const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
