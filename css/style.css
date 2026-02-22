@@ -296,37 +296,100 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
 .game-zone h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-main); }
 .game-zone input[type="number"] { padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; font-size: 1.1rem; text-align: center; }
 
-/* Profile Collapsible Styles */
+/* Profile Collapsible Styles & Fixes */
 .profile-details { 
   background: var(--card-bg); 
   border: 1px solid var(--border-color); 
   border-radius: 12px; 
   margin-bottom: 1rem; 
-  overflow: hidden; 
   transition: all 0.3s ease;
 }
 .profile-details summary { 
-  padding: 1rem; 
+  padding: 1.2rem; 
   font-weight: 700; 
   cursor: pointer; 
   list-style: none; 
   display: flex; 
   justify-content: space-between; 
   align-items: center;
-  background: var(--bg-color);
-  transition: background 0.2s;
+  background: var(--card-bg);
+  border-radius: 12px;
 }
-.profile-details summary:hover { background: #f0f0f0; }
+.profile-details[open] summary {
+  border-bottom: 1px solid var(--border-color);
+  border-radius: 12px 12px 0 0;
+}
+.profile-details summary:hover { background: var(--bg-color); }
 .profile-details summary::-webkit-details-marker { display: none; }
-.profile-details summary::after { content: '▾'; transition: transform 0.2s; }
+.profile-details summary::after { content: '▾'; transition: transform 0.2s; opacity: 0.5; }
 .profile-details[open] summary::after { transform: rotate(180deg); }
-.profile-details > div, .profile-details > .inventory-grid, .profile-details > .shop-wrapper, .profile-details > .profile-settings {
+
+/* Padding fix to prevent overlap */
+.profile-details > div, 
+.profile-details > .inventory-grid, 
+.profile-details > .shop-wrapper, 
+.profile-details > .profile-settings {
   padding: 1.5rem;
-  border-top: 1px solid var(--border-color);
+  position: relative;
+  overflow: visible; /* Allow badges to pop out slightly if needed */
 }
 
-.e-icon { font-size: 1.6rem; }
-.emoji-btn.active:after { content: '사용 중'; position: absolute; top: -5px; left: -5px; font-size: 0.5rem; background: var(--accent-color); color: white; padding: 2px 4px; border-radius: 4px; }
+/* Tier & Progress styles */
+.tier-badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: white;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+}
+.tier-rookie { background: #95a5a6; }
+.tier-bronze { background: #cd7f32; }
+.tier-silver { background: #bdc3c7; }
+.tier-gold { background: #f1c40f; }
+.tier-platinum { background: #1abc9c; }
+.tier-diamond { background: #3498db; }
+
+.progress-track {
+  width: 100%;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 10px;
+  margin: 1rem 0;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent-color);
+  transition: width 0.5s ease;
+}
+
+/* Synthesis (Alchemy) Styles */
+.alchemy-zone {
+  background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-top: 1rem;
+}
+.alchemy-zone h3 { color: white; margin-bottom: 0.5rem; }
+.alchemy-zone .text-sub { color: rgba(255,255,255,0.8); }
+
+/* Emoji Badge fix */
+.emoji-btn { position: relative; overflow: visible; }
+.emoji-btn.active:after { 
+  content: 'ON'; 
+  position: absolute; 
+  top: -8px; 
+  right: -8px; 
+  font-size: 0.6rem; 
+  background: var(--accent-secondary); 
+  color: white; 
+  padding: 2px 6px; 
+  border-radius: 10px;
+  z-index: 2;
+}
 
 @media (max-width: 600px) {
   .test-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }

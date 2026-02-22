@@ -1,5 +1,5 @@
 // js/app.js
-import { initAuth, updateUI, UserState, addPoints, EMOJI_SHOP } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, EMOJI_SHOP, getTier, TIERS } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
@@ -61,7 +61,10 @@ function renderHome() {
             ${UserState.user ? 
                 `<div style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;" onclick="location.hash='#profile'">
                     <span id="user-emoji" style="font-size:1.5rem;">${UserState.data.emoji || '👤'}</span>
-                    <strong id="user-name">${UserState.data.nickname}</strong>님
+                    <div style="display:flex; flex-direction:column;">
+                        <strong id="user-name" style="font-size:0.9rem;">${UserState.data.nickname}</strong>
+                        <div class="tier-display" style="margin-top:-2px;"></div>
+                    </div>
                  </div>
                  <div style="display:flex; gap:0.5rem;">
                     <button onclick="location.hash='#ranking'" class="btn-secondary" style="width: auto; padding: 0.4rem 0.8rem; font-size: 0.8rem;">🏆 랭킹</button>
@@ -98,37 +101,46 @@ function renderProfile() {
         '<p class="text-sub">획득한 아이템이 없습니다.</p>';
 
     const unlocked = UserState.data.unlockedEmojis || ['👤'];
+    const currentScore = UserState.data.totalScore || 0;
+    const tier = getTier(currentScore);
+    const nextTier = TIERS[TIERS.indexOf(tier) + 1] || tier;
+    const progress = tier === nextTier ? 100 : Math.min(100, (currentScore / nextTier.min) * 100);
 
     app.innerHTML = `
         <div class="card profile-container fade-in">
             <div style="text-align:center; margin-bottom:2rem;">
-                <div id="user-emoji" style="font-size:4rem; margin-bottom:1rem;">${UserState.data.emoji || '👤'}</div>
-                <h2 id="user-name" style="margin:0;">${UserState.data.nickname}</h2>
-                <div class="profile-stats">
+                <div id="user-emoji" style="font-size:4.5rem; margin-bottom:0.5rem;">${UserState.data.emoji || '👤'}</div>
+                <div class="tier-display"></div>
+                <h2 id="user-name" style="margin:0.5rem 0;">${UserState.data.nickname}</h2>
+                
+                <div class="progress-section" style="max-width:300px; margin:0 auto;">
+                    <div class="progress-track"><div class="progress-fill" style="width:${progress}%"></div></div>
+                    <p class="text-sub" style="font-size:0.75rem;">다음 등급까지: ${Math.max(0, nextTier.min - currentScore).toLocaleString()} 점 남음</p>
+                </div>
+
+                <div class="profile-stats" style="margin-top:1.5rem;">
                     <div class="stat-item"><span class="stat-label">랭킹 점수</span><span class="stat-value" id="user-total-score">0 점</span></div>
                     <div class="stat-item"><span class="stat-label">보유 포인트</span><span class="stat-value" id="user-points">0 P</span></div>
                 </div>
             </div>
 
-            <!-- 아코디언 메뉴들 -->
             <details class="profile-details" open>
-                <summary>🎒 내 인벤토리 보기</summary>
-                <div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap:0.5rem; padding:1rem 0;">
+                <summary>🎒 내 인벤토리</summary>
+                <div class="inventory-grid" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap:0.5rem;">
                     ${invHTML}
                 </div>
             </details>
 
             <details class="profile-details">
-                <summary>🏪 이모지 교환소 열기</summary>
-                <div class="shop-wrapper" style="padding:1rem 0;">
-                    <p class="text-sub" style="margin-bottom:1rem;">아이템을 소모하여 새로운 이모지를 획득하세요!</p>
+                <summary>🏪 이모지 교환소 (아이템 소모)</summary>
+                <div class="shop-wrapper">
+                    <p class="text-sub" style="margin-bottom:1rem; font-size:0.8rem; color:#ff4757;">⚠️ 주의: 교환 시 보유 아이템이 소모되어 랭킹 점수가 차감됩니다.</p>
                     ${Object.entries(EMOJI_SHOP).map(([catName, emojis]) => `
-                        <h4 style="margin-top:1rem; font-size:0.9rem; color:var(--text-sub); border-bottom:1px solid #eee; padding-bottom:5px;">${catName}</h4>
+                        <h4 style="margin-top:1rem; font-size:0.85rem; border-bottom:1px solid var(--border-color); padding-bottom:5px;">${catName}</h4>
                         <div class="emoji-selector" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap:0.5rem; margin-top:0.8rem;">
                             ${Object.entries(emojis).map(([e, price]) => {
                                 const isOwn = unlocked.includes(e);
-                                return `<button class="emoji-btn ${isOwn ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" 
-                                                data-emoji="${e}">
+                                return `<button class="emoji-btn ${isOwn ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
                                             <span class="e-icon">${e}</span>
                                             ${!isOwn ? `<span class="e-price">${price}</span>` : ''}
                                         </button>`;
@@ -140,7 +152,7 @@ function renderProfile() {
 
             <details class="profile-details">
                 <summary>⚙️ 계정 설정</summary>
-                <div class="profile-settings" style="padding:1.5rem 0;">
+                <div class="profile-settings">
                     <div class="setting-item">
                         <label style="font-size:0.85rem; font-weight:bold;">닉네임 변경 (월 1회)</label>
                         <div class="input-row">
@@ -168,15 +180,21 @@ function renderArcade() {
             </div>
             
             <div class="game-zone card" style="background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
-                <h3>📦 행운의 아이템 뽑기 (100 P)</h3>
+                <h3>📦 아이템 뽑기 (100 P)</h3>
                 <div id="gacha-result" class="gacha-box" style="height:100px; display:flex; align-items:center; justify-content:center; margin:1rem 0;">준비 완료!</div>
-                <button id="gacha-btn" class="btn-primary">100P 소모하여 뽑기</button>
+                <button id="gacha-btn" class="btn-primary">100P로 뽑기</button>
+            </div>
+
+            <div class="alchemy-zone card" style="margin-top:1.5rem;">
+                <h3>🔮 아이템 연금술 (500 P)</h3>
+                <p class="text-sub">하위 아이템 5개를 소모하여 무작위 상급 아이템 1개를 만듭니다.</p>
+                <div id="alchemy-result" style="margin:1rem 0; font-weight:bold; text-align:center; min-height:20px;">재료를 준비해 주세요.</div>
+                <button id="alchemy-btn" class="btn-primary" style="background:#fff; color:#6c5ce7;">연금술 시작</button>
             </div>
 
             <div class="game-zone card" style="margin-top:1.5rem; background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
                 <h3>🔢 숫자 Up & Down (보상: 50P)</h3>
-                <p class="text-sub">1~50 사이의 숫자를 맞춰보세요!</p>
-                <div id="updown-msg" style="margin:1rem 0; font-weight:bold;">숫자를 입력하고 확인을 누르세요.</div>
+                <div id="updown-msg" style="margin:1rem 0; font-weight:bold; text-align:center;">숫자 입력 (1-50)</div>
                 <div class="input-row">
                     <input type="number" id="updown-input" placeholder="1-50" min="1" max="50">
                     <button id="updown-submit" class="btn-primary" style="width:80px;">확인</button>
@@ -184,8 +202,8 @@ function renderArcade() {
             </div>
 
             <div class="game-zone card" style="margin-top:1.5rem; background:var(--bg-color); border:1px solid var(--border-color); padding:1.5rem;">
-                <h3>⛏️ 단순 포인트 채굴</h3>
-                <button id="click-game-btn" class="btn-secondary">클릭해서 채굴하기</button>
+                <h3>⛏️ 포인트 채굴</h3>
+                <button id="click-game-btn" class="btn-secondary">클릭해서 채굴</button>
             </div>
         </div>
     `;
