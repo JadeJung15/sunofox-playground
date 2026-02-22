@@ -1085,6 +1085,165 @@ main {
   .col-author { font-size: var(--font-sm); color: var(--text-sub); }
 }
 
+/* Advice Section */
+.advice-card {
+    background: linear-gradient(135deg, rgba(72, 169, 255, 0.1), rgba(56, 242, 194, 0.1));
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+}
+.advice-card p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0;
+    color: var(--accent-color);
+    font-style: italic;
+}
+
+/* Newsroom Feed */
+.newsroom-feed {
+    display: grid;
+    gap: 1rem;
+}
+.feed-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.feed-item:hover {
+    transform: translateX(8px);
+    border-color: var(--accent-color);
+    box-shadow: var(--shadow-md);
+}
+.feed-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+.feed-date {
+    font-size: 0.75rem;
+    color: var(--text-sub);
+}
+.feed-item h4 {
+    margin-bottom: 0.4rem;
+    color: var(--text-color);
+}
+.feed-item p {
+    font-size: 0.9rem;
+    color: var(--text-sub);
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Latest Drops Clickable */
+.rail-tile.clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+.rail-tile.clickable:hover {
+    background: color-mix(in srgb, var(--accent-color) 10%, var(--card-bg));
+    border-color: var(--accent-color);
+    transform: translateY(-4px);
+}
+
+/* Modern Game UI Improvements */
+.game-container {
+    background: #0f121a;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+.game-container::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), var(--accent-2));
+}
+.game-header {
+    margin-bottom: 2rem;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+.game-title {
+    margin: 0;
+    font-size: 1.4rem;
+    background: linear-gradient(120deg, #fff, var(--text-sub));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.game-controls {
+    margin-top: 2rem;
+    display: flex;
+    gap: 0.8rem;
+    justify-content: center;
+    width: 100%;
+}
+
+/* Reaction Area Fix */
+.reaction-area {
+    width: 100%;
+    height: 300px;
+    border-radius: 24px;
+    font-weight: 800;
+    font-size: 1.5rem;
+    transition: all 0.1s ease;
+    border: 4px solid rgba(255,255,255,0.05);
+}
+.reaction-area.waiting { background: #ff4757; box-shadow: 0 0 40px rgba(255, 71, 87, 0.3); }
+.reaction-area.ready { background: #2ed573; box-shadow: 0 0 40px rgba(46, 213, 115, 0.3); }
+.reaction-area.error { background: #ffa502; }
+
+/* Memory Grid Fix */
+.memory-grid {
+    gap: 0.8rem;
+    max-width: 450px;
+}
+.memory-card {
+    border-radius: 12px;
+    font-size: 2rem;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.memory-card .front {
+    background: linear-gradient(135deg, #2c3e50, #000);
+    color: var(--accent-color);
+    font-weight: bold;
+}
+
+/* Math Area Fix */
+.math-area {
+    background: rgba(255,255,255,0.03);
+    padding: 2rem;
+    border-radius: 20px;
+    width: 100%;
+}
+.math-question {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    font-family: 'Manrope', sans-serif;
+}
+.math-input {
+    font-size: 1.5rem;
+    text-align: center;
+    max-width: 200px;
+    margin: 0 auto;
+}
+
 /* Specific Mobile Adjustments (under 768px) */
 @media (max-width: 768px) {
   header { padding: 0.6rem 0.8rem; }

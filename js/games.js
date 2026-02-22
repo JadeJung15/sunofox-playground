@@ -39,9 +39,9 @@ export class ReactionGame {
       this.startWait();
     } else if (this.state === 'waiting') {
       clearTimeout(this.timer);
-      this.status.textContent = "너무 빨라요! 다시 시도하세요.";
+      this.status.textContent = "너무 빨라요! 클릭하여 다시 시도하세요.";
       this.area.className = 'game-area reaction-area error';
-      this.state = 'finished'; // Go to finished state to allow restart
+      this.state = 'finished';
     } else if (this.state === 'ready') {
       const reactionTime = Date.now() - this.startTime;
       this.endGame(reactionTime);
