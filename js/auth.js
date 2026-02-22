@@ -99,24 +99,31 @@ async function loadUserData(user) {
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
+    const headerPoints = document.getElementById('header-points');
+    const userPointsEls = document.querySelectorAll('#user-points');
+    const userNameEls = document.querySelectorAll('#user-name');
+    const userScoreEls = document.querySelectorAll('#user-total-score');
+    const userEmojiEls = document.querySelectorAll('#user-emoji');
+
     if (isLoggedIn && UserState.data) {
         document.getElementById('login-btn')?.classList.add('hidden');
         document.getElementById('user-profile')?.classList.remove('hidden');
+        if (headerPoints) headerPoints.classList.remove('hidden');
         
         const tier = getTier(UserState.data.totalScore || 0);
         
-        document.querySelectorAll('#user-name').forEach(el => el.textContent = UserState.data.nickname);
-        document.querySelectorAll('#user-points').forEach(el => el.textContent = `${(UserState.data.points || 0).toLocaleString()} P`);
-        document.querySelectorAll('#user-total-score').forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
-        document.querySelectorAll('#user-emoji').forEach(el => el.textContent = UserState.data.emoji || '👤');
+        userNameEls.forEach(el => el.textContent = UserState.data.nickname);
+        userPointsEls.forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
+        userScoreEls.forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
+        userEmojiEls.forEach(el => el.textContent = UserState.data.emoji || '👤');
         
-        // Tier UI Update
         document.querySelectorAll('.tier-display').forEach(el => {
             el.innerHTML = `<span class="tier-badge ${tier.class}">${tier.name}</span>`;
         });
     } else {
         document.getElementById('login-btn')?.classList.remove('hidden');
         document.getElementById('user-profile')?.classList.add('hidden');
+        if (headerPoints) headerPoints.classList.add('hidden');
     }
 }
 

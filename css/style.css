@@ -52,6 +52,27 @@ header {
   align-items: center;
 }
 
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.header-points {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--bg-color);
+  padding: 0.3rem 0.6rem;
+  border-radius: 50px;
+  border: 1px solid var(--border-color);
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-color);
+  white-space: nowrap;
+}
+.p-icon { font-size: 0.9rem; }
+
 .logo {
   font-size: 1.4rem;
   font-weight: 900;
