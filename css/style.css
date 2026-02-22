@@ -296,6 +296,38 @@ main { max-width: 800px; margin: 1.5rem auto; padding: 0 1rem; padding-bottom: 5
 .game-zone h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text-main); }
 .game-zone input[type="number"] { padding: 0.8rem; border-radius: 10px; border: 1px solid var(--border-color); flex: 1; font-size: 1.1rem; text-align: center; }
 
+/* Profile Collapsible Styles */
+.profile-details { 
+  background: var(--card-bg); 
+  border: 1px solid var(--border-color); 
+  border-radius: 12px; 
+  margin-bottom: 1rem; 
+  overflow: hidden; 
+  transition: all 0.3s ease;
+}
+.profile-details summary { 
+  padding: 1rem; 
+  font-weight: 700; 
+  cursor: pointer; 
+  list-style: none; 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  background: var(--bg-color);
+  transition: background 0.2s;
+}
+.profile-details summary:hover { background: #f0f0f0; }
+.profile-details summary::-webkit-details-marker { display: none; }
+.profile-details summary::after { content: '▾'; transition: transform 0.2s; }
+.profile-details[open] summary::after { transform: rotate(180deg); }
+.profile-details > div, .profile-details > .inventory-grid, .profile-details > .shop-wrapper, .profile-details > .profile-settings {
+  padding: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.e-icon { font-size: 1.6rem; }
+.emoji-btn.active:after { content: '사용 중'; position: absolute; top: -5px; left: -5px; font-size: 0.5rem; background: var(--accent-color); color: white; padding: 2px 4px; border-radius: 4px; }
+
 @media (max-width: 600px) {
   .test-grid { grid-template-columns: 1fr 1fr; gap: 0.8rem; }
   .test-card h3 { font-size: 0.95rem; }
