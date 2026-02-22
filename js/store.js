@@ -13,11 +13,17 @@ const commentsCol = collection(db, "comments");
 // Initial Setup & Dummy Data (for Firestore, only if collection is empty)
 // Removed manual 'id' from initial posts to let Firestore assign them
 const initialPosts = [
-  { type: 'community', category: '영상', title: '이번 OST 감정선 어땠나요?', content: '클라이맥스 구간이 특히 좋았어요!', author: '팬1', date: new Date().toISOString(), likes: 8, views: 34, authorId: 'anonymous' },
-  { type: 'community', category: '게임 기록', title: '반응속도 210ms 달성!', content: '다들 기록 어디까지 나오나요?', author: '뉴비', date: new Date().toISOString(), likes: 5, views: 24, authorId: 'anonymous' },
-  { type: 'lounge', category: '심리테스트', title: '나의 OST 무드 타입 결과 공유', content: '저는 감성 크리에이터 나왔어요!', author: '팬2', date: new Date().toISOString(), likes: 12, views: 45, authorId: 'anonymous' },
-  { type: 'lounge', category: '추천', title: '다음 영상 아이디어 추천합니다', content: '스토리텔링 OST 제작 과정 보고 싶어요.', author: '팬3', date: new Date().toISOString(), likes: 10, views: 38, authorId: 'anonymous' },
+  { type: 'community', category: '공지', title: '팬페이지 이용 안내', content: '수노폭스 팬들을 위한 공식 팬페이지입니다. 최신 영상과 팬 토론을 자유롭게 이용해주세요.', author: '운영진', date: new Date().toISOString(), likes: 0, views: 0, authorId: 'system' },
+  { type: 'community', category: '공지', title: '게시글 작성 규칙', content: '서로를 존중하는 대화를 부탁드립니다. 홍보/스팸/비방 글은 삭제될 수 있습니다.', author: '운영진', date: new Date().toISOString(), likes: 0, views: 0, authorId: 'system' },
+  { type: 'community', category: '공지', title: '팬 토론 가이드', content: '영상별 감상 포인트, 추천 장면, 다음 주제 제안을 자유롭게 남겨주세요.', author: '운영진', date: new Date().toISOString(), likes: 0, views: 0, authorId: 'system' },
 ];
+
+const dummyPostSignatures = new Set([
+  '이번 OST 감정선 어땠나요?',
+  '반응속도 210ms 달성!',
+  '나의 OST 무드 타입 결과 공유',
+  '다음 영상 아이디어 추천합니다',
+]);
 
 const initialGameRecords = {
   reaction: null, // ms (lower is better)
@@ -114,6 +120,31 @@ export const Store = {
     }
 
     return posts;
+  },
+
+  async cleanupDummyPosts() {
+    const snapshot = await getDocs(postsCol);
+    const batch = writeBatch(db);
+    let hasDeletes = false;
+    snapshot.docs.forEach((docSnap) => {
+      const data = docSnap.data();
+      if (data.authorId === 'anonymous' || dummyPostSignatures.has(data.title)) {
+        batch.delete(docSnap.ref);
+        hasDeletes = true;
+      }
+    });
+    if (hasDeletes) {
+      await batch.commit();
+    }
+  },
+
+  async ensureAnnouncements() {
+    const snapshot = await getDocs(query(postsCol, where('category', '==', '공지')));
+    const existingTitles = new Set(snapshot.docs.map(d => d.data().title));
+    const missing = initialPosts.filter(p => !existingTitles.has(p.title));
+    for (const p of missing) {
+      await addDoc(postsCol, p);
+    }
   },
   
   async getPost(id) {

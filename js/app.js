@@ -8,7 +8,8 @@ import {
   signOut, 
   onAuthStateChanged,
   GoogleAuthProvider, // New import
-  signInWithPopup     // New import
+  signInWithPopup,     // New import
+  updateProfile
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 
@@ -22,10 +23,23 @@ let activeGame = null;
 
 let currentUser = null; // To store authenticated user info
 let isAdmin = false;    // To store admin status
+let adminMaintenanceDone = false;
 
 const CHANNEL_URL = 'https://youtube.com/@sunofox';
 const FEATURED_PLAYLIST = 'PLP7_j0_nQXuEv-ny2l03vgreGyTvLhmD0';
-const CHANNEL_ID = '';
+const CHANNEL_ID = 'UC8M-2aXbknDT3tDcN1PMvuQ';
+
+const LINKTREE_LINKS = [
+  { label: 'YouTube', url: 'https://www.youtube.com/@sunofox' },
+  { label: 'YouTube Music', url: 'https://music.youtube.com/channel/UCjPuy8z0pdzW3OVUXka0lMw?si=2ljpP0CVll5jXeQe' },
+  { label: 'Spotify', url: 'https://open.spotify.com/artist/5fzr4xqw1e0c5cI8dVj11D?si=lYMzkqudQDmpVKgzkG18Kg' },
+  { label: 'Apple Music', url: 'https://music.apple.com/kr/artist/%EC%88%98%EB%85%B8%ED%8F%AD%EC%8A%A4/1874158480' },
+  { label: 'SoundCloud', url: 'https://www.soundcloud.com/sunopogseu?utm_campaign=social_sharing&utm_medium=text&utm_source=clipboard' },
+  { label: 'FLO', url: 'https://www.music-flo.com/detail/artist/413342628/track?roleType=ALL&sortType=POPULARITY' },
+  { label: 'Bugs', url: 'https://music.bugs.co.kr/artist/14591489' },
+  { label: 'VIBE', url: 'https://vibe.naver.com/artist/10398991' },
+  { label: 'TIDAL', url: 'https://tidal.com/artist/73947996/u:' }
+];
 
 // Routing
 const routes = {
@@ -77,6 +91,15 @@ onAuthStateChanged(auth, async (user) => {
     const idTokenResult = await currentUser.getIdTokenResult(true); // Force refresh token
     isAdmin = idTokenResult.claims.admin || false;
   }
+  if (isAdmin && !adminMaintenanceDone) {
+    adminMaintenanceDone = true;
+    try {
+      await Store.cleanupDummyPosts();
+      await Store.ensureAnnouncements();
+    } catch (error) {
+      console.warn('Admin maintenance failed:', error);
+    }
+  }
   updateAdminNav();
   router(); // Re-render current view to reflect auth state or admin status
 });
@@ -112,6 +135,9 @@ function updateThemeIcon(theme) {
 
 // Views
 function renderHome() {
+  const linkButtons = LINKTREE_LINKS.map((item) => (
+    `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
+  )).join('');
   app.innerHTML = `
     <section class="stream-hero fade-in">
       <div class="stream-grid">
@@ -217,10 +243,23 @@ function renderHome() {
         </a>
       </div>
     </section>
+
+    <section class="section fade-in">
+      <div class="section-head">
+        <h2>Listen & Follow</h2>
+        <span>수노폭스 공식 링크 모음</span>
+      </div>
+      <div class="link-grid">
+        ${linkButtons}
+      </div>
+    </section>
   `;
 }
 
 function renderVideos() {
+  const linkButtons = LINKTREE_LINKS.map((item) => (
+    `<a class="link-btn" href="${item.url}" target="_blank" rel="noreferrer">${item.label}</a>`
+  )).join('');
   app.innerHTML = `
     <div class="fade-in">
       <div class="section-head">
@@ -256,34 +295,41 @@ function renderVideos() {
             <span>뉴스룸 하이라이트</span>
           </div>
           <div class="newsroom-grid">
-            <div class="news-card">
+            <a href="#community" class="news-card">
               <div class="news-tag">REVIEW</div>
               <h4>최신 영상 리뷰</h4>
               <p>팬들이 남긴 리뷰와 해석을 모읍니다.</p>
-            </div>
-            <div class="news-card">
+            </a>
+            <a href="#videos" class="news-card">
               <div class="news-tag">ARCHIVE</div>
               <h4>시리즈 정주행</h4>
               <p>시리즈별 재생목록을 한 번에 확인하세요.</p>
-            </div>
-            <div class="news-card">
+            </a>
+            <a href="#community" class="news-card">
               <div class="news-tag">REQUEST</div>
               <h4>다음 주제 제안</h4>
               <p>팬이 원하는 영상 주제를 투표합니다.</p>
-            </div>
-            <div class="news-card">
+            </a>
+            <a href="#community" class="news-card">
               <div class="news-tag">MEMORY</div>
               <h4>명장면 기록</h4>
               <p>베스트 장면과 사운드 포인트를 공유합니다.</p>
-            </div>
+            </a>
           </div>
         </div>
       </div>
       <div class="section-head">
         <h2>최신 업로드</h2>
-        <span>자동 업데이트 (채널 ID 설정 필요)</span>
+        <span>자동 업데이트</span>
       </div>
       <div id="latest-videos" class="video-grid"></div>
+      <div class="section-head">
+        <h2>Listen & Follow</h2>
+        <span>수노폭스 공식 링크 모음</span>
+      </div>
+      <div class="link-grid">
+        ${linkButtons}
+      </div>
     </div>
   `;
   loadLatestVideos();
@@ -506,10 +552,15 @@ function renderProfile() {
       <section class="profile-section fade-in">
           <h2 class="page-title">👤 내 프로필</h2>
           <div class="profile-card card">
-              <h3>환영합니다, ${currentUser.email}!</h3>
+              <h3>환영합니다, ${getDisplayName()}!</h3>
               <p>UID: ${currentUser.uid}</p>
               ${isAdmin ? '<p class="text-sub highlight">✨ 관리자 권한 활성화됨</p>' : ''}
               <p>가입일: ${new Date(currentUser.metadata.creationTime).toLocaleDateString()}</p>
+              <div class="mt-4">
+                <label for="nickname-input">닉네임</label>
+                <input type="text" id="nickname-input" class="input" placeholder="닉네임" value="${currentUser.displayName || ''}">
+                <button id="save-nickname-btn" class="btn btn-primary full-width mt-2">닉네임 변경</button>
+              </div>
               <button id="logout-btn" class="btn btn-secondary full-width mt-4">로그아웃</button>
           </div>
           <div class="profile-details card mt-4">
@@ -525,6 +576,18 @@ function renderProfile() {
       } catch (error) {
         console.error('Logout error:', error);
         alert('로그아웃 중 오류가 발생했습니다.');
+      }
+    });
+    document.getElementById('save-nickname-btn').addEventListener('click', async () => {
+      const nickname = document.getElementById('nickname-input').value.trim();
+      if (!nickname) return alert('닉네임을 입력해주세요.');
+      try {
+        await updateProfile(currentUser, { displayName: nickname });
+        alert('닉네임이 변경되었습니다.');
+        router();
+      } catch (error) {
+        console.error('Update profile error:', error);
+        alert('닉네임 변경에 실패했습니다.');
       }
     });
   } else {
@@ -661,7 +724,7 @@ async function openWriteModal(type, prefill = {}, refreshCallback = null) {
             }
         </select>
         <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill && prefill.title || ''}">
-        <input type="text" id="post-author" class="input" placeholder="닉네임" value="${currentUser.email.split('@')[0]}" disabled>
+        <input type="text" id="post-author" class="input" placeholder="닉네임" value="${getDisplayName()}" disabled>
         <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${prefill && prefill.content || ''}</textarea>
       </div>
       <div class="modal-footer">
@@ -733,7 +796,7 @@ async function openPostModal(id) { // Added async
                 `).join('')}
               </div>
               <div class="comment-form">
-                  <input type="text" id="comment-author" placeholder="닉네임" class="input small" value="${currentUser ? currentUser.email.split('@')[0] : ''}" ${currentUser ? 'disabled' : ''}>
+                  <input type="text" id="comment-author" placeholder="닉네임" class="input small" value="${currentUser ? getDisplayName() : ''}" ${currentUser ? 'disabled' : ''}>
                   <input type="text" id="comment-text" placeholder="댓글 내용" class="input">
                   <button id="submit-comment" class="btn btn-secondary" ${currentUser ? '' : 'disabled'}>등록</button>
               </div>
@@ -916,4 +979,9 @@ function buildYouTubeEmbed(url) {
   } catch {
     return '';
   }
+}
+
+function getDisplayName() {
+  if (!currentUser) return '';
+  return currentUser.displayName || currentUser.email?.split('@')[0] || '팬';
 }

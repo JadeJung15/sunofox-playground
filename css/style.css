@@ -840,6 +840,31 @@ main {
 .rail-tile strong { font-size: 0.95rem; }
 .rail-tile span { color: var(--text-sub); font-size: 0.85rem; }
 
+.link-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 0.8rem;
+}
+.link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+  color: var(--text-color);
+  font-weight: 700;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+}
+.link-btn:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent-color) 50%, transparent);
+  box-shadow: var(--shadow-sm);
+}
+
 /* Modals */
 .modal-overlay {
   position: fixed;
