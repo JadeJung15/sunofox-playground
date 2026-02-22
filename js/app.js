@@ -6,7 +6,9 @@ import {
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   signOut, 
-  onAuthStateChanged 
+  onAuthStateChanged,
+  GoogleAuthProvider, // New import
+  signInWithPopup     // New import
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 
 
@@ -294,8 +296,13 @@ function renderProfile() {
                   <label for="password">비밀번호</label>
                   <input type="password" id="password-input" class="input" placeholder="비밀번호">
               </div>
-              <button id="login-btn" class="btn btn-primary full-width mt-4">로그인</button>
-              <button id="signup-btn" class="btn btn-secondary full-width mt-2">회원가입</button>
+              <button id="login-btn" class="btn btn-primary full-width mt-4">이메일/비밀번호로 로그인</button>
+              <button id="signup-btn" class="btn btn-secondary full-width mt-2">이메일/비밀번호로 회원가입</button>
+              <div class="divider">또는</div>
+              <button id="google-login-btn" class="btn btn-outline full-width mt-2">
+                  <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon" style="height: 1.2em; vertical-align: middle; margin-right: 8px;">
+                  Google로 로그인
+              </button>
           </div>
           <div class="profile-details card mt-4">
               <h3>나의 활동</h3>
@@ -326,6 +333,17 @@ function renderProfile() {
         console.error('Signup error:', error);
         alert('회원가입 실패: ' + error.message);
       }
+    });
+    
+    document.getElementById('google-login-btn').addEventListener('click', async () => {
+        const provider = new GoogleAuthProvider();
+        try {
+            await signInWithPopup(auth, provider);
+            alert('Google 로그인 성공!');
+        } catch (error) {
+            console.error('Google login error:', error);
+            alert('Google 로그인 실패: ' + error.message);
+        }
     });
   }
 }
