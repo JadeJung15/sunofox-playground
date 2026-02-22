@@ -245,13 +245,48 @@ main { max-width: 800px; margin: 1rem auto; padding: 0 1rem; padding-bottom: 5re
 .stat-label { font-size: 0.7rem; color: var(--text-sub); }
 .stat-value { font-size: 1rem; font-weight: 800; color: var(--accent-color); }
 
-/* Board */
-.post-item { background: var(--card-bg); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 0.8rem; }
-.post-item.premium-post { border: 2px solid var(--accent-color); background: #fff9fb; }
-.post-header { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.4rem; }
-.post-author-info { display: flex; align-items: center; gap: 0.3rem; }
-.author-emoji { font-size: 1rem; }
-.post-author { font-weight: 700; }
+/* Board & Community Refinement */
+.posts-list { margin-top: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.post-item { 
+  background: var(--card-bg); 
+  padding: 1.2rem; 
+  border-radius: 12px; 
+  border: 1px solid var(--border-color); 
+  box-shadow: var(--shadow);
+  position: relative;
+}
+.post-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem; }
+.post-author-info { display: flex; align-items: center; gap: 0.4rem; }
+.author-emoji { font-size: 1.2rem; }
+.post-author { font-weight: 700; font-size: 0.9rem; }
+.post-date { font-size: 0.75rem; color: var(--text-sub); }
+.post-content { font-size: 0.95rem; line-height: 1.5; color: var(--text-main); word-break: break-all; }
+.btn-delete { margin-top: 0.8rem; background: none; border: 1px solid #ff4757; color: #ff4757; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem; cursor: pointer; float: right; }
+
+.post-item.premium-post { 
+  border: 2px solid var(--accent-color); 
+  background: linear-gradient(135deg, var(--card-bg) 0%, #fef0f5 100%); 
+}
+
+/* Footer Refinement */
+.footer {
+  background: var(--card-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 3rem 1rem;
+  margin-top: 4rem;
+  text-align: center;
+  width: 100%;
+}
+.footer-content {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+}
+.footer-info h3 { font-size: 1.2rem; color: var(--accent-color); margin-bottom: 0.5rem; }
+.footer-info p { font-size: 0.85rem; color: var(--text-sub); line-height: 1.4; }
+.footer-links { margin-top: 1rem; display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+.footer-links a { font-size: 0.85rem; color: var(--text-sub); text-decoration: none; transition: 0.2s; }
+.footer-links a:hover { color: var(--accent-color); }
+.copyright { font-size: 0.75rem; color: #ccc; margin-top: 1.5rem; }
 
 @media (max-width: 480px) {
   .h-name { display: none; }
