@@ -904,48 +904,57 @@ function renderAdmin() {
   if (isAdmin) {
     app.innerHTML = `
       <section class="admin-section fade-in">
-        <h2 class="page-title">⚙️ 운영 센터</h2>
-        <p class="text-sub">관리자 ${escapeHTML(currentUser.email || '')}님 환영합니다.</p>
-
-        <div class="admin-dashboard">
-          <div class="admin-card card fan-card">
-            <h3>게시글 관리</h3>
-            <p class="text-sub">커뮤니티 게시글 목록을 조회하고 삭제할 수 있습니다.</p>
-            <button id="admin-load-posts" class="btn btn-secondary full-width mt-2">게시글 목록 불러오기</button>
-            <div id="admin-posts-list" class="mt-2"></div>
+        <div class="admin-console sf-card">
+          <div class="admin-console-head">
+            <div>
+              <h2 class="page-title">⚙️ 운영 센터</h2>
+              <p class="text-sub">관리자 ${escapeHTML(currentUser.email || '')} · 콘텐츠/댓글/사용자 통합 관리</p>
+            </div>
+            <div class="admin-console-actions">
+              <input id="admin-search" class="input admin-search" placeholder="제목·작성자·UID 검색">
+              <button id="admin-refresh" class="btn btn-secondary">새로고침</button>
+            </div>
           </div>
 
-          <div class="admin-card card fan-card">
-            <h3>댓글 관리</h3>
-            <p class="text-sub">최근 댓글 목록을 조회하고 삭제할 수 있습니다.</p>
-            <button id="admin-load-comments" class="btn btn-secondary full-width mt-2">댓글 목록 불러오기</button>
-            <div id="admin-comments-list" class="mt-2"></div>
+          <div class="admin-kpi-grid">
+            <div class="stat-card"><span class="stat-label">게시글</span><strong id="admin-kpi-posts">-</strong></div>
+            <div class="stat-card"><span class="stat-label">댓글</span><strong id="admin-kpi-comments">-</strong></div>
+            <div class="stat-card"><span class="stat-label">사용자</span><strong id="admin-kpi-users">-</strong></div>
           </div>
 
-          <div class="admin-card card fan-card">
-            <h3>사용자 관리</h3>
-            <p class="text-sub">사용자 목록(포인트/등급)을 조회합니다.</p>
-            <button id="admin-load-users" class="btn btn-secondary full-width mt-2">사용자 목록 불러오기</button>
-            <div id="admin-users-list" class="mt-2"></div>
+          <div class="admin-tabs">
+            <button class="tab-btn active" data-panel="posts">게시글</button>
+            <button class="tab-btn" data-panel="comments">댓글</button>
+            <button class="tab-btn" data-panel="users">사용자</button>
           </div>
+
+          <div id="admin-panel-posts" class="admin-panel"></div>
+          <div id="admin-panel-comments" class="admin-panel hidden"></div>
+          <div id="admin-panel-users" class="admin-panel hidden"></div>
         </div>
       </section>
     `;
 
-    const postsWrap = document.getElementById('admin-posts-list');
-    const commentsWrap = document.getElementById('admin-comments-list');
-    const usersWrap = document.getElementById('admin-users-list');
+    const postsPanel = document.getElementById('admin-panel-posts');
+    const commentsPanel = document.getElementById('admin-panel-comments');
+    const usersPanel = document.getElementById('admin-panel-users');
+    const searchInput = document.getElementById('admin-search');
+    const refreshBtn = document.getElementById('admin-refresh');
+    const kpiPosts = document.getElementById('admin-kpi-posts');
+    const kpiComments = document.getElementById('admin-kpi-comments');
+    const kpiUsers = document.getElementById('admin-kpi-users');
 
-    const renderAdminPosts = async () => {
-      if (!postsWrap) return;
-      postsWrap.innerHTML = '<div class="empty">불러오는 중...</div>';
-      try {
-        const posts = await Store.getPosts('community');
-        if (!posts.length) {
-          postsWrap.innerHTML = '<div class="empty">게시글이 없습니다.</div>';
-          return;
-        }
-        postsWrap.innerHTML = posts.slice(0, 60).map((p) => `
+    let activePanel = 'posts';
+    let currentKeyword = '';
+    const cache = { posts: [], comments: [], users: [] };
+
+    const renderPosts = () => {
+      if (!postsPanel) return;
+      const keyword = currentKeyword.toLowerCase();
+      const rows = cache.posts
+        .filter((p) => !keyword || `${p.title || ''} ${p.author || ''} ${p.category || ''}`.toLowerCase().includes(keyword))
+        .slice(0, 120)
+        .map((p) => `
           <div class="post-row">
             <span class="col-cat"><span class="chip micro">${escapeHTML(p.category || '일반')}</span></span>
             <span class="col-title">${escapeHTML(p.title || '')}</span>
@@ -955,65 +964,53 @@ function renderAdmin() {
             </span>
           </div>
         `).join('');
-        postsWrap.querySelectorAll('.admin-del-post').forEach((btn) => {
-          btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            if (!id) return;
-            if (!confirm('이 게시글을 삭제하시겠습니까?')) return;
-            await Store.deletePost(id);
-            await renderAdminPosts();
-          });
+      postsPanel.innerHTML = rows || '<div class="empty">조건에 맞는 게시글이 없습니다.</div>';
+      postsPanel.querySelectorAll('.admin-del-post').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!id) return;
+          if (!confirm('이 게시글을 삭제하시겠습니까?')) return;
+          await Store.deletePost(id);
+          await reloadAll();
         });
-      } catch (error) {
-        console.error(error);
-        postsWrap.innerHTML = '<div class="empty">게시글 목록을 불러오지 못했습니다.</div>';
-      }
+      });
     };
 
-    const renderAdminComments = async () => {
-      if (!commentsWrap) return;
-      commentsWrap.innerHTML = '<div class="empty">불러오는 중...</div>';
-      try {
-        const comments = await Store.getAllComments(80);
-        if (!comments.length) {
-          commentsWrap.innerHTML = '<div class="empty">댓글이 없습니다.</div>';
-          return;
-        }
-        commentsWrap.innerHTML = comments.map((c) => `
+    const renderComments = () => {
+      if (!commentsPanel) return;
+      const keyword = currentKeyword.toLowerCase();
+      const rows = cache.comments
+        .filter((c) => !keyword || `${c.content || ''} ${c.author || ''} ${c.postId || ''}`.toLowerCase().includes(keyword))
+        .slice(0, 120)
+        .map((c) => `
           <div class="post-row">
             <span class="col-cat"><span class="chip micro">댓글</span></span>
-            <span class="col-title">${escapeHTML((c.content || '').slice(0, 70))}</span>
+            <span class="col-title">${escapeHTML((c.content || '').slice(0, 80))}</span>
             <span class="col-author">${escapeHTML(c.author || '')}</span>
             <span class="col-meta">
               <button class="btn btn-danger btn-sm admin-del-comment" data-id="${c.id}">삭제</button>
             </span>
           </div>
         `).join('');
-        commentsWrap.querySelectorAll('.admin-del-comment').forEach((btn) => {
-          btn.addEventListener('click', async () => {
-            const id = btn.dataset.id;
-            if (!id) return;
-            if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
-            await Store.deleteComment(id);
-            await renderAdminComments();
-          });
+      commentsPanel.innerHTML = rows || '<div class="empty">조건에 맞는 댓글이 없습니다.</div>';
+      commentsPanel.querySelectorAll('.admin-del-comment').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          if (!id) return;
+          if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
+          await Store.deleteComment(id);
+          await reloadAll();
         });
-      } catch (error) {
-        console.error(error);
-        commentsWrap.innerHTML = '<div class="empty">댓글 목록을 불러오지 못했습니다.</div>';
-      }
+      });
     };
 
-    const renderAdminUsers = async () => {
-      if (!usersWrap) return;
-      usersWrap.innerHTML = '<div class="empty">불러오는 중...</div>';
-      try {
-        const users = await Store.getAllUsers();
-        if (!users.length) {
-          usersWrap.innerHTML = '<div class="empty">사용자가 없습니다.</div>';
-          return;
-        }
-        usersWrap.innerHTML = users.map((u, idx) => `
+    const renderUsers = () => {
+      if (!usersPanel) return;
+      const keyword = currentKeyword.toLowerCase();
+      const rows = cache.users
+        .filter((u) => !keyword || `${u.displayName || ''} ${u.uid || ''} ${u.tier || ''}`.toLowerCase().includes(keyword))
+        .slice(0, 120)
+        .map((u, idx) => `
           <div class="post-row">
             <span class="col-cat"><span class="chip micro">#${idx + 1}</span></span>
             <span class="col-title">${escapeHTML(u.displayName || u.uid || '팬')}</span>
@@ -1021,19 +1018,59 @@ function renderAdmin() {
             <span class="col-meta">${u.points || 0}P / ${escapeHTML(u.tier || 'Rookie')}</span>
           </div>
         `).join('');
+      usersPanel.innerHTML = rows || '<div class="empty">조건에 맞는 사용자가 없습니다.</div>';
+    };
+
+    const renderAllPanels = () => {
+      renderPosts();
+      renderComments();
+      renderUsers();
+    };
+
+    const setPanel = (panel) => {
+      activePanel = panel;
+      document.querySelectorAll('.admin-tabs .tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.panel === panel));
+      postsPanel?.classList.toggle('hidden', panel !== 'posts');
+      commentsPanel?.classList.toggle('hidden', panel !== 'comments');
+      usersPanel?.classList.toggle('hidden', panel !== 'users');
+    };
+
+    const reloadAll = async () => {
+      if (postsPanel) postsPanel.innerHTML = '<div class="empty">불러오는 중...</div>';
+      if (commentsPanel) commentsPanel.innerHTML = '<div class="empty">불러오는 중...</div>';
+      if (usersPanel) usersPanel.innerHTML = '<div class="empty">불러오는 중...</div>';
+      try {
+        const [posts, comments, users] = await Promise.all([
+          Store.getPosts('community'),
+          Store.getAllComments(200),
+          Store.getAllUsers()
+        ]);
+        cache.posts = posts || [];
+        cache.comments = comments || [];
+        cache.users = users || [];
+        if (kpiPosts) kpiPosts.textContent = String(cache.posts.length);
+        if (kpiComments) kpiComments.textContent = String(cache.comments.length);
+        if (kpiUsers) kpiUsers.textContent = String(cache.users.length);
+        renderAllPanels();
+        setPanel(activePanel);
       } catch (error) {
         console.error(error);
-        usersWrap.innerHTML = '<div class="empty">사용자 목록을 불러오지 못했습니다.</div>';
+        if (postsPanel) postsPanel.innerHTML = '<div class="empty">데이터를 불러오지 못했습니다.</div>';
+        if (commentsPanel) commentsPanel.innerHTML = '<div class="empty">데이터를 불러오지 못했습니다.</div>';
+        if (usersPanel) usersPanel.innerHTML = '<div class="empty">데이터를 불러오지 못했습니다.</div>';
       }
     };
 
-    document.getElementById('admin-load-posts')?.addEventListener('click', renderAdminPosts);
-    document.getElementById('admin-load-comments')?.addEventListener('click', renderAdminComments);
-    document.getElementById('admin-load-users')?.addEventListener('click', renderAdminUsers);
-
-    renderAdminPosts();
-    renderAdminComments();
-    renderAdminUsers();
+    document.querySelectorAll('.admin-tabs .tab-btn').forEach((btn) => {
+      btn.addEventListener('click', () => setPanel(btn.dataset.panel || 'posts'));
+    });
+    searchInput?.addEventListener('input', () => {
+      currentKeyword = (searchInput.value || '').trim();
+      renderAllPanels();
+      setPanel(activePanel);
+    });
+    refreshBtn?.addEventListener('click', reloadAll);
+    reloadAll();
   } else {
     app.innerHTML = `
       <section class="admin-section fade-in">

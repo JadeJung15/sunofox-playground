@@ -3032,3 +3032,73 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Admin Center UX Refresh */
+.admin-console {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.admin-console-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.admin-console-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.admin-search {
+  min-width: 260px;
+}
+
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.admin-panel {
+  border: 1px solid var(--sf-line);
+  border-radius: 14px;
+  background: var(--sf-surface);
+  padding: 0.55rem;
+  min-height: 240px;
+}
+
+.admin-panel .post-row {
+  border-radius: 10px;
+  margin-bottom: 0.45rem;
+}
+
+.admin-panel .post-row:last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 860px) {
+  .admin-console-actions {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+  }
+
+  .admin-search {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+}
