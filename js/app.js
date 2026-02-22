@@ -180,7 +180,7 @@ function renderLounge() {
 
   renderCategories();
   renderList();
-  document.getElementById('write-lounge-btn').addEventListener('click', () => openWriteModal('lounge', renderList));
+  document.getElementById('write-lounge-btn').addEventListener('click', () => openWriteModal('lounge', null, renderList));
 }
 
 function renderCommunity() {
@@ -220,11 +220,11 @@ function renderCommunity() {
   };
 
   renderList();
-  document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', renderList));
+  document.getElementById('write-comm-btn').addEventListener('click', () => openWriteModal('community', null, renderList));
 }
 
 // Modals
-function openWriteModal(type, refreshCallback) {
+function openWriteModal(type, prefill = {}, refreshCallback = null) {
   const modal = document.createElement('div');
   modal.className = 'modal-overlay fade-in';
   modal.innerHTML = `
@@ -237,12 +237,12 @@ function openWriteModal(type, refreshCallback) {
         <select id="post-category" class="input">
             ${type === 'lounge' 
                 ? ['잡담', '질문', '정보', '후기', '유머', '창작', '게임', 'AI', '취미'].map(c => `<option value="${c}">${c}</option>`).join('')
-                : ['일반', '질문', '공략', '팁'].map(c => `<option value="${c}">${c}</option>`).join('')
+                : ['일반', '질문', '공략', '팁', '게임 기록'].map(c => `<option value="${c}" ${prefill.category === c ? 'selected' : ''}>${c}</option>`).join('')
             }
         </select>
-        <input type="text" id="post-title" class="input" placeholder="제목">
+        <input type="text" id="post-title" class="input" placeholder="제목" value="${prefill.title || ''}">
         <input type="text" id="post-author" class="input" placeholder="닉네임">
-        <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요"></textarea>
+        <textarea id="post-content" class="input textarea" placeholder="내용을 입력하세요">${prefill.content || ''}</textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" id="submit-post">등록</button>
@@ -266,6 +266,7 @@ function openWriteModal(type, refreshCallback) {
     Store.addPost({ type, title, content, author, category });
     close();
     if (refreshCallback) refreshCallback();
+    else router(); // Re-render current view to show new post
   });
 }
 
@@ -317,19 +318,32 @@ function openPostModal(id) {
     `;
     
     // Re-attach events
-    modal.querySelector('.close-btn').addEventListener('click', () => modal.remove());
-    modal.querySelector('#like-btn').addEventListener('click', () => {
+    const closeBtn = modal.querySelector('.close-btn');
+    if (closeBtn) closeBtn.addEventListener('click', () => modal.remove());
+    
+    const likeBtn = modal.querySelector('#like-btn');
+    if (likeBtn) likeBtn.addEventListener('click', () => {
        const newLikes = Store.likePost(id);
        post.likes = newLikes; // update local ref
        renderModalContent(); // re-render to update like count
     });
 
-    modal.querySelector('#submit-comment').addEventListener('click', () => {
-        const author = modal.querySelector('#comment-author').value;
-        const content = modal.querySelector('#comment-text').value;
+    const submitCommentBtn = modal.querySelector('#submit-comment');
+    if (submitCommentBtn) submitCommentBtn.addEventListener('click', () => {
+        const authorInput = modal.querySelector('#comment-author');
+        const contentInput = modal.querySelector('#comment-text');
+        
+        if (!authorInput || !contentInput) {
+            console.error("Comment input elements not found.");
+            return;
+        }
+
+        const author = authorInput.value;
+        const content = contentInput.value;
         if (!author || !content) return;
         
         Store.addComment({ postId: parseInt(id), author, content });
+        contentInput.value = '';
         renderModalContent();
     });
   };
@@ -338,3 +352,14 @@ function openPostModal(id) {
   renderModalContent();
   modal.addEventListener('click', (e) => { if(e.target === modal) modal.remove(); });
 }
+
+// Listen for game share events
+window.addEventListener('gameShareRecord', (e) => {
+    const { gameName, score } = e.detail;
+    openWriteModal('community', {
+        category: '게임 기록',
+        title: `[${gameName}] 새로운 최고 기록 달성! ${score}`
+    });
+    // Automatically navigate to community tab after sharing
+    window.location.hash = '#community'; 
+});

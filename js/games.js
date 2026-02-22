@@ -28,6 +28,7 @@ export class ReactionGame {
     this.area.addEventListener('click', () => this.handleClick());
     this.container.querySelector('#reset-reaction').addEventListener('click', () => {
       Store.saveGameRecord('reaction', null);
+      this.result.textContent = '기록 초기화됨.';
       alert('기록이 초기화되었습니다.');
     });
   }
@@ -39,7 +40,7 @@ export class ReactionGame {
       clearTimeout(this.timer);
       this.status.textContent = "너무 빨라요! 다시 시도하세요.";
       this.area.className = 'game-area reaction-area error';
-      this.state = 'idle';
+      this.state = 'finished'; // Go to finished state to allow restart
     } else if (this.state === 'ready') {
       const reactionTime = Date.now() - this.startTime;
       this.endGame(reactionTime);
@@ -50,7 +51,7 @@ export class ReactionGame {
     this.state = 'waiting';
     this.area.className = 'game-area reaction-area waiting';
     this.status.textContent = "초록색이 되면 클릭하세요...";
-    this.result.textContent = '';
+    this.result.innerHTML = '';
     
     const randomTime = Math.floor(Math.random() * 2000) + 1000;
     this.timer = setTimeout(() => {
@@ -64,11 +65,24 @@ export class ReactionGame {
   endGame(time) {
     this.state = 'finished';
     this.area.className = 'game-area reaction-area';
-    this.status.textContent = `${time}ms! 다시 하려면 클릭.`;
     
     const isBest = Store.saveGameRecord('reaction', time);
     const best = Store.getGameRecord('reaction');
+    
+    this.status.textContent = `${time}ms! 다시 하려면 클릭.`;
     this.result.innerHTML = `현재: ${time}ms <br> 최고: ${best}ms ${isBest ? '(New!)' : ''}`;
+
+    if (isBest) {
+        this.result.innerHTML += ` <button class="btn btn-primary btn-share" data-game-name="반응속도 테스트" data-score="${time}ms">공유하기</button>`;
+        this.result.querySelector('.btn-share').addEventListener('click', (e) => {
+            window.dispatchEvent(new CustomEvent('gameShareRecord', { 
+                detail: { 
+                    gameName: e.target.dataset.gameName, 
+                    score: e.target.dataset.score 
+                } 
+            }));
+        });
+    }
   }
 }
 
@@ -92,12 +106,18 @@ export class MemoryGame {
       <div class="memory-grid" id="memory-grid"></div>
       <div class="game-controls">
         <button class="btn btn-primary" id="start-memory">새 게임</button>
+        <button class="btn btn-secondary" id="reset-memory">기록 초기화</button>
       </div>
     `;
     this.grid = this.container.querySelector('#memory-grid');
     this.scoreDisplay = this.container.querySelector('.game-score');
     
     this.container.querySelector('#start-memory').addEventListener('click', () => this.startGame());
+    this.container.querySelector('#reset-memory').addEventListener('click', () => {
+      Store.saveGameRecord('memory', null);
+      this.scoreDisplay.textContent = `Turns: 0 (Best: -)`;
+      alert('기록이 초기화되었습니다.');
+    });
     this.startGame();
   }
 
@@ -131,7 +151,7 @@ export class MemoryGame {
 
     if (this.flipped.length === 2) {
       this.turns++;
-      this.scoreDisplay.textContent = `Turns: ${this.turns}`;
+      this.scoreDisplay.textContent = `Turns: ${this.turns} (Best: ${Store.getGameRecord('memory') || '-'})`;
       this.checkMatch();
     }
   }
@@ -156,8 +176,21 @@ export class MemoryGame {
   }
 
   endGame() {
-    Store.saveGameRecord('memory', this.turns);
-    alert(`성공! 총 ${this.turns}턴 소요되었습니다.`);
+    const isBest = Store.saveGameRecord('memory', this.turns);
+    const best = Store.getGameRecord('memory');
+    alert(`성공! 총 ${this.turns}턴 소요되었습니다. (최고 기록: ${best || '-'})`);
+    
+    if (isBest) {
+        const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
+        if (shareConfirm) {
+            window.dispatchEvent(new CustomEvent('gameShareRecord', { 
+                detail: { 
+                    gameName: '카드 뒤집기', 
+                    score: `${this.turns}턴` 
+                } 
+            }));
+        }
+    }
     this.startGame();
   }
 }
@@ -167,6 +200,8 @@ export class RhythmGame {
         this.container = element;
         this.score = 0;
         this.isPlaying = false;
+        this.spawnInterval = null;
+        this.gameTimer = null;
         this.render();
     }
 
@@ -183,6 +218,7 @@ export class RhythmGame {
             <div class="game-controls">
                 <p>타이밍에 맞춰 스페이스바 또는 화면 터치!</p>
                 <button class="btn btn-primary" id="start-rhythm">게임 시작</button>
+                <button class="btn btn-secondary" id="reset-rhythm">기록 초기화</button>
             </div>
         `;
         this.area = this.container.querySelector('#rhythm-area');
@@ -190,7 +226,12 @@ export class RhythmGame {
         this.scoreEl = this.container.querySelector('.rhythm-score');
         
         this.container.querySelector('#start-rhythm').addEventListener('click', () => this.startGame());
-        
+        this.container.querySelector('#reset-rhythm').addEventListener('click', () => {
+            Store.saveGameRecord('rhythm', 0);
+            this.scoreEl.textContent = `Score: 0 (Best: 0)`;
+            alert('기록이 초기화되었습니다.');
+        });
+
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' && this.isPlaying) {
                 e.preventDefault(); // Scroll prevent
@@ -209,7 +250,7 @@ export class RhythmGame {
         if (this.isPlaying) return;
         this.isPlaying = true;
         this.score = 0;
-        this.scoreEl.textContent = `Score: 0`;
+        this.scoreEl.textContent = `Score: 0 (Best: ${Store.getGameRecord('rhythm') || 0})`;
         this.notesContainer.innerHTML = '';
         
         this.spawnInterval = setInterval(() => this.spawnNote(), 800);
@@ -221,7 +262,6 @@ export class RhythmGame {
         note.className = 'rhythm-note';
         this.notesContainer.appendChild(note);
         
-        // Cleanup missed notes
         setTimeout(() => {
             if (note.parentNode) {
                 note.remove();
@@ -236,10 +276,9 @@ export class RhythmGame {
 
         notes.forEach(note => {
             const noteY = note.offsetTop;
-            // Check if note is near the target zone (bottom)
             if (noteY > targetY - 40 && noteY < targetY + 40) {
                 this.score += 10;
-                this.scoreEl.textContent = `Score: ${this.score}`;
+                this.scoreEl.textContent = `Score: ${this.score} (Best: ${Store.getGameRecord('rhythm') || 0})`;
                 note.classList.add('hit');
                 setTimeout(() => note.remove(), 100);
                 hitMade = true;
@@ -255,9 +294,24 @@ export class RhythmGame {
     endGame() {
         this.isPlaying = false;
         clearInterval(this.spawnInterval);
-        Store.saveGameRecord('rhythm', this.score);
-        alert(`게임 종료! 점수: ${this.score}`);
+        clearTimeout(this.gameTimer);
+        
+        const isBest = Store.saveGameRecord('rhythm', this.score);
+        const best = Store.getGameRecord('rhythm');
+        alert(`게임 종료! 점수: ${this.score} (최고 기록: ${best || 0})`);
         this.notesContainer.innerHTML = '';
+
+        if (isBest) {
+            const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
+            if (shareConfirm) {
+                window.dispatchEvent(new CustomEvent('gameShareRecord', { 
+                    detail: { 
+                        gameName: '비트 탭', 
+                        score: `${this.score}점` 
+                    } 
+                }));
+            }
+        }
     }
 }
 
@@ -279,12 +333,18 @@ export class PuzzleGame {
             <div class="puzzle-grid" id="puzzle-grid"></div>
             <div class="game-controls">
                 <button class="btn btn-primary" id="shuffle-puzzle">섞기</button>
+                <button class="btn btn-secondary" id="reset-puzzle">기록 초기화</button>
             </div>
         `;
         this.grid = this.container.querySelector('#puzzle-grid');
         this.movesEl = this.container.querySelector('.puzzle-moves');
         
         this.container.querySelector('#shuffle-puzzle').addEventListener('click', () => this.shuffle());
+        this.container.querySelector('#reset-puzzle').addEventListener('click', () => {
+            Store.saveGameRecord('puzzle', null);
+            this.movesEl.textContent = `Moves: 0 (Best: -)`;
+            alert('기록이 초기화되었습니다.');
+        });
         this.initGrid();
     }
 
@@ -293,6 +353,7 @@ export class PuzzleGame {
         this.tiles.push(null); // Empty slot
         this.emptyIndex = 15;
         this.draw();
+        this.shuffle(); // Shuffle on init
     }
 
     draw() {
@@ -330,8 +391,8 @@ export class PuzzleGame {
     }
 
     shuffle() {
-        // Simple valid shuffle: perform random valid moves
-        for (let i = 0; i < 100; i++) {
+        // Perform many valid random moves to ensure solvability
+        for (let i = 0; i < 200; i++) { // More shuffles for better randomness
             const neighbors = [];
             const row = Math.floor(this.emptyIndex / 4);
             const col = this.emptyIndex % 4;
@@ -341,10 +402,12 @@ export class PuzzleGame {
             if (col > 0) neighbors.push(this.emptyIndex - 1);
             if (col < 3) neighbors.push(this.emptyIndex + 1);
 
-            const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
-            this.tiles[this.emptyIndex] = this.tiles[randomNeighbor];
-            this.tiles[randomNeighbor] = null;
-            this.emptyIndex = randomNeighbor;
+            if (neighbors.length > 0) {
+                const randomNeighbor = neighbors[Math.floor(Math.random() * neighbors.length)];
+                this.tiles[this.emptyIndex] = this.tiles[randomNeighbor];
+                this.tiles[randomNeighbor] = null;
+                this.emptyIndex = randomNeighbor;
+            }
         }
         this.moves = 0;
         this.draw();
@@ -357,7 +420,21 @@ export class PuzzleGame {
         for (let i = 0; i < 15; i++) {
             if (this.tiles[i] !== i + 1) return;
         }
-        Store.saveGameRecord('puzzle', this.moves);
-        alert(`축하합니다! ${this.moves}번 움직여서 완성했습니다.`);
+        
+        const isBest = Store.saveGameRecord('puzzle', this.moves);
+        const best = Store.getGameRecord('puzzle');
+        alert(`축하합니다! ${this.moves}번 움직여서 완성했습니다. (최고 기록: ${best || '-'})`);
+
+        if (isBest) {
+            const shareConfirm = confirm('새로운 최고 기록입니다! 커뮤니티에 공유하시겠습니까?');
+            if (shareConfirm) {
+                window.dispatchEvent(new CustomEvent('gameShareRecord', { 
+                    detail: { 
+                        gameName: '15 퍼즐', 
+                        score: `${this.moves}회` 
+                    } 
+                }));
+            }
+        }
     }
 }
