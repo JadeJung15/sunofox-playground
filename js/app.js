@@ -1010,16 +1010,15 @@ async function loadLatestVideos() {
   }
   try {
     const rssUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${CHANNEL_ID}`;
-    const res = await fetch(rssUrl);
-    const text = await res.text();
-    const xml = new DOMParser().parseFromString(text, 'text/xml');
-    const entries = Array.from(xml.getElementsByTagName('entry')).slice(0, 6);
-    const cards = entries.map((entry) => {
-      const title = entry.getElementsByTagName('title')[0]?.textContent || 'Untitled';
-      const link = entry.getElementsByTagName('link')[0]?.getAttribute('href') || CHANNEL_URL;
-      const published = entry.getElementsByTagName('published')[0]?.textContent || '';
-      const videoId = entry.getElementsByTagName('yt:videoId')[0]?.textContent || link.split('v=')[1] || '';
-      const thumb = videoId ? `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg` : '';
+    const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    const items = (data.items || []).slice(0, 6);
+    const cards = items.map((item) => {
+      const title = item.title || 'Untitled';
+      const link = item.link || CHANNEL_URL;
+      const published = item.pubDate || '';
+      const thumb = item.thumbnail || '';
       const dateText = published ? new Date(published).toLocaleDateString() : '';
       return `
         <a class="video-card" href="${link}" target="_blank" rel="noreferrer">
