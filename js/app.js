@@ -1215,7 +1215,10 @@ function renderArcade() {
                     <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
                     <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">재료 5개 ➔ 상급 아이템 연성<br><small style="color:var(--accent-color);">(수수료 500P 소모)</small></p>
                     <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.9rem;"></div>
-                    <button id="alchemy-btn" class="btn-primary" style="width:100%; background:var(--accent-secondary); box-shadow: 0 4px 14px rgba(16, 185, 129, 0.2);">연금술 합체!</button>
+                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
+                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); box-shadow: none;">1회 (500P)</button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:var(--accent-color); box-shadow: none;">5회 (2,200P 🔥)</button>
+                    </div>
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0;">

@@ -14,6 +14,7 @@ export function initArcade() {
         if (target.id === 'gacha-10-btn') await playGacha(10, 950);
         
         if (target.id === 'alchemy-btn') await playAlchemy(1, 500);
+        if (target.id === 'alchemy-5-btn') await playAlchemy(5, 2200);
         
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'updown-submit') await playUpDown();
@@ -153,7 +154,13 @@ async function playAlchemy(count, cost) {
 
             const resultEl = document.getElementById('alchemy-result');
             if (resultEl) {
-                resultEl.innerHTML = `연금술 성공! <strong>[${results[0]}]</strong> 탄생!`;
+                if (count === 1) {
+                    resultEl.innerHTML = `연금술 성공! <strong>[${results[0]}]</strong> 탄생!`;
+                } else {
+                    const summary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                    const resultText = Object.entries(summary).map(([name, num]) => `${name} x${num}`).join(', ');
+                    resultEl.innerHTML = `<div style="font-size:0.8rem; line-height:1.4;">연금술 5회 대성공!<br><strong>${resultText}</strong> 획득!</div>`;
+                }
             }
             updateUI();
         } catch (e) { alert("연금술 실패"); }
