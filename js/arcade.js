@@ -256,18 +256,21 @@ export async function openMarket() {
     
     container.innerHTML = `
         <div style="background: var(--bg-color); border-radius: 12px; padding: 1rem; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-            <p style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem; text-align: center;">👇 판매할 아이템의 [판매] 버튼을 누르세요</p>
-            <div style="max-height: 200px; overflow-y: auto; padding-right: 5px;">
+            <p style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem; text-align: center;">👇 판매할 수량을 입력하고 [판매]를 누르세요</p>
+            <div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
                 ${Object.entries(itemCounts).map(([name, count]) => {
                     const val = ITEM_VALUES[name] || 0;
                     const sellPrice = Math.floor(val * 0.7);
                     return `
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.6rem 0; border-bottom: 1px solid var(--border-color);">
-                            <div style="display:flex; flex-direction:column;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.8rem 0; border-bottom: 1px solid var(--border-color);">
+                            <div style="display:flex; flex-direction:column; flex:1;">
                                 <span style="font-size:0.85rem; font-weight:700;">${name}</span>
-                                <small style="font-size:0.7rem; color:var(--text-sub);">보유: ${count}개 | 가치: ${val}P</small>
+                                <small style="font-size:0.7rem; color:var(--text-sub);">가치: ${val}P | 보유: ${count}개</small>
                             </div>
-                            <button class="sell-item-btn btn-primary" data-name="${name}" style="padding: 4px 12px; font-size: 0.75rem; background: var(--accent-color); border-radius: 6px; box-shadow: none;">${sellPrice}P 판매</button>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <input type="number" id="sell-qty-${name}" value="1" min="1" max="${count}" style="width:50px; padding:4px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem; text-align:center;">
+                                <button class="sell-item-btn btn-primary" data-name="${name}" style="padding: 6px 12px; font-size: 0.75rem; background: var(--accent-color); border-radius: 6px; box-shadow: none; white-space:nowrap;">판매</button>
+                            </div>
                         </div>
                     `;
                 }).join('')}
@@ -281,7 +284,11 @@ export async function openMarket() {
     container.querySelectorAll('.sell-item-btn').forEach(btn => {
         btn.onclick = async () => {
             const itemName = btn.dataset.name;
-            await sellItem(itemName);
+            const qtyInput = document.getElementById(`sell-qty-${itemName}`);
+            const qty = parseInt(qtyInput.value);
+            if (isNaN(qty) || qty < 1) return;
+            
+            await sellItem(itemName, qty);
             openMarket(); // 목록 새로고침
         };
     });
@@ -292,26 +299,42 @@ export async function openMarket() {
     };
 }
 
-async function sellItem(itemName) {
+async function sellItem(itemName, qty = 1) {
     const val = ITEM_VALUES[itemName];
-    const sellPrice = Math.floor(val * 0.7);
-    if (!confirm(`[${itemName}] 1개를 판매하고 ${sellPrice}P를 받으시겠습니까?`)) return;
+    const totalSellPrice = Math.floor(val * 0.7) * qty;
+    const totalScoreValue = val * qty;
+    
+    if (!confirm(`[${itemName}] ${qty}개를 판매하고 ${totalSellPrice.toLocaleString()}P를 받으시겠습니까?`)) return;
 
     try {
         const userRef = doc(db, "users", UserState.user.uid);
         let currentInv = [...UserState.data.inventory];
-        const idx = currentInv.indexOf(itemName);
-        if (idx > -1) {
-            currentInv.splice(idx, 1);
+        
+        // 입력된 수량만큼 아이템 제거
+        let removedCount = 0;
+        for (let i = 0; i < qty; i++) {
+            const idx = currentInv.indexOf(itemName);
+            if (idx > -1) {
+                currentInv.splice(idx, 1);
+                removedCount++;
+            }
+        }
+
+        if (removedCount > 0) {
+            const finalPrice = Math.floor(val * 0.7) * removedCount;
+            const finalScore = val * removedCount;
+
             await updateDoc(userRef, {
                 inventory: currentInv,
-                points: increment(sellPrice),
-                totalScore: increment(-val)
+                points: increment(finalPrice),
+                totalScore: increment(-finalScore)
             });
+            
             UserState.data.inventory = currentInv;
-            UserState.data.points += sellPrice;
-            UserState.data.totalScore -= val;
+            UserState.data.points += finalPrice;
+            UserState.data.totalScore -= finalScore;
             updateUI();
+            alert(`${removedCount}개 판매 완료! +${finalPrice.toLocaleString()}P 획득`);
         }
     } catch (e) { alert("판매 실패"); }
 }
