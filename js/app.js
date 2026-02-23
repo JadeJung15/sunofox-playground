@@ -1,5 +1,5 @@
 // js/app.js - Premium Content & Core Logic
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, getGrade } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
