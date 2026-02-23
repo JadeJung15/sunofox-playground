@@ -1167,12 +1167,12 @@ function renderArcade() {
             </div>
 
             <!-- Daily Quest Section -->
-            <div class="card quest-section fade-in" style="margin-bottom: 2rem; border: 2px solid var(--accent-soft);">
-                <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem;">📜 일일 퀘스트</h3>
-                <div id="daily-quest-list">
+            <details class="profile-details quest-section fade-in" style="margin-bottom: 2rem; border: 2px solid var(--accent-soft);">
+                <summary id="quest-summary" style="font-size:1.1rem; font-weight:800;">📜 일일 퀘스트 (로딩 중...)</summary>
+                <div id="daily-quest-list" class="content-area">
                     <!-- 퀘스트 목록은 JS로 동적 로드 -->
                 </div>
-            </div>
+            </details>
 
             <div class="arcade-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
                 <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
@@ -1199,7 +1199,10 @@ function renderArcade() {
                         <span style="background: rgba(253, 160, 133, 0.1); color: #fda085; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">JACKPOT</span>
                     </div>
                     <div id="lotto-result" class="lotto-card" style="height:70px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed #fda085; border-radius:15px; font-weight:800; font-size:1rem; background:rgba(253,160,133,0.05); color: #fda085;">당신의 행운을 테스트하세요!</div>
-                    <button id="lotto-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3);">복권 구매 (500P)</button>
+                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
+                        <button id="lotto-btn" class="btn-primary" style="background:#fda085; box-shadow: none; font-size:0.8rem; height:50px;">1장 (500P)</button>
+                        <button id="lotto-5-btn" class="btn-primary" style="background:#f97316; box-shadow: none; font-size:0.8rem; height:50px;">5장 (2200P 🔥)</button>
+                    </div>
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0;">
@@ -1482,7 +1485,7 @@ async function renderEncyclopedia() {
                             return `
                                 <div class="book-item ${isUnlocked ? 'unlocked' : ''}">
                                     <div style="font-size:2.5rem; margin-bottom:0.5rem;">${isUnlocked ? name.split(' ')[0] : '❓'}</div>
-                                    <span class="item-name">${isUnlocked ? name.split(' ')[1] : '???'}</span>
+                                    <span class="item-name">${isUnlocked ? name.substring(name.indexOf(' ') + 1) : '???'}</span>
                                     <span class="item-value">${ITEM_VALUES[name]}P</span>
                                 </div>
                             `;
@@ -1701,6 +1704,7 @@ async function checkDailyQuests(type) {
 
 function loadDailyQuests() {
     const container = document.getElementById('daily-quest-list');
+    const summary = document.getElementById('quest-summary');
     if (!container || !UserState.data?.quests) return;
     
     const q = UserState.data.quests.list || {};
@@ -1710,14 +1714,25 @@ function loadDailyQuests() {
         { title: "나의 목소리", desc: "게시판에 글 한 개 쓰기", done: !!q.board, reward: 50 }
     ];
 
+    const completedCount = quests.filter(qt => qt.done).length;
+    if (summary) {
+        summary.innerHTML = `📜 일일 퀘스트 <span style="margin-left:10px; color:var(--accent-color); font-size:0.9rem;">${completedCount} / ${quests.length} 완료</span>`;
+        if (completedCount === quests.length) {
+            summary.style.color = 'var(--accent-secondary)';
+            summary.innerHTML += ' ✅';
+        } else {
+            summary.style.color = 'inherit';
+        }
+    }
+
     container.innerHTML = quests.map(quest => `
         <div class="quest-item">
             <div class="quest-info">
-                <h4>${quest.title}</h4>
+                <h4 style="color: ${quest.done ? 'var(--text-sub)' : 'var(--text-main)'}">${quest.done ? '✅' : '⭐'} ${quest.title}</h4>
                 <p>${quest.desc} ${quest.max ? `(${quest.current}/${quest.max})` : ''}</p>
             </div>
             <div class="quest-status ${quest.done ? 'done' : ''}">
-                ${quest.done ? '✅ 완료' : `+${quest.reward}P`}
+                ${quest.done ? '완료' : `+${quest.reward}P`}
             </div>
         </div>
     `).join('');

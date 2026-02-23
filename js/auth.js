@@ -47,15 +47,21 @@ export const EMOJI_SHOP = {
 };
 
 export const ITEM_VALUES = {
-    '💩 돌멩이': 1, '💊 물약': 20, '🥉 동메달': 50, '🥈 은메달': 150, '🥇 금메달': 500, '🍀 행운의 클로버': 100, '💎 다이아몬드': 2000,
-    '🧪 현자의 돌': 5000, '🧬 인공 생명체': 8000, '⚡ 번개 병': 3500, '🌌 은하수 가루': 12000
+    // COMMON
+    '💩 돌멩이': 1, '💊 물약': 20, '🌱 묘목': 15,
+    // UNCOMMON
+    '🥉 동메달': 80, '🥈 은메달': 200, '🌳 일반 나무': 150,
+    // RARE
+    '🥇 금메달': 800, '🍀 행운의 클로버': 1200, '🌲 전나무': 1000, '🍎 사과나무': 1500,
+    // LEGENDARY
+    '💎 다이아몬드': 5000, '🧪 현자의 돌': 15000, '🧬 인공 생명체': 25000, '⚡ 번개 병': 7000, '🌌 은하수 가루': 50000, '✨ 생명의 나무': 20000
 };
 
 export const ITEM_GRADES = {
-    'COMMON': ['💩 돌멩이', '💊 물약'],
-    'UNCOMMON': ['🥉 동메달', '🥈 은메달'],
-    'RARE': ['🥇 금메달', '🍀 행운의 클로버'],
-    'LEGENDARY': ['💎 다이아몬드', '🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루']
+    'COMMON': ['💩 돌멩이', '💊 물약', '🌱 묘목'],
+    'UNCOMMON': ['🥉 동메달', '🥈 은메달', '🌳 일반 나무'],
+    'RARE': ['🥇 금메달', '🍀 행운의 클로버', '🌲 전나무', '🍎 사과나무'],
+    'LEGENDARY': ['💎 다이아몬드', '🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루', '✨ 생명의 나무']
 };
 
 export function getGrade(itemName) {
@@ -241,14 +247,14 @@ async function handleEmojiExchange(emoji) {
             const item = currentInv.shift();
             scoreToDeduct -= ITEM_VALUES[item];
         }
-        const newScore = Math.max(0, (UserState.data.totalScore || 0) - price);
+        const newScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
         await updateDoc(userRef, {
             unlockedEmojis: arrayUnion(emoji),
             inventory: currentInv,
             totalScore: newScore,
             emoji: emoji
         });
-        addLog(UserState.user.uid, 'score', -price, `이모지 교환: ${emoji}`);
+        addLog(UserState.user.uid, 'score', -(UserState.data.totalScore - newScore), `이모지 교환: ${emoji}`);
         UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore = newScore; UserState.data.emoji = emoji;
         updateUI(); alert("교환 완료!");
         if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));

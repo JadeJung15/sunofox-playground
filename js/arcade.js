@@ -20,7 +20,8 @@ export function initArcade() {
         
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'updown-submit') await playUpDown();
-        if (target.id === 'lotto-btn') await playLottery();
+        if (target.id === 'lotto-btn') await playLottery(1, 500);
+        if (target.id === 'lotto-5-btn') await playLottery(5, 2200);
         if (target.id === 'daily-checkin-btn') await playDailyCheckin();
         if (target.id === 'market-open-btn') await openMarket();
         
@@ -168,20 +169,23 @@ async function playAlchemy(count) {
             }
 
             currentInv.push(...results);
-            const newScore = Math.max(0, (UserState.data.totalScore || 0) + (addedValue - removedValue));
-            const netProfit = addedValue - removedValue - cost;
+            
+            // 통합 아이템 점수(totalScore) 정확하게 재계산 (유저 요청 반영)
+            // 소모된 아이템 점수 차감 및 연성된 아이템 점수 가산 로직 보강
+            const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
+            const netProfit = recalcScore - (UserState.data.totalScore || 0) - cost;
 
             // 도감(discoveredItems) 업데이트 준비
             const newDiscovered = [...new Set(results)];
 
             await updateDoc(userRef, {
                 inventory: currentInv,
-                totalScore: newScore,
+                totalScore: recalcScore,
                 discoveredItems: arrayUnion(...newDiscovered)
             });
 
             UserState.data.inventory = currentInv;
-            UserState.data.totalScore = newScore;
+            UserState.data.totalScore = recalcScore;
             // 로컬 도감 데이터도 업데이트
             if (!UserState.data.discoveredItems) UserState.data.discoveredItems = [];
             newDiscovered.forEach(item => {
@@ -197,7 +201,7 @@ async function playAlchemy(count) {
                 const resultText = Object.entries(resultSummary).map(([name, num]) => `<strong>${name}x${num}</strong>`).join(' ');
 
                 const profitColor = netProfit >= 0 ? 'var(--accent-secondary)' : '#ef4444';
-                const profitText = netProfit >= 0 ? `+${netProfit.toLocaleString()}점 이득! ✨` : `${netProfit.toLocaleString()}점 손해... 💀`;
+                const profitText = netProfit >= 0 ? `+${netProfit.toLocaleString()}점 이득! ✨` : `${Math.abs(netProfit).toLocaleString()}점 손해... 💀`;
 
                 resultEl.innerHTML = `
                     <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:0.4rem;">재료 소모: ${consumedText}</div>
@@ -236,33 +240,66 @@ async function playBettingGame(type, choice) {
     }
 }
 
-async function playLottery() {
+async function playLottery(count = 1, cost = 500) {
     if (!UserState.user) return alert("로그인이 필요합니다.");
-    const cost = 500;
     const resultEl = document.getElementById('lotto-result');
-    if (!confirm(`복권 1장을 ${cost}P에 구매하시겠습니까?`)) return;
+    if (!confirm(`복권 ${count}장을 ${cost.toLocaleString()}P에 구매하시겠습니까?`)) return;
     if (await usePoints(cost)) {
         await updateArcadeStat('lottery');
         resultEl.innerHTML = `<div class="lotto-scratcher">긁는 중... ✨</div>`;
+        
         setTimeout(async () => {
-            const rand = Math.random() * 1000;
-            let rewardMsg = ""; let rewardType = "none";
-            if (rand < 1) {
-                const winPoints = 30000; await addPoints(winPoints);
-                rewardMsg = `🎊 1등 당첨!! 3만P!`; rewardType = "win";
-            } else if (rand < 10) {
-                const winItem = '💎 다이아몬드'; const itemScore = ITEM_VALUES[winItem];
-                await updateDoc(doc(db, "users", UserState.user.uid), { inventory: arrayUnion(winItem), totalScore: increment(itemScore) });
-                UserState.data.inventory.push(winItem); UserState.data.totalScore += itemScore;
-                rewardMsg = `💎 2등! 다이아 획득!`; rewardType = "win";
-            } else if (rand < 100) {
-                const winPoints = 1500; await addPoints(winPoints);
-                rewardMsg = `✨ 3등 당첨! 1500P!`; rewardType = "win";
-            } else if (rand < 300) {
-                const winPoints = 500; await addPoints(winPoints);
-                rewardMsg = `🍀 4등! 500P (본전!)`; rewardType = "even";
-            } else { rewardMsg = `💀 꽝! 다음 기회에..`; rewardType = "lose"; }
-            resultEl.innerHTML = `<div class="lotto-final ${rewardType}">${rewardMsg}</div>`;
+            let totalWinPoints = 0;
+            let winItems = [];
+            let logs = [];
+            let rewardType = "none";
+
+            for (let i = 0; i < count; i++) {
+                const rand = Math.random() * 1000;
+                if (rand < 1) {
+                    totalWinPoints += 30000;
+                    logs.push(`🎊 1등 당첨!! 3만P!`);
+                    rewardType = "win";
+                } else if (rand < 10) {
+                    const winItem = '💎 다이아몬드';
+                    winItems.push(winItem);
+                    logs.push(`💎 2등! 다이아 획득!`);
+                    rewardType = "win";
+                } else if (rand < 100) {
+                    totalWinPoints += 1500;
+                    logs.push(`✨ 3등 당첨! 1500P!`);
+                    if (rewardType !== "win") rewardType = "win";
+                } else if (rand < 300) {
+                    totalWinPoints += 500;
+                    logs.push(`🍀 4등! 500P (본전!)`);
+                    if (rewardType === "none" || rewardType === "lose") rewardType = "even";
+                } else {
+                    logs.push(`💀 꽝!`);
+                    if (rewardType === "none") rewardType = "lose";
+                }
+            }
+
+            if (totalWinPoints > 0) await addPoints(totalWinPoints, `복권 당첨 (${count}장)`);
+            
+            if (winItems.length > 0) {
+                let totalItemScore = winItems.reduce((acc, item) => acc + ITEM_VALUES[item], 0);
+                try {
+                    await updateDoc(doc(db, "users", UserState.user.uid), {
+                        inventory: arrayUnion(...winItems),
+                        totalScore: increment(totalItemScore)
+                    });
+                    UserState.data.inventory.push(...winItems);
+                    UserState.data.totalScore += totalItemScore;
+                } catch (e) { console.error("아이템 지급 실패", e); }
+            }
+
+            if (count === 1) {
+                resultEl.innerHTML = `<div class="lotto-final ${rewardType}">${logs[0]}</div>`;
+            } else {
+                const summary = logs.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const summaryText = Object.entries(summary).map(([msg, num]) => `${msg} x${num}`).join('<br>');
+                resultEl.innerHTML = `<div class="lotto-final ${rewardType}" style="font-size:0.75rem; padding: 5px; line-height:1.3;"><strong>${count}장 결과:</strong><br>${summaryText}</div>`;
+            }
             updateUI();
         }, 1500);
     }
