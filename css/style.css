@@ -596,6 +596,7 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .nav-dropdown {
   position: relative;
   display: inline-block;
+  flex-shrink: 0; /* 드롭다운 자체가 좁아지지 않도록 */
 }
 
 .nav-dropbtn {
@@ -609,9 +610,11 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   border-radius: var(--radius-sm);
   font-family: inherit;
+  white-space: nowrap; /* 이모지와 글자 줄바꿈 방지 */
+  flex-shrink: 0;      /* 버튼이 압축되지 않도록 */
 }
 
 .nav-dropbtn:hover {
