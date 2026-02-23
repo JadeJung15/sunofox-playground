@@ -707,7 +707,6 @@ async function router() {
     else if (hash === '#contact') renderContact();
     else if (hash === '#arcade') renderArcade();
     else if (hash === '#board') await renderBoard(app);
-    else if (hash === '#news') await renderNews();
     else if (hash === '#ranking') await renderRanking(app);
     else if (hash === '#guide') renderGuide();
     else if (hash === '#profile') renderProfile();
