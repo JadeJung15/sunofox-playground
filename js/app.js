@@ -1513,7 +1513,7 @@ async function renderEncyclopedia() {
                         <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 800;">🧪 효율적인 획득 방법</h4>
                         <ul style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; padding-left: 1.2rem;">
                             <li><strong>뽑기:</strong> 가장 기본적인 획득 경로입니다.</li>
-                            <li><strong>연금술:</strong> 낮은 등급 아이템 5개를 확정적으로 상위 등급으로 변환하여 가치를 크게 뻥튀기할 수 있습니다.</li>
+                            <li><strong>연금술:</strong> 낮은 등급 아이템 10개를 확정적으로 상위 등급으로 변환하여 가치를 크게 뻥튀기할 수 있습니다.</li>
                             <li><strong>복권:</strong> 낮은 확률로 '다이아몬드' 같은 고가치 아이템을 획득합니다.</li>
                         </ul>
                     </div>
@@ -1618,7 +1618,7 @@ function renderGuide() {
                         </div>
                         <div style="border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
                             <h4 style="margin-bottom: 0.4rem;">⚗️ 아이템 연금술</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">아이템 5개를 합성하여 오직 연금술로만 나오는 <strong>초희귀 아이템</strong>을 연성합니다.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">아이템 10개를 합성하여 오직 연금술로만 나오는 <strong>초희귀 아이템</strong>을 연성합니다.</p>
                         </div>
                         <div style="border-left: 3px solid #f43f5e; padding-left: 1rem;">
                             <h4 style="margin-bottom: 0.4rem;">🏪 중고장터</h4>

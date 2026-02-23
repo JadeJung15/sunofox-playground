@@ -115,16 +115,16 @@ async function playUpDown() {
 async function playAlchemy(count) {
     if (!UserState.user) return;
     
-    // 연금술 비용 대폭 인하 (수익구조 개선)
-    let cost = 50;
-    if (count === 5) cost = 200;
-    else if (count === 10) cost = 350;
+    // 연금술 비용 조정 (수익성 밸런스 패치)
+    let cost = 100 * count;
+    if (count === 5) cost = 450;
+    else if (count === 10) cost = 800;
 
     const gradeSelect = document.getElementById('alchemy-grade-select');
     if (!gradeSelect) return;
     
     const selectedGrade = gradeSelect.value;
-    const itemsNeeded = count * 5;
+    const itemsNeeded = count * 10;
     
     const targetItems = ITEM_GRADES[selectedGrade];
     const availableItems = UserState.data.inventory.filter(name => targetItems.includes(name));

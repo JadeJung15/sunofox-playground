@@ -73,11 +73,11 @@ export function getGrade(itemName) {
 
 export const TIERS = [
     { name: 'ROOKIE', min: 0, class: 'tier-rookie' },
-    { name: 'BRONZE', min: 1000, class: 'tier-bronze' },
-    { name: 'SILVER', min: 5000, class: 'tier-silver' },
-    { name: 'GOLD', min: 15000, class: 'tier-gold' },
-    { name: 'PLATINUM', min: 50000, class: 'tier-platinum' },
-    { name: 'DIAMOND', min: 100000, class: 'tier-diamond' }
+    { name: 'BRONZE', min: 100000, class: 'tier-bronze' },
+    { name: 'SILVER', min: 500000, class: 'tier-silver' },
+    { name: 'GOLD', min: 1500000, class: 'tier-gold' },
+    { name: 'PLATINUM', min: 5000000, class: 'tier-platinum' },
+    { name: 'DIAMOND', min: 10000000, class: 'tier-diamond' }
 ];
 
 export function getTier(score) {
@@ -136,6 +136,10 @@ async function loadUserData(user) {
             discoveredItems: [],     // 획득했던 모든 아이템 기록 (도감용)
             unlockedAuras: ['NONE'], // 구매한 오라 목록
             activeAura: 'NONE',      // 현재 장착 중인 오라
+            unlockedBorders: ['NONE'], // 구매한 테두리 목록
+            activeBorder: 'NONE',      // 현재 장착 중인 테두리
+            unlockedBackgrounds: ['NONE'], // 구매한 배경 목록
+            activeBackground: 'NONE',      // 현재 장착 중인 배경
             nicknameChanged: false, 
             lastNicknameChange: null, 
             boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
@@ -173,6 +177,20 @@ async function loadUserData(user) {
         UserState.data.unlockedAuras = ['NONE'];
         updateObj.activeAura = 'NONE';
         UserState.data.activeAura = 'NONE';
+        needsUpdate = true;
+    }
+    if (!UserState.data.unlockedBorders) {
+        updateObj.unlockedBorders = ['NONE'];
+        UserState.data.unlockedBorders = ['NONE'];
+        updateObj.activeBorder = 'NONE';
+        UserState.data.activeBorder = 'NONE';
+        needsUpdate = true;
+    }
+    if (!UserState.data.unlockedBackgrounds) {
+        updateObj.unlockedBackgrounds = ['NONE'];
+        UserState.data.unlockedBackgrounds = ['NONE'];
+        updateObj.activeBackground = 'NONE';
+        UserState.data.activeBackground = 'NONE';
         needsUpdate = true;
     }
     

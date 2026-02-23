@@ -16,8 +16,46 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const AURA_SHOP = {
-    'PLATINUM': { name: '플래티넘 오라', price: 5000, minScore: 30000, class: 'aura-platinum' },
-    'DIAMOND': { name: '다이아몬드 오라', price: 15000, minScore: 80000, class: 'aura-diamond' }
+    'PLATINUM': { name: '플래티넘 오라', price: 5000, minScore: 5000000, class: 'aura-platinum' },
+    'DIAMOND': { name: '다이아몬드 오라', price: 15000, minScore: 10000000, class: 'aura-diamond' }
+};
+
+const BORDER_SHOP = {
+    'B_RED': { name: '레드 보더', price: 1000, minScore: 0, class: 'border-red' },
+    'B_BLUE': { name: '블루 보더', price: 1000, minScore: 0, class: 'border-blue' },
+    'B_GREEN': { name: '그린 보더', price: 1000, minScore: 0, class: 'border-green' },
+    'B_YELLOW': { name: '옐로우 보더', price: 1000, minScore: 0, class: 'border-yellow' },
+    'B_PURPLE': { name: '퍼플 보더', price: 1000, minScore: 0, class: 'border-purple' },
+    'B_PINK': { name: '핑크 보더', price: 1000, minScore: 0, class: 'border-pink' },
+    'B_ORANGE': { name: '오렌지 보더', price: 1000, minScore: 0, class: 'border-orange' },
+    'B_CYAN': { name: '시안 보더', price: 1000, minScore: 0, class: 'border-cyan' },
+    'B_GRAY': { name: '그레이 보더', price: 1000, minScore: 0, class: 'border-gray' },
+    'B_BLACK': { name: '블랙 보더', price: 1000, minScore: 0, class: 'border-black' },
+    // 스페셜 5종 (점수 제한 있음)
+    'S_GOLD': { name: '✨ 황금 전설', price: 10000, minScore: 1500000, class: 'border-s-gold' },
+    'S_RAINBOW': { name: '🌈 무지개 빛', price: 20000, minScore: 3000000, class: 'border-s-rainbow' },
+    'S_FIRE': { name: '🔥 불타는 의지', price: 25000, minScore: 5000000, class: 'border-s-fire' },
+    'S_ICE': { name: '❄️ 시린 서리', price: 25000, minScore: 5000000, class: 'border-s-ice' },
+    'S_GALAXY': { name: '🌌 은하의 신비', price: 50000, minScore: 10000000, class: 'border-s-galaxy' }
+};
+
+const BACKGROUND_SHOP = {
+    'BG_SOFT_RED': { name: '소프트 레드', price: 1500, minScore: 0, class: 'bg-soft-red' },
+    'BG_SOFT_BLUE': { name: '소프트 블루', price: 1500, minScore: 0, class: 'bg-soft-blue' },
+    'BG_SOFT_GREEN': { name: '소프트 그린', price: 1500, minScore: 0, class: 'bg-soft-green' },
+    'BG_SOFT_YELLOW': { name: '소프트 옐로우', price: 1500, minScore: 0, class: 'bg-soft-yellow' },
+    'BG_SOFT_PURPLE': { name: '소프트 퍼플', price: 1500, minScore: 0, class: 'bg-soft-purple' },
+    'BG_SOFT_PINK': { name: '소프트 핑크', price: 1500, minScore: 0, class: 'bg-soft-pink' },
+    'BG_DARK_GRAY': { name: '다크 그레이', price: 1500, minScore: 0, class: 'bg-dark-gray' },
+    'BG_MINT': { name: '민트 프레쉬', price: 1500, minScore: 0, class: 'bg-mint' },
+    'BG_SKY': { name: '스카이 블루', price: 1500, minScore: 0, class: 'bg-sky' },
+    'BG_SAND': { name: '샌드 베이지', price: 1500, minScore: 0, class: 'bg-sand' },
+    // 스페셜 5종 (점수 제한 있음)
+    'SBG_NEON': { name: '🎮 네온 시티', price: 15000, minScore: 2000000, class: 'bg-s-neon' },
+    'SBG_FOREST': { name: '🍃 요정의 숲', price: 15000, minScore: 2000000, class: 'bg-s-forest' },
+    'SBG_SPACE': { name: '🚀 우주 여행', price: 30000, minScore: 6000000, class: 'bg-s-space' },
+    'SBG_OCEAN': { name: '🌊 깊은 바다', price: 30000, minScore: 6000000, class: 'bg-s-ocean' },
+    'SBG_SUNSET': { name: '🌅 영원한 노을', price: 50000, minScore: 10000000, class: 'bg-s-sunset' }
 };
 
 export async function renderBoard(container) {
