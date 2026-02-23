@@ -87,7 +87,8 @@ header {
   display: flex; 
   gap: 0.5rem; 
   padding: 0.25rem 0; 
-  overflow: visible; /* 드롭다운이 잘리지 않도록 명시적 설정 */
+  overflow: visible; 
+  flex-wrap: nowrap; /* 강제로 한 줄 유지 */
 }
 .nav-link {
   text-decoration: none; color: var(--text-sub);
@@ -95,6 +96,7 @@ header {
   font-weight: 600; font-size: 0.9rem; white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   border: 1px solid transparent;
+  flex-shrink: 0; /* 공간이 좁아도 크기 축소 방지 */
 }
 .nav-link:hover { color: var(--accent-color); background: var(--card-bg); border-color: var(--border-color); }
 .nav-link.active { color: #fff; background: var(--accent-color); box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.39); border-color: var(--accent-color); }
