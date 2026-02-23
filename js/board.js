@@ -10,7 +10,8 @@ import {
     serverTimestamp,
     deleteDoc,
     doc,
-    onSnapshot
+    onSnapshot,
+    getCountFromServer
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function renderBoard(container) {
@@ -93,6 +94,11 @@ async function loadPosts(container) {
             const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
             const canDelete = UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin);
             
+            // 댓글 수 조회
+            const commentsRef = collection(db, "posts", postId, "comments");
+            const countSnap = await getCountFromServer(commentsRef);
+            const commentCount = countSnap.data().count;
+
             const postEl = document.createElement('div');
             postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} fade-in`;
             postEl.innerHTML = `
@@ -105,7 +111,7 @@ async function loadPosts(container) {
                 </div>
                 <div class="post-content">${data.content}</div>
                 <div class="post-footer">
-                    <button class="btn-toggle-comments" data-id="${postId}">💬 댓글</button>
+                    <button class="btn-toggle-comments" data-id="${postId}">💬 댓글 ${commentCount > 0 ? `<b>(${commentCount})</b>` : ''}</button>
                     ${canDelete ? `<button class="btn-delete" data-id="${postId}">삭제</button>` : ''}
                 </div>
                 <div id="comment-section-${postId}" class="comment-section" style="display:none;">
