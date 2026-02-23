@@ -109,6 +109,8 @@ async function loadUserData(user) {
             originalEmail: user.email || '이메일 없음', // 구글 이메일 저장
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, 
+            unlockedAuras: ['NONE'], // 구매한 오라 목록
+            activeAura: 'NONE',      // 현재 장착 중인 오라
             nicknameChanged: false, 
             lastNicknameChange: null, 
             boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
@@ -139,6 +141,13 @@ async function loadUserData(user) {
     if (!UserState.data.quests) {
         updateObj.quests = { date: null, list: {} };
         UserState.data.quests = updateObj.quests;
+        needsUpdate = true;
+    }
+    if (!UserState.data.unlockedAuras) {
+        updateObj.unlockedAuras = ['NONE'];
+        UserState.data.unlockedAuras = ['NONE'];
+        updateObj.activeAura = 'NONE';
+        UserState.data.activeAura = 'NONE';
         needsUpdate = true;
     }
     
