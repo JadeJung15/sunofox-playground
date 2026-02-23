@@ -24,6 +24,17 @@ export const UserState = {
     isMaster: false
 };
 
+// 랜덤 닉네임 생성용 데이터
+const ADJECTIVES = ['용감한', '신비로운', '행복한', '빛나는', '똑똑한', '우아한', '재빠른', '포근한', '화려한', '은은한', '날렵한', '든든한'];
+const NOUNS = ['여우', '사자', '호랑이', '고양이', '팬더', '독수리', '돌고래', '토끼', '유니콘', '피닉스', '강아지', '늑대'];
+
+function generateRandomNickname() {
+    const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+    const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+    const num = Math.floor(1000 + Math.random() * 8999);
+    return `${adj}${noun}_${num}`;
+}
+
 // 상점 데이터 정규화
 export const EMOJI_SHOP = {
     '귀여운 동물': { '🐱': 200, '🐶': 200, '🦊': 300, '🐰': 300, '🐼': 500, '🐨': 500, '🐹': 400, '🐣': 400, '🐧': 500 },
@@ -71,7 +82,6 @@ export function initAuth() {
         }
     });
 
-    // Delegated clicks for reliability
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
@@ -93,9 +103,12 @@ async function loadUserData(user) {
 
     if (!snap.exists()) {
         const newData = {
-            uid: user.uid, nickname: user.displayName || '익명',
+            uid: user.uid, 
+            nickname: generateRandomNickname(), // 구글 이름 대신 랜덤 닉네임 부여
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
-            inventory: [], totalScore: 0, lastNicknameChange: null, 
+            inventory: [], totalScore: 0, 
+            nicknameChanged: false, // 최초 변경 여부 추적
+            lastNicknameChange: null, 
             boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
             arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
             createdAt: serverTimestamp()
@@ -134,15 +147,10 @@ export function updateUI(isLoggedIn = !!UserState.user) {
     }
 }
 
-// 로그 기록 함수 추가
 async function addLog(uid, type, amount, reason) {
     try {
         await addDoc(collection(db, "pointLogs"), {
-            uid,
-            type, // 'points' or 'score'
-            amount,
-            reason,
-            timestamp: serverTimestamp()
+            uid, type, amount, reason, timestamp: serverTimestamp()
         });
     } catch (e) { console.error("Log failed", e); }
 }
@@ -202,19 +210,34 @@ async function changeNickname() {
     const newName = input.value.trim();
     if (newName.length < 2 || newName.length > 10) return alert("닉네임은 2~10자 사이로 입력해주세요.");
     
-    const cost = 5000; // 닉네임 변경 비용
-    if (!confirm(`닉네임을 [${newName}](으)로 변경하시겠습니까?\n변경 시 ${cost.toLocaleString()}P가 소모됩니다.`)) return;
+    // 최초 1회 무료 혜택 체크
+    const isFree = UserState.data.nicknameChanged === false;
+    const cost = isFree ? 0 : 5000;
+    
+    if (cost > 0 && !confirm(`닉네임을 [${newName}](으)로 변경하시겠습니까?\n변경 시 ${cost.toLocaleString()}P가 소모됩니다.`)) return;
+    if (isFree && !confirm(`첫 닉네임 설정을 [${newName}](으)로 하시겠습니까?\n(최초 1회 무료)`)) return;
 
     try {
-        if (await usePoints(cost, `닉네임 변경: ${newName}`)) {
-            await updateDoc(doc(db, "users", UserState.user.uid), { 
-                nickname: newName, 
-                lastNicknameChange: serverTimestamp() 
-            });
+        const updateData = { 
+            nickname: newName, 
+            nicknameChanged: true,
+            lastNicknameChange: serverTimestamp() 
+        };
+
+        const performUpdate = async () => {
+            await updateDoc(doc(db, "users", UserState.user.uid), updateData);
             UserState.data.nickname = newName;
+            UserState.data.nicknameChanged = true;
             updateUI();
             if (msg) msg.textContent = "성공적으로 변경되었습니다!";
             input.value = '';
+            if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
+        };
+
+        if (cost === 0) {
+            await performUpdate();
+        } else if (await usePoints(cost, `닉네임 변경: ${newName}`)) {
+            await performUpdate();
         }
     } catch (e) { 
         console.error(e);

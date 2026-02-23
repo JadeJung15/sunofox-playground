@@ -944,8 +944,8 @@ function renderProfile() {
                 <summary>⚙️ 계정 설정</summary>
                 <div class="content-area">
                     <div class="setting-group" style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                        <label style="display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 0.25rem;">닉네임 변경 (소모: 5,000P)</label>
-                        <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 0.75rem;">변경 제한은 없으나 포인트가 차감됩니다.</p>
+                        <label style="display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 0.25rem;">닉네임 변경 ${UserState.data.nicknameChanged ? '(소모: 5,000P)' : '<span style="color:var(--accent-secondary);">(최초 1회 무료)</span>'}</label>
+                        <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 0.75rem;">${UserState.data.nicknameChanged ? '닉네임 변경 시 포인트가 차감됩니다.' : '현재 랜덤 닉네임 상태입니다. 원하는 이름으로 변경해 보세요!'}</p>
                         <div style="display: flex; gap: 0.5rem;">
                             <input type="text" id="nickname-input" style="flex: 1; padding: 0.8rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.95rem;" placeholder="새 닉네임 (2~10자)">
                             <button id="nickname-save" class="btn-primary" style="padding: 0 1.5rem; font-size: 0.9rem;">변경</button>
