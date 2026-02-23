@@ -2,10 +2,10 @@
 import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
-import { renderBoard } from './board.js';
+import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
-import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -900,15 +900,20 @@ function renderProfile() {
     const progress = tier === nextTier ? 100 : Math.min(100, (currentScore / nextTier.min) * 100);
     const stats = UserState.data.arcadeStats || { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
 
+    // 테두리 및 배경 적용 효과 미리보기용 클래스 추출
+    const activeBorderClass = UserState.data.activeBorder !== 'NONE' ? BORDER_SHOP[UserState.data.activeBorder]?.class || '' : '';
+    const activeBackgroundClass = UserState.data.activeBackground !== 'NONE' ? BACKGROUND_SHOP[UserState.data.activeBackground]?.class || '' : '';
+    const activeAuraClass = UserState.data.activeAura !== 'NONE' ? AURA_SHOP[UserState.data.activeAura]?.class || '' : '';
+
     app.innerHTML = `
         <div class="profile-page fade-in">
-            <div class="card profile-header-card" style="padding: 2.5rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
+            <div class="card profile-header-card ${activeBackgroundClass}" style="padding: 2.5rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
                 <div class="profile-accent-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); opacity: 0.1;"></div>
-                <div id="user-emoji" style="font-size: 5rem; margin: 0 auto 1rem; position: relative; display: inline-block; background: var(--card-bg); border-radius: 50%; width: 100px; height: 100px; line-height: 100px; box-shadow: var(--shadow-md);">👤</div>
+                <div id="user-emoji" class="author-emoji-circle ${activeBorderClass} ${activeAuraClass}" style="font-size: 5rem; margin: 0 auto 1rem; position: relative; display: flex; background: var(--card-bg); border-radius: 50%; width: 120px; height: 120px; align-items: center; justify-content: center; box-shadow: var(--shadow-md);">👤</div>
                 <div class="tier-badge" style="background: var(--accent-color); color: #fff; display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.5rem; position: relative;">${tier.name}</div>
                 <h2 id="user-name" style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">닉네임</h2>
                 
-                <div class="progress-container" style="max-width: 400px; margin: 0 auto 2rem;">
+                <div class="progress-container" style="max-width: 400px; margin: 0 auto 2rem; position:relative; z-index:1;">
                     <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem;">
                         <span>등급 성장도</span>
                         <span>${currentScore.toLocaleString()} / ${nextTier.min.toLocaleString()}</span>
@@ -916,20 +921,34 @@ function renderProfile() {
                     <div class="progress-track" style="height: 10px; background: var(--bg-color); border-radius: 10px; overflow: hidden;">
                         <div class="progress-fill" style="width: ${progress}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); border-radius: 10px;"></div>
                     </div>
-                    <p style="font-size: 0.75rem; color: var(--text-sub); margin-top: 0.5rem;">다음 등급까지 <strong>${Math.max(0, nextTier.min - currentScore).toLocaleString()}P</strong> 남았습니다.</p>
-                </div>
-
-                <div class="profile-stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 400px; margin: 0 auto;">
-                    <div class="stat-box" style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                        <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.25rem;">누적 랭킹 점수</span>
-                        <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-color);">${currentScore.toLocaleString()}</span>
-                    </div>
-                    <div class="stat-box" style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                        <span style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.25rem;">보유 포인트</span>
-                        <span style="font-size: 1.5rem; font-weight: 900; color: var(--accent-secondary);">${(UserState.data.points || 0).toLocaleString()}</span>
-                    </div>
                 </div>
             </div>
+
+            <details class="profile-details" open>
+                <summary>🎨 내 꾸미기 관리</summary>
+                <div class="content-area">
+                    <div style="display: grid; gap: 1.5rem;">
+                        <div>
+                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🖼️ 보유한 테두리</h4>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <button class="btn-equip-profile ${UserState.data.activeBorder === 'NONE' ? 'active' : ''}" data-type="Border" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
+                                ${(UserState.data.unlockedBorders || []).filter(id => id !== 'NONE').map(id => `
+                                    <button class="btn-equip-profile ${UserState.data.activeBorder === id ? 'active' : ''}" data-type="Border" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBorder === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBorder === id ? '#fff' : 'inherit'}">${BORDER_SHOP[id]?.name || id}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🎨 보유한 배경</h4>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                <button class="btn-equip-profile ${UserState.data.activeBackground === 'NONE' ? 'active' : ''}" data-type="Background" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
+                                ${(UserState.data.unlockedBackgrounds || []).filter(id => id !== 'NONE').map(id => `
+                                    <button class="btn-equip-profile ${UserState.data.activeBackground === id ? 'active' : ''}" data-type="Background" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBackground === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBackground === id ? '#fff' : 'inherit'}">${BACKGROUND_SHOP[id]?.name || id}</button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </details>
 
             <details class="profile-details" open>
                 <summary>📊 오락실 이용 통계</summary>
@@ -983,6 +1002,19 @@ function renderProfile() {
             </details>
         </div>
     `;
+
+    // 프로필 장착 이벤트 바인딩
+    app.querySelectorAll('.btn-equip-profile').forEach(btn => {
+        btn.onclick = async () => {
+            const { type, id } = btn.dataset;
+            const activeKey = `active${type}`;
+            await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
+            UserState.data[activeKey] = id;
+            renderProfile();
+            updateUI();
+        };
+    });
+
     updateUI();
 }
 
@@ -1513,7 +1545,7 @@ async function renderEncyclopedia() {
                         <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 800;">🧪 효율적인 획득 방법</h4>
                         <ul style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; padding-left: 1.2rem;">
                             <li><strong>뽑기:</strong> 가장 기본적인 획득 경로입니다.</li>
-                            <li><strong>연금술:</strong> 낮은 등급 아이템 10개를 확정적으로 상위 등급으로 변환하여 가치를 크게 뻥튀기할 수 있습니다.</li>
+                            <li><strong>연금술:</strong> 낮은 등급 아이템 6개를 확정적으로 상위 등급으로 변환하여 가치를 크게 뻥튀기할 수 있습니다.</li>
                             <li><strong>복권:</strong> 낮은 확률로 '다이아몬드' 같은 고가치 아이템을 획득합니다.</li>
                         </ul>
                     </div>
@@ -1618,7 +1650,7 @@ function renderGuide() {
                         </div>
                         <div style="border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
                             <h4 style="margin-bottom: 0.4rem;">⚗️ 아이템 연금술</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">아이템 10개를 합성하여 오직 연금술로만 나오는 <strong>초희귀 아이템</strong>을 연성합니다.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">아이템 6개를 합성하여 오직 연금술로만 나오는 <strong>초희귀 아이템</strong>을 연성합니다.</p>
                         </div>
                         <div style="border-left: 3px solid #f43f5e; padding-left: 1rem;">
                             <h4 style="margin-bottom: 0.4rem;">🏪 중고장터</h4>

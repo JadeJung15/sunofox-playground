@@ -124,7 +124,7 @@ async function playAlchemy(count) {
     if (!gradeSelect) return;
     
     const selectedGrade = gradeSelect.value;
-    const itemsNeeded = count * 10;
+    const itemsNeeded = count * 6;
     
     const targetItems = ITEM_GRADES[selectedGrade];
     const availableItems = UserState.data.inventory.filter(name => targetItems.includes(name));

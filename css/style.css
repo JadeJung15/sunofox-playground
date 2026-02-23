@@ -1056,6 +1056,76 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
 .grade-legendary { border-color: #f59e0b !important; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
 
+/* --- Shop Decoration Styles --- */
+
+/* 1. Icon Borders */
+.border-red { border-color: #ef4444 !important; }
+.border-blue { border-color: #3b82f6 !important; }
+.border-green { border-color: #10b981 !important; }
+.border-yellow { border-color: #f59e0b !important; }
+.border-purple { border-color: #8b5cf6 !important; }
+.border-pink { border-color: #ec4899 !important; }
+.border-orange { border-color: #f97316 !important; }
+.border-cyan { border-color: #06b6d4 !important; }
+.border-gray { border-color: #64748b !important; }
+.border-black { border-color: #1e293b !important; }
+
+/* Special Borders */
+.border-s-legend {
+  border-color: transparent !important;
+  background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+              linear-gradient(135deg, #f59e0b, #fbbf24, #f59e0b) border-box !important;
+  border: 3px solid transparent !important;
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.4);
+}
+.border-s-galaxy {
+  border-color: transparent !important;
+  background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+              linear-gradient(135deg, #6366f1, #a855f7, #ec4899) border-box !important;
+  border: 3px solid transparent !important;
+  animation: galaxy-border 3s linear infinite;
+}
+@keyframes galaxy-border { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+
+.border-s-god {
+  border-color: transparent !important;
+  background: linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+              conic-gradient(from 0deg, #fff, #fbbf24, #fff) border-box !important;
+  border: 4px solid transparent !important;
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+  animation: spin 4s linear infinite;
+}
+
+/* 2. Profile Backgrounds */
+.bg-soft-red { background-color: rgba(239, 68, 68, 0.05) !important; }
+.bg-soft-blue { background-color: rgba(59, 130, 246, 0.05) !important; }
+.bg-soft-green { background-color: rgba(16, 185, 129, 0.05) !important; }
+.bg-soft-yellow { background-color: rgba(245, 158, 11, 0.05) !important; }
+.bg-soft-purple { background-color: rgba(139, 92, 246, 0.05) !important; }
+.bg-soft-pink { background-color: rgba(236, 72, 153, 0.05) !important; }
+.bg-dark-gray { background-color: rgba(30, 41, 59, 0.05) !important; }
+.bg-mint { background-color: rgba(45, 212, 191, 0.05) !important; }
+.bg-sky { background-color: rgba(56, 189, 248, 0.05) !important; }
+.bg-sand { background-color: rgba(212, 163, 115, 0.05) !important; }
+
+/* Special Backgrounds */
+.bg-s-neon {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%) !important;
+  color: #fff !important;
+  border: 1px solid #818cf8 !important;
+  box-shadow: inset 0 0 20px rgba(129, 140, 248, 0.2);
+}
+.bg-s-space {
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%) !important;
+  background-image: url('https://www.transparenttextures.com/patterns/stardust.png') !important;
+  color: #fff !important;
+}
+.bg-s-paradise {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+  background-image: url('https://www.transparenttextures.com/patterns/cloudy-day.png') !important;
+  border: 1px solid #bae6fd !important;
+}
+
 /* Encyclopedia Styles */
 .book-container { padding: 2rem; }
 .book-grid {
