@@ -1198,7 +1198,7 @@ function renderContact() {
             <div style="display: grid; gap: 1rem; max-width: 400px; margin: 0 auto; text-align: left;">
                 <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
                     <small style="color: var(--text-sub); display: block; margin-bottom: 0.3rem;">공식 이메일</small>
-                    <strong style="font-size: 1.1rem;">support@sevencheck.studio</strong>
+                    <strong style="font-size: 1.1rem;">sunofox.official@gmail.com</strong>
                 </div>
                 <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
                     <small style="color: var(--text-sub); display: block; margin-bottom: 0.3rem;">운영 시간</small>
