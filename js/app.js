@@ -781,7 +781,10 @@ async function renderHome(hash) {
                         <span class="hero-tag">✨ 7번의 질문으로 찾는 나</span>
                         <h1>당신이 몰랐던<br>진짜 모습을 확인하세요</h1>
                         <p>심리학적 기반의 정교한 분석 리포트와<br>즐거운 미니게임이 기다리고 있습니다.</p>
-                        <button class="btn-primary" style="margin: 0 auto; padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#7check'">테스트 시작하기</button>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                            <button class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#7check'">테스트 시작하기</button>
+                            <button class="btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 50px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: #fff;" onclick="window.globalShareSite()">🔗 공유하기</button>
+                        </div>
                     </div>
                 </div>
 
@@ -1454,6 +1457,40 @@ function renderTestExecution(testId) {
         });
     };
     updateStep();
+}
+
+let lastGlobalShareTime = 0;
+window.globalShareSite = async () => {
+    const siteUrl = window.location.origin;
+    const now = Date.now();
+    
+    const rewardUser = async () => {
+        if (now - lastGlobalShareTime > 10000) { // 10 second throttle
+            const success = await addPoints(30);
+            if (success) lastGlobalShareTime = now;
+        }
+    };
+
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: 'SevenCheck - 7번의 질문으로 찾는 나의 본모습',
+                text: '이 사이트 완전 대박이야! 너도 한번 해봐.',
+                url: siteUrl
+            });
+            await rewardUser();
+        } catch (e) {
+            console.error(e);
+        }
+    } else {
+        await copyLink(siteUrl);
+        // copyLink already rewards 30 points.
+    }
+};
+
+const headerShareBtn = document.getElementById('share-site-btn');
+if (headerShareBtn) {
+    headerShareBtn.onclick = window.globalShareSite;
 }
 
 themeToggle.onclick = () => {
