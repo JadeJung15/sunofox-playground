@@ -801,12 +801,26 @@ async function renderHome(hash) {
                             <button class="btn-secondary" style="width:100%; padding: 0.5rem; font-size: 0.8rem;" onclick="location.hash='#ranking'">랭킹 보기</button>
                         </div>
                     </div>
-                    <div class="guide-preview-card" onclick="location.hash='#guide'">
+                    <div class="guide-preview-card" onclick="location.hash='#guide'" style="background: linear-gradient(135deg, #64748b, #475569); color: #fff; padding: 1.5rem; border-radius: var(--radius-lg); position: relative; overflow: hidden; cursor: pointer;">
                         <div style="position:relative; z-index:1;">
                             <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">📖 이용 가이드</h4>
-                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">포인트 획득 방법부터<br>등급 시스템까지 한눈에!</p>
+                            <p style="font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">포인트 획득 방법부터<br>등급 시스템까지 한눈에!</p>
                         </div>
                         <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.1;">📒</span>
+                    </div>
+                    <div class="board-preview-card" onclick="location.hash='#board'" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: var(--radius-lg); position: relative; overflow: hidden; cursor: pointer;">
+                        <div style="position:relative; z-index:1;">
+                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">💬 커뮤니티</h4>
+                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">다른 이용자들과 소통하고<br>나만의 분석 결과를 공유하세요.</p>
+                        </div>
+                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.05;">✨</span>
+                    </div>
+                    <div class="profile-preview-card" onclick="location.hash='#profile'" style="background: var(--card-bg); border: 1px solid var(--border-color); padding: 1.5rem; border-radius: var(--radius-lg); position: relative; overflow: hidden; cursor: pointer;">
+                        <div style="position:relative; z-index:1;">
+                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">👤 내 정보</h4>
+                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">보유 포인트와 아이템,<br>현재 등급을 확인하세요.</p>
+                        </div>
+                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.05;">🆔</span>
                     </div>
                 </div>
             </div>
