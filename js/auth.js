@@ -51,6 +51,13 @@ export const ITEM_VALUES = {
     '🧪 현자의 돌': 5000, '🧬 인공 생명체': 8000, '⚡ 번개 병': 3500, '🌌 은하수 가루': 12000
 };
 
+export const ITEM_GRADES = {
+    'COMMON': ['💩 돌멩이', '💊 물약'],
+    'UNCOMMON': ['🥉 동메달', '🥈 은메달'],
+    'RARE': ['🥇 금메달', '🍀 행운의 클로버'],
+    'LEGENDARY': ['💎 다이아몬드', '🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루']
+};
+
 export const TIERS = [
     { name: 'ROOKIE', min: 0, class: 'tier-rookie' },
     { name: 'BRONZE', min: 1000, class: 'tier-bronze' },

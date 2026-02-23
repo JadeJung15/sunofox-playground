@@ -1211,19 +1211,27 @@ function renderArcade() {
                 <div class="card arcade-item-card" style="margin-bottom:0;">
                     <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">📦 아이템 뽑기</h3>
                     <div id="gacha-result" class="gacha-box" style="min-height:75px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed var(--border-color); border-radius:15px; text-align:center; font-size:0.9rem; background:rgba(0,0,0,0.02); font-weight: 600;">희귀 아이템이 쏟아집니다</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
-                        <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); box-shadow: 0 4px 14px rgba(30, 41, 59, 0.2);">1회 (100P)</button>
-                        <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);">10회 (950P 🔥)</button>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
+                        <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); font-size:0.75rem; padding:0.5rem;">1회 (100P)</button>
+                        <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.5rem;">10회 (950P)</button>
+                        <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.75rem; padding:0.5rem;">30회 (2700P 🔥)</button>
                     </div>
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
                     <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
-                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">재료 5개 ➔ 상급 아이템 연성<br><small style="color:var(--accent-color);">(수수료 500P 소모)</small></p>
+                    <div style="background:var(--bg-color); padding:0.8rem; border-radius:10px; margin-bottom:1rem; border:1px solid var(--border-color);">
+                        <label style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-sub); margin-bottom:0.4rem;">소모 등급 선택 (성공률 70%)</label>
+                        <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-weight:800; color:var(--accent-color); outline:none; cursor:pointer;">
+                            <option value="COMMON">일반 (COMMON) ➔ 고급</option>
+                            <option value="UNCOMMON">고급 (UNCOMMON) ➔ 희귀</option>
+                            <option value="RARE">희귀 (RARE) ➔ 전설</option>
+                        </select>
+                    </div>
                     <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.9rem;"></div>
                     <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); box-shadow: none;">1회 (500P)</button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:var(--accent-color); box-shadow: none;">5회 (2,200P 🔥)</button>
+                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); box-shadow: none; font-size:0.8rem;">1회 (500P)</button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:var(--accent-color); box-shadow: none; font-size:0.8rem;">10회 (4200P 🔥)</button>
                     </div>
                 </div>
 
