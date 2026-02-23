@@ -127,9 +127,13 @@ async function playAlchemy(count, cost) {
             let currentInv = [...UserState.data.inventory];
             
             currentInv.sort((a, b) => ITEM_VALUES[a] - ITEM_VALUES[b]);
+            
+            const consumedItems = [];
             let removedValue = 0;
             for (let i = 0; i < itemsNeeded; i++) {
-                removedValue += ITEM_VALUES[currentInv.shift()];
+                const item = currentInv.shift();
+                consumedItems.push(item);
+                removedValue += ITEM_VALUES[item];
             }
 
             const highItems = ['🥈 은메달', '🥇 금메달', '💎 다이아몬드', '🍀 행운의 클로버', '🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루'];
@@ -143,6 +147,8 @@ async function playAlchemy(count, cost) {
 
             currentInv.push(...results);
             const scoreDelta = addedValue - removedValue;
+            // 실질 이득 계산: 추가 가치 - 소모 가치 - (포인트 비용을 점수로 환산, 1P = 1점 기준)
+            const netProfit = addedValue - removedValue - cost;
 
             await updateDoc(userRef, {
                 inventory: currentInv,
@@ -154,13 +160,20 @@ async function playAlchemy(count, cost) {
 
             const resultEl = document.getElementById('alchemy-result');
             if (resultEl) {
-                if (count === 1) {
-                    resultEl.innerHTML = `연금술 성공! <strong>[${results[0]}]</strong> 탄생!`;
-                } else {
-                    const summary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                    const resultText = Object.entries(summary).map(([name, num]) => `${name} x${num}`).join(', ');
-                    resultEl.innerHTML = `<div style="font-size:0.8rem; line-height:1.4;">연금술 5회 대성공!<br><strong>${resultText}</strong> 획득!</div>`;
-                }
+                const consumedSummary = consumedItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const consumedText = Object.entries(consumedSummary).map(([name, num]) => `${name}x${num}`).join(' ');
+                
+                const resultSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const resultText = Object.entries(resultSummary).map(([name, num]) => `<strong>${name}x${num}</strong>`).join(' ');
+
+                const profitColor = netProfit >= 0 ? 'var(--accent-secondary)' : '#ef4444';
+                const profitText = netProfit >= 0 ? `+${netProfit.toLocaleString()}점 이득! ✨` : `${netProfit.toLocaleString()}점 손해... 💀`;
+
+                resultEl.innerHTML = `
+                    <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:0.5rem;">재료 소모: ${consumedText}</div>
+                    <div style="font-size:0.9rem; margin-bottom:0.5rem;">연성 결과: ${resultText}</div>
+                    <div style="font-weight:900; color:${profitColor}; font-size:1rem;">${profitText}</div>
+                `;
             }
             updateUI();
         } catch (e) { alert("연금술 실패"); }
