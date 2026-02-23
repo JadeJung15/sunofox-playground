@@ -1239,17 +1239,16 @@ function renderArcade() {
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0;">
-                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">🎲 포인트 베팅</h3>
+                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">🎲 주사위 3개 베팅</h3>
                     <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border: 1px solid var(--border-color);">
                         <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.5rem;">베팅 금액 설정</label>
                         <input type="number" id="bet-amount" value="100" min="10" style="width:100%; background: transparent; border: none; text-align:center; font-size:1.5rem; font-weight:900; color: var(--accent-color); outline: none;">
                     </div>
-                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1rem; min-height:35px; font-size:0.9rem; color: var(--text-sub);">Ready to play?</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
-                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="oddeven" data-choice="odd">홀수</button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="oddeven" data-choice="even">짝수</button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="dice" data-choice="low">1 ~ 3</button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 800;" data-game="dice" data-choice="high">4 ~ 6</button>
+                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1rem; min-height:35px; font-size:0.9rem; color: var(--text-sub);">주사위 3개를 던집니다!</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
+                        <button class="bet-btn btn-secondary" style="font-weight: 800; padding: 0.8rem 0;" data-game="dice3" data-choice="small">소(3~8)<br><small>3.5배</small></button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 800; padding: 0.8rem 0;" data-game="dice3" data-choice="middle">중(9~12)<br><small>2배</small></button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 800; padding: 0.8rem 0;" data-game="dice3" data-choice="big">대(13~18)<br><small>3.5배</small></button>
                     </div>
                 </div>
 

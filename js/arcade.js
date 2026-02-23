@@ -226,21 +226,44 @@ async function playBettingGame(type, choice) {
     if (UserState.data.points < betAmount) { alert("포인트 부족"); return; }
     if (await usePoints(betAmount)) {
         await updateArcadeStat('betting');
-        msgEl.textContent = "결과 확인 중...";
+        msgEl.textContent = "주사위를 흔드는 중...";
         setTimeout(async () => {
-            let win = false; let resultText = "";
-            if (type === 'oddeven') {
-                const num = Math.floor(Math.random() * 100) + 1;
-                win = (choice === 'even' && num % 2 === 0) || (choice === 'odd' && num % 2 !== 0);
-                resultText = `숫자 [${num}]!`;
-            } else if (type === 'dice') {
+            let win = false; 
+            let resultText = "";
+            let winMultiplier = 2;
+
+            if (type === 'dice3') {
+                const d1 = Math.floor(Math.random() * 6) + 1;
+                const d2 = Math.floor(Math.random() * 6) + 1;
+                const d3 = Math.floor(Math.random() * 6) + 1;
+                const sum = d1 + d2 + d3;
+                
+                if (choice === 'small') {
+                    win = sum >= 3 && sum <= 8;
+                    winMultiplier = 3.5;
+                } else if (choice === 'middle') {
+                    win = sum >= 9 && sum <= 12;
+                    winMultiplier = 2;
+                } else if (choice === 'big') {
+                    win = sum >= 13 && sum <= 18;
+                    winMultiplier = 3.5;
+                }
+                resultText = `🎲 [${d1}] [${d2}] [${d3}] = 합계 [${sum}]`;
+            } else {
+                // Fallback for old types if any
                 const dice = Math.floor(Math.random() * 6) + 1;
                 win = (choice === 'high' && dice > 3) || (choice === 'low' && dice <= 3);
                 resultText = `주사위 [${dice}]!`;
             }
-            if (win) { await addPoints(betAmount * 2); msgEl.innerHTML = `<span style="color:var(--accent-secondary)">🎉 성공! ${betAmount*2}P 획득!</span><br><small>${resultText}</small>`; }
-            else { msgEl.innerHTML = `<span style="color:#ff4757">💀 실패...</span><br><small>${resultText}</small>`; }
-        }, 800);
+
+            if (win) { 
+                const winAmount = Math.floor(betAmount * winMultiplier);
+                await addPoints(winAmount); 
+                msgEl.innerHTML = `<span style="color:var(--accent-secondary)">🎉 성공! ${winAmount.toLocaleString()}P 획득!</span><br><small>${resultText}</small>`; 
+            } else { 
+                msgEl.innerHTML = `<span style="color:#ff4757">💀 실패...</span><br><small>${resultText}</small>`; 
+            }
+        }, 1000);
     }
 }
 
