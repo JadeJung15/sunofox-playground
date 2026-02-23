@@ -1243,9 +1243,9 @@ function renderArcade() {
                     </div>
                     <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.85rem;"></div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">1회 (50P)</button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">5회 (200P)</button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">10회 (350P 🔥)</button>
+                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">1회 (300P)</button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">5회 (1350P)</button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">10회 (2500P 🔥)</button>
                     </div>
                 </div>
 

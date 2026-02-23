@@ -115,10 +115,10 @@ async function playUpDown() {
 async function playAlchemy(count) {
     if (!UserState.user) return;
     
-    // 연금술 비용 조정 (수익성 밸런스 패치)
-    let cost = 100 * count;
-    if (count === 5) cost = 450;
-    else if (count === 10) cost = 800;
+    // 연금술 비용 조정 (가챠의 3배 가격으로 벨런스 상향)
+    let cost = 300;
+    if (count === 5) cost = 1350;
+    else if (count === 10) cost = 2500;
 
     const gradeSelect = document.getElementById('alchemy-grade-select');
     if (!gradeSelect) return;
