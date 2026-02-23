@@ -1032,7 +1032,7 @@ function renderProfile() {
                         <div style="display:flex; flex-direction:column; padding: 1rem; border-bottom: 1px solid var(--border-color); gap: 0.5rem;">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div style="display:flex; flex-direction:column; overflow:hidden; flex:1;">
-                                    <span style="font-size:0.9rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-main);">${data.nickname || '익명'} <span style="font-size:0.75rem; color:var(--text-sub); font-weight:normal;">(${data.originalName || '미기록'})</span></span>
+                                    <span style="font-size:0.9rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-main);">${data.nickname || '익명'} <span style="font-size:0.75rem; color:var(--accent-color); font-weight:normal;">(${data.originalName || data.nickname || '정보없음'})</span></span>
                                     <small style="font-size:0.65rem; color:var(--text-sub); font-family:monospace;">${d.id}</small>
                                 </div>
                                 <div style="display:flex; gap:0.4rem;">

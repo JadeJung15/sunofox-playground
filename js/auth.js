@@ -121,7 +121,12 @@ async function loadUserData(user) {
     
     // 기존 유저 데이터 복구: originalName이 없는 경우 채워넣음
     if (!UserState.data.originalName && user.displayName) {
-        await updateDoc(userRef, { originalName: user.displayName });
+        const updateObj = { originalName: user.displayName };
+        // 만약 닉네임 변경을 한 번도 안 했다면, 현재 닉네임이 구글 이름일 확률이 높음
+        if (UserState.data.nicknameChanged === undefined) {
+            updateObj.nicknameChanged = false;
+        }
+        await updateDoc(userRef, updateObj);
         UserState.data.originalName = user.displayName;
     }
 
