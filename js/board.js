@@ -9,7 +9,8 @@ import {
     getDocs, 
     serverTimestamp,
     deleteDoc,
-    doc
+    doc,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function renderBoard(container) {
@@ -84,35 +85,129 @@ async function loadPosts(container) {
         const snap = await getDocs(q);
         if (snap.empty) { container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">게시글이 없습니다.</p>`; return; }
 
-        container.innerHTML = snap.docs.map(docSnap => {
+        container.innerHTML = ''; // 초기화
+
+        for (const docSnap of snap.docs) {
             const data = docSnap.data();
+            const postId = docSnap.id;
             const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
             const canDelete = UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin);
             
+            const postEl = document.createElement('div');
+            postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} fade-in`;
+            postEl.innerHTML = `
+                <div class="post-header">
+                    <div class="post-author-info">
+                        <div class="author-emoji-circle">${data.authorEmoji || '👤'}</div>
+                        <span class="post-author" style="color:${data.authorColor || 'var(--text-main)'}">${data.author}</span>
+                    </div>
+                    <span class="post-date">${date}</span>
+                </div>
+                <div class="post-content">${data.content}</div>
+                <div class="post-footer">
+                    <button class="btn-toggle-comments" data-id="${postId}">💬 댓글</button>
+                    ${canDelete ? `<button class="btn-delete" data-id="${postId}">삭제</button>` : ''}
+                </div>
+                <div id="comment-section-${postId}" class="comment-section" style="display:none;">
+                    <div id="comments-list-${postId}" class="comments-list"></div>
+                    <div class="comment-form">
+                        <input type="text" id="comment-input-${postId}" placeholder="댓글을 입력하세요..." maxlength="100">
+                        <button class="btn-submit-comment" data-id="${postId}">작성</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(postEl);
+
+            // 삭제 버튼 이벤트
+            const deleteBtn = postEl.querySelector('.btn-delete');
+            if (deleteBtn) {
+                deleteBtn.onclick = async () => {
+                    if (confirm("게시글을 삭제하시겠습니까?")) {
+                        await deleteDoc(doc(db, "posts", postId));
+                        loadPosts(container);
+                    }
+                };
+            }
+
+            // 댓글창 토글
+            const toggleCommentsBtn = postEl.querySelector('.btn-toggle-comments');
+            const commentSection = postEl.querySelector(`#comment-section-${postId}`);
+            toggleCommentsBtn.onclick = () => {
+                const isOpen = commentSection.style.display === 'block';
+                commentSection.style.display = isOpen ? 'none' : 'block';
+                if (!isOpen) loadComments(postId);
+            };
+
+            // 댓글 등록 버튼
+            const submitCommentBtn = postEl.querySelector('.btn-submit-comment');
+            const commentInput = postEl.querySelector(`#comment-input-${postId}`);
+            submitCommentBtn.onclick = async () => {
+                if (!UserState.user) return alert("로그인이 필요합니다.");
+                const content = commentInput.value.trim();
+                if (!content) return;
+
+                try {
+                    submitCommentBtn.disabled = true;
+                    await addDoc(collection(db, "posts", postId, "comments"), {
+                        uid: UserState.user.uid,
+                        author: UserState.data.nickname,
+                        authorEmoji: UserState.data.emoji || "👤",
+                        content: content,
+                        createdAt: serverTimestamp()
+                    });
+                    commentInput.value = '';
+                    loadComments(postId);
+                } catch (e) {
+                    alert("댓글 등록 실패");
+                } finally {
+                    submitCommentBtn.disabled = false;
+                }
+            };
+        }
+    } catch (e) { container.innerHTML = `<p class="error-msg">로드 오류</p>`; }
+}
+
+async function loadComments(postId) {
+    const listContainer = document.getElementById(`comments-list-${postId}`);
+    if (!listContainer) return;
+
+    try {
+        const q = query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc"));
+        const snap = await getDocs(q);
+        
+        if (snap.empty) {
+            listContainer.innerHTML = '<p class="text-sub" style="font-size:0.75rem; padding:0.5rem;">첫 댓글을 남겨보세요!</p>';
+            return;
+        }
+
+        listContainer.innerHTML = snap.docs.map(dSnap => {
+            const d = dSnap.data();
+            const date = d.createdAt ? new Date(d.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
+            const canDelete = UserState.user && (d.uid === UserState.user.uid || UserState.isAdmin);
+
             return `
-                <div class="post-item ${data.isPremium ? 'premium-post' : ''} fade-in">
-                    <div class="post-header">
-                        <div class="post-author-info">
-                            <div class="author-emoji-circle">${data.authorEmoji || '👤'}</div>
-                            <span class="post-author" style="color:${data.authorColor || 'var(--text-main)'}">${data.author}</span>
-                        </div>
-                        <span class="post-date">${date}</span>
+                <div class="comment-item">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:1rem;">${d.authorEmoji || '👤'}</span>
+                        <span style="font-weight:800; font-size:0.8rem;">${d.author}</span>
+                        <span style="font-size:0.7rem; color:var(--text-sub);">${date}</span>
+                        ${canDelete ? `<button class="btn-comment-delete" data-postid="${postId}" data-id="${dSnap.id}" style="background:none; border:none; color:#ef4444; font-size:0.7rem; cursor:pointer; padding:0;">삭제</button>` : ''}
                     </div>
-                    <div class="post-content">${data.content}</div>
-                    <div class="post-footer">
-                        ${canDelete ? `<button class="btn-delete" data-id="${docSnap.id}">삭제</button>` : ''}
-                    </div>
+                    <p style="font-size:0.85rem; margin-top:0.25rem; color:var(--text-main);">${d.content}</p>
                 </div>
             `;
         }).join('');
 
-        container.querySelectorAll('.btn-delete').forEach(btn => {
+        // 댓글 삭제 이벤트
+        listContainer.querySelectorAll('.btn-comment-delete').forEach(btn => {
             btn.onclick = async () => {
-                if (confirm("삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, "posts", btn.dataset.id));
-                    loadPosts(container);
+                if (confirm("댓글을 삭제하시겠습니까?")) {
+                    await deleteDoc(doc(db, "posts", postId, "comments", btn.dataset.id));
+                    loadComments(postId);
                 }
             };
         });
-    } catch (e) { container.innerHTML = `<p class="error-msg">로드 오류</p>`; }
+    } catch (e) {
+        console.error(e);
+    }
 }

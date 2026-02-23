@@ -288,7 +288,80 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
 .post-content { font-size: 1rem; color: var(--text-main); line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
 
-.post-footer { display: flex; justify-content: flex-end; align-items: center; margin-top: 1rem; gap: 1rem; }
+.post-footer { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-top: 1rem; 
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+  gap: 1rem; 
+}
+
+.btn-toggle-comments {
+  background: none;
+  border: none;
+  color: var(--text-sub);
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.btn-toggle-comments:hover { color: var(--accent-color); }
+
+/* Comment System Styles */
+.comment-section {
+  margin-top: 1rem;
+  background: var(--bg-color);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  border: 1px solid var(--border-color);
+}
+
+.comments-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.comment-item {
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.comment-item:last-child { border-bottom: none; }
+
+.comment-form {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.comment-form input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  font-size: 0.85rem;
+  color: var(--text-main);
+}
+
+.btn-submit-comment {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  padding: 0 1.25rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
 .btn-delete { 
   background: none; border: none; color: #ef4444; font-size: 0.75rem; 
   font-weight: 700; cursor: pointer; opacity: 0.6; transition: 0.2s;
