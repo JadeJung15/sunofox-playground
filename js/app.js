@@ -1020,14 +1020,26 @@ function renderProfile() {
                 snap.forEach(d => {
                     const data = d.data();
                     users.push(`
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.8rem; border-bottom: 1px solid var(--border-color);">
-                            <div style="display:flex; flex-direction:column; overflow:hidden;">
-                                <span style="font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.nickname || '익명'}</span>
-                                <small style="font-size:0.65rem; color:var(--text-sub);">${d.id}</small>
+                        <div style="display:flex; flex-direction:column; padding: 1rem; border-bottom: 1px solid var(--border-color); gap: 0.5rem;">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="display:flex; flex-direction:column; overflow:hidden; flex:1;">
+                                    <span style="font-size:0.9rem; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text-main);">${data.nickname || '익명'}</span>
+                                    <small style="font-size:0.65rem; color:var(--text-sub); font-family:monospace;">${d.id}</small>
+                                </div>
+                                <div style="display:flex; gap:0.4rem;">
+                                    <button class="admin-view-log-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem; border-color:var(--accent-color); color:var(--accent-color);">로그</button>
+                                    <button class="admin-select-user-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem;">선택</button>
+                                </div>
                             </div>
-                            <div style="display:flex; gap:0.4rem;">
-                                <button class="admin-view-log-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem; border-color:var(--accent-color); color:var(--accent-color);">로그</button>
-                                <button class="admin-select-user-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem;">선택</button>
+                            <div style="display:flex; gap:1rem; background:var(--bg-color); padding:0.5rem 0.75rem; border-radius:6px; border:1px solid var(--border-color);">
+                                <div style="display:flex; flex-direction:column;">
+                                    <small style="font-size:0.6rem; color:var(--text-sub); font-weight:700;">보유 포인트</small>
+                                    <span style="font-size:0.8rem; font-weight:900; color:var(--accent-secondary);">${(data.points || 0).toLocaleString()}P</span>
+                                </div>
+                                <div style="display:flex; flex-direction:column; border-left:1px solid var(--border-color); padding-left:1rem;">
+                                    <small style="font-size:0.6rem; color:var(--text-sub); font-weight:700;">랭킹 점수</small>
+                                    <span style="font-size:0.8rem; font-weight:900; color:var(--accent-color);">${(data.totalScore || 0).toLocaleString()}점</span>
+                                </div>
                             </div>
                         </div>
                     `);
