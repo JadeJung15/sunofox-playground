@@ -1133,10 +1133,82 @@ async function renderResult(testId, answers) {
     document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
 }
 
-function renderPrivacy() { app.innerHTML = `<div class="card legal-page fade-in"><h2>🔒 개인정보처리방침</h2><p>귀하의 데이터는 안전하게 보호됩니다.</p></div>`; }
-function renderAbout() { app.innerHTML = `<div class="card guide-container fade-in"><h2>✨ 서비스 소개</h2><p>SevenCheck Studio는 심리 분석과 성장의 재미를 결합한 플랫폼입니다.</p></div>`; }
-function renderTerms() { app.innerHTML = `<div class="card legal-page fade-in"><h2>📜 이용약관</h2><p>이용 규칙을 준수해 주세요.</p></div>`; }
-function renderContact() { app.innerHTML = `<div class="card guide-container fade-in" style="text-align:center;"><h2>📧 문의하기</h2><p>support@sevencheck.studio</p></div>`; }
+function renderPrivacy() {
+    app.innerHTML = `
+        <div class="card legal-page fade-in">
+            <h2 style="margin-bottom: 2rem; color: var(--accent-color);">🔒 개인정보처리방침</h2>
+            <div class="legal-content" style="line-height: 1.8; font-size: 0.95rem; color: var(--text-main);">
+                <p>SevenCheck(이하 '회사')은 고객님의 개인정보를 중요시하며, "개인정보보호법" 등 관련 법령을 준수하고 있습니다.</p>
+                <h4 style="margin-top: 1.5rem;">1. 수집하는 개인정보 항목</h4>
+                <p>회사는 서비스 이용을 위해 구글 계정 정보(이름, 이메일, 프로필 사진)를 수집합니다. 또한 서비스 이용 과정에서 포인트 획득 및 사용 이력, 게임 통계 등이 생성될 수 있습니다.</p>
+                <h4 style="margin-top: 1.5rem;">2. 개인정보의 수집 및 이용목적</h4>
+                <p>- 서비스 제공 및 본인 확인<br>- 개인 맞춤형 심리 분석 결과 제공<br>- 오락실 포인트 및 아이템 관리<br>- 랭킹 등재 및 커뮤니티 활동 관리</p>
+                <h4 style="margin-top: 1.5rem;">3. 개인정보의 보유 및 이용기간</h4>
+                <p>회원 탈퇴 시까지 보유하며, 법령에 따른 의무 보유 기간이 있는 경우 해당 기간까지 보관 후 지체 없이 파기합니다.</p>
+                <h4 style="margin-top: 1.5rem;">4. 이용자의 권리</h4>
+                <p>이용자는 언제든지 자신의 개인정보를 조회하거나 수정할 수 있으며, 회원 탈퇴를 통해 개인정보 이용 동의를 철회할 수 있습니다.</p>
+            </div>
+        </div>`;
+}
+
+function renderAbout() {
+    app.innerHTML = `
+        <div class="card guide-container fade-in">
+            <h2 style="margin-bottom: 1.5rem; color: var(--accent-color);">✨ SevenCheck: 나를 찾는 여정</h2>
+            <div style="line-height: 1.9; color: var(--text-main);">
+                <p style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem;">"딱 7번의 질문으로, 당신의 내면을 비춥니다."</p>
+                <p>SevenCheck Studio는 심리학적 통찰과 디지털 재미를 결합하여, 바쁜 현대인들이 잠시나마 자신을 돌아볼 수 있는 '마음의 쉼터'를 지향합니다.</p>
+                <div style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); margin: 2rem 0;">
+                    <h4 style="margin-bottom: 0.8rem;">🚀 우리의 미션</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✅ 정교한 분석을 통한 자아 발견 도구 제공</li>
+                        <li>✅ 심리 테스트와 게임화를 통한 즐거운 사용자 경험</li>
+                        <li>✅ 수집과 성장의 재미를 느낄 수 있는 오락실 시스템</li>
+                    </ul>
+                </div>
+                <p>우리는 단순히 결과를 보여주는 것에 그치지 않고, 당신이 가진 고유한 매력(Aura)을 발견하고 이를 가꿀 수 있는 커뮤니티를 만들어 갑니다.</p>
+            </div>
+        </div>`;
+}
+
+function renderTerms() {
+    app.innerHTML = `
+        <div class="card legal-page fade-in">
+            <h2 style="margin-bottom: 2rem; color: var(--accent-color);">📜 이용약관</h2>
+            <div class="legal-content" style="line-height: 1.8; font-size: 0.95rem; color: var(--text-main);">
+                <h4 style="margin-top: 1.5rem;">1. 서비스 이용</h4>
+                <p>이용자는 본 약관을 준수해야 하며, 타인의 정보를 도용하거나 서비스의 정상적인 운영을 방해하는 행위를 해서는 안 됩니다.</p>
+                <h4 style="margin-top: 1.5rem;">2. 포인트 및 아이템 (Arcade System)</h4>
+                <p>- 서비스 내에서 획득한 포인트(P)와 아이템은 현금으로 환전할 수 없습니다.<br>- 부정한 방법으로 획득한 포인트는 사전 고지 없이 회수될 수 있습니다.<br>- 아이템의 가치는 서비스 업데이트에 따라 변동될 수 있습니다.</p>
+                <h4 style="margin-top: 1.5rem;">3. 커뮤니티 이용 규칙</h4>
+                <p>게시판 이용 시 욕설, 비방, 광고성 게시글은 관리자에 의해 삭제될 수 있으며, 반복 시 이용이 제한될 수 있습니다.</p>
+                <h4 style="margin-top: 1.5rem;">4. 면책 사항</h4>
+                <p>심리 테스트 결과는 통계적 경향성에 기반한 것으로, 의학적 진단이나 법적 판단의 근거로 사용될 수 없습니다.</p>
+            </div>
+        </div>`;
+}
+
+function renderContact() {
+    app.innerHTML = `
+        <div class="card guide-container fade-in" style="text-align:center; padding: 4rem 2rem;">
+            <div style="font-size: 4rem; margin-bottom: 1.5rem;">📧</div>
+            <h2 style="margin-bottom: 1rem; color: var(--accent-color);">무엇을 도와드릴까요?</h2>
+            <p style="color: var(--text-sub); margin-bottom: 2.5rem;">서비스 이용 중 불편한 점이나 제휴 제안이 있으시면 언제든 연락주세요.</p>
+            
+            <div style="display: grid; gap: 1rem; max-width: 400px; margin: 0 auto; text-align: left;">
+                <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <small style="color: var(--text-sub); display: block; margin-bottom: 0.3rem;">공식 이메일</small>
+                    <strong style="font-size: 1.1rem;">support@sevencheck.studio</strong>
+                </div>
+                <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                    <small style="color: var(--text-sub); display: block; margin-bottom: 0.3rem;">운영 시간</small>
+                    <strong style="font-size: 1.1rem;">평일 10:00 - 18:00 (KST)</strong>
+                </div>
+            </div>
+            
+            <p style="margin-top: 3rem; font-size: 0.85rem; color: var(--text-sub);">보통 영업일 기준 24시간 이내에 답변을 드립니다.</p>
+        </div>`;
+}
 
 function renderGuide() {
     app.innerHTML = `
