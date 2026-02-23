@@ -785,13 +785,6 @@ async function renderHome(hash) {
                     </div>
                 </div>
 
-                <div class="quick-menu">
-                    <a href="#personality" class="quick-item"><span class="quick-icon">🧠</span><span class="quick-label">성격 분석</span></a>
-                    <a href="#face" class="quick-item"><span class="quick-icon">✨</span><span class="quick-label">비주얼</span></a>
-                    <a href="#fun" class="quick-item"><span class="quick-icon">🎨</span><span class="quick-label">재미</span></a>
-                    <a href="#fortune" class="quick-item"><span class="quick-icon">🔮</span><span class="quick-label">오늘 운세</span></a>
-                </div>
-
                 <div class="banner-grid" style="margin-top: 2rem;">
                     <div class="arcade-preview-card" onclick="location.hash='#arcade'">
                         <div style="position:relative; z-index:1;">
