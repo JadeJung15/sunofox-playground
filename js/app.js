@@ -1,5 +1,5 @@
 // js/app.js - Premium Content & Core Logic
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
@@ -694,6 +694,12 @@ async function handleLike(testId) {
 }
 
 async function router() {
+    // 인증 상태가 확정될 때까지 대기
+    if (app.innerHTML === '') {
+        app.innerHTML = '<div style="text-align:center; padding:5rem;"><div class="loading-spinner">보안 연결 확인 중...</div></div>';
+    }
+    await authReady;
+
     const hash = window.location.hash || '#home';
     navLinks.forEach(link => {
         const filter = link.dataset.filter;

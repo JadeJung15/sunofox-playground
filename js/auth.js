@@ -24,6 +24,9 @@ export const UserState = {
     isMaster: false
 };
 
+let authResolve;
+export const authReady = new Promise(resolve => authResolve = resolve);
+
 // 랜덤 닉네임 생성용 데이터
 const ADJECTIVES = ['용감한', '신비로운', '행복한', '빛나는', '똑똑한', '우아한', '재빠른', '포근한', '화려한', '은은한', '날렵한', '든든한'];
 const NOUNS = ['여우', '사자', '호랑이', '고양이', '팬더', '독수리', '돌고래', '토끼', '유니콘', '피닉스', '강아지', '늑대'];
@@ -80,6 +83,7 @@ export function initAuth() {
             UserState.user = null; UserState.data = null; UserState.isAdmin = false; UserState.isMaster = false;
             updateUI(false);
         }
+        authResolve(); // 인증 상태 확인 완료 신호
     });
 
     document.addEventListener('click', async (e) => {
