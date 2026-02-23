@@ -222,14 +222,15 @@ async function handleEmojiExchange(emoji) {
             const item = currentInv.shift();
             scoreToDeduct -= ITEM_VALUES[item];
         }
+        const newScore = Math.max(0, (UserState.data.totalScore || 0) - price);
         await updateDoc(userRef, {
             unlockedEmojis: arrayUnion(emoji),
             inventory: currentInv,
-            totalScore: increment(-price),
+            totalScore: newScore,
             emoji: emoji
         });
         addLog(UserState.user.uid, 'score', -price, `이모지 교환: ${emoji}`);
-        UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore -= price; UserState.data.emoji = emoji;
+        UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore = newScore; UserState.data.emoji = emoji;
         updateUI(); alert("교환 완료!");
         if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
     } catch (e) { alert("오류 발생"); }
@@ -294,9 +295,16 @@ export async function chargeUserPoints(targetUid, amount, reason = "관리자 �
     if (!UserState.isAdmin) return false;
     const finalUid = targetUid || UserState.user.uid;
     try {
-        await updateDoc(doc(db, "users", finalUid), { points: increment(amount) });
+        const userRef = doc(db, "users", finalUid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) return false;
+        
+        const currentPoints = userSnap.data().points || 0;
+        const newPoints = Math.max(0, currentPoints + amount); // 0 미만 방지
+        
+        await updateDoc(userRef, { points: newPoints });
         addLog(finalUid, 'points', amount, reason);
-        if (finalUid === UserState.user.uid) { UserState.data.points += amount; updateUI(); }
+        if (finalUid === UserState.user.uid) { UserState.data.points = newPoints; updateUI(); }
         return true;
     } catch (e) { return false; }
 }
@@ -305,9 +313,16 @@ export async function chargeUserScore(targetUid, amount, reason = "관리자 권
     if (!UserState.isAdmin) return false;
     const finalUid = targetUid || UserState.user.uid;
     try {
-        await updateDoc(doc(db, "users", finalUid), { totalScore: increment(amount) });
+        const userRef = doc(db, "users", finalUid);
+        const userSnap = await getDoc(userRef);
+        if (!userSnap.exists()) return false;
+
+        const currentScore = userSnap.data().totalScore || 0;
+        const newScore = Math.max(0, currentScore + amount); // 0 미만 방지
+
+        await updateDoc(userRef, { totalScore: newScore });
         addLog(finalUid, 'score', amount, reason);
-        if (finalUid === UserState.user.uid) { UserState.data.totalScore += amount; updateUI(); }
+        if (finalUid === UserState.user.uid) { UserState.data.totalScore = newScore; updateUI(); }
         return true;
     } catch (e) { return false; }
 }
@@ -315,17 +330,21 @@ export async function chargeUserScore(targetUid, amount, reason = "관리자 권
 export async function addPoints(amount, reason = "테스트 완료 보상") {
     if (!UserState.user) return false;
     try {
-        await updateDoc(doc(db, "users", UserState.user.uid), { points: increment(amount) });
+        const userRef = doc(db, "users", UserState.user.uid);
+        const newPoints = Math.max(0, (UserState.data.points || 0) + amount); // 0 미만 방지
+        await updateDoc(userRef, { points: newPoints });
         addLog(UserState.user.uid, 'points', amount, reason);
-        UserState.data.points += amount; updateUI(); return true;
+        UserState.data.points = newPoints; updateUI(); return true;
     } catch (e) { return false; }
 }
 
 export async function usePoints(amount, reason = "서비스 이용") {
     if (!UserState.user || UserState.data.points < amount) { alert("포인트 부족"); return false; }
     try {
-        await updateDoc(doc(db, "users", UserState.user.uid), { points: increment(-amount) });
+        const userRef = doc(db, "users", UserState.user.uid);
+        const newPoints = Math.max(0, (UserState.data.points || 0) - amount); // 0 미만 방지
+        await updateDoc(userRef, { points: newPoints });
         addLog(UserState.user.uid, 'points', -amount, reason);
-        UserState.data.points -= amount; updateUI(); return true;
+        UserState.data.points = newPoints; updateUI(); return true;
     } catch (e) { return false; }
 }

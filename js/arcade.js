@@ -335,17 +335,20 @@ async function sellItem(itemName, qty = 1) {
 
         if (removedCount > 0) {
             const finalPrice = Math.floor(val * 0.7) * removedCount;
-            const finalScore = val * removedCount;
+            const finalScoreLoss = val * removedCount;
+            
+            const newPoints = Math.max(0, (UserState.data.points || 0) + finalPrice);
+            const newScore = Math.max(0, (UserState.data.totalScore || 0) - finalScoreLoss);
 
             await updateDoc(userRef, {
                 inventory: currentInv,
-                points: increment(finalPrice),
-                totalScore: increment(-finalScore)
+                points: newPoints,
+                totalScore: newScore
             });
             
             UserState.data.inventory = currentInv;
-            UserState.data.points += finalPrice;
-            UserState.data.totalScore -= finalScore;
+            UserState.data.points = newPoints;
+            UserState.data.totalScore = newScore;
             updateUI();
             alert(`${removedCount}개 판매 완료! +${finalPrice.toLocaleString()}P 획득`);
         }
