@@ -198,18 +198,28 @@ async function changeNickname() {
     const input = document.getElementById('nickname-input');
     const msg = document.getElementById('nickname-msg');
     if (!UserState.user || !input?.value.trim()) return;
+    
     const newName = input.value.trim();
-    const now = Date.now();
-    const lastChange = UserState.data.lastNicknameChange ? (UserState.data.lastNicknameChange.toMillis ? UserState.data.lastNicknameChange.toMillis() : UserState.data.lastNicknameChange) : 0;
-    if (!UserState.isAdmin && (now - lastChange < 30 * 24 * 60 * 60 * 1000)) {
-        const days = Math.ceil((lastChange + 30*24*60*60*1000 - now) / (24*60*60*1000));
-        if (msg) msg.textContent = `${days}일 후 변경 가능합니다.`; return;
-    }
+    if (newName.length < 2 || newName.length > 10) return alert("닉네임은 2~10자 사이로 입력해주세요.");
+    
+    const cost = 5000; // 닉네임 변경 비용
+    if (!confirm(`닉네임을 [${newName}](으)로 변경하시겠습니까?\n변경 시 ${cost.toLocaleString()}P가 소모됩니다.`)) return;
+
     try {
-        await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, lastNicknameChange: serverTimestamp() });
-        UserState.data.nickname = newName; UserState.data.lastNicknameChange = now; updateUI();
-        if (msg) msg.textContent = "변경되었습니다.";
-    } catch (e) { console.error(e); }
+        if (await usePoints(cost, `닉네임 변경: ${newName}`)) {
+            await updateDoc(doc(db, "users", UserState.user.uid), { 
+                nickname: newName, 
+                lastNicknameChange: serverTimestamp() 
+            });
+            UserState.data.nickname = newName;
+            updateUI();
+            if (msg) msg.textContent = "성공적으로 변경되었습니다!";
+            input.value = '';
+        }
+    } catch (e) { 
+        console.error(e);
+        alert("변경 중 오류가 발생했습니다.");
+    }
 }
 
 export async function chargeUserPoints(targetUid, amount, reason = "관리자 권한으로 집행") {
