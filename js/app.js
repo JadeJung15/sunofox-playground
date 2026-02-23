@@ -710,6 +710,7 @@ async function router() {
     else if (hash === '#ranking') await renderRanking(app);
     else if (hash === '#guide') renderGuide();
     else if (hash === '#profile') renderProfile();
+    else if (hash === '#7check') renderCategorySelection();
     else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
     else {
         currentFilter = categoryMap[hash] || '전체';
@@ -721,6 +722,51 @@ async function router() {
 // =================================================================
 // 3. Page Renders
 // =================================================================
+
+function renderCategorySelection() {
+    app.innerHTML = `
+        <div class="category-selection-page fade-in">
+            <div class="section-header" style="text-align:center; flex-direction:column; gap:1rem; margin-bottom:3.5rem; margin-top: 2rem;">
+                <h2 class="section-title" style="font-size:2.2rem; width:100%; text-align:center;">✨ 어떤 분석을 원하시나요?</h2>
+                <p class="text-sub" style="font-weight:600; font-size: 1.1rem;">당신의 본모습을 찾아줄 7가지 질문이 기다리고 있습니다.</p>
+            </div>
+            <div class="category-large-grid">
+                <div class="cat-large-card" onclick="location.hash='#personality'" style="--cat-color: var(--color-personality);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🧠</span>
+                        <h3>성격 분석</h3>
+                        <p>내면의 심리와 숨겨진 성향을<br>심층 분석합니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#face'" style="--cat-color: var(--color-face);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">✨</span>
+                        <h3>비주얼/얼굴</h3>
+                        <p>이목구비와 첫인상이 주는<br>고유한 매력을 진단합니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#fortune'" style="--cat-color: var(--color-fortune);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🔮</span>
+                        <h3>오늘의 운세</h3>
+                        <p>영적 타로와 사주 관법으로<br>오늘의 운을 점쳐봅니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#fun'" style="--cat-color: var(--color-fun);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🎨</span>
+                        <h3>재미/심리</h3>
+                        <p>일상의 소소한 취향과<br>재미있는 심리 테스트입니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
 
 async function renderHome(hash) {
     await fetchAllLikes();
@@ -735,7 +781,7 @@ async function renderHome(hash) {
                         <span class="hero-tag">✨ 7번의 질문으로 찾는 나</span>
                         <h1>당신이 몰랐던<br>진짜 모습을 확인하세요</h1>
                         <p>심리학적 기반의 정교한 분석 리포트와<br>즐거운 미니게임이 기다리고 있습니다.</p>
-                        <button class="btn-primary" style="margin: 0 auto; padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#personality'">테스트 시작하기</button>
+                        <button class="btn-primary" style="margin: 0 auto; padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#7check'">테스트 시작하기</button>
                     </div>
                 </div>
 

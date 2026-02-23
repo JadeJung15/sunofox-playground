@@ -678,3 +678,104 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     padding: 0 1rem;
   }
 }
+
+/* =================================================================
+   Category Selection Page Styling
+   ================================================================= */
+.category-selection-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+.category-large-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.cat-large-card {
+  background: var(--card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-large-card:hover {
+  transform: translateY(-10px);
+  border-color: var(--cat-color);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.cat-large-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 6px;
+  background: var(--cat-color);
+  opacity: 0.8;
+}
+
+.cat-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1.5rem;
+  transition: transform 0.3s ease;
+}
+
+.cat-large-card:hover .cat-icon {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.cat-large-card h3 {
+  font-size: 1.6rem;
+  font-weight: 900;
+  margin-bottom: 1rem;
+  color: var(--text-main);
+}
+
+.cat-large-card p {
+  color: var(--text-sub);
+  font-size: 1rem;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.cat-go {
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--cat-color);
+  background: var(--bg-color);
+  padding: 8px 20px;
+  border-radius: 50px;
+  transition: all 0.3s;
+  border: 1px solid var(--border-color);
+}
+
+.cat-large-card:hover .cat-go {
+  background: var(--cat-color);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: transparent;
+}
+
+/* Mobile Category Selection */
+@media (max-width: 600px) {
+  .category-large-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  .cat-large-card {
+    padding: 2.5rem 1.5rem;
+  }
+}
