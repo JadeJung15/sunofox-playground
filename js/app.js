@@ -720,6 +720,7 @@ async function router() {
     else if (hash === '#board') await renderBoard(app);
     else if (hash === '#ranking') await renderRanking(app);
     else if (hash === '#guide') renderGuide();
+    else if (hash === '#book') await renderEncyclopedia();
     else if (hash === '#profile') renderProfile();
     else if (hash === '#admin') renderAdmin();
     else if (hash === '#7check') renderCategorySelection();
@@ -1463,11 +1464,34 @@ function renderContact() {
 async function renderEncyclopedia() {
     const discovered = UserState.data?.discoveredItems || [];
     
+    const ITEM_DESCRIPTIONS = {
+        '💩 돌멩이': '어디서나 흔히 볼 수 있는 평범한 돌멩이입니다. 가치는 낮지만 수집의 시작입니다.',
+        '💊 물약': '기력을 회복시켜주는 기초적인 물약입니다. 연금술의 단골 재료입니다.',
+        '🌱 묘목': '작고 소중한 생명의 시작입니다. 정성껏 돌보면 큰 나무가 될 잠재력이 있습니다.',
+        '🥉 동메달': '노력의 결실로 얻은 구리빛 메달입니다. 수집가로서의 첫 발걸음을 상징합니다.',
+        '🥈 은메달': '뛰어난 성취를 증명하는 은빛 메달입니다. 상당한 가치를 지니고 있습니다.',
+        '🌳 일반 나무': '울창한 잎을 가진 평범하지만 든든한 나무입니다. 자연의 기운을 담고 있습니다.',
+        '🥇 금메달': '최고의 영광을 상징하는 황금빛 메달입니다. 모든 수집가가 탐내는 귀한 아이템입니다.',
+        '🍀 행운의 클로버': '발견하는 것만으로도 행운을 가져다준다는 희귀한 네잎 클로버입니다.',
+        '🌲 전나무': '추운 겨울에도 푸르름을 잃지 않는 강인한 나무입니다. 고결한 분위기를 자아냅니다.',
+        '🍎 사과나무': '달콤한 결실을 맺는 풍요로운 나무입니다. 보기만 해도 마음이 풍성해집니다.',
+        '💎 다이아몬드': '영원히 변치 않는 광채를 뿜어내는 최상급 보석입니다. 엄청난 가치를 자랑합니다.',
+        '🧪 현자의 돌': '모든 물질을 금으로 바꿀 수 있다는 전설의 촉매제입니다. 연금술의 정점입니다.',
+        '🧬 인공 생명체': '금단의 연금술로 탄생한 신비로운 존재입니다. 생명의 신비를 담고 있습니다.',
+        '⚡ 번개 병': '폭풍우 치는 밤의 강력한 번개를 병 속에 가두었습니다. 엄청난 에너지가 요동칩니다.',
+        '🌌 은하수 가루': '밤하늘의 은하수를 한 줌 담아온 듯한 신비로운 가루입니다. 우주의 기운이 느껴집니다.',
+        '✨ 생명의 나무': '신화 속에서나 존재한다는 전설의 나무입니다. 영원한 생명력의 원천입니다.'
+    };
+
     app.innerHTML = `
         <div class="book-page fade-in">
+            <button onclick="location.hash='#guide'" class="btn-secondary" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 8px; font-weight: 800; padding: 0.6rem 1.2rem; background: var(--card-bg); border-radius: 50px; box-shadow: var(--shadow-sm);">
+                ← 가이드로 돌아가기
+            </button>
+
             <div class="card book-header" style="background: linear-gradient(135deg, #1e293b, #334155); color:#fff; border:none; padding:3rem 1.5rem; text-align:center; border-radius: var(--radius-lg); margin-bottom:2rem;">
                 <h2 style="font-size:2.2rem; font-weight:900; margin-bottom:0.5rem;">📒 아이템 도감</h2>
-                <p style="opacity:0.9; font-weight:600;">세븐 오락실에서 발견한 모든 보물들의 기록</p>
+                <p style="opacity:0.9; font-weight:600;">세븐 오락실에서 발견한 모든 보물들의 상세 정보</p>
                 <div style="margin-top:1.5rem; display:inline-block; background:rgba(255,255,255,0.1); padding:0.5rem 1.5rem; border-radius:50px; font-size:0.9rem; font-weight:800;">
                     수집률: ${discovered.length} / ${Object.keys(ITEM_VALUES).length} (${Math.round((discovered.length / Object.keys(ITEM_VALUES).length) * 100)}%)
                 </div>
@@ -1479,14 +1503,27 @@ async function renderEncyclopedia() {
                         ${grade === 'LEGENDARY' ? '✨' : grade === 'RARE' ? '💎' : grade === 'UNCOMMON' ? '🥈' : '💩'} 
                         ${grade} 아이템
                     </h3>
-                    <div class="book-grid">
+                    <div class="book-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem;">
                         ${items.map(name => {
                             const isUnlocked = discovered.includes(name);
+                            const icon = name.split(' ')[0];
+                            const label = name.substring(name.indexOf(' ') + 1);
+                            const desc = ITEM_DESCRIPTIONS[name] || '정보가 없습니다.';
+                            
                             return `
-                                <div class="book-item ${isUnlocked ? 'unlocked' : ''}">
-                                    <div style="font-size:2.5rem; margin-bottom:0.5rem;">${isUnlocked ? name.split(' ')[0] : '❓'}</div>
-                                    <span class="item-name">${isUnlocked ? name.substring(name.indexOf(' ') + 1) : '???'}</span>
-                                    <span class="item-value">${ITEM_VALUES[name]}P</span>
+                                <div class="book-item-card ${isUnlocked ? 'unlocked' : 'locked'}" style="background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 15px; padding: 1.5rem; transition: transform 0.2s, box-shadow 0.2s; ${isUnlocked ? '' : 'opacity: 0.6; filter: grayscale(0.8);'}">
+                                    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+                                        <div style="font-size: 2.5rem; background: var(--bg-color); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; border: 1px solid var(--border-color);">
+                                            ${isUnlocked ? icon : '❓'}
+                                        </div>
+                                        <div>
+                                            <h4 style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.2rem;">${isUnlocked ? label : '???'}</h4>
+                                            <span style="font-size: 0.85rem; font-weight: 900; color: var(--accent-color);">${ITEM_VALUES[name]}P</span>
+                                        </div>
+                                    </div>
+                                    <p style="font-size: 0.85rem; line-height: 1.6; color: var(--text-sub); min-height: 3rem;">
+                                        ${isUnlocked ? desc : '아직 발견하지 못한 아이템입니다. 오락실 활동을 통해 획득할 수 있습니다.'}
+                                    </p>
                                 </div>
                             `;
                         }).join('')}
@@ -1581,6 +1618,13 @@ function renderGuide() {
                     <p>3. 도배, 욕설, 광고 등 부적절한 활동은 서비스 이용이 제한될 수 있습니다.</p>
                 </div>
             </details>
+
+            <!-- Encyclopedia CTA -->
+            <div class="card" style="margin-top: 2.5rem; background: linear-gradient(135deg, #334155, #1e293b); color: #fff; border: none; text-align: center; padding: 2.5rem 1.5rem;">
+                <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.75rem;">📒 수집한 아이템이 궁금하신가요?</h3>
+                <p style="opacity: 0.8; font-size: 0.9rem; margin-bottom: 1.5rem;">지금까지 발견한 모든 아이템의 상세 정보와 가치를 확인해보세요.</p>
+                <button onclick="location.hash='#book'" class="btn-primary" style="background: var(--accent-color); border: none; padding: 0.8rem 2rem; font-weight: 800;">아이템 도감 열기</button>
+            </div>
         </div>
     `;
 }
