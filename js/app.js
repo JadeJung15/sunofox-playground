@@ -5,7 +5,7 @@ import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
-import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -964,6 +964,15 @@ function renderProfile() {
                         <button id="admin-search-users" class="btn-secondary" style="width:100%; margin-bottom:1rem; border-color:var(--accent-color); color:var(--accent-color);">사용자 목록 불러오기</button>
                         <div id="admin-user-list-container" style="max-height: 200px; overflow-y: auto; margin-bottom: 1.5rem; background: var(--card-bg); border-radius: 8px; border: 1px solid var(--border-color); display: none;"></div>
                         
+                        <!-- 활동 이력 컨테이너 추가 -->
+                        <div id="admin-user-log-container" style="display:none; margin-bottom: 2rem; background: var(--bg-color); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border-color);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                                <h4 style="font-size: 0.95rem;">📋 이용자 활동 이력</h4>
+                                <button onclick="document.getElementById('admin-user-log-container').style.display='none'" style="background:none; border:none; color:var(--text-sub); cursor:pointer; font-weight:800;">닫기 ✕</button>
+                            </div>
+                            <div id="log-list-content" style="display:flex; flex-direction:column; gap:0.5rem; max-height: 400px; overflow-y:auto;"></div>
+                        </div>
+
                         <h4 style="margin-bottom: 1rem; font-size: 0.95rem;">💰 사용자 자산 관리</h4>
                         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
                             <input type="text" id="admin-target-uid" style="padding: 0.8rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);" placeholder="대상 UID (미입력 시 본인)">
@@ -1010,12 +1019,15 @@ function renderProfile() {
                 snap.forEach(d => {
                     const data = d.data();
                     users.push(`
-                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.6rem; border-bottom: 1px solid var(--border-color);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.8rem; border-bottom: 1px solid var(--border-color);">
                             <div style="display:flex; flex-direction:column; overflow:hidden;">
-                                <span style="font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.nickname}</span>
+                                <span style="font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${data.nickname || '익명'}</span>
                                 <small style="font-size:0.65rem; color:var(--text-sub);">${d.id}</small>
                             </div>
-                            <button class="admin-select-user-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem; white-space:nowrap;">등록</button>
+                            <div style="display:flex; gap:0.4rem;">
+                                <button class="admin-view-log-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem; border-color:var(--accent-color); color:var(--accent-color);">로그</button>
+                                <button class="admin-select-user-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem;">선택</button>
+                            </div>
                         </div>
                     `);
                 });
@@ -1026,6 +1038,53 @@ function renderProfile() {
                     btn.onclick = () => {
                         document.getElementById('admin-target-uid').value = btn.dataset.uid;
                         alert(`${btn.dataset.uid} 사용자가 선택되었습니다.`);
+                    };
+                });
+
+                // 로그 보기 이벤트 바인딩
+                listContainer.querySelectorAll('.admin-view-log-btn').forEach(btn => {
+                    btn.onclick = async () => {
+                        const logContainer = document.getElementById('admin-user-log-container');
+                        const logListContent = document.getElementById('log-list-content');
+                        const targetUid = btn.dataset.uid;
+                        
+                        logListContent.innerHTML = '<p class="text-sub">데이터 불러오는 중...</p>';
+                        logContainer.style.display = 'block';
+                        
+                        try {
+                            const q = query(collection(db, "pointLogs"), where("uid", "==", targetUid), orderBy("timestamp", "desc"), limit(50));
+                            const logSnap = await getDocs(q);
+                            
+                            if (logSnap.empty) {
+                                logListContent.innerHTML = '<p class="text-sub" style="text-align:center; padding:1rem;">기록된 내역이 없습니다.</p>';
+                                return;
+                            }
+                            
+                            const logs = [];
+                            logSnap.forEach(ld => {
+                                const l = ld.data();
+                                const date = l.timestamp ? new Date(l.timestamp.toMillis()).toLocaleString() : '진행 중...';
+                                const color = l.amount > 0 ? '#10b981' : '#ef4444';
+                                const prefix = l.amount > 0 ? '+' : '';
+                                
+                                logs.push(`
+                                    <div style="background:var(--card-bg); padding:0.75rem; border-radius:8px; border:1px solid var(--border-color); font-size:0.85rem;">
+                                        <div style="display:flex; justify-content:space-between; margin-bottom:0.25rem;">
+                                            <span style="font-weight:800; color:var(--accent-color); font-size:0.7rem;">${l.type === 'points' ? 'POINT' : 'SCORE'}</span>
+                                            <span style="font-size:0.7rem; color:var(--text-sub);">${date}</span>
+                                        </div>
+                                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                                            <span style="font-weight:600;">${l.reason}</span>
+                                            <span style="font-weight:900; color:${color};">${prefix}${l.amount.toLocaleString()}</span>
+                                        </div>
+                                    </div>
+                                `);
+                            });
+                            logListContent.innerHTML = logs.join('');
+                        } catch (err) {
+                            console.error(err);
+                            logListContent.innerHTML = `<p style="color:#ef4444; font-size:0.8rem;">로그를 불러오지 못했습니다. (색인 생성 중일 수 있습니다)</p>`;
+                        }
                     };
                 });
             } catch (e) { alert("목록 로드 실패"); }

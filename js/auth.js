@@ -12,7 +12,9 @@ import {
     updateDoc, 
     increment, 
     serverTimestamp,
-    arrayUnion
+    arrayUnion,
+    collection,
+    addDoc
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export const UserState = {
@@ -116,7 +118,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
             let prefix = '';
             if (UserState.isMaster) prefix = '💎 ';
             else if (UserState.isAdmin) prefix = '👑 ';
-            el.textContent = prefix + UserState.data.nickname;
+            el.textContent = prefix + (UserState.data.nickname || '익명');
             el.style.color = UserState.data.nameColor || 'var(--text-main)';
         });
         document.querySelectorAll('#user-points').forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
@@ -130,6 +132,19 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         document.getElementById('login-btn')?.classList.remove('hidden');
         document.getElementById('header-profile')?.classList.add('hidden');
     }
+}
+
+// 로그 기록 함수 추가
+async function addLog(uid, type, amount, reason) {
+    try {
+        await addDoc(collection(db, "pointLogs"), {
+            uid,
+            type, // 'points' or 'score'
+            amount,
+            reason,
+            timestamp: serverTimestamp()
+        });
+    } catch (e) { console.error("Log failed", e); }
 }
 
 async function handleEmojiExchange(emoji) {
@@ -160,6 +175,7 @@ async function handleEmojiExchange(emoji) {
             totalScore: increment(-price),
             emoji: emoji
         });
+        addLog(UserState.user.uid, 'score', -price, `이모지 교환: ${emoji}`);
         UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore -= price; UserState.data.emoji = emoji;
         updateUI(); alert("교환 완료!");
         if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
@@ -172,7 +188,7 @@ async function changeNameColor(color) {
         await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
         UserState.data.nameColor = color; updateUI(); return;
     }
-    if (await usePoints(2000)) {
+    if (await usePoints(2000, `닉네임 색상 변경: ${color}`)) {
         await updateDoc(doc(db, "users", UserState.user.uid), { unlockedColors: arrayUnion(color), nameColor: color });
         UserState.data.unlockedColors.push(color); UserState.data.nameColor = color; updateUI();
     }
@@ -196,38 +212,42 @@ async function changeNickname() {
     } catch (e) { console.error(e); }
 }
 
-export async function chargeUserPoints(targetUid, amount) {
+export async function chargeUserPoints(targetUid, amount, reason = "관리자 권한으로 집행") {
     if (!UserState.isAdmin) return false;
     const finalUid = targetUid || UserState.user.uid;
     try {
         await updateDoc(doc(db, "users", finalUid), { points: increment(amount) });
+        addLog(finalUid, 'points', amount, reason);
         if (finalUid === UserState.user.uid) { UserState.data.points += amount; updateUI(); }
         return true;
     } catch (e) { return false; }
 }
 
-export async function chargeUserScore(targetUid, amount) {
+export async function chargeUserScore(targetUid, amount, reason = "관리자 권한으로 집행") {
     if (!UserState.isAdmin) return false;
     const finalUid = targetUid || UserState.user.uid;
     try {
         await updateDoc(doc(db, "users", finalUid), { totalScore: increment(amount) });
+        addLog(finalUid, 'score', amount, reason);
         if (finalUid === UserState.user.uid) { UserState.data.totalScore += amount; updateUI(); }
         return true;
     } catch (e) { return false; }
 }
 
-export async function addPoints(amount) {
+export async function addPoints(amount, reason = "테스트 완료 보상") {
     if (!UserState.user) return false;
     try {
         await updateDoc(doc(db, "users", UserState.user.uid), { points: increment(amount) });
+        addLog(UserState.user.uid, 'points', amount, reason);
         UserState.data.points += amount; updateUI(); return true;
     } catch (e) { return false; }
 }
 
-export async function usePoints(amount) {
+export async function usePoints(amount, reason = "서비스 이용") {
     if (!UserState.user || UserState.data.points < amount) { alert("포인트 부족"); return false; }
     try {
         await updateDoc(doc(db, "users", UserState.user.uid), { points: increment(-amount) });
+        addLog(UserState.user.uid, 'points', -amount, reason);
         UserState.data.points -= amount; updateUI(); return true;
     } catch (e) { return false; }
 }
