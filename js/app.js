@@ -914,12 +914,12 @@ function renderProfile() {
                 <h2 id="user-name" style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">닉네임</h2>
                 
                 <div class="progress-container" style="max-width: 400px; margin: 0 auto 2rem; position:relative; z-index:1;">
-                    <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem;">
+                    <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; margin-bottom: 0.5rem; background: rgba(0,0,0,0.4); color: #fff; padding: 4px 12px; border-radius: 50px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
                         <span>등급 성장도</span>
                         <span>${currentScore.toLocaleString()} / ${nextTier.min.toLocaleString()}</span>
                     </div>
-                    <div class="progress-track" style="height: 10px; background: var(--bg-color); border-radius: 10px; overflow: hidden;">
-                        <div class="progress-fill" style="width: ${progress}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); border-radius: 10px;"></div>
+                    <div class="progress-track" style="height: 12px; background: rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
+                        <div class="progress-fill" style="width: ${progress}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); border-radius: 10px; box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);"></div>
                     </div>
                 </div>
             </div>
