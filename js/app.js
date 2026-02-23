@@ -1,11 +1,11 @@
 // js/app.js - Premium Content & Core Logic
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, getGrade } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, shareTest } from './share.js';
 import { renderBoard } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
-import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -881,13 +881,17 @@ function renderProfile() {
     }
     const inv = UserState.data.inventory || [];
     const groupedInv = inv.reduce((acc, item) => { acc[item] = (acc[item] || 0) + 1; return acc; }, {});
-    const invHTML = Object.entries(groupedInv).map(([name, count]) => `
-        <div class="inv-card">
-            <span class="inv-icon">${name.split(' ')[0]}</span>
-            <span class="inv-name">${name.split(' ')[1] || ''}</span>
-            <span class="inv-badge">${count}</span>
-        </div>
-    `).join('') || '<p class="text-sub">수집한 아이템이 없습니다.</p>';
+    const invHTML = Object.entries(groupedInv).map(([name, count]) => {
+        const grade = getGrade(name);
+        return `
+            <div class="inv-card grade-${grade.toLowerCase()}">
+                <span class="inv-grade-badge">${grade[0]}</span>
+                <span class="inv-icon">${name.split(' ')[0]}</span>
+                <span class="inv-name">${name.split(' ')[1] || ''}</span>
+                <span class="inv-badge">${count}</span>
+            </div>
+        `;
+    }).join('') || '<p class="text-sub">수집한 아이템이 없습니다.</p>';
 
     const currentScore = UserState.data.totalScore || 0;
     const tier = getTier(currentScore);
@@ -1217,26 +1221,27 @@ function renderArcade() {
                     <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">📦 아이템 뽑기</h3>
                     <div id="gacha-result" class="gacha-box" style="min-height:75px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed var(--border-color); border-radius:15px; text-align:center; font-size:0.9rem; background:rgba(0,0,0,0.02); font-weight: 600;">희귀 아이템이 쏟아집니다</div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); font-size:0.75rem; padding:0.5rem;">1회 (100P)</button>
-                        <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.5rem;">10회 (950P)</button>
-                        <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.75rem; padding:0.5rem;">30회 (2700P 🔥)</button>
+                        <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">1회 (100P)</button>
+                        <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">10회 (950P)</button>
+                        <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">30회 (2700P 🔥)</button>
                     </div>
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
                     <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
                     <div style="background:var(--bg-color); padding:0.8rem; border-radius:10px; margin-bottom:1rem; border:1px solid var(--border-color);">
-                        <label style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-sub); margin-bottom:0.4rem;">소모 등급 선택 (성공률 70%)</label>
-                        <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-weight:800; color:var(--accent-color); outline:none; cursor:pointer;">
+                        <label style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-sub); margin-bottom:0.4rem;">소모 등급 선택 (성공률 100%)</label>
+                        <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-weight:800; color:var(--accent-color); outline:none; cursor:pointer; font-family:inherit;">
                             <option value="COMMON">일반 (COMMON) ➔ 고급</option>
                             <option value="UNCOMMON">고급 (UNCOMMON) ➔ 희귀</option>
                             <option value="RARE">희귀 (RARE) ➔ 전설</option>
                         </select>
                     </div>
-                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.9rem;"></div>
-                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); box-shadow: none; font-size:0.8rem;">1회 (500P)</button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:var(--accent-color); box-shadow: none; font-size:0.8rem;">10회 (4200P 🔥)</button>
+                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.85rem;"></div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
+                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">1회 (500P)</button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">5회 (2200P)</button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">10회 (4200P 🔥)</button>
                     </div>
                 </div>
 
@@ -1452,100 +1457,41 @@ function renderContact() {
         </div>`;
 }
 
-async function renderNews() {
+async function renderEncyclopedia() {
+    const discovered = UserState.data?.discoveredItems || [];
+    
     app.innerHTML = `
-        <div class="news-page fade-in">
-            <div class="card news-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:3rem 1.5rem; text-align:center; border-radius: var(--radius-lg); margin-bottom:2rem;">
-                <h2 style="font-size:2.2rem; font-weight:900; margin-bottom:0.5rem;">📢 업데이트 소식</h2>
-                <p style="opacity:0.9; font-weight:600;">SevenCheck의 새로운 기능과 공지사항을 확인하세요.</p>
+        <div class="book-page fade-in">
+            <div class="card book-header" style="background: linear-gradient(135deg, #1e293b, #334155); color:#fff; border:none; padding:3rem 1.5rem; text-align:center; border-radius: var(--radius-lg); margin-bottom:2rem;">
+                <h2 style="font-size:2.2rem; font-weight:900; margin-bottom:0.5rem;">📒 아이템 도감</h2>
+                <p style="opacity:0.9; font-weight:600;">세븐 오락실에서 발견한 모든 보물들의 기록</p>
+                <div style="margin-top:1.5rem; display:inline-block; background:rgba(255,255,255,0.1); padding:0.5rem 1.5rem; border-radius:50px; font-size:0.9rem; font-weight:800;">
+                    수집률: ${discovered.length} / ${Object.keys(ITEM_VALUES).length} (${Math.round((discovered.length / Object.keys(ITEM_VALUES).length) * 100)}%)
+                </div>
             </div>
 
-            ${UserState.isMaster ? `
-            <div class="card admin-news-form" style="margin-bottom: 2rem; border: 2px dashed #f59e0b;">
-                <h3 style="margin-bottom: 1rem;">✍️ 신규 공지 작성 (마스터 전용)</h3>
-                <input type="text" id="news-title" placeholder="공지 제목" style="width:100%; padding:0.8rem; margin-bottom:0.5rem; border-radius:8px; border:1px solid var(--border-color);">
-                <textarea id="news-content" placeholder="업데이트 내용을 상세히 적어주세요." style="width:100%; height:150px; padding:0.8rem; border-radius:8px; border:1px solid var(--border-color);"></textarea>
-                <button id="submit-news" class="btn-primary" style="width:100%; margin-top:0.5rem; background:#f59e0b;">공지 등록하기</button>
-            </div>
-            ` : ''}
-
-            <div id="news-list" class="news-list">
-                <div class="loading-spinner">소식을 불러오는 중...</div>
-            </div>
+            ${Object.entries(ITEM_GRADES).map(([grade, items]) => `
+                <div class="card" style="margin-bottom:2rem; border-left: 6px solid var(--color-${grade.toLowerCase()}, #ccc);">
+                    <h3 style="margin-bottom:1.5rem; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
+                        ${grade === 'LEGENDARY' ? '✨' : grade === 'RARE' ? '💎' : grade === 'UNCOMMON' ? '🥈' : '💩'} 
+                        ${grade} 아이템
+                    </h3>
+                    <div class="book-grid">
+                        ${items.map(name => {
+                            const isUnlocked = discovered.includes(name);
+                            return `
+                                <div class="book-item ${isUnlocked ? 'unlocked' : ''}">
+                                    <div style="font-size:2.5rem; margin-bottom:0.5rem;">${isUnlocked ? name.split(' ')[0] : '❓'}</div>
+                                    <span class="item-name">${isUnlocked ? name.split(' ')[1] : '???'}</span>
+                                    <span class="item-value">${ITEM_VALUES[name]}P</span>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            `).join('')}
         </div>
     `;
-
-    const listContainer = document.getElementById('news-list');
-    
-    // 공지사항 로드 함수
-    const loadAnnouncements = async () => {
-        try {
-            const q = query(collection(db, "announcements"), orderBy("createdAt", "desc"), limit(20));
-            const snap = await getDocs(q);
-            
-            if (snap.empty) {
-                listContainer.innerHTML = '<p class="text-sub" style="text-align:center; padding:4rem;">아직 등록된 공지사항이 없습니다.</p>';
-                return;
-            }
-
-            listContainer.innerHTML = snap.docs.map(docSnap => {
-                const data = docSnap.data();
-                const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleDateString() : "방금 전";
-                return `
-                    <div class="card news-item fade-in" style="margin-bottom:1.5rem; padding:2rem;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-                            <span style="background:rgba(245,158,11,0.1); color:#d97706; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:800;">NOTICE</span>
-                            <span style="font-size:0.8rem; color:var(--text-sub); font-weight:600;">${date}</span>
-                        </div>
-                        <h3 style="font-size:1.3rem; font-weight:900; margin-bottom:1rem; color:var(--text-main);">${data.title}</h3>
-                        <div style="line-height:1.8; color:var(--text-main); white-space:pre-wrap;">${data.content}</div>
-                        ${UserState.isMaster ? `<button class="btn-delete-news" data-id="${docSnap.id}" style="margin-top:1.5rem; background:none; border:none; color:#ef4444; font-size:0.8rem; cursor:pointer; font-weight:700;">삭제 ✕</button>` : ''}
-                    </div>
-                `;
-            }).join('');
-
-            // 삭제 버튼 이벤트
-            if (UserState.isMaster) {
-                listContainer.querySelectorAll('.btn-delete-news').forEach(btn => {
-                    btn.onclick = async () => {
-                        if (confirm("공지를 삭제하시겠습니까?")) {
-                            await deleteDoc(doc(db, "announcements", btn.dataset.id));
-                            loadAnnouncements();
-                        }
-                    };
-                });
-            }
-        } catch (e) {
-            listContainer.innerHTML = '<p class="error-msg">공지를 불러오지 못했습니다.</p>';
-        }
-    };
-
-    loadAnnouncements();
-
-    // 관리자 작성 이벤트
-    if (UserState.isMaster) {
-        const submitBtn = document.getElementById('submit-news');
-        submitBtn.onclick = async () => {
-            const title = document.getElementById('news-title').value.trim();
-            const content = document.getElementById('news-content').value.trim();
-            if (!title || !content) return alert("제목과 내용을 입력해주세요.");
-
-            try {
-                submitBtn.disabled = true;
-                await addDoc(collection(db, "announcements"), {
-                    title, content, createdAt: serverTimestamp()
-                });
-                alert("공지가 성공적으로 등록되었습니다.");
-                document.getElementById('news-title').value = '';
-                document.getElementById('news-content').value = '';
-                loadAnnouncements();
-            } catch (e) {
-                alert("등록 실패");
-            } finally {
-                submitBtn.disabled = false;
-            }
-        };
-    }
 }
 
 function renderGuide() {

@@ -58,6 +58,13 @@ export const ITEM_GRADES = {
     'LEGENDARY': ['💎 다이아몬드', '🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루']
 };
 
+export function getGrade(itemName) {
+    for (const [grade, items] of Object.entries(ITEM_GRADES)) {
+        if (items.includes(itemName)) return grade;
+    }
+    return 'COMMON';
+}
+
 export const TIERS = [
     { name: 'ROOKIE', min: 0, class: 'tier-rookie' },
     { name: 'BRONZE', min: 1000, class: 'tier-bronze' },
@@ -120,6 +127,7 @@ async function loadUserData(user) {
             originalEmail: user.email || '이메일 없음', // 구글 이메일 저장
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, 
+            discoveredItems: [],     // 획득했던 모든 아이템 기록 (도감용)
             unlockedAuras: ['NONE'], // 구매한 오라 목록
             activeAura: 'NONE',      // 현재 장착 중인 오라
             nicknameChanged: false, 

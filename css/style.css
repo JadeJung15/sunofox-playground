@@ -1029,3 +1029,65 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .notif-item:hover { background: var(--bg-color); }
 .notif-item.unread { background: rgba(99, 102, 241, 0.05); }
 .notif-time { font-size: 0.7rem; color: var(--text-sub); display: block; margin-top: 0.3rem; }
+
+/* Item Grade Styles */
+.inv-card { position: relative; overflow: visible; }
+.inv-grade-badge {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  font-size: 0.6rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.grade-common .inv-grade-badge { background: #94a3b8; }
+.grade-uncommon .inv-grade-badge { background: #10b981; }
+.grade-rare .inv-grade-badge { background: #3b82f6; }
+.grade-legendary .inv-grade-badge { background: #f59e0b; }
+
+.grade-legendary { border-color: #f59e0b !important; box-shadow: 0 0 10px rgba(245, 158, 11, 0.2); }
+
+/* Encyclopedia Styles */
+.book-container { padding: 2rem; }
+.book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.book-item {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  filter: grayscale(1);
+  opacity: 0.5;
+  transition: all 0.3s;
+}
+.book-item.unlocked {
+  filter: none;
+  opacity: 1;
+  border-color: var(--accent-soft);
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+}
+.book-item .item-name {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 800;
+  margin-top: 0.5rem;
+}
+.book-item .item-value {
+  font-size: 0.65rem;
+  color: var(--text-sub);
+}

@@ -15,6 +15,7 @@ export function initArcade() {
         if (target.id === 'gacha-30-btn') await playGacha(30, 2700);
         
         if (target.id === 'alchemy-btn') await playAlchemy(1);
+        if (target.id === 'alchemy-5-btn') await playAlchemy(5);
         if (target.id === 'alchemy-10-btn') await playAlchemy(10);
         
         if (target.id === 'click-game-btn') await playClickGame();
@@ -113,7 +114,10 @@ async function playUpDown() {
 async function playAlchemy(count) {
     if (!UserState.user) return;
     
-    const cost = count === 1 ? 500 : 4200;
+    let cost = 500;
+    if (count === 5) cost = 2200;
+    else if (count === 10) cost = 4200;
+
     const gradeSelect = document.getElementById('alchemy-grade-select');
     if (!gradeSelect) return;
     
@@ -128,7 +132,7 @@ async function playAlchemy(count) {
         return;
     }
 
-    if (!confirm(`[${selectedGrade}] 등급 아이템 ${itemsNeeded}개와 ${cost.toLocaleString()}P를 사용하여 연금술(${count}회)을 진행하시겠습니까?\n(성공 확률: 70%)`)) return;
+    if (!confirm(`[${selectedGrade}] 등급 아이템 ${itemsNeeded}개와 ${cost.toLocaleString()}P를 사용하여 연금술(${count}회)을 진행하시겠습니까?\n(성공률 100%)`)) return;
 
     if (await usePoints(cost)) {
         await updateArcadeStat('alchemy');
@@ -154,51 +158,51 @@ async function playAlchemy(count) {
             const nextGradeItems = ITEM_GRADES[nextGrade];
 
             const results = [];
-            let successCount = 0;
             let addedValue = 0;
 
             for (let i = 0; i < count; i++) {
-                const isSuccess = Math.random() < 0.7;
-                if (isSuccess) {
-                    const reward = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
-                    results.push(reward);
-                    addedValue += ITEM_VALUES[reward];
-                    successCount++;
-                }
+                // 성공률 100%
+                const reward = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
+                results.push(reward);
+                addedValue += ITEM_VALUES[reward];
             }
 
             currentInv.push(...results);
-            const scoreDelta = addedValue - removedValue;
-            
-            // 기존 점수에 변동분을 더하되 음수 방지
-            const newScore = Math.max(0, (UserState.data.totalScore || 0) + scoreDelta);
+            const newScore = Math.max(0, (UserState.data.totalScore || 0) + (addedValue - removedValue));
             const netProfit = addedValue - removedValue - cost;
+
+            // 도감(discoveredItems) 업데이트 준비
+            const newDiscovered = [...new Set(results)];
 
             await updateDoc(userRef, {
                 inventory: currentInv,
-                totalScore: newScore
+                totalScore: newScore,
+                discoveredItems: arrayUnion(...newDiscovered)
             });
 
-            // 로컬 상태 즉시 갱신
             UserState.data.inventory = currentInv;
             UserState.data.totalScore = newScore;
+            // 로컬 도감 데이터도 업데이트
+            if (!UserState.data.discoveredItems) UserState.data.discoveredItems = [];
+            newDiscovered.forEach(item => {
+                if (!UserState.data.discoveredItems.includes(item)) UserState.data.discoveredItems.push(item);
+            });
 
             const resultEl = document.getElementById('alchemy-result');
             if (resultEl) {
-                const resultSummary = results.length > 0 
-                    ? results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {})
-                    : null;
-                const resultText = resultSummary 
-                    ? Object.entries(resultSummary).map(([name, num]) => `<strong>${name}x${num}</strong>`).join(' ')
-                    : '<span style="color:#ef4444;">모두 소멸됨...</span>';
+                const consumedSummary = consumedItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const consumedText = Object.entries(consumedSummary).map(([name, num]) => `${name}x${num}`).join(' ');
+                
+                const resultSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const resultText = Object.entries(resultSummary).map(([name, num]) => `<strong>${name}x${num}</strong>`).join(' ');
 
                 const profitColor = netProfit >= 0 ? 'var(--accent-secondary)' : '#ef4444';
                 const profitText = netProfit >= 0 ? `+${netProfit.toLocaleString()}점 이득! ✨` : `${netProfit.toLocaleString()}점 손해... 💀`;
 
                 resultEl.innerHTML = `
-                    <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:0.5rem;">${count}회 시도 중 ${successCount}회 성공! (확률 70%)</div>
-                    <div style="font-size:0.9rem; margin-bottom:0.5rem;">연성 결과: ${resultText}</div>
-                    <div style="font-weight:900; color:${profitColor}; font-size:1rem;">${profitText}</div>
+                    <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:0.4rem;">재료 소모: ${consumedText}</div>
+                    <div style="font-size:0.85rem; margin-bottom:0.4rem;">연성 결과: ${resultText}</div>
+                    <div style="font-weight:900; color:${profitColor}; font-size:0.95rem;">${profitText}</div>
                 `;
             }
             updateUI();
