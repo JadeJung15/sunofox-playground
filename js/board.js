@@ -218,21 +218,44 @@ async function renderBoardTab(container) {
 
     // 게시글 등록
     submitBtn.onclick = async () => {
+        if (!UserState.user) return alert("로그인이 필요합니다.");
         const content = contentInput.value.trim();
-        if (!content) return;
+        if (!content) return alert("내용을 입력해주세요.");
+        
         let isPremium = premiumCheck.checked;
-        if (isPremium && !(await usePoints(300))) return;
+        if (isPremium && !(await usePoints(300, "게시글 강조"))) return;
+
         try {
             submitBtn.disabled = true;
+            const currentTier = getTier(UserState.data.totalScore || 0);
+            
             await addDoc(collection(db, "posts"), {
-                uid: UserState.user.uid, author: UserState.data.nickname, authorEmoji: UserState.data.emoji || "👤",
-                authorColor: UserState.data.nameColor || "#333", userTier: getTier(UserState.data.totalScore || 0).name,
-                content, isPremium, createdAt: serverTimestamp()
+                uid: UserState.user.uid, 
+                author: UserState.data.nickname || "익명", 
+                authorEmoji: UserState.data.emoji || "👤",
+                authorColor: UserState.data.nameColor || "#333", 
+                userTier: currentTier ? currentTier.name : "ROOKIE",
+                content: content, 
+                isPremium: isPremium, 
+                createdAt: serverTimestamp()
             });
-            contentInput.value = ''; premiumCheck.checked = false;
-            renderBoardTab(container);
-        } catch (e) { alert("실패"); }
-        finally { submitBtn.disabled = false; }
+
+            // 퀘스트 체크 (전역 함수 checkDailyQuests 호출 시도)
+            if (window.checkDailyQuests) window.checkDailyQuests('board'); 
+
+            contentInput.value = ''; 
+            premiumCheck.checked = false;
+            // renderBoardTab 대신 최상위 renderBoard 호출하여 탭 상태 유지하며 갱신
+            const mainContainer = document.querySelector('.community-container')?.parentElement;
+            if (mainContainer) renderBoard(mainContainer);
+            else renderBoardTab(container);
+            
+        } catch (e) { 
+            console.error(e);
+            alert("등록 실패: " + e.message); 
+        } finally { 
+            submitBtn.disabled = false; 
+        }
     };
 }
 

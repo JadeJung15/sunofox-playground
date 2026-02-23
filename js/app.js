@@ -1707,6 +1707,11 @@ async function checkDailyQuests(type) {
         if (qData.list.test === 3) await addPoints(100, "일일 퀘스트: 테스트 3회");
         updated = true;
     }
+    if (type === 'board' && !qData.list.board) {
+        qData.list.board = true;
+        await addPoints(50, "일일 퀘스트: 게시글 작성");
+        updated = true;
+    }
     
     if (updated) {
         await updateDoc(userRef, { quests: qData });
