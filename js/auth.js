@@ -118,6 +118,13 @@ async function loadUserData(user) {
         snap = await getDoc(userRef);
     }
     UserState.data = snap.data();
+    
+    // 기존 유저 데이터 복구: originalName이 없는 경우 채워넣음
+    if (!UserState.data.originalName && user.displayName) {
+        await updateDoc(userRef, { originalName: user.displayName });
+        UserState.data.originalName = user.displayName;
+    }
+
     if (!UserState.data.arcadeStats) UserState.data.arcadeStats = { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
 }
 
