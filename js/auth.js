@@ -105,6 +105,7 @@ async function loadUserData(user) {
         const newData = {
             uid: user.uid, 
             nickname: generateRandomNickname(), // 구글 이름 대신 랜덤 닉네임 부여
+            originalName: user.displayName || '알 수 없음', // 구글 원본 이름 저장
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, 
             nicknameChanged: false, // 최초 변경 여부 추적
