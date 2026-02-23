@@ -40,9 +40,66 @@ export async function renderBoard(container) {
     const contentArea = document.getElementById('community-content');
     if (currentTab === 'notice') {
         await renderNoticeTab(contentArea);
+        // 마스터 자동 공지 등록 (1회성)
+        if (UserState.isMaster) {
+            autoPostGrandUpdate();
+        }
     } else {
         await renderBoardTab(contentArea);
     }
+}
+
+// 마스터 자동 공지 등록 함수
+async function autoPostGrandUpdate() {
+    const title = "✨ SevenCheck 그랜드 업데이트: 더 깊어진 분석과 소통의 시작";
+    try {
+        const q = query(collection(db, "announcements"), where("title", "==", title));
+        const snap = await getDocs(q);
+        if (!snap.empty) return; // 이미 등록됨
+
+        const content = `안녕하세요, SevenCheck 이용자 여러분!
+더욱 풍성하고 즐거운 서비스 경험을 위해 진행된 '그랜드 업데이트' 내역을 안내해 드립니다.
+
+1. 📸 결과 이미지 저장 & 실시간 통계 도입
+이제 테스트 결과를 예쁜 카드 형태로 소장할 수 있습니다!
+- '이미지 저장' 버튼을 통해 나의 분석 리포트를 갤러리에 저장해 보세요.
+- 내가 얻은 결과가 참여자 중 상위 몇 %인지 실시간 통계 그래프로 확인할 수 있습니다.
+
+2. 💬 통합 커뮤니티 센터 오픈
+공지사항과 자유게시판이 하나로 합쳐졌습니다!
+- 상단 탭을 통해 새로운 소식과 유저들의 이야기를 더 간편하게 오갈 수 있습니다.
+- 이제 게시판에 글을 쓰면 일일 퀘스트 포인트도 받을 수 있어요!
+
+3. 🔔 실시간 알림 시스템
+내 글에 댓글이 달리면 상단 🔔 아이콘이 알려드립니다!
+- 중요한 반응을 놓치지 말고 실시간으로 소통해 보세요.
+
+4. 📜 일일 퀘스트 & 보상 강화
+세븐 오락실에 '일일 퀘스트'가 추가되었습니다.
+- 매일 출석하기, 테스트 참여하기, 게시글 작성하기를 완료하고 추가 포인트를 획득하세요.
+
+5. ✨ 명예로운 티어 오라(Aura) 효과
+높은 등급의 수집가들에게 걸맞은 특별한 효과가 적용됩니다!
+- 플래티넘 및 다이아몬드 등급 유저가 게시판에 글을 쓰면 이름 테두리에 화려한 애니메이션 오라가 나타납니다.
+
+6. 📱 모바일 최적화 및 UI 개선
+스마트폰에서도 모든 기능을 쾌적하게 이용할 수 있도록 대시보드 배치를 최적화했습니다.
+
+---
+SevenCheck은 여러분의 피드백을 바탕으로 매일 성장하고 있습니다. 
+지금 바로 새로운 기능들을 체험해 보세요! 
+
+감사합니다.
+- SevenCheck Studio -`;
+
+        await addDoc(collection(db, "announcements"), {
+            title, content, createdAt: serverTimestamp()
+        });
+        console.log("자동 공지 등록 완료!");
+        // UI 갱신을 위해 탭 다시 렌더링 (옵션)
+        const container = document.getElementById('community-content');
+        if (container) renderNoticeTab(container);
+    } catch (e) { console.error("Auto-post failed", e); }
 }
 
 // --- 공지사항 탭 ---
