@@ -1497,6 +1497,35 @@ async function renderEncyclopedia() {
                 </div>
             </div>
 
+            <!-- Item Value & Acquisition Guide -->
+            <div class="card" style="margin-bottom: 2rem; background: var(--bg-color); border: 1px solid var(--accent-soft); padding: 1.5rem;">
+                <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1rem; color: var(--accent-color); display: flex; align-items: center; gap: 8px;">
+                    💡 아이템 가치 및 획득 가이드
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem;">
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 800;">💎 가치 산정 방식</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6;">
+                            아이템의 가치는 <strong>희귀도(Grade)</strong>에 따라 결정됩니다. 등급이 높을수록 획득 확률이 낮아지며, 인벤토리에 보유한 모든 아이템의 가치 총합이 나의 <strong>'통합 아이템 점수'</strong>가 됩니다.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 800;">🧪 효율적인 획득 방법</h4>
+                        <ul style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6; padding-left: 1.2rem;">
+                            <li><strong>뽑기:</strong> 가장 기본적인 획득 경로입니다.</li>
+                            <li><strong>연금술:</strong> 낮은 등급 아이템 5개를 확정적으로 상위 등급으로 변환하여 가치를 크게 뻥튀기할 수 있습니다.</li>
+                            <li><strong>복권:</strong> 낮은 확률로 '다이아몬드' 같은 고가치 아이템을 획득합니다.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.5rem; font-weight: 800;">🏆 명예와 랭킹</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.6;">
+                            모은 점수에 따라 <strong>ROOKIE부터 DIAMOND</strong>까지 티어가 결정됩니다. 고가치 아이템을 많이 수집하여 명예의 전당(랭킹)에 이름을 올려보세요!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             ${Object.entries(ITEM_GRADES).map(([grade, items]) => `
                 <div class="card" style="margin-bottom:2rem; border-left: 6px solid var(--color-${grade.toLowerCase()}, #ccc);">
                     <h3 style="margin-bottom:1.5rem; font-size:1.1rem; display:flex; align-items:center; gap:10px;">
