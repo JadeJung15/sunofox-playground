@@ -1055,7 +1055,7 @@ function renderAdmin() {
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div style="overflow:hidden;">
                                     <h4 style="font-size:1rem; font-weight:900; margin-bottom:0.2rem;">${data.nickname || '익명'}</h4>
-                                    <p style="font-size:0.75rem; color:var(--accent-color); font-weight:600; margin-bottom:0.4rem;">${data.originalEmail ? `(${data.originalEmail})` : '<span style="color:var(--text-sub);">(ID 미기록)</span>'}</p>
+                                    <p style="font-size:0.75rem; color:var(--accent-color); font-weight:600; margin-bottom:0.4rem;">${data.originalEmail ? `(${data.originalEmail})` : '<span style="color:var(--text-sub); font-weight:normal;">(미접속: 정보 업데이트 대기)</span>'}</p>
                                     <small style="font-size:0.65rem; color:var(--text-sub); font-family:monospace;">${d.id}</small>
                                 </div>
                                 <div style="display:flex; gap:0.4rem; flex-shrink:0;">
