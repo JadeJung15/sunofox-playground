@@ -115,10 +115,10 @@ async function playUpDown() {
 async function playAlchemy(count) {
     if (!UserState.user) return;
     
-    // 연금술 비용 인하 (수익구조 개선)
-    let cost = 300;
-    if (count === 5) cost = 1200;
-    else if (count === 10) cost = 2000;
+    // 연금술 비용 대폭 인하 (수익구조 개선)
+    let cost = 50;
+    if (count === 5) cost = 200;
+    else if (count === 10) cost = 350;
 
     const gradeSelect = document.getElementById('alchemy-grade-select');
     if (!gradeSelect) return;
