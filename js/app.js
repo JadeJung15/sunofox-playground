@@ -1688,30 +1688,41 @@ const headerShareBtn = document.getElementById('share-site-btn');
 // --- Utility Functions for Grand Update ---
 
 async function checkDailyQuests(type) {
-    if (!UserState.user) return;
-    const today = new Date().toISOString().split('T')[0];
-    const userRef = doc(db, "users", UserState.user.uid);
+    if (!UserState.user || !UserState.data) return;
     
+    // 한국 시간(KST) 기준 날짜 문자열 생성
+    const now = new Date();
+    const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+    const today = kstDate.toISOString().split('T')[0];
+    
+    const userRef = doc(db, "users", UserState.user.uid);
     let qData = UserState.data.quests || { date: null, list: {} };
+    
+    // 날짜가 바뀌었거나 데이터가 없으면 초기화
     if (qData.date !== today) {
-        qData = { date: today, list: { login: false, test: 0, comment: 0 } };
+        qData = { 
+            date: today, 
+            list: { login: false, test: 0, board: false } 
+        };
         await updateDoc(userRef, { quests: qData });
         UserState.data.quests = qData;
     }
 
     let updated = false;
-    if (type === 'login' && !qData.list.login) {
-        qData.list.login = true;
+    const list = qData.list || {};
+
+    if (type === 'login' && !list.login) {
+        list.login = true;
         await addPoints(50, "일일 퀘스트: 출석");
         updated = true;
     }
-    if (type === 'test' && (qData.list.test || 0) < 3) {
-        qData.list.test = (qData.list.test || 0) + 1;
-        if (qData.list.test === 3) await addPoints(100, "일일 퀘스트: 테스트 3회");
+    if (type === 'test' && (list.test || 0) < 3) {
+        list.test = (list.test || 0) + 1;
+        if (list.test === 3) await addPoints(100, "일일 퀘스트: 테스트 3회");
         updated = true;
     }
-    if (type === 'board' && !qData.list.board) {
-        qData.list.board = true;
+    if (type === 'board' && !list.board) {
+        list.board = true;
         await addPoints(50, "일일 퀘스트: 게시글 작성");
         updated = true;
     }
@@ -1727,10 +1738,11 @@ function loadDailyQuests() {
     const container = document.getElementById('daily-quest-list');
     if (!container || !UserState.data?.quests) return;
     
-    const q = UserState.data.quests.list;
+    const q = UserState.data.quests.list || {};
     const quests = [
-        { title: "매일매일 출석체크", desc: "오락실 방문하기", done: q.login, reward: 50 },
-        { title: "자아 탐구 생활", desc: "테스트 3회 완료", current: q.test || 0, max: 3, done: (q.test || 0) >= 3, reward: 100 }
+        { title: "매일매일 출석체크", desc: "오락실 방문하기", done: !!q.login, reward: 50 },
+        { title: "자아 탐구 생활", desc: "테스트 3회 완료", current: q.test || 0, max: 3, done: (q.test || 0) >= 3, reward: 100 },
+        { title: "나의 목소리", desc: "게시판에 글 한 개 쓰기", done: !!q.board, reward: 50 }
     ];
 
     container.innerHTML = quests.map(quest => `
@@ -1740,7 +1752,7 @@ function loadDailyQuests() {
                 <p>${quest.desc} ${quest.max ? `(${quest.current}/${quest.max})` : ''}</p>
             </div>
             <div class="quest-status ${quest.done ? 'done' : ''}">
-                ${quest.done ? '완료됨' : `+${quest.reward}P`}
+                ${quest.done ? '✅ 완료' : `+${quest.reward}P`}
             </div>
         </div>
     `).join('');
