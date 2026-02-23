@@ -700,6 +700,11 @@ async function router() {
     }
     await authReady;
 
+    // 일일 퀘스트: 로그인 체크 (인증 완료 후 즉시)
+    if (UserState.user && typeof checkDailyQuests === 'function') {
+        checkDailyQuests('login');
+    }
+
     const hash = window.location.hash || '#home';
     navLinks.forEach(link => {
         const filter = link.dataset.filter;
@@ -1704,10 +1709,11 @@ const headerShareBtn = document.getElementById('share-site-btn');
 async function checkDailyQuests(type) {
     if (!UserState.user || !UserState.data) return;
     
-    // 한국 시간(KST) 기준 날짜 문자열 생성
+    // 한국 시간(KST) 기준 날짜 문자열 생성 (보다 견고한 방식)
     const now = new Date();
-    const kstDate = new Date(now.getTime() + (9 * 60 * 60 * 1000));
-    const today = kstDate.toISOString().split('T')[0];
+    const kstOffset = 9 * 60 * 60 * 1000;
+    const kstTime = new Date(now.getTime() + kstOffset);
+    const today = kstTime.toISOString().split('T')[0];
     
     const userRef = doc(db, "users", UserState.user.uid);
     let qData = UserState.data.quests || { date: null, list: {} };
@@ -1723,27 +1729,26 @@ async function checkDailyQuests(type) {
     }
 
     let updated = false;
-    const list = qData.list || {};
+    const list = qData.list || { login: false, test: 0, board: false };
 
     if (type === 'login' && !list.login) {
         list.login = true;
         await addPoints(50, "일일 퀘스트: 출석");
         updated = true;
-    }
-    if (type === 'test' && (list.test || 0) < 3) {
+    } else if (type === 'test' && (list.test || 0) < 3) {
         list.test = (list.test || 0) + 1;
         if (list.test === 3) await addPoints(100, "일일 퀘스트: 테스트 3회");
         updated = true;
-    }
-    if (type === 'board' && !list.board) {
+    } else if (type === 'board' && !list.board) {
         list.board = true;
         await addPoints(50, "일일 퀘스트: 게시글 작성");
         updated = true;
     }
     
     if (updated) {
+        qData.list = list;
         await updateDoc(userRef, { quests: qData });
-        UserState.data.quests = qData;
+        UserState.data.quests = qData; // 로컬 메모리 최신화
         if (document.getElementById('daily-quest-list')) loadDailyQuests();
     }
 }

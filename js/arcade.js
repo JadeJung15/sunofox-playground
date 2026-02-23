@@ -168,7 +168,10 @@ async function playAlchemy(count) {
             }
 
             currentInv.push(...results);
-            const newScore = Math.max(0, (UserState.data.totalScore || 0) + (addedValue - removedValue));
+            const scoreDelta = addedValue - removedValue;
+            
+            // 기존 점수에 변동분을 더하되 음수 방지
+            const newScore = Math.max(0, (UserState.data.totalScore || 0) + scoreDelta);
             const netProfit = addedValue - removedValue - cost;
 
             await updateDoc(userRef, {
@@ -176,6 +179,7 @@ async function playAlchemy(count) {
                 totalScore: newScore
             });
 
+            // 로컬 상태 즉시 갱신
             UserState.data.inventory = currentInv;
             UserState.data.totalScore = newScore;
 
