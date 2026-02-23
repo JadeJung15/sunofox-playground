@@ -11,6 +11,7 @@
     <meta property="og:title" content="SevenCheck - 전문적인 7단계 심리 분석">
     <meta property="og:description" content="딱 7번의 선택으로 당신의 잠재력을 확인해보세요. 친구와 함께 즐기는 미니게임도 준비되어 있습니다.">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <header>
@@ -18,6 +19,10 @@
             <div class="nav-top">
                 <a href="#home" class="logo"><span>7</span>Check</a>
                 <div class="nav-right">
+                    <button id="notification-btn" class="theme-toggle" style="position:relative; display:none;" title="알림">
+                        🔔
+                        <span id="notif-badge" class="notif-badge hidden">0</span>
+                    </button>
                     <div id="header-profile" class="header-profile hidden" onclick="location.hash='#profile'">
                         <span id="user-emoji" class="h-emoji">👤</span>
                         <span id="user-name" class="h-name">닉네임</span>

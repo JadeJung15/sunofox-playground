@@ -914,3 +914,101 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     padding: 2.5rem 1.5rem;
   }
 }
+
+/* --- Grand Update Styles --- */
+
+/* 1. Tier Aura Effects */
+@keyframes spin { 0% { --rotate: 0deg; } 100% { --rotate: 360deg; } }
+@property --rotate { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
+
+.aura-platinum {
+  position: relative;
+  z-index: 0;
+  border-color: transparent !important;
+}
+.aura-platinum::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -3px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--rotate), #e2e8f0, #94a3b8, #e2e8f0);
+  animation: spin 3s linear infinite; 
+}
+
+.aura-diamond {
+  position: relative;
+  z-index: 0;
+  border-color: transparent !important;
+}
+.aura-diamond::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -3px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--rotate), #818cf8, #c084fc, #818cf8);
+  animation: spin 2s linear infinite; 
+  box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+}
+
+/* 2. Notification Badge */
+.notif-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ef4444;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 800;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--card-bg);
+}
+
+/* 3. Stat Bar */
+.stat-bar-container {
+  width: 100%;
+  height: 10px;
+  background: var(--border-color);
+  border-radius: 50px;
+  overflow: hidden;
+  margin: 0.5rem 0;
+}
+.stat-bar-fill {
+  height: 100%;
+  background: var(--accent-color);
+  border-radius: 50px;
+  transition: width 1s ease-out;
+}
+
+/* 4. Daily Quest */
+.quest-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-color);
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 0.8rem;
+}
+.quest-info h4 { font-size: 0.95rem; margin-bottom: 0.2rem; }
+.quest-info p { font-size: 0.8rem; color: var(--text-sub); }
+.quest-status { font-weight: 800; font-size: 0.9rem; color: var(--accent-secondary); }
+.quest-status.done { color: var(--text-sub); text-decoration: line-through; }
+
+/* 5. Notification List */
+.notif-item {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--card-bg);
+  cursor: pointer;
+}
+.notif-item:hover { background: var(--bg-color); }
+.notif-item.unread { background: rgba(99, 102, 241, 0.05); }
+.notif-time { font-size: 0.7rem; color: var(--text-sub); display: block; margin-top: 0.3rem; }

@@ -1151,6 +1151,14 @@ function renderArcade() {
                 </div>
             </div>
 
+            <!-- Daily Quest Section -->
+            <div class="card quest-section fade-in" style="margin-bottom: 2rem; border: 2px solid var(--accent-soft);">
+                <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem;">📜 일일 퀘스트</h3>
+                <div id="daily-quest-list">
+                    <!-- 퀘스트 목록은 JS로 동적 로드 -->
+                </div>
+            </div>
+
             <div class="arcade-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
                 <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -1255,32 +1263,94 @@ function renderArcade() {
 
 async function renderResult(testId, answers) {
     const test = TESTS.find(t => t.id === testId);
-    const result = test.results[answers.filter(x => x==='A').length >= 4 ? 'A' : 'B'];
+    const resultType = answers.filter(x => x==='A').length >= 4 ? 'A' : 'B';
+    const result = test.results[resultType];
+    
+    // 보상 및 통계 업데이트
     let reward = 10;
-    if (UserState.user && UserState.data.boosterCount > 0) {
-        reward = 20;
-        await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(-1) });
-        UserState.data.boosterCount -= 1;
+    if (UserState.user) {
+        if (UserState.data.boosterCount > 0) {
+            reward = 20;
+            await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(-1) });
+            UserState.data.boosterCount -= 1;
+        }
+        await addPoints(reward);
+        
+        // 통계 업데이트 (A/B 카운트)
+        try {
+            await setDoc(doc(db, "testStats", testId), { 
+                [`counts.${resultType}`]: increment(1),
+                total: increment(1)
+            }, { merge: true });
+            checkDailyQuests('test'); // 퀘스트 체크
+        } catch (e) { console.error(e); }
     }
-    if (UserState.user) await addPoints(reward);
+
+    // 통계 데이터 로드
+    let stats = { A: 50, B: 50 };
+    try {
+        const snap = await getDoc(doc(db, "testStats", testId));
+        if (snap.exists()) {
+            const data = snap.data();
+            const total = data.total || 1;
+            const countA = data.counts?.A || 0;
+            stats.A = Math.round((countA / total) * 100);
+            stats.B = 100 - stats.A;
+        }
+    } catch (e) {}
 
     app.innerHTML = `
-        <div class="result-card fade-in" data-cat="${test.category}">
+        <div class="result-card fade-in" id="capture-target" data-cat="${test.category}">
             <span class="test-category">분석 리포트</span>
             <div class="result-img" style="background-image: url('${result.img}'); background-size:cover; background-position:center;"></div>
-            <h2 style="color:var(--accent-color);">[${result.title}]</h2>
-            <div class="result-desc" style="text-align:left; line-height:1.8; margin:1.5rem 0;"><p>${result.desc}</p></div>
-            <button id="like-btn" class="btn-secondary" style="width:auto; padding:0.6rem 1.5rem; border-radius:50px; margin-bottom:1.5rem;">❤️ 좋아요 <span id="like-count-${testId}">${testLikesData[testId] || 0}</span></button>
-            <p class="text-sub" style="font-weight:800; color:var(--accent-secondary);">보상 +${reward}P 지급 완료!</p>
-            <div class="share-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; margin-top:1.5rem;">
-                <button class="btn-primary" id="share-result" style="background:var(--text-main);">결과 공유</button>
-                <button class="btn-primary" id="share-test" style="background:var(--accent-soft);">링크 공유</button>
+            <h2 style="color:var(--accent-color); margin-top:1rem;">[${result.title}]</h2>
+            
+            <!-- 통계 바 -->
+            <div style="margin: 1.5rem 0;">
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:var(--text-sub);">
+                    <span>${test.results.A.title} (${stats.A}%)</span>
+                    <span>${test.results.B.title} (${stats.B}%)</span>
+                </div>
+                <div class="stat-bar-container">
+                    <div class="stat-bar-fill" style="width: ${stats.A}%; background: linear-gradient(90deg, #f472b6, #818cf8);"></div>
+                </div>
             </div>
-            <button class="btn-secondary" style="width:100%; margin-top:1rem;" onclick="location.hash='#home'">다른 테스트 보러 가기</button>
+
+            <div class="result-desc" style="text-align:left; line-height:1.8; margin-bottom:1.5rem;"><p>${result.desc}</p></div>
+            
+            <div class="result-actions" data-html2canvas-ignore="true">
+                <button id="like-btn" class="btn-secondary" style="width:auto; padding:0.6rem 1.5rem; border-radius:50px; margin-bottom:1rem;">❤️ 좋아요 <span id="like-count-${testId}">${testLikesData[testId] || 0}</span></button>
+                <p class="text-sub" style="font-weight:800; color:var(--accent-secondary); margin-bottom:1.5rem;">보상 +${reward}P 지급 완료!</p>
+                
+                <div class="share-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
+                    <button class="btn-primary" id="save-img-btn" style="background:var(--accent-color);">📸 이미지 저장</button>
+                    <button class="btn-primary" id="share-link-btn" style="background:var(--text-main);">🔗 링크 공유</button>
+                </div>
+                <button class="btn-secondary" style="width:100%; margin-top:1rem;" onclick="location.hash='#home'">다른 테스트 보러 가기</button>
+            </div>
         </div>`;
+
     document.getElementById('like-btn').onclick = () => handleLike(testId);
-    document.getElementById('share-result').onclick = () => shareTest(testId, `나의 결과: ${result.title}`);
-    document.getElementById('share-test').onclick = () => copyLink(window.location.origin + `/#test/${testId}`);
+    document.getElementById('share-link-btn').onclick = () => shareTest(testId, `나의 결과: ${result.title}`);
+    
+    document.getElementById('save-img-btn').onclick = async () => {
+        const btn = document.getElementById('save-img-btn');
+        btn.textContent = '생성 중...';
+        try {
+            const target = document.getElementById('capture-target');
+            const canvas = await html2canvas(target, { backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg').trim(), scale: 2 });
+            const link = document.createElement('a');
+            link.download = `SevenCheck_${test.title}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+            btn.textContent = '📸 저장 완료!';
+            setTimeout(() => btn.textContent = '📸 이미지 저장', 2000);
+        } catch (e) {
+            console.error(e);
+            alert("이미지 저장 실패");
+            btn.textContent = '📸 이미지 저장';
+        }
+    };
 }
 
 function renderPrivacy() {
@@ -1512,12 +1582,110 @@ window.globalShareSite = async () => {
 };
 
 const headerShareBtn = document.getElementById('share-site-btn');
-if (headerShareBtn) {
+    if (headerShareBtn) {
     headerShareBtn.onclick = window.globalShareSite;
 }
 
-themeToggle.onclick = () => {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+// --- Utility Functions for Grand Update ---
+
+async function checkDailyQuests(type) {
+    if (!UserState.user) return;
+    const today = new Date().toISOString().split('T')[0];
+    const userRef = doc(db, "users", UserState.user.uid);
+    
+    let qData = UserState.data.quests || { date: null, list: {} };
+    if (qData.date !== today) {
+        qData = { date: today, list: { login: false, test: 0, comment: 0 } };
+        await updateDoc(userRef, { quests: qData });
+        UserState.data.quests = qData;
+    }
+
+    let updated = false;
+    if (type === 'login' && !qData.list.login) {
+        qData.list.login = true;
+        await addPoints(50, "일일 퀘스트: 출석");
+        updated = true;
+    }
+    if (type === 'test' && (qData.list.test || 0) < 3) {
+        qData.list.test = (qData.list.test || 0) + 1;
+        if (qData.list.test === 3) await addPoints(100, "일일 퀘스트: 테스트 3회");
+        updated = true;
+    }
+    
+    if (updated) {
+        await updateDoc(userRef, { quests: qData });
+        UserState.data.quests = qData;
+        if (document.getElementById('daily-quest-list')) loadDailyQuests();
+    }
+}
+
+function loadDailyQuests() {
+    const container = document.getElementById('daily-quest-list');
+    if (!container || !UserState.data?.quests) return;
+    
+    const q = UserState.data.quests.list;
+    const quests = [
+        { title: "매일매일 출석체크", desc: "오락실 방문하기", done: q.login, reward: 50 },
+        { title: "자아 탐구 생활", desc: "테스트 3회 완료", current: q.test || 0, max: 3, done: (q.test || 0) >= 3, reward: 100 }
+    ];
+
+    container.innerHTML = quests.map(quest => `
+        <div class="quest-item">
+            <div class="quest-info">
+                <h4>${quest.title}</h4>
+                <p>${quest.desc} ${quest.max ? `(${quest.current}/${quest.max})` : ''}</p>
+            </div>
+            <div class="quest-status ${quest.done ? 'done' : ''}">
+                ${quest.done ? '완료됨' : `+${quest.reward}P`}
+            </div>
+        </div>
+    `).join('');
+}
+
+let notifUnsubscribe = null;
+function initNotifications() {
+    const btn = document.getElementById('notification-btn');
+    if (!UserState.user) {
+        if(btn) btn.style.display = 'none';
+        if (notifUnsubscribe) notifUnsubscribe();
+        return;
+    }
+
+    const badge = document.getElementById('notif-badge');
+    if(btn) btn.style.display = 'flex';
+
+    const q = query(collection(db, "users", UserState.user.uid, "notifications"), where("isRead", "==", false), orderBy("createdAt", "desc"));
+    notifUnsubscribe = onSnapshot(q, (snap) => {
+        const count = snap.size;
+        if(badge) {
+            badge.textContent = count;
+            badge.classList.toggle('hidden', count === 0);
+        }
+    });
+
+    if(btn) {
+        btn.onclick = async () => {
+            const snap = await getDocs(q);
+            if (snap.empty) return alert("새로운 알림이 없습니다.");
+            
+            let msg = "";
+            snap.forEach(d => {
+                const data = d.data();
+                msg += `- ${data.message}\n`;
+                updateDoc(doc(db, "users", UserState.user.uid, "notifications", d.id), { isRead: true });
+            });
+            alert(`[새 알림]\n${msg}\n(확인 처리되었습니다)`);
+        };
+    }
+    
+    checkDailyQuests('login');
+}
+
+setInterval(() => {
+    if (UserState.user && !notifUnsubscribe) initNotifications();
+}, 3000);
+
+themeToggle.onclick = () => {    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     themeToggle.textContent = next === 'dark' ? '☀️' : '✨';
 };

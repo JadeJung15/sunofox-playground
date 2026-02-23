@@ -113,6 +113,7 @@ async function loadUserData(user) {
             lastNicknameChange: null, 
             boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
             arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
+            quests: { date: null, list: {} }, // 퀘스트 데이터 초기화
             createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);
@@ -120,7 +121,7 @@ async function loadUserData(user) {
     }
     UserState.data = snap.data();
     
-    // 데이터 복구: originalName 또는 originalEmail이 없는 경우 채워넣음
+    // 기존 유저 데이터 복구: originalName 또는 originalEmail이 없는 경우 채워넣음
     let needsUpdate = false;
     const updateObj = {};
     
@@ -132,6 +133,12 @@ async function loadUserData(user) {
     if (!UserState.data.originalEmail && user.email) {
         updateObj.originalEmail = user.email;
         UserState.data.originalEmail = user.email;
+        needsUpdate = true;
+    }
+    // 퀘스트 필드 없는 경우 추가
+    if (!UserState.data.quests) {
+        updateObj.quests = { date: null, list: {} };
+        UserState.data.quests = updateObj.quests;
         needsUpdate = true;
     }
     

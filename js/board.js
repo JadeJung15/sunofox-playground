@@ -65,6 +65,7 @@ export async function renderBoard(container) {
                 author: UserState.data.nickname,
                 authorEmoji: UserState.data.emoji || "👤",
                 authorColor: UserState.data.nameColor || "#333",
+                userTier: getTier(UserState.data.totalScore || 0).name, // 티어 정보 저장
                 content: content,
                 isPremium: isPremium,
                 createdAt: serverTimestamp()
@@ -99,8 +100,13 @@ async function loadPosts(container) {
             const countSnap = await getCountFromServer(commentsRef);
             const commentCount = countSnap.data().count;
 
+            // 티어 오라 클래스 결정
+            let auraClass = '';
+            if (data.userTier === 'DIAMOND') auraClass = 'aura-diamond';
+            else if (data.userTier === 'PLATINUM') auraClass = 'aura-platinum';
+
             const postEl = document.createElement('div');
-            postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} fade-in`;
+            postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} ${auraClass} fade-in`;
             postEl.innerHTML = `
                 <div class="post-header">
                     <div class="post-author-info">
@@ -163,6 +169,19 @@ async function loadPosts(container) {
                     });
                     commentInput.value = '';
                     loadComments(postId);
+
+                    // 알림 전송 (본인 글이 아닐 경우)
+                    if (data.uid !== UserState.user.uid) {
+                        try {
+                            await addDoc(collection(db, "users", data.uid, "notifications"), {
+                                type: "comment",
+                                message: `"${UserState.data.nickname}"님이 댓글을 남겼습니다.`,
+                                relatedId: postId,
+                                isRead: false,
+                                createdAt: serverTimestamp()
+                            });
+                        } catch (err) { console.error("알림 전송 실패", err); }
+                    }
                 } catch (e) {
                     alert("댓글 등록 실패");
                 } finally {
