@@ -666,7 +666,7 @@ const TESTS = [
 
 const categoryMap = { 
     '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', 
-    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드'
+    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드', '#news': '공지'
 };
 let currentFilter = '전체';
 let testLikesData = {};
@@ -707,6 +707,7 @@ async function router() {
     else if (hash === '#contact') renderContact();
     else if (hash === '#arcade') renderArcade();
     else if (hash === '#board') await renderBoard(app);
+    else if (hash === '#news') await renderNews();
     else if (hash === '#ranking') await renderRanking(app);
     else if (hash === '#guide') renderGuide();
     else if (hash === '#profile') renderProfile();
@@ -1428,6 +1429,102 @@ function renderContact() {
             
             <p style="margin-top: 3rem; font-size: 0.85rem; color: var(--text-sub);">보통 영업일 기준 24시간 이내에 답변을 드립니다.</p>
         </div>`;
+}
+
+async function renderNews() {
+    app.innerHTML = `
+        <div class="news-page fade-in">
+            <div class="card news-header" style="background: linear-gradient(135deg, #f59e0b, #d97706); color:#fff; border:none; padding:3rem 1.5rem; text-align:center; border-radius: var(--radius-lg); margin-bottom:2rem;">
+                <h2 style="font-size:2.2rem; font-weight:900; margin-bottom:0.5rem;">📢 업데이트 소식</h2>
+                <p style="opacity:0.9; font-weight:600;">SevenCheck의 새로운 기능과 공지사항을 확인하세요.</p>
+            </div>
+
+            ${UserState.isMaster ? `
+            <div class="card admin-news-form" style="margin-bottom: 2rem; border: 2px dashed #f59e0b;">
+                <h3 style="margin-bottom: 1rem;">✍️ 신규 공지 작성 (마스터 전용)</h3>
+                <input type="text" id="news-title" placeholder="공지 제목" style="width:100%; padding:0.8rem; margin-bottom:0.5rem; border-radius:8px; border:1px solid var(--border-color);">
+                <textarea id="news-content" placeholder="업데이트 내용을 상세히 적어주세요." style="width:100%; height:150px; padding:0.8rem; border-radius:8px; border:1px solid var(--border-color);"></textarea>
+                <button id="submit-news" class="btn-primary" style="width:100%; margin-top:0.5rem; background:#f59e0b;">공지 등록하기</button>
+            </div>
+            ` : ''}
+
+            <div id="news-list" class="news-list">
+                <div class="loading-spinner">소식을 불러오는 중...</div>
+            </div>
+        </div>
+    `;
+
+    const listContainer = document.getElementById('news-list');
+    
+    // 공지사항 로드 함수
+    const loadAnnouncements = async () => {
+        try {
+            const q = query(collection(db, "announcements"), orderBy("createdAt", "desc"), limit(20));
+            const snap = await getDocs(q);
+            
+            if (snap.empty) {
+                listContainer.innerHTML = '<p class="text-sub" style="text-align:center; padding:4rem;">아직 등록된 공지사항이 없습니다.</p>';
+                return;
+            }
+
+            listContainer.innerHTML = snap.docs.map(docSnap => {
+                const data = docSnap.data();
+                const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleDateString() : "방금 전";
+                return `
+                    <div class="card news-item fade-in" style="margin-bottom:1.5rem; padding:2rem;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                            <span style="background:rgba(245,158,11,0.1); color:#d97706; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:800;">NOTICE</span>
+                            <span style="font-size:0.8rem; color:var(--text-sub); font-weight:600;">${date}</span>
+                        </div>
+                        <h3 style="font-size:1.3rem; font-weight:900; margin-bottom:1rem; color:var(--text-main);">${data.title}</h3>
+                        <div style="line-height:1.8; color:var(--text-main); white-space:pre-wrap;">${data.content}</div>
+                        ${UserState.isMaster ? `<button class="btn-delete-news" data-id="${docSnap.id}" style="margin-top:1.5rem; background:none; border:none; color:#ef4444; font-size:0.8rem; cursor:pointer; font-weight:700;">삭제 ✕</button>` : ''}
+                    </div>
+                `;
+            }).join('');
+
+            // 삭제 버튼 이벤트
+            if (UserState.isMaster) {
+                listContainer.querySelectorAll('.btn-delete-news').forEach(btn => {
+                    btn.onclick = async () => {
+                        if (confirm("공지를 삭제하시겠습니까?")) {
+                            await deleteDoc(doc(db, "announcements", btn.dataset.id));
+                            loadAnnouncements();
+                        }
+                    };
+                });
+            }
+        } catch (e) {
+            listContainer.innerHTML = '<p class="error-msg">공지를 불러오지 못했습니다.</p>';
+        }
+    };
+
+    loadAnnouncements();
+
+    // 관리자 작성 이벤트
+    if (UserState.isMaster) {
+        const submitBtn = document.getElementById('submit-news');
+        submitBtn.onclick = async () => {
+            const title = document.getElementById('news-title').value.trim();
+            const content = document.getElementById('news-content').value.trim();
+            if (!title || !content) return alert("제목과 내용을 입력해주세요.");
+
+            try {
+                submitBtn.disabled = true;
+                await addDoc(collection(db, "announcements"), {
+                    title, content, createdAt: serverTimestamp()
+                });
+                alert("공지가 성공적으로 등록되었습니다.");
+                document.getElementById('news-title').value = '';
+                document.getElementById('news-content').value = '';
+                loadAnnouncements();
+            } catch (e) {
+                alert("등록 실패");
+            } finally {
+                submitBtn.disabled = false;
+            }
+        };
+    }
 }
 
 function renderGuide() {
