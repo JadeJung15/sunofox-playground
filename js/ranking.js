@@ -11,7 +11,7 @@ export async function renderRanking(container) {
                 <div class="card ranking-header" style="text-align:center; padding: 3rem 1.5rem; background: linear-gradient(135deg, #1e293b, #334155); color: #fff; border: none; margin-bottom: 2rem; border-radius: var(--radius-lg); position: relative; overflow: hidden;">
                     <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
                     <h2 style="font-size: 2.5rem; font-weight: 900; margin-bottom: 0.5rem; position: relative;">🏆 명예의 전당</h2>
-                    <p style="opacity: 0.9; font-size: 1.1rem; font-weight: 600; position: relative;">분야별 최고의 기록을 확인하세요</p>
+                    <p style="opacity: 0.9; font-size: 1.1rem; font-weight: 600; position: relative;">각 분야의 정점에 선 수집가들</p>
                 </div>
 
                 <div class="ranking-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 2rem; justify-content: center; background: var(--bg-color); padding: 0.5rem; border-radius: 50px; border: 1px solid var(--border-color); max-width: 500px; margin-left: auto; margin-right: auto;">
@@ -38,62 +38,83 @@ export async function renderRanking(container) {
     const loadData = async () => {
         const listContainer = document.getElementById('ranking-list');
         const ADMIN_UID = '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
-        const RANK_EMOJIS = ['👑', '✨', '⭐', '🎖️', '🏅', '💎', '🔥', '⚡', '🔮', '🍀'];
+        
+        // 카테고리별 스페셜 이모지 정의 (1~5등)
+        const SPECIAL_EMOJIS = {
+            score: ['👑', '💎', '🌟', '✨', '⭐'],
+            points: ['💰', '💵', '💸', '🪙', '💳'],
+            activity: ['🕹️', '🎮', '⚡', '🔥', '🍀']
+        };
 
         try {
-            // 탭에 따라 다른 정렬 기준 적용
-            const sortField = currentTab === 'score' ? 'totalScore' : (currentTab === 'points' ? 'points' : 'totalScore');
-            const q = query(collection(db, "users"), orderBy(sortField, "desc"), limit(50));
+            // 충분한 양의 유저 데이터를 가져와서 모든 랭킹을 클라이언트에서 계산
+            const q = query(collection(db, "users"), orderBy("totalScore", "desc"), limit(100));
             const snap = await getDocs(q);
 
-            if (snap.empty) {
-                listContainer.innerHTML = `<div class="card" style="text-align:center; padding:3rem;"><p class="text-sub">데이터가 없습니다.</p></div>`;
-                return;
-            }
-
-            let users = snap.docs
+            let allUsers = snap.docs
                 .filter(doc => doc.id !== ADMIN_UID)
                 .map(d => {
                     const data = d.data();
-                    // 활동량 합계 계산
                     const stats = data.arcadeStats || {};
                     const totalActivity = Object.values(stats).reduce((a, b) => a + b, 0);
                     return { id: d.id, ...data, totalActivity };
                 })
                 .filter(user => !user.isMaster);
 
-            // 활동량 탭일 경우 별도 정렬
-            if (currentTab === 'activity') {
-                users.sort((a, b) => b.totalActivity - a.totalActivity);
+            // 1. 아이템 점수 랭킹 계산
+            const scoreRanked = [...allUsers].sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+            // 2. 보유 자산 랭킹 계산
+            const pointsRanked = [...allUsers].sort((a, b) => (b.points || 0) - (a.points || 0));
+            // 3. 활동량 랭킹 계산
+            const activityRanked = [...allUsers].sort((a, b) => b.totalActivity - a.totalActivity);
+
+            // 현재 탭에 맞는 리스트 선택
+            let currentList = [];
+            let accentColor = 'var(--accent-color)';
+            let displayLabel = '';
+
+            if (currentTab === 'score') {
+                currentList = scoreRanked;
+                accentColor = 'var(--accent-color)';
+                displayLabel = '아이템 점수';
+            } else if (currentTab === 'points') {
+                currentList = pointsRanked;
+                accentColor = 'var(--accent-secondary)';
+                displayLabel = '보유 자산';
+            } else {
+                currentList = activityRanked;
+                accentColor = '#10b981';
+                displayLabel = '총 활동량';
             }
 
-            const topUsers = users.slice(0, 10);
+            const top10 = currentList.slice(0, 10);
 
-            let rank = 1;
-            listContainer.innerHTML = topUsers.map(data => {
+            listContainer.innerHTML = top10.map((data, idx) => {
+                const rank = idx + 1;
                 const isTop3 = rank <= 3;
-                const rankEmoji = RANK_EMOJIS[rank - 1] || '🎖️';
                 
+                // 유저가 획득한 모든 분야의 배지 수집
+                let userBadges = '';
+                
+                // 점수 배지 체크
+                const sIdx = scoreRanked.findIndex(u => u.id === data.id);
+                if (sIdx >= 0 && sIdx < 5) userBadges += `<span title="점수 ${sIdx+1}위">${SPECIAL_EMOJIS.score[sIdx]}</span>`;
+                
+                // 자산 배지 체크
+                const pIdx = pointsRanked.findIndex(u => u.id === data.id);
+                if (pIdx >= 0 && pIdx < 5) userBadges += `<span title="자산 ${pIdx+1}위">${SPECIAL_EMOJIS.points[pIdx]}</span>`;
+                
+                // 활동 배지 체크
+                const aIdx = activityRanked.findIndex(u => u.id === data.id);
+                if (aIdx >= 0 && aIdx < 5) userBadges += `<span title="활동 ${aIdx+1}위">${SPECIAL_EMOJIS.activity[aIdx]}</span>`;
+
                 let specialStyle = '';
-                let accentColor = 'var(--accent-color)';
-                
-                if (currentTab === 'score') {
-                    if (rank === 1) specialStyle = 'background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(251, 191, 36, 0.05) 100%); border: 2px solid #fbbf24;';
-                    else if (rank === 2) specialStyle = 'background: linear-gradient(135deg, rgba(148, 163, 184, 0.15) 0%, rgba(148, 163, 184, 0.05) 100%); border: 2px solid #94a3b8;';
-                    else if (rank === 3) specialStyle = 'background: linear-gradient(135deg, rgba(212, 163, 115, 0.15) 0%, rgba(212, 163, 115, 0.05) 100%); border: 2px solid #d4a373;';
-                } else if (currentTab === 'points') {
-                    accentColor = 'var(--accent-secondary)';
-                    if (rank === 1) specialStyle = 'background: linear-gradient(135deg, rgba(244, 63, 94, 0.15) 0%, rgba(244, 63, 94, 0.05) 100%); border: 2px solid #f43f5e;';
-                } else {
-                    accentColor = '#10b981';
-                    if (rank === 1) specialStyle = 'background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%); border: 2px solid #10b981;';
-                }
+                if (rank === 1) specialStyle = `background: linear-gradient(135deg, ${accentColor}22 0%, ${accentColor}05 100%); border: 2px solid ${accentColor};`;
+                else if (isTop3) specialStyle = `border-left: 4px solid ${accentColor};`;
 
                 const displayValue = currentTab === 'score' ? 
                     `${(data.totalScore || 0).toLocaleString()} 점` : 
                     (currentTab === 'points' ? `${(data.points || 0).toLocaleString()} P` : `${(data.totalActivity || 0).toLocaleString()} 회`);
-
-                const displayLabel = currentTab === 'score' ? '아이템 점수' : (currentTab === 'points' ? '보유 자산' : '총 활동량');
 
                 return `
                     <div class="card ranking-item" style="display: flex; align-items: center; padding: 1.25rem 1.5rem; gap: 1.5rem; ${specialStyle} position: relative; overflow: hidden;">
@@ -103,7 +124,7 @@ export async function renderRanking(container) {
                         </div>
                         <div class="rank-info" style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="font-size:0.9rem;">${rankEmoji}</span></h4>
+                                <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="margin-left:4px; display:inline-flex; gap:2px;">${userBadges}</span></h4>
                             </div>
                             <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
                                 ${displayLabel}: <strong style="color: ${accentColor}; font-size: 1rem;">${displayValue}</strong>
@@ -112,14 +133,10 @@ export async function renderRanking(container) {
                     </div>
                 `;
             }).join('');
-            
-            // 랭크 숫자 업데이트를 위한 후처리
-            const items = listContainer.querySelectorAll('.ranking-item');
-            items.forEach((_, idx) => rank++);
 
         } catch (e) {
             console.error(e);
-            listContainer.innerHTML = '<p style="text-align:center; padding:2rem; color:#ef4444;">로드 실패</p>';
+            listContainer.innerHTML = '<p style="text-align:center; padding:2rem; color:#ef4444;">데이터 처리 중 오류가 발생했습니다.</p>';
         }
     };
 
