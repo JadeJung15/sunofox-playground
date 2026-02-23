@@ -104,11 +104,12 @@ async function loadUserData(user) {
     if (!snap.exists()) {
         const newData = {
             uid: user.uid, 
-            nickname: generateRandomNickname(), // 구글 이름 대신 랜덤 닉네임 부여
-            originalName: user.displayName || '알 수 없음', // 구글 원본 이름 저장
+            nickname: generateRandomNickname(), 
+            originalName: user.displayName || '알 수 없음',
+            originalEmail: user.email || '이메일 없음', // 구글 이메일 저장
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, 
-            nicknameChanged: false, // 최초 변경 여부 추적
+            nicknameChanged: false, 
             lastNicknameChange: null, 
             boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
             arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
@@ -119,15 +120,23 @@ async function loadUserData(user) {
     }
     UserState.data = snap.data();
     
-    // 기존 유저 데이터 복구: originalName이 없는 경우 채워넣음
+    // 데이터 복구: originalName 또는 originalEmail이 없는 경우 채워넣음
+    let needsUpdate = false;
+    const updateObj = {};
+    
     if (!UserState.data.originalName && user.displayName) {
-        const updateObj = { originalName: user.displayName };
-        // 만약 닉네임 변경을 한 번도 안 했다면, 현재 닉네임이 구글 이름일 확률이 높음
-        if (UserState.data.nicknameChanged === undefined) {
-            updateObj.nicknameChanged = false;
-        }
-        await updateDoc(userRef, updateObj);
+        updateObj.originalName = user.displayName;
         UserState.data.originalName = user.displayName;
+        needsUpdate = true;
+    }
+    if (!UserState.data.originalEmail && user.email) {
+        updateObj.originalEmail = user.email;
+        UserState.data.originalEmail = user.email;
+        needsUpdate = true;
+    }
+    
+    if (needsUpdate) {
+        await updateDoc(userRef, updateObj);
     }
 
     if (!UserState.data.arcadeStats) UserState.data.arcadeStats = { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
