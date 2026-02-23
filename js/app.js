@@ -792,15 +792,7 @@ async function renderHome(hash) {
                     <a href="#fortune" class="quick-item"><span class="quick-icon">🔮</span><span class="quick-label">오늘 운세</span></a>
                 </div>
 
-                <div class="section-header">
-                    <h2 class="section-title">🔥 지금 인기 있는 테스트</h2>
-                    <a href="#personality" class="section-more">전체보기</a>
-                </div>
-                <div class="test-grid" style="margin-bottom: 3.5rem;">
-                    ${featuredTests.map(t => renderTestCard(t)).join('')}
-                </div>
-
-                <div class="banner-grid">
+                <div class="banner-grid" style="margin-top: 2rem;">
                     <div class="arcade-preview-card" onclick="location.hash='#arcade'">
                         <div style="position:relative; z-index:1;">
                             <span style="font-size: 0.8rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 50px; margin-bottom: 1rem; display: inline-block;">DAILY MISSION</span>
