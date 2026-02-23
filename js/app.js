@@ -1811,49 +1811,6 @@ function loadDailyQuests() {
     `).join('');
 }
 
-let notifUnsubscribe = null;
-function initNotifications() {
-    const btn = document.getElementById('notification-btn');
-    if (!UserState.user) {
-        if(btn) btn.style.display = 'none';
-        if (notifUnsubscribe) notifUnsubscribe();
-        return;
-    }
-
-    const badge = document.getElementById('notif-badge');
-    if(btn) btn.style.display = 'flex';
-
-    const q = query(collection(db, "users", UserState.user.uid, "notifications"), where("isRead", "==", false), orderBy("createdAt", "desc"));
-    notifUnsubscribe = onSnapshot(q, (snap) => {
-        const count = snap.size;
-        if(badge) {
-            badge.textContent = count;
-            badge.classList.toggle('hidden', count === 0);
-        }
-    });
-
-    if(btn) {
-        btn.onclick = async () => {
-            const snap = await getDocs(q);
-            if (snap.empty) return alert("새로운 알림이 없습니다.");
-            
-            let msg = "";
-            snap.forEach(d => {
-                const data = d.data();
-                msg += `- ${data.message}\n`;
-                updateDoc(doc(db, "users", UserState.user.uid, "notifications", d.id), { isRead: true });
-            });
-            alert(`[새 알림]\n${msg}\n(확인 처리되었습니다)`);
-        };
-    }
-    
-    checkDailyQuests('login');
-}
-
-setInterval(() => {
-    if (UserState.user && !notifUnsubscribe) initNotifications();
-}, 3000);
-
 themeToggle.onclick = () => {    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     themeToggle.textContent = next === 'dark' ? '☀️' : '✨';
