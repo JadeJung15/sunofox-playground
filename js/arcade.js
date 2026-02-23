@@ -115,9 +115,10 @@ async function playUpDown() {
 async function playAlchemy(count) {
     if (!UserState.user) return;
     
-    let cost = 500;
-    if (count === 5) cost = 2200;
-    else if (count === 10) cost = 4200;
+    // 연금술 비용 인하 (수익구조 개선)
+    let cost = 300;
+    if (count === 5) cost = 1200;
+    else if (count === 10) cost = 2000;
 
     const gradeSelect = document.getElementById('alchemy-grade-select');
     if (!gradeSelect) return;
@@ -133,7 +134,7 @@ async function playAlchemy(count) {
         return;
     }
 
-    if (!confirm(`[${selectedGrade}] 등급 아이템 ${itemsNeeded}개와 ${cost.toLocaleString()}P를 사용하여 연금술(${count}회)을 진행하시겠습니까?\n(성공률 100%)`)) return;
+    if (!confirm(`[${selectedGrade}] 등급 아이템 ${itemsNeeded}개와 ${cost.toLocaleString()}P를 사용하여 연금술(${count}회)을 진행하시겠습니까?\n(성공률 100% + 대성공 확률 존재)`)) return;
 
     if (await usePoints(cost)) {
         await updateArcadeStat('alchemy');
@@ -142,14 +143,12 @@ async function playAlchemy(count) {
             let currentInv = [...UserState.data.inventory];
             
             const consumedItems = [];
-            let removedValue = 0;
             
             for (let i = 0; i < itemsNeeded; i++) {
                 const idx = currentInv.findIndex(name => targetItems.includes(name));
                 if (idx > -1) {
                     const item = currentInv.splice(idx, 1)[0];
                     consumedItems.push(item);
-                    removedValue += ITEM_VALUES[item];
                 }
             }
 
@@ -159,19 +158,24 @@ async function playAlchemy(count) {
             const nextGradeItems = ITEM_GRADES[nextGrade];
 
             const results = [];
-            let addedValue = 0;
+            let greatSuccessCount = 0;
 
             for (let i = 0; i < count; i++) {
-                // 성공률 100%
+                // 기본 보상
                 const reward = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
                 results.push(reward);
-                addedValue += ITEM_VALUES[reward];
+                
+                // 15% 확률로 대성공 (보상 2배)
+                if (Math.random() < 0.15) {
+                    const bonus = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
+                    results.push(bonus);
+                    greatSuccessCount++;
+                }
             }
 
             currentInv.push(...results);
             
-            // 통합 아이템 점수(totalScore) 정확하게 재계산 (유저 요청 반영)
-            // 소모된 아이템 점수 차감 및 연성된 아이템 점수 가산 로직 보강
+            // 통합 아이템 점수(totalScore) 정확하게 재계산
             const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
             const netProfit = recalcScore - (UserState.data.totalScore || 0) - cost;
 
@@ -205,7 +209,7 @@ async function playAlchemy(count) {
 
                 resultEl.innerHTML = `
                     <div style="font-size:0.7rem; color:var(--text-sub); margin-bottom:0.4rem;">재료 소모: ${consumedText}</div>
-                    <div style="font-size:0.85rem; margin-bottom:0.4rem;">연성 결과: ${resultText}</div>
+                    <div style="font-size:0.85rem; margin-bottom:0.4rem;">연성 결과: ${resultText}${greatSuccessCount > 0 ? `<br><span style="color:#f59e0b; font-weight:800;">✨ 대성공 ${greatSuccessCount}회 발생! ✨</span>` : ''}</div>
                     <div style="font-weight:900; color:${profitColor}; font-size:0.95rem;">${profitText}</div>
                 `;
             }
@@ -336,20 +340,26 @@ export async function openMarket() {
     
     container.innerHTML = `
         <div style="background: var(--bg-color); border-radius: 12px; padding: 1rem; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-            <p style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); margin-bottom: 0.75rem; text-align: center;">👇 판매할 수량을 입력하고 [판매]를 누르세요</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1rem;">
+                <label style="font-size:0.8rem; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px;">
+                    <input type="checkbox" id="market-select-all"> 전체 선택
+                </label>
+                <button id="sell-selected-btn" class="btn-primary" style="padding: 6px 15px; font-size: 0.75rem; background: var(--accent-secondary); border-radius: 6px; box-shadow: none; opacity:0.5;" disabled>선택 판매</button>
+            </div>
             <div style="max-height: 250px; overflow-y: auto; padding-right: 5px;">
                 ${Object.entries(itemCounts).map(([name, count]) => {
                     const val = ITEM_VALUES[name] || 0;
-                    const sellPrice = Math.floor(val * 0.7);
                     return `
                         <div style="display:flex; justify-content:space-between; align-items:center; padding: 0.8rem 0; border-bottom: 1px solid var(--border-color);">
-                            <div style="display:flex; flex-direction:column; flex:1;">
-                                <span style="font-size:0.85rem; font-weight:700;">${name}</span>
-                                <small style="font-size:0.7rem; color:var(--text-sub);">가치: ${val}P | 보유: ${count}개</small>
+                            <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                                <input type="checkbox" class="item-checkbox" data-name="${name}">
+                                <div style="display:flex; flex-direction:column;">
+                                    <span style="font-size:0.85rem; font-weight:700;">${name}</span>
+                                    <small style="font-size:0.7rem; color:var(--text-sub);">가치: ${val}P | 보유: ${count}개</small>
+                                </div>
                             </div>
                             <div style="display:flex; align-items:center; gap:0.5rem;">
-                                <input type="number" id="sell-qty-${name}" value="1" min="1" max="${count}" style="width:50px; padding:4px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem; text-align:center;">
-                                <button class="sell-item-btn btn-primary" data-name="${name}" style="padding: 6px 12px; font-size: 0.75rem; background: var(--accent-color); border-radius: 6px; box-shadow: none; white-space:nowrap;">판매</button>
+                                <input type="number" id="sell-qty-${name}" value="${count}" min="1" max="${count}" style="width:50px; padding:4px; border-radius:4px; border:1px solid var(--border-color); font-size:0.8rem; text-align:center;">
                             </div>
                         </div>
                     `;
@@ -361,17 +371,41 @@ export async function openMarket() {
     
     document.getElementById('market-open-btn').style.display = 'none';
 
-    container.querySelectorAll('.sell-item-btn').forEach(btn => {
-        btn.onclick = async () => {
-            const itemName = btn.dataset.name;
-            const qtyInput = document.getElementById(`sell-qty-${itemName}`);
-            const qty = parseInt(qtyInput.value);
-            if (isNaN(qty) || qty < 1) return;
-            
-            await sellItem(itemName, qty);
-            openMarket(); // 목록 새로고침
-        };
+    const selectAll = document.getElementById('market-select-all');
+    const sellSelectedBtn = document.getElementById('sell-selected-btn');
+    const checkboxes = container.querySelectorAll('.item-checkbox');
+
+    const updateSellBtn = () => {
+        const checked = container.querySelectorAll('.item-checkbox:checked').length;
+        sellSelectedBtn.disabled = checked === 0;
+        sellSelectedBtn.style.opacity = checked === 0 ? '0.5' : '1';
+        sellSelectedBtn.textContent = checked > 0 ? `선택 판매 (${checked})` : '선택 판매';
+    };
+
+    selectAll.onchange = (e) => {
+        checkboxes.forEach(cb => cb.checked = e.target.checked);
+        updateSellBtn();
+    };
+
+    checkboxes.forEach(cb => {
+        cb.onchange = updateSellBtn;
     });
+
+    sellSelectedBtn.onclick = async () => {
+        const itemsToSell = [];
+        checkboxes.forEach(cb => {
+            if (cb.checked) {
+                const name = cb.dataset.name;
+                const qty = parseInt(document.getElementById(`sell-qty-${name}`).value);
+                itemsToSell.push({ name, qty });
+            }
+        });
+        
+        if (itemsToSell.length > 0) {
+            await sellItems(itemsToSell);
+            openMarket();
+        }
+    };
 
     document.getElementById('market-close-btn').onclick = () => {
         container.innerHTML = '';
@@ -379,45 +413,50 @@ export async function openMarket() {
     };
 }
 
-async function sellItem(itemName, qty = 1) {
-    const val = ITEM_VALUES[itemName];
-    const totalSellPrice = Math.floor(val * 0.7) * qty;
-    const totalScoreValue = val * qty;
-    
-    if (!confirm(`[${itemName}] ${qty}개를 판매하고 ${totalSellPrice.toLocaleString()}P를 받으시겠습니까?`)) return;
+async function sellItems(itemsToSell) {
+    let totalScoreLoss = 0;
+    let totalPointsGain = 0;
+    let itemsDescription = [];
+
+    itemsToSell.forEach(({ name, qty }) => {
+        const val = ITEM_VALUES[name];
+        totalScoreLoss += val * qty;
+        totalPointsGain += Math.floor(val * 0.7) * qty;
+        itemsDescription.push(`${name} x${qty}`);
+    });
+
+    if (!confirm(`선택한 아이템들을 판매하여 ${totalPointsGain.toLocaleString()}P를 받으시겠습니까?\n(${itemsDescription.join(', ')})`)) return;
 
     try {
         const userRef = doc(db, "users", UserState.user.uid);
         let currentInv = [...UserState.data.inventory];
         
-        // 입력된 수량만큼 아이템 제거
-        let removedCount = 0;
-        for (let i = 0; i < qty; i++) {
-            const idx = currentInv.indexOf(itemName);
-            if (idx > -1) {
-                currentInv.splice(idx, 1);
-                removedCount++;
+        itemsToSell.forEach(({ name, qty }) => {
+            for (let i = 0; i < qty; i++) {
+                const idx = currentInv.indexOf(name);
+                if (idx > -1) currentInv.splice(idx, 1);
             }
-        }
+        });
 
-        if (removedCount > 0) {
-            const finalPrice = Math.floor(val * 0.7) * removedCount;
-            const finalScoreLoss = val * removedCount;
-            
-            const newPoints = Math.max(0, (UserState.data.points || 0) + finalPrice);
-            const newScore = Math.max(0, (UserState.data.totalScore || 0) - finalScoreLoss);
+        const newPoints = Math.max(0, (UserState.data.points || 0) + totalPointsGain);
+        const newScore = Math.max(0, (UserState.data.totalScore || 0) - totalScoreLoss);
 
-            await updateDoc(userRef, {
-                inventory: currentInv,
-                points: newPoints,
-                totalScore: newScore
-            });
-            
-            UserState.data.inventory = currentInv;
-            UserState.data.points = newPoints;
-            UserState.data.totalScore = newScore;
-            updateUI();
-            alert(`${removedCount}개 판매 완료! +${finalPrice.toLocaleString()}P 획득`);
-        }
-    } catch (e) { alert("판매 실패"); }
+        await updateDoc(userRef, {
+            inventory: currentInv,
+            points: newPoints,
+            totalScore: newScore
+        });
+        
+        UserState.data.inventory = currentInv;
+        UserState.data.points = newPoints;
+        UserState.data.totalScore = newScore;
+        updateUI();
+        alert(`판매 완료! +${totalPointsGain.toLocaleString()}P 획득`);
+    } catch (e) { console.error(e); alert("판매 실패"); }
+}
+
+async function sellItem(itemName, qty = 1) {
+    // This function is kept for backward compatibility or individual calls if any, 
+    // but the main UI now uses sellItems.
+    await sellItems([{ name: itemName, qty }]);
 }
