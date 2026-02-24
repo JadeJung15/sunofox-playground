@@ -1247,14 +1247,15 @@ function renderArcade() {
 
                 <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🎫 럭키 복권</h3>
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🎰 이모지 슬롯</h3>
                         <span style="background: rgba(253, 160, 133, 0.1); color: #fda085; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">JACKPOT</span>
                     </div>
-                    <div id="lotto-result" class="lotto-card" style="height:70px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed #fda085; border-radius:15px; font-weight:800; font-size:1rem; background:rgba(253,160,133,0.05); color: #fda085;">당신의 행운을 테스트하세요!</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1.5fr; gap:0.6rem;">
-                        <button id="lotto-btn" class="btn-primary" style="background:#fda085; box-shadow: none; font-size:0.8rem; height:50px;">1장 (500P)</button>
-                        <button id="lotto-5-btn" class="btn-primary" style="background:#f97316; box-shadow: none; font-size:0.8rem; height:50px;">5장 (2200P 🔥)</button>
+                    <div id="slot-machine-container" style="height:100px; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:1.25rem; border:2px solid #fda085; border-radius:15px; background:rgba(253,160,133,0.05); font-size: 3rem; overflow: hidden;">
+                        <div class="slot-reel" id="slot-1">🎰</div>
+                        <div class="slot-reel" id="slot-2">🎰</div>
+                        <div class="slot-reel" id="slot-3">🎰</div>
                     </div>
+                    <button id="slot-spin-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3); height:55px; font-weight: 800;">슬롯 돌리기 (300P)</button>
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0;">
@@ -1299,14 +1300,23 @@ function renderArcade() {
                     </div>
                 </div>
 
-                <div class="card arcade-item-card" style="margin-bottom:0;">
-                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">🔢 UP & DOWN</h3>
-                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem;">1~50 숫자 맞추기 (보상 <strong>50P</strong>)</p>
-                    <div style="display:flex; gap:0.6rem; background: var(--bg-color); padding: 0.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
-                        <input type="number" id="updown-input" style="flex:1; background: transparent; border: none; text-align:center; font-size:1.2rem; font-weight:800; outline: none;" placeholder="??">
-                        <button id="updown-submit" class="btn-primary" style="width:80px; height: 45px; padding:0;">확인</button>
+                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🧨 폭탄 돌리기</h3>
+                        <span style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">DANGER</span>
                     </div>
-                    <p id="updown-msg" style="text-align:center; margin-top:1.25rem; font-weight:900; color:var(--accent-color); font-size:1rem; min-height: 24px;"></p>
+                    <p id="bomb-msg" class="text-sub" style="font-size:0.9rem; margin-bottom:1rem; text-align: center; min-height: 24px;">전선을 선택하세요! (현재 누적: 0P)</p>
+                    <div id="bomb-wires" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.5rem; margin-bottom:1.5rem;">
+                        <button class="wire-btn" data-wire="0" style="height:60px; background:#ef4444; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="1" style="height:60px; background:#3b82f6; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="2" style="height:60px; background:#10b981; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="3" style="height:60px; background:#f59e0b; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:8px;"></button>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
+                        <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; height:50px;">게임 시작 (200P)</button>
+                        <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.8rem; height:50px; border-color:#f43f5e; color:#f43f5e;" disabled>포인트 챙기기</button>
+                    </div>
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0; border: 2px solid var(--accent-soft); background: rgba(99, 102, 241, 0.02);">
