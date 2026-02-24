@@ -19,7 +19,7 @@ const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fi
 
 const TESTS = [
     {
-        id: 'p1', category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '7단계 심층 질문으로 당신만의 고유한 성향과 아우라를 분석합니다.', thumb: unsplash('1557683316-973673baf926'),
+        id: 'p1', category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '7단계 심층 질문으로 당신만의 고유한 성향과 아우라를 분석합니다.', thumb: 'https://images.pexels.com/photos/16148505/pexels-photo-16148505.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '낯선 파티에 초대받았다면 당신의 선택은?', options: [{ text: '화려한 옷으로 존재감을 뽐낸다', scores: {e:2, c:1} }, { text: '깔끔하고 단정한 옷으로 자연스럽게 섞인다', scores: {l:1, p:1} }] },
             { q: '길을 걷다 예쁜 꽃을 발견했을 때 행동은?', options: [{ text: '바로 사진을 찍어 SNS에 공유한다', scores: {e:1, c:2} }, { text: '잠시 멈춰 향기를 맡으며 감상에 젖는다', scores: {p:2, l:1} }] },
@@ -30,14 +30,14 @@ const TESTS = [
             { q: '10년 후 당신의 모습은 어떨 것 같나요?', options: [{ text: '새로운 분야에 도전하며 열정적으로 살고 있다', scores: {e:2, c:1} }, { text: '평온하고 안정적인 삶의 여유를 누리고 있다', scores: {p:2, l:1} }] }
         ],
         results: {
-            energy: { title: '타오르는 태양의 레드', desc: '당신은 주변 사람들에게 에너지를 전파하는 강력한 아우라를 가졌습니다. 리더십이 뛰어나고 솔직한 표현이 매력적입니다.', img: unsplash('1525909002-1b05e0c869d8'), color: '#ef4444', tags: ['#열정', '#리더십', '#에너자이저'] },
-            logic: { title: '냉철한 이성의 블루', desc: '데이터와 논리를 바탕으로 최선의 답을 찾는 전략가입니다. 신중하고 사려 깊은 태도가 주변의 신뢰를 얻습니다.', img: unsplash('1557683311-e19223e33116'), color: '#3b82f6', tags: ['#분석가', '#브레인', '#전략가'] },
-            empathy: { title: '고요한 숲의 그린', desc: '주변을 편안하게 만드는 따뜻한 공감 능력의 소유자입니다. 당신과 함께라면 누구나 위로를 얻습니다.', img: unsplash('1518310383802-640c2de311b2'), color: '#10b981', tags: ['#힐러', '#평화주의자', '#리스너'] },
-            creativity: { title: '신비로운 보랏빛 밤', desc: '독창적인 시선으로 세상을 바라보는 예술가적 영혼입니다. 남들이 보지 못하는 가능성을 찾아냅니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#아이디어', '#아티스트', '#독창성'] }
+            energy: { title: '타오르는 태양의 레드', desc: '당신은 주변 사람들에게 에너지를 전파하는 강력한 아우라를 가졌습니다. 리더십이 뛰어나고 솔직한 표현이 매력적입니다.', img: 'https://images.pexels.com/photos/2832432/pexels-photo-2832432.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#ef4444', tags: ['#열정', '#리더십', '#에너자이저'] },
+            logic: { title: '냉철한 이성의 블루', desc: '데이터와 논리를 바탕으로 최선의 답을 찾는 전략가입니다. 신중하고 사려 깊은 태도가 주변의 신뢰를 얻습니다.', img: 'https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#3b82f6', tags: ['#분석가', '#브레인', '#전략가'] },
+            empathy: { title: '고요한 숲의 그린', desc: '주변을 편안하게 만드는 따뜻한 공감 능력의 소유자입니다. 당신과 함께라면 누구나 위로를 얻습니다.', img: 'https://images.pexels.com/photos/7130503/pexels-photo-7130503.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#10b981', tags: ['#힐러', '#평화주의자', '#리스너'] },
+            creativity: { title: '신비로운 보랏빛 밤', desc: '독창적인 시선으로 세상을 바라보는 예술가적 영혼입니다. 남들이 보지 못하는 가능성을 찾아냅니다.', img: 'https://images.pexels.com/photos/2832432/pexels-photo-2832432.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#아이디어', '#아티스트', '#독창성'] }
         }
     },
     {
-        id: 'p2', category: '성격', title: '내면 아이 유형 테스트', desc: '당신의 무의식 깊은 곳에 자리 잡은 내면 아이의 성향을 분석합니다.', thumb: unsplash('1516035069371-29a1b244cc32'),
+        id: 'p2', category: '성격', title: '내면 아이 유형 테스트', desc: '당신의 무의식 깊은 곳에 자리 잡은 내면 아이의 성향을 분석합니다.', thumb: 'https://images.pexels.com/photos/15131512/pexels-photo-15131512.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '어린 시절 가장 즐거웠던 기억은?', options: [{ text: '동네 친구들과 뛰어놀던 골목길', scores: {e:2, p:1} }, { text: '방 안에서 혼자 상상하며 놀던 시간', scores: {c:2, l:1} }] },
             { q: '꿈속에서 마법 지팡이를 얻었다면?', options: [{ text: '하늘을 날아 세계 여행을 떠난다', scores: {e:2, c:1} }, { text: '동물들과 대화하는 능력을 갖는다', scores: {p:2, c:1} }] },
@@ -48,14 +48,14 @@ const TESTS = [
             { q: '잠들기 전 주로 어떤 생각을 하나요?', options: [{ text: '내일 일어날 즐거운 일들을 상상한다', scores: {e:1, c:2} }, { text: '오늘 하루 있었던 일들을 되짚어본다', scores: {l:2, p:1} }] }
         ],
         results: {
-            energy: { title: '호기심 많은 모험가 아이', desc: '지치지 않는 호기심과 활기가 당신의 진정한 힘입니다.', img: unsplash('1534361960057-19889db9621e'), color: '#f59e0b', tags: ['#모험가', '#에너지', '#천진난만'] },
-            logic: { title: '지혜로운 꼬마 학자 아이', desc: '세상을 관찰하고 깊이 생각하는 것을 즐기는 통찰력 있는 아이입니다.', img: unsplash('1456513080510-7bf3a84b82f8'), color: '#64748b', tags: ['#학자', '#통찰력', '#차분함'] },
-            empathy: { title: '사랑이 넘치는 작은 천사', desc: '타인의 아픔을 어루만질 줄 아는 세상에서 가장 따뜻한 아이입니다.', img: unsplash('1516589174184-c68d8e5fcc4a'), color: '#ec4899', tags: ['#천사', '#공감', '#순수함'] },
-            creativity: { title: '꿈꾸는 무지개 소년/소녀', desc: '상상력이 풍부하여 언제나 새로운 세상을 그리는 아이입니다.', img: unsplash('1456735190827-d1262f71b8a3'), color: '#8b5cf6', tags: ['#예술가', '#꿈나무', '#상상력'] }
+            energy: { title: '호기심 많은 모험가 아이', desc: '지치지 않는 호기심과 활기가 당신의 진정한 힘입니다.', img: 'https://images.pexels.com/photos/15020862/pexels-photo-15020862.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#f59e0b', tags: ['#모험가', '#에너지', '#천진난만'] },
+            logic: { title: '지혜로운 꼬마 학자 아이', desc: '세상을 관찰하고 깊이 생각하는 것을 즐기는 통찰력 있는 아이입니다.', img: 'https://images.pexels.com/photos/4565130/pexels-photo-4565130.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#64748b', tags: ['#학자', '#통찰력', '#차분함'] },
+            empathy: { title: '사랑이 넘치는 작은 천사', desc: '타인의 아픔을 어루만질 줄 아는 세상에서 가장 따뜻한 아이입니다.', img: 'https://images.pexels.com/photos/15165891/pexels-photo-15165891.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#ec4899', tags: ['#천사', '#공감', '#순수함'] },
+            creativity: { title: '꿈꾸는 무지개 소년/소녀', desc: '상상력이 풍부하여 언제나 새로운 세상을 그리는 아이입니다.', img: 'https://images.pexels.com/photos/14567351/pexels-photo-14567351.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#예술가', '#꿈나무', '#상상력'] }
         }
     },
     {
-        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: unsplash('1518199266791-5375a83190b7'),
+        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: 'https://images.pexels.com/photos/16206417/pexels-photo-16206417.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '연인과 가고 싶은 첫 데이트 장소는?', options: [{ text: '북적이는 핫플레이스와 축제', scores: {e:2, c:1} }, { text: '조용하고 분위기 있는 골목 카페', scores: {p:2, l:1} }] },
             { q: '연락 빈도에 대한 당신의 생각은?', options: [{ text: '일상의 모든 것을 공유하고 싶다', scores: {e:1, p:2} }, { text: '각자의 시간을 존중하는 연락이 좋다', scores: {l:2, p:1} }] },
@@ -66,10 +66,10 @@ const TESTS = [
             { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하며 자극을 주는 관계', scores: {e:1, l:2} }, { text: '있는 그대로를 수용해주는 관계', scores: {p:2, c:1} }] }
         ],
         results: {
-            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: unsplash('1516589174184-c68d8e5fcc4a'), color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
-            logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: unsplash('1552664730-d307ca884978'), color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
-            empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: unsplash('1494774157365-9e04c6720e47'), color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
-            creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
+            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.pexels.com/photos/15232938/pexels-photo-15232938.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
+            logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: 'https://images.pexels.com/photos/15526647/pexels-photo-15526647.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
+            empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: 'https://images.pexels.com/photos/14947741/pexels-photo-14947741.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
+            creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: 'https://images.pexels.com/photos/15343619/pexels-photo-15343619.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
         }
     },
     {
