@@ -604,22 +604,22 @@ const TESTS = [
             B: { title: '세상을 유랑한 자유로운 예술가', desc: '당신은 전생에 얽매이지 않고 세상을 떠돌며 예술을 하거나 도를 닦던 영혼이었습니다. 현생에서도 자유를 갈망하며, 독창적인 사고방식으로 주변 사람들에게 영감을 줍니다.', img: unsplash('1456735190827-d1262f71b8a3') }
         }
     },
-    {
-        id: 'z2', category: '재미', title: '조선시대 나의 직업은?', desc: '타임머신을 타고 조선시대로 간다면 당신은 무엇을 하고 있을까요? 싱크로율 200% 직업 찾기!', thumb: unsplash('1532452145324-c5c93a4a9371'),
-        questions: [
-            { q: '아침 기상 시간, 당신의 스타일은?', options: [{ text: '새벽같이 일어나 부지런히 움직인다', type: 'A' }, { text: '해 중천에 뜰 때까지 느긋하게 잔다', type: 'B' }] },
-            { q: '공부나 책 읽기를 좋아하나요?', options: [{ text: '새로운 지식을 쌓는 게 즐겁다', type: 'A' }, { text: '책만 보면 졸음이 쏟아진다', type: 'B' }] },
-            { q: '남의 말을 잘 들어주는 편인가요?', options: [{ text: '고민 상담을 자주 해주는 편이다', type: 'A' }, { text: '내 이야기하기 바빠서 잘 못 듣는다', type: 'B' }] },
-            { q: '손으로 하는 활동 중 자신 있는 것은?', options: [{ text: '요리, 바느질, 만들기 등 금손이다', type: 'A' }, { text: '글쓰기, 그림 그리기 등 예술 활동', type: 'B' }] },
-            { q: '사람 많은 장터에 갔을 때 당신은?', options: [{ text: '물건값을 흥정하며 싸게 산다', type: 'A' }, { text: '사람 구경하고 맛있는 거 사 먹는다', type: 'B' }] },
-            { q: '누군가와 시비가 붙었을 때?', options: [{ text: '논리정연하게 말로 제압한다', type: 'A' }, { text: '목소리 크기로 기선 제압한다', type: 'B' }] },
-            { q: '가장 중요하게 생각하는 것은?', options: [{ text: '명예와 체면', type: 'A' }, { text: '실속과 재물', type: 'B' }] }
-        ],
-        results: {
-            A: { title: '나랏일을 걱정하는 선비', desc: '당신은 학식과 인품을 겸비한 선비 스타일입니다. 명분을 중시하고 올곧은 성품을 지녔으며, 조직 내에서 브레인 역할을 담당하기에 딱 맞습니다.', img: unsplash('1528825871115-3581a5387919') },
-            B: { title: '돈을 긁어모으는 거상', desc: '당신은 뛰어난 수완과 눈치로 조선 팔도의 돈을 쓸어 담을 거상 스타일입니다. 현실 감각이 뛰어나고 협상 능력이 탁월하여 어디서든 잘 먹고 잘 살 타입입니다.', img: unsplash('1579621970563-ebec7560ff3e') }
-        }
-    },
+        {
+            id: 'z2', category: '재미', title: '조선시대 나의 직업은?', desc: '타임머신을 타고 조선시대로 간다면 당신은 무엇을 하고 있을까요? 싱크로율 200% 직업 찾기!', thumb: 'https://images.pexels.com/photos/15288258/pexels-photo-15288258.jpeg?auto=compress&cs=tinysrgb&w=800',
+            questions: [
+                { q: '아침 기상 시간, 당신의 스타일은?', options: [{ text: '새벽같이 일어나 부지런히 움직인다', type: 'A' }, { text: '해 중천에 뜰 때까지 느긋하게 잔다', type: 'B' }] },
+                { q: '공부나 책 읽기를 좋아하나요?', options: [{ text: '새로운 지식을 쌓는 게 즐겁다', type: 'A' }, { text: '책만 보면 졸음이 쏟아진다', type: 'B' }] },
+                { q: '남의 말을 잘 들어주는 편인가요?', options: [{ text: '고민 상담을 자주 해주는 편이다', type: 'A' }, { text: '내 이야기하기 바빠서 잘 못 듣는다', type: 'B' }] },
+                { q: '손으로 하는 활동 중 자신 있는 것은?', options: [{ text: '요리, 바느질, 만들기 등 금손이다', type: 'A' }, { text: '글쓰기, 그림 그리기 등 예술 활동', type: 'B' }] },
+                { q: '사람 많은 장터에 갔을 때 당신은?', options: [{ text: '물건값을 흥정하며 싸게 산다', type: 'A' }, { text: '사람 구경하고 맛있는 거 사 먹는다', type: 'B' }] },
+                { q: '누군가와 시비가 붙었을 때?', options: [{ text: '논리정연하게 말로 제압한다', type: 'A' }, { text: '목소리 크기로 기선 제압한다', type: 'B' }] },
+                { q: '가장 중요하게 생각하는 것은?', options: [{ text: '명예와 체면', type: 'A' }, { text: '실속과 재물', type: 'B' }] }
+            ],
+            results: {
+                A: { title: '나랏일을 걱정하는 선비', desc: '당신은 학식과 인품을 겸비한 선비 스타일입니다. 명분을 중시하고 올곧은 성품을 지녔으며, 조직 내에서 브레인 역할을 담당하기에 딱 맞습니다.', img: 'https://images.pexels.com/photos/4565130/pexels-photo-4565130.jpeg?auto=compress&cs=tinysrgb&w=800' },
+                B: { title: '돈을 긁어모으는 거상', desc: '당신은 뛰어난 수완과 눈치로 조선 팔도의 돈을 쓸어 담을 거상 스타일입니다. 현실 감각이 뛰어나고 협상 능력이 탁월하여 어디서든 잘 먹고 잘 살 타입입니다.', img: 'https://images.pexels.com/photos/5796219/pexels-photo-5796219.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            }
+        },
     {
         id: 'z3', category: '재미', title: '무인도 생존 유형', desc: '비행기 추락으로 무인도에 떨어진 당신! 극한 상황에서 드러나는 당신의 생존 본능은?', thumb: unsplash('1502085671122-2d218cd434e6'),
         questions: [
@@ -637,7 +637,7 @@ const TESTS = [
         }
     },
     {
-        id: 'z4', category: '재미', title: '탕수육 소스 취향 분석', desc: '부먹 vs 찍먹? 사소한 취향 속에 숨겨진 당신의 성격과 대인관계 스타일을 알아봅니다.', thumb: unsplash('1541544744-cc8196e96b8c'),
+        id: 'z4', category: '재미', title: '탕수육 소스 취향 분석', desc: '부먹 vs 찍먹? 사소한 취향 속에 숨겨진 당신의 성격과 대인관계 스타일을 알아봅니다.', thumb: 'https://images.pexels.com/photos/16041521/pexels-photo-16041521.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '탕수육이 나왔다! 소스는 어떻게?', options: [{ text: '바삭함을 위해 소스를 찍어 먹는다 (찍먹)', type: 'A' }, { text: '촉촉함을 위해 소스를 부어 먹는다 (부먹)', type: 'B' }] },
             { q: '친구가 말도 없이 소스를 부어버렸다면?', options: [{ text: '이미 부은 거 어쩔 수 없지, 그냥 먹는다', type: 'A' }, { text: '"아 왜 부어!" 하며 진심으로 화를 낸다', type: 'B' }] },
@@ -648,8 +648,8 @@ const TESTS = [
             { q: '음식 먹을 때 가장 참을 수 없는 것은?', options: [{ text: '식감이 눅눅해지거나 맛이 섞이는 것', type: 'A' }, { text: '음식이 너무 뜨겁거나 식어서 맛없는 것', type: 'B' }] }
         ],
         results: {
-            A: { title: '확고한 취향의 원칙주의자', desc: '당신은 (찍먹파에 가깝군요!) 호불호가 분명하고 자신의 영역을 중요하게 생각합니다. 깔끔하고 효율적인 것을 선호하며, 남에게 피해를 주지도 받지도 않으려는 합리적인 성격입니다.', img: unsplash('1604152135912-04a022e23696') },
-            B: { title: '둥글둥글한 융통성 대마왕', desc: '당신은 (부먹파에 가깝군요!) 상황에 따라 유연하게 대처하는 평화주의자입니다. 사람들과 어울리는 것을 좋아하고, 웬만하면 상대방에게 맞춰주는 배려심 깊은 성격입니다.', img: unsplash('1560155016-371e98072e9a') }
+            A: { title: '확고한 취향의 원칙주의자', desc: '당신은 (찍먹파에 가깝군요!) 호불호가 분명하고 자신의 영역을 중요하게 생각합니다. 깔끔하고 효율적인 것을 선호하며, 남에게 피해를 주지도 받지도 않으려는 합리적인 성격입니다.', img: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '둥글둥글한 융통성 대마왕', desc: '당신은 (부먹파에 가깝군요!) 상황에 따라 유연하게 대처하는 평화주의자입니다. 사람들과 어울리는 것을 좋아하고, 웬만하면 상대방에게 맞춰주는 배려심 깊은 성격입니다.', img: 'https://images.pexels.com/photos/1234535/pexels-photo-1234535.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
