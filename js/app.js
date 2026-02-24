@@ -1377,7 +1377,7 @@ async function renderResult(testId, traitScores) {
         UserState.data.inventory.push(rewardedItem);
         UserState.data.totalScore = (UserState.data.totalScore || 0) + itemVal;
         await addPoints(basePointReward, '분석 완료 보상');
-        checkDailyQuests('test');
+        if (typeof checkDailyQuests === 'function') checkDailyQuests('test');
     }
 
     // Dynamic Aura Background
