@@ -2,42 +2,43 @@ import { addPoints } from './auth.js';
 
 let lastShareTime = 0;
 
-export async function copyLink(url = window.location.href) {
+export async function copyLink(url = window.location.href, silent = false) {
     try {
         await navigator.clipboard.writeText(url);
-        alert("링크가 복사되었습니다! 친구들에게 공유해보세요.");
+        if (!silent) alert("링크가 복사되었습니다! 친구들에게 공유해보세요.");
         
-        // Reward 30 points for sharing (throttle 5 seconds)
+        // Reward 30 points for sharing (throttle 10 seconds)
         const now = Date.now();
-        if (now - lastShareTime > 5000) {
-            const success = await addPoints(30);
-            if (success) lastShareTime = now;
+        if (now - lastShareTime > 10000) {
+            const success = await addPoints(30, '콘텐츠 공유 보상');
+            if (success) {
+                lastShareTime = now;
+                return true;
+            }
         }
     } catch (err) {
         console.error('Copy failed', err);
-        alert("복사에 실패했습니다.");
     }
+    return false;
 }
 
-export async function shareTest(testId, title) {
+export async function shareResult(title, testId) {
     const url = `${window.location.origin}/#test/${testId}`;
+    const shareText = `나의 결과는 [${title}]! 딱 7번의 질문으로 찾는 나의 본모습, SevenCheck에서 확인해보세요.`;
+
     if (navigator.share) {
         try {
             await navigator.share({
-                title: title,
-                text: '이 테스트 한번 해볼래? 완전 신기해!',
+                title: 'SevenCheck 심리분석 리포트',
+                text: shareText,
                 url: url
             });
-            
-            const now = Date.now();
-            if (now - lastShareTime > 5000) {
-                const success = await addPoints(30);
-                if (success) lastShareTime = now;
-            }
+            await copyLink(url, true); // 보상 지급을 위해 호출
+            return true;
         } catch (e) {
-            console.error(e);
+            return await copyLink(url);
         }
     } else {
-        await copyLink(url);
+        return await copyLink(url);
     }
 }
