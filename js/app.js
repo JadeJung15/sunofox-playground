@@ -13,6 +13,19 @@ const themeToggle = document.getElementById('theme-toggle');
 
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
 
+const FOX_ADVICE = [
+    "오늘 하루도 당신은 충분히 빛나요! ✨",
+    "오른쪽으로 걸어가면 뜻밖의 행운이 있을지도? 🍀",
+    "지금 테스트를 하면 마음이 한결 가벼워질 거예요. 🧠",
+    "지칠 땐 오락실에서 한 판 쉬어가는 건 어때요? 🎰",
+    "당신의 아우라는 오늘 '열정의 레드'만큼 뜨겁네요! 🔥",
+    "맛있는 걸 먹으면 운세가 2배로 좋아질 거예요! 🍰",
+    "누군가 당신을 생각하고 있는 따뜻한 날이네요. 💌",
+    "오늘은 새로운 도전을 시작하기에 완벽한 날입니다! 🚀",
+    "가끔은 아무것도 하지 않는 게 최고의 휴식이에요. 💤",
+    "당신이 몰랐던 매력을 곧 발견하게 될 거예요! 💎"
+];
+
 // =================================================================
 // 1. High-Quality Test Database
 // =================================================================
@@ -797,12 +810,18 @@ async function renderHome(hash) {
     await fetchAllLikes();
     
     if (hash === '#home' || !hash) {
-        const featuredTests = TESTS.slice(0, 4);
+        const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
         
         app.innerHTML = `
             <div class="dashboard fade-in">
                 <div class="hero-section">
                     <div class="hero-content">
+                        <div class="fox-advice-container fade-in" style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div class="fox-avatar" style="font-size: 3rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));">🦊</div>
+                            <div class="advice-bubble" style="background: rgba(255,255,255,0.9); padding: 0.8rem 1.5rem; border-radius: 20px 20px 20px 4px; box-shadow: var(--shadow-md); position: relative; font-weight: 800; color: #334155; font-size: 1rem; border: 2px solid var(--accent-soft); backdrop-filter: blur(5px);">
+                                ${randomAdvice}
+                            </div>
+                        </div>
                         <span class="hero-tag">✨ 7번의 질문으로 찾는 나</span>
                         <h1>당신이 몰랐던<br>진짜 모습을 확인하세요</h1>
                         <p>심리학적 기반의 정교한 분석 리포트와<br>즐거운 미니게임이 기다리고 있습니다.</p>
