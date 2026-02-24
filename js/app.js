@@ -19,83 +19,93 @@ const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fi
 
 const TESTS = [
     {
-        id: 'p1', category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '타인에게 느껴지는 당신만의 고유한 색채와 분위기를 7단계 심층 질문으로 분석합니다.', thumb: unsplash('1557683316-973673baf926'),
+        id: 'p1', category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '7단계 심층 질문으로 당신만의 고유한 성향과 아우라를 분석합니다.', thumb: unsplash('1557683316-973673baf926'),
         questions: [
-            { q: '낯선 파티에 초대받았다면 당신의 선택은?', options: [{ text: '화려한 옷으로 존재감을 뽐낸다', type: 'A' }, { text: '깔끔하고 단정한 옷으로 자연스럽게 섞인다', type: 'B' }] },
-            { q: '길을 걷다 예쁜 꽃을 발견했을 때 행동은?', options: [{ text: '바로 사진을 찍어 SNS에 공유한다', type: 'A' }, { text: '잠시 멈춰 향기를 맡으며 감상에 젖는다', type: 'B' }] },
-            { q: '중요한 결정을 내릴 때 당신의 기준은?', options: [{ text: '나의 직관과 느낌을 전적으로 믿는다', type: 'A' }, { text: '객관적인 데이터와 조언을 신중히 참고한다', type: 'B' }] },
-            { q: '비 오는 창밖을 볼 때 드는 생각은?', options: [{ text: '파전에 막걸리 같은 맛있는 음식이 생각난다', type: 'A' }, { text: '왠지 모르게 과거의 기억들이 떠오르며 감성적이 된다', type: 'B' }] },
-            { q: '친구가 고민을 털어놓을 때 당신의 반응은?', options: [{ text: '도움이 될 만한 확실한 해결책을 제시한다', type: 'A' }, { text: '말없이 끝까지 들어주며 공감해준다', type: 'B' }] },
-            { q: '평소 당신의 책상 위 모습은 어떤가요?', options: [{ text: '자유분방하고 창의적으로 어질러져 있다', type: 'A' }, { text: '항상 정해진 자리에 필요한 물건만 놓여 있다', type: 'B' }] },
-            { q: '10년 후 당신의 모습은 어떨 것 같나요?', options: [{ text: '새로운 분야에 도전하며 열정적으로 살고 있다', type: 'A' }, { text: '평온하고 안정적인 삶의 여유를 누리고 있다', type: 'B' }] }
+            { q: '낯선 파티에 초대받았다면 당신의 선택은?', options: [{ text: '화려한 옷으로 존재감을 뽐낸다', scores: {e:2, c:1} }, { text: '깔끔하고 단정한 옷으로 자연스럽게 섞인다', scores: {l:1, p:1} }] },
+            { q: '길을 걷다 예쁜 꽃을 발견했을 때 행동은?', options: [{ text: '바로 사진을 찍어 SNS에 공유한다', scores: {e:1, c:2} }, { text: '잠시 멈춰 향기를 맡으며 감상에 젖는다', scores: {p:2, l:1} }] },
+            { q: '중요한 결정을 내릴 때 당신의 기준은?', options: [{ text: '나의 직관과 느낌을 전적으로 믿는다', scores: {c:2, e:1} }, { text: '객관적인 데이터와 조언을 신중히 참고한다', scores: {l:2, p:1} }] },
+            { q: '비 오는 창밖을 볼 때 드는 생각은?', options: [{ text: '파전에 막걸리 같은 맛있는 음식이 생각난다', scores: {e:2, l:1} }, { text: '왠지 모르게 과거의 기억들이 떠오르며 감성적이 된다', scores: {p:2, c:1} }] },
+            { q: '친구가 고민을 털어놓을 때 당신의 반응은?', options: [{ text: '도움이 될 만한 확실한 해결책을 제시한다', scores: {l:2, e:1} }, { text: '말없이 끝까지 들어주며 공감해준다', scores: {p:2, c:1} }] },
+            { q: '평소 당신의 책상 위 모습은 어떤가요?', options: [{ text: '자유분방하고 창의적으로 어질러져 있다', scores: {c:2, e:1} }, { text: '항상 정해진 자리에 필요한 물건만 놓여 있다', scores: {l:2, p:1} }] },
+            { q: '10년 후 당신의 모습은 어떨 것 같나요?', options: [{ text: '새로운 분야에 도전하며 열정적으로 살고 있다', scores: {e:2, c:1} }, { text: '평온하고 안정적인 삶의 여유를 누리고 있다', scores: {p:2, l:1} }] }
         ],
         results: {
-            A: { title: '타오르는 태양의 레드', desc: '당신은 주변 사람들에게 에너지를 전파하는 강력한 아우라를 가졌습니다. 리더십이 뛰어나고 솔직한 표현이 매력적입니다.', img: unsplash('1525909002-1b05e0c869d8') },
-            B: { title: '고요한 숲의 그린', desc: '당신은 함께 있는 것만으로도 마음이 편안해지는 아우라를 가졌습니다. 신중하고 사려 깊은 태도가 주변의 신뢰를 얻습니다.', img: unsplash('1518310383802-640c2de311b2') }
+            energy: { title: '타오르는 태양의 레드', desc: '당신은 주변 사람들에게 에너지를 전파하는 강력한 아우라를 가졌습니다. 리더십이 뛰어나고 솔직한 표현이 매력적입니다.', img: unsplash('1525909002-1b05e0c869d8'), color: '#ef4444', tags: ['#열정', '#리더십', '#에너자이저'] },
+            logic: { title: '냉철한 이성의 블루', desc: '데이터와 논리를 바탕으로 최선의 답을 찾는 전략가입니다. 신중하고 사려 깊은 태도가 주변의 신뢰를 얻습니다.', img: unsplash('1557683311-e19223e33116'), color: '#3b82f6', tags: ['#분석가', '#브레인', '#전략가'] },
+            empathy: { title: '고요한 숲의 그린', desc: '주변을 편안하게 만드는 따뜻한 공감 능력의 소유자입니다. 당신과 함께라면 누구나 위로를 얻습니다.', img: unsplash('1518310383802-640c2de311b2'), color: '#10b981', tags: ['#힐러', '#평화주의자', '#리스너'] },
+            creativity: { title: '신비로운 보랏빛 밤', desc: '독창적인 시선으로 세상을 바라보는 예술가적 영혼입니다. 남들이 보지 못하는 가능성을 찾아냅니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#아이디어', '#아티스트', '#독창성'] }
         }
     },
     {
-        id: 'p2', category: '성격', title: '내면 아이 유형 테스트', desc: '당신의 무의식 깊은 곳에 자리 잡은 내면 아이의 성향을 7단계로 분석합니다.', thumb: unsplash('1516035069371-29a1b244cc32'),
+        id: 'p2', category: '성격', title: '내면 아이 유형 테스트', desc: '당신의 무의식 깊은 곳에 자리 잡은 내면 아이의 성향을 분석합니다.', thumb: unsplash('1516035069371-29a1b244cc32'),
         questions: [
-            { q: '어린 시절 가장 즐거웠던 기억은?', options: [{ text: '동네 친구들과 뛰어놀던 골목길', type: 'A' }, { text: '방 안에서 혼자 상상하며 놀던 시간', type: 'B' }] },
-            { q: '꿈속에서 마법 지팡이를 얻었다면?', options: [{ text: '하늘을 날아 세계 여행을 떠난다', type: 'A' }, { text: '동물들과 대화하는 능력을 갖는다', type: 'B' }] },
-            { q: '맛있는 간식이 하나만 남았다면?', options: [{ text: '친구에게 기분 좋게 양보한다', type: 'A' }, { text: '몰래 아껴두었다가 나중에 먹는다', type: 'B' }] },
-            { q: '길을 잃은 강아지를 발견한다면?', options: [{ text: '주인을 찾아주기 위해 적극적으로 나선다', type: 'A' }, { text: '겁이 나지만 먹을 것을 챙겨준다', type: 'B' }] },
-            { q: '무서운 번개가 칠 때 당신은?', options: [{ text: '가족에게 달려가 품에 안긴다', type: 'A' }, { text: '이불 속으로 들어가 소리를 차단한다', type: 'B' }] },
-            { q: '새로운 장난감을 선물받았을 때?', options: [{ text: '설명서 없이 바로 조립해본다', type: 'A' }, { text: '그림을 보며 신중하게 하나씩 만든다', type: 'B' }] },
-            { q: '잠들기 전 주로 어떤 생각을 하나요?', options: [{ text: '내일 일어날 즐거운 일들을 상상한다', type: 'A' }, { text: '오늘 하루 있었던 일들을 되짚어본다', type: 'B' }] }
+            { q: '어린 시절 가장 즐거웠던 기억은?', options: [{ text: '동네 친구들과 뛰어놀던 골목길', scores: {e:2, p:1} }, { text: '방 안에서 혼자 상상하며 놀던 시간', scores: {c:2, l:1} }] },
+            { q: '꿈속에서 마법 지팡이를 얻었다면?', options: [{ text: '하늘을 날아 세계 여행을 떠난다', scores: {e:2, c:1} }, { text: '동물들과 대화하는 능력을 갖는다', scores: {p:2, c:1} }] },
+            { q: '맛있는 간식이 하나만 남았다면?', options: [{ text: '친구에게 기분 좋게 양보한다', scores: {p:2, e:1} }, { text: '몰래 아껴두었다가 나중에 먹는다', scores: {l:2, c:1} }] },
+            { q: '길을 잃은 강아지를 발견한다면?', options: [{ text: '주인을 찾아주기 위해 적극적으로 나선다', scores: {e:1, p:2} }, { text: '겁이 나지만 먹을 것을 챙겨준다', scores: {p:1, l:2} }] },
+            { q: '무서운 번개가 칠 때 당신은?', options: [{ text: '가족에게 달려가 품에 안긴다', scores: {p:2, e:1} }, { text: '이불 속으로 들어가 소리를 차단한다', scores: {l:2, c:1} }] },
+            { q: '새로운 장난감을 선물받았을 때?', options: [{ text: '설명서 없이 바로 조립해본다', scores: {c:2, e:1} }, { text: '그림을 보며 신중하게 하나씩 만든다', scores: {l:2, p:1} }] },
+            { q: '잠들기 전 주로 어떤 생각을 하나요?', options: [{ text: '내일 일어날 즐거운 일들을 상상한다', scores: {e:1, c:2} }, { text: '오늘 하루 있었던 일들을 되짚어본다', scores: {l:2, p:1} }] }
         ],
         results: {
-            A: { title: '호기심 많은 모험가 아이', desc: '당신의 내면 아이는 여전히 새로운 세상을 향해 뛰어놀고 싶어 합니다. 지치지 않는 호기심과 활기가 당신의 진정한 힘입니다.', img: unsplash('1534361960057-19889db9621e') },
-            B: { title: '지혜로운 꼬마 학자 아이', desc: '당신의 내면 아이는 세상을 관찰하고 깊이 생각하는 것을 즐깁니다. 통찰력 있는 시선과 차분함이 당신의 가장 큰 매력입니다.', img: unsplash('1456513080510-7bf3a84b82f8') }
+            energy: { title: '호기심 많은 모험가 아이', desc: '지치지 않는 호기심과 활기가 당신의 진정한 힘입니다.', img: unsplash('1534361960057-19889db9621e'), color: '#f59e0b', tags: ['#모험가', '#에너지', '#천진난만'] },
+            logic: { title: '지혜로운 꼬마 학자 아이', desc: '세상을 관찰하고 깊이 생각하는 것을 즐기는 통찰력 있는 아이입니다.', img: unsplash('1456513080510-7bf3a84b82f8'), color: '#64748b', tags: ['#학자', '#통찰력', '#차분함'] },
+            empathy: { title: '사랑이 넘치는 작은 천사', desc: '타인의 아픔을 어루만질 줄 아는 세상에서 가장 따뜻한 아이입니다.', img: unsplash('1516589174184-c68d8e5fcc4a'), color: '#ec4899', tags: ['#천사', '#공감', '#순수함'] },
+            creativity: { title: '꿈꾸는 무지개 소년/소녀', desc: '상상력이 풍부하여 언제나 새로운 세상을 그리는 아이입니다.', img: unsplash('1456735190827-d1262f71b8a3'), color: '#8b5cf6', tags: ['#예술가', '#꿈나무', '#상상력'] }
         }
     },
     {
         id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: unsplash('1518199266791-5375a83190b7'),
         questions: [
-            { q: '연인과 가고 싶은 첫 데이트 장소는?', options: [{ text: '북적이는 핫플레이스와 축제', type: 'A' }, { text: '조용하고 분위기 있는 골목 카페', type: 'B' }] },
-            { q: '연락 빈도에 대한 당신의 생각은?', options: [{ text: '일상의 모든 것을 공유하고 싶다', type: 'A' }, { text: '각자의 시간을 존중하는 적당한 연락이 좋다', type: 'B' }] },
-            { q: '연인과 사소한 말다툼을 했다면?', options: [{ text: '그 자리에서 바로 대화로 푼다', type: 'A' }, { text: '잠시 시간을 갖고 감정을 추스른 뒤 대화한다', type: 'B' }] },
-            { q: '기념일에 더 선호하는 선물은?', options: [{ text: '실용적이고 평소 필요했던 물건', type: 'A' }, { text: '정성이 담긴 편지와 추억이 담긴 선물', type: 'B' }] },
-            { q: '연인이 갑자기 집 앞으로 찾아왔다면?', options: [{ text: '설레고 너무 기뻐서 바로 나간다', type: 'A' }, { text: '조금 당황스럽지만 고마운 마음이 든다', type: 'B' }] },
-            { q: '사랑을 표현할 때 더 중요한 것은?', options: [{ text: '자주 말해주는 직접적인 애정 표현', type: 'A' }, { text: '행동으로 보여주는 든든한 배려', type: 'B' }] },
-            { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하고 자극을 주는 열정적인 관계', type: 'A' }, { text: '있는 그대로를 수용해주는 편안한 관계', type: 'B' }] }
+            { q: '연인과 가고 싶은 첫 데이트 장소는?', options: [{ text: '북적이는 핫플레이스와 축제', scores: {e:2, c:1} }, { text: '조용하고 분위기 있는 골목 카페', scores: {p:2, l:1} }] },
+            { q: '연락 빈도에 대한 당신의 생각은?', options: [{ text: '일상의 모든 것을 공유하고 싶다', scores: {e:1, p:2} }, { text: '각자의 시간을 존중하는 연락이 좋다', scores: {l:2, p:1} }] },
+            { q: '연인과 사소한 말다툼을 했다면?', options: [{ text: '그 자리에서 바로 대화로 푼다', scores: {e:1, l:2} }, { text: '잠시 시간을 갖고 감정을 추스른다', scores: {p:2, l:1} }] },
+            { q: '기념일에 더 선호하는 선물은?', options: [{ text: '실용적이고 평소 필요했던 물건', scores: {l:2, e:1} }, { text: '정성이 담긴 편지와 추억의 선물', scores: {p:2, c:1} }] },
+            { q: '연인이 갑자기 집 앞으로 찾아왔다면?', options: [{ text: '설레고 너무 기뻐서 바로 나간다', scores: {e:2, p:1} }, { text: '조금 당황스럽지만 고마운 마음이 든다', scores: {l:1, p:2} }] },
+            { q: '사랑을 표현할 때 더 중요한 것은?', options: [{ text: '자주 말해주는 직접적인 애정 표현', scores: {e:2, c:1} }, { text: '행동으로 보여주는 든든한 배려', scores: {l:2, p:1} }] },
+            { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하며 자극을 주는 관계', scores: {e:1, l:2} }, { text: '있는 그대로를 수용해주는 관계', scores: {p:2, c:1} }] }
         ],
         results: {
-            A: { title: '직진하는 불꽃 사랑', desc: '당신은 사랑에 있어 매우 솔직하고 열정적입니다. 상대방에게 확신을 주는 태도가 연인에게 큰 안정감을 줍니다.', img: unsplash('1516589174184-c68d8e5fcc4a') },
-            B: { title: '은은하게 스며드는 사랑', desc: '당신은 서서히 신뢰를 쌓아가는 깊이 있는 사랑을 선호합니다. 한결같은 모습과 세심한 배려가 당신의 연애 무기입니다.', img: unsplash('1494774157365-9e04c6720e47') }
+            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: unsplash('1516589174184-c68d8e5fcc4a'), color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
+            logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: unsplash('1552664730-d307ca884978'), color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
+            empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: unsplash('1494774157365-9e04c6720e47'), color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
+            creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
         }
     },
     {
-        id: 'p4', category: '성격', title: '스트레스 방어기제 테스트', desc: '힘든 상황이 닥쳤을 때 당신의 마음이 어떻게 스스로를 보호하는지 알아봅니다.', thumb: unsplash('1506126613408-eca57c42797c'),
+        id: 'p4', category: '성격', title: '스트레스 방어기제 테스트', desc: '힘든 상황에서 당신의 마음이 어떻게 스스로를 보호하는지 분석합니다.', thumb: unsplash('1506126613408-eca57c42797c'),
         questions: [
-            { q: '예상치 못한 큰 실수를 저질렀다면?', options: [{ text: '무엇이 잘못되었는지 즉시 원인을 파악한다', type: 'A' }, { text: '일단 기분 전환을 위해 다른 일을 한다', type: 'B' }] },
-            { q: '누군가 나를 이유 없이 비난한다면?', options: [{ text: '당당하게 나의 입장을 논리적으로 설명한다', type: 'A' }, { text: '상대할 가치가 없다고 생각하며 무시한다', type: 'B' }] },
-            { q: '업무나 공부가 너무 쌓여 압박을 느낄 때?', options: [{ text: '우선순위를 정해 계획표를 짠다', type: 'A' }, { text: '잠시 잠을 자거나 휴식을 취하며 잊는다', type: 'B' }] },
-            { q: '친구와 심한 갈등이 생겼을 때?', options: [{ text: '먼저 연락해서 대화를 시도한다', type: 'A' }, { text: '시간이 해결해 줄 것이라 믿고 기다린다', type: 'B' }] },
-            { q: '슬픈 영화를 볼 때 당신의 모습은?', options: [{ text: '감정을 억누르지 않고 펑펑 운다', type: 'A' }, { text: '눈물이 나려 해도 꾹 참는다', type: 'B' }] },
-            { q: '중요한 발표를 앞두고 떨린다면?', options: [{ text: '연습을 반복하며 완벽을 기한다', type: 'A' }, { text: '심호흡을 하며 마인드 컨트롤을 한다', type: 'B' }] },
-            { q: '과거의 창피했던 기억이 떠오르면?', options: [{ text: '그때 왜 그랬을까 분석해본다', type: 'A' }, { text: '머리를 흔들며 강제로 생각을 지운다', type: 'B' }] }
+            { q: '예상치 못한 큰 실수를 저질렀다면?', options: [{ text: '즉시 원인을 파악하고 해결책을 찾는다', scores: {l:2, e:1} }, { text: '일단 기분 전환을 위해 다른 일을 한다', scores: {c:2, p:1} }] },
+            { q: '누군가 나를 이유 없이 비난한다면?', options: [{ text: '당당하게 나의 입장을 논리적으로 설명한다', scores: {l:2, e:1} }, { text: '상대할 가치가 없다고 생각하며 무시한다', scores: {p:1, l:2} }] },
+            { q: '업무나 공부가 너무 쌓여 압박을 느낄 때?', options: [{ text: '우선순위를 정해 계획표를 짠다', scores: {l:2, p:1} }, { text: '잠시 잠을 자거나 휴식을 취하며 잊는다', scores: {p:2, c:1} }] },
+            { q: '친구와 심한 갈등이 생겼을 때?', options: [{ text: '먼저 연락해서 대화를 시도한다', scores: {e:2, p:1} }, { text: '시간이 해결해 줄 것이라 믿고 기다린다', scores: {p:2, l:1} }] },
+            { q: '슬픈 영화를 볼 때 당신의 모습은?', options: [{ text: '감정을 억누르지 않고 펑펑 운다', scores: {p:2, c:1} }, { text: '눈물이 나려 해도 꾹 참는다', scores: {l:2, e:1} }] },
+            { q: '중요한 발표를 앞두고 떨린다면?', options: [{ text: '연습을 반복하며 완벽을 기한다', scores: {l:2, e:1} }, { text: '심호흡을 하며 마인드 컨트롤을 한다', scores: {p:2, c:1} }] },
+            { q: '과거의 창피했던 기억이 떠오르면?', options: [{ text: '그때 왜 그랬을까 분석해본다', scores: {l:2, p:1} }, { text: '머리를 흔들며 강제로 생각을 지운다', scores: {e:1, c:2} }] }
         ],
         results: {
-            A: { title: '강인한 철벽 방어형', desc: '당신은 스트레스 상황에서 문제를 정면으로 돌파하려는 경향이 있습니다. 현실적인 대처 능력이 매우 뛰어납니다.', img: unsplash('1499209974431-9dac3e5d9774') },
-            B: { title: '유연한 회피 수용형', desc: '당신은 마음의 평화를 유지하기 위해 감정을 조절하고 휴식하는 법을 압니다. 회복탄력성이 높은 편입니다.', img: unsplash('1474418397713-7dedd394996e') }
+            energy: { title: '강인한 철벽 방어형', desc: '스트레스 상황에서 정면 돌파하려는 강한 의지를 가졌습니다.', img: unsplash('1499209974431-9dac3e5d9774'), color: '#475569', tags: ['#강철멘탈', '#정면돌파', '#단호함'] },
+            logic: { title: '침착한 전략적 분석가', desc: '문제를 논리적으로 해체하여 감정에 휘둘리지 않고 해결합니다.', img: unsplash('1454165833762-621f2f57b2d1'), color: '#334155', tags: ['#분석가', '#이성적', '#차분함'] },
+            empathy: { title: '유연한 감성 수용자', desc: '감정을 있는 그대로 받아들이고 스스로를 치유하는 능력이 뛰어납니다.', img: unsplash('1474418397713-7dedd394996e'), color: '#94a3b8', tags: ['#회복탄력성', '#수용', '#힐러'] },
+            creativity: { title: '창의적 승화의 대가', desc: '스트레스를 예술이나 새로운 아이디어로 승화시키는 독특한 능력이 있습니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#승화', '#아이디어', '#특별함'] }
         }
     },
     {
-        id: 'p5', category: '성격', title: '나만의 여행 DNA', desc: '여행지에서 보여주는 행동을 통해 당신의 숨겨진 성격 특성을 찾아냅니다.', thumb: unsplash('1469854523086-cc02fe5d8800'),
+        id: 'p5', category: '성격', title: '나만의 여행 DNA', desc: '여행지에서 보여주는 행동으로 당신의 핵심 성격을 진단합니다.', thumb: unsplash('1469854523086-cc02fe5d8800'),
         questions: [
-            { q: '여행 계획을 세울 때 당신의 스타일은?', options: [{ text: '시간 단위로 꼼꼼하게 동선을 짠다', type: 'A' }, { text: '목적지만 정하고 나머지는 가서 정한다', type: 'B' }] },
-            { q: '공항에 도착했을 때 가장 먼저 드는 기분은?', options: [{ text: '비행기 시간이 늦지 않을지 걱정되고 분주하다', type: 'A' }, { text: '떠난다는 사실 자체로 이미 설레고 즐겁다', type: 'B' }] },
-            { q: '유명 맛집에 줄이 너무 길다면?', options: [{ text: '예약했거나 꼭 가야 한다면 끝까지 기다린다', type: 'A' }, { text: '옆에 있는 다른 식당으로 발길을 돌린다', type: 'B' }] },
-            { q: '여행 중 비가 온다면 당신의 대처는?', options: [{ text: '실내 미술관이나 쇼핑몰로 계획을 수정한다', type: 'A' }, { text: '빗소리를 들으며 숙소에서 여유를 즐긴다', type: 'B' }] },
-            { q: '현지인들이 추천하는 낯선 음식을 본다면?', options: [{ text: '유명한 이유가 있을 테니 도전해본다', type: 'A' }, { text: '내가 아는 익숙한 음식을 선택한다', type: 'B' }] },
-            { q: '여행 사진을 찍을 때 더 중점을 두는 곳은?', options: [{ text: '내가 잘 나온 예쁜 인물 사진', type: 'A' }, { text: '그곳의 분위기가 잘 담긴 풍경 사진', type: 'B' }] },
-            { q: '여행이 끝나고 돌아오는 길에 드는 생각은?', options: [{ text: '집에 가서 쉬고 싶다는 생각', type: 'A' }, { text: '다음엔 어디로 여행 갈까 하는 생각', type: 'B' }] }
+            { q: '여행 계획을 세울 때 당신의 스타일은?', options: [{ text: '시간 단위로 꼼꼼하게 동선을 짠다', scores: {l:2, e:1} }, { text: '목적지만 정하고 나머지는 가서 정한다', scores: {c:2, p:1} }] },
+            { q: '공항에 도착했을 때 가장 먼저 드는 기분은?', options: [{ text: '늦지 않을지 걱정되고 분주하다', scores: {l:2, p:1} }, { text: '이미 떠난다는 사실로 즐겁다', scores: {e:2, c:1} }] },
+            { q: '유명 맛집에 줄이 너무 길다면?', options: [{ text: '꼭 가야 한다면 끝까지 기다린다', scores: {l:1, e:2} }, { text: '옆에 있는 다른 식당으로 간다', scores: {c:1, p:2} }] },
+            { q: '여행 중 비가 온다면 당신의 대처는?', options: [{ text: '실내 미술관 등으로 계획을 수정한다', scores: {l:2, c:1} }, { text: '빗소리를 들으며 숙소에서 쉰다', scores: {p:2, l:1} }] },
+            { q: '현지인들이 추천하는 낯선 음식은?', options: [{ text: '유명한 이유가 있을 테니 도전한다', scores: {e:2, c:1} }, { text: '내가 아는 익숙한 음식을 선택한다', scores: {l:2, p:1} }] },
+            { q: '여행 사진을 찍을 때 더 중점을 두는 곳은?', options: [{ text: '내가 잘 나온 예쁜 인물 사진', scores: {e:2, p:1} }, { text: '그곳 분위기가 담긴 풍경 사진', scores: {c:2, l:1} }] },
+            { q: '여행이 끝나고 돌아오는 길에 드는 생각?', options: [{ text: '집에 가서 쉬고 싶다는 생각', scores: {l:2, p:1} }, { text: '다음엔 어디로 갈까 하는 생각', scores: {e:1, c:2} }] }
         ],
         results: {
-            A: { title: '철저한 계획가 트래블러', desc: '당신은 목표 지향적이고 효율적인 성격입니다. 준비된 상황에서 최고의 만족감을 느끼는 스타일입니다.', img: unsplash('1488646953014-85cb44e25828') },
-            B: { title: '자유로운 영혼의 보헤미안', desc: '당신은 현재의 순간과 우연한 만남을 즐길 줄 아는 사람입니다. 적응력이 뛰어나고 여유로운 마음을 가졌습니다.', img: unsplash('1503220317375-aaad61436b1b') }
+            energy: { title: '열정적인 어드벤처러', desc: '새로운 세상을 직접 부딪히며 탐험하는 에너지가 넘치는 여행자입니다.', img: unsplash('1488646953014-85cb44e25828'), color: '#f97316', tags: ['#모험', '#열정', '#탐험가'] },
+            logic: { title: '철저한 전략 기획가', desc: '모든 상황을 예측하고 최적의 경로를 찾는 완벽주의 여행자입니다.', img: unsplash('1486312338219-ce68d2c6f44d'), color: '#334155', tags: ['#계획형', '#분석', '#안정성'] },
+            empathy: { title: '감성적인 낭만 방랑자', desc: '현지의 분위기와 사람들의 마음에 공감하며 여유를 즐기는 여행자입니다.', img: unsplash('1503220317375-aaad61436b1b'), color: '#10b981', tags: ['#감성', '#여유', '#낭만'] },
+            creativity: { title: '독창적인 무드 탐색가', desc: '남들은 가지 않는 숨은 명소를 찾고 자신만의 시각으로 기록하는 여행자입니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#유니크', '#아티스트', '#기록'] }
         }
     },
     {
@@ -1323,116 +1333,150 @@ function renderArcade() {
     updateUI();
 }
 
-async function renderResult(testId, answers) {
+async function renderResult(testId, traitScores) {
     const test = TESTS.find(t => t.id === testId);
-    const resultType = answers.filter(x => x==='A').length >= 4 ? 'A' : 'B';
-    const result = test.results[resultType];
+    const traits = ['energy', 'logic', 'empathy', 'creativity'];
+    const dominantTrait = traits.reduce((a, b) => (traitScores[a] >= traitScores[b] ? a : b));
     
-    // 보상 및 통계 업데이트
-    let reward = 10;
-    if (UserState.user) {
-        if (UserState.data.boosterCount > 0) {
-            reward = 20;
-            await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(-1) });
-            UserState.data.boosterCount -= 1;
-        }
-        await addPoints(reward);
-        
-        // 통계 업데이트 (A/B 카운트)
-        try {
-            await setDoc(doc(db, "testStats", testId), { 
-                [`counts.${resultType}`]: increment(1),
-                total: increment(1)
-            }, { merge: true });
-            checkDailyQuests('test'); // 퀘스트 체크
-        } catch (e) { console.error(e); }
+    const result = (test.results[dominantTrait]) ? test.results[dominantTrait] : (traitScores.energy >= 4 ? test.results.A : test.results.B);
+    const themeColor = result.color || '#6366f1';
+    const tags = result.tags || ['#분석완료', '#세븐체크'];
+
+    const stats = {
+        energy: Math.min(100, (traitScores.energy / 14) * 100),
+        logic: Math.min(100, (traitScores.logic / 14) * 100),
+        empathy: Math.min(100, (traitScores.empathy / 14) * 100),
+        creativity: Math.min(100, (traitScores.creativity / 14) * 100)
+    };
+
+    let basePointReward = 10;
+    if (UserState.user && UserState.data.boosterCount > 0) {
+        basePointReward = 20;
+        await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(-1) });
+        UserState.data.boosterCount -= 1;
     }
 
-    // 통계 데이터 로드
-    let stats = { A: 50, B: 50 };
-    try {
-        const snap = await getDoc(doc(db, "testStats", testId));
-        if (snap.exists()) {
-            const data = snap.data();
-            const total = data.total || 1;
-            const countA = data.counts?.A || 0;
-            stats.A = Math.round((countA / total) * 100);
-            stats.B = 100 - stats.A;
-        }
-    } catch (e) {}
+    let rewardedItem = null;
+    if (UserState.user) {
+        const traitItems = {
+            energy: '⚡ 번개 병',
+            logic: '🧪 현자의 돌',
+            empathy: '🌱 묘목',
+            creativity: '🌌 은하수 가루'
+        };
+        rewardedItem = traitItems[dominantTrait] || '💩 돌멩이';
+        const itemVal = ITEM_VALUES[rewardedItem] || 500;
+        
+        await updateDoc(doc(db, "users", UserState.user.uid), {
+            inventory: arrayUnion(rewardedItem),
+            totalScore: increment(itemVal),
+            discoveredItems: arrayUnion(rewardedItem)
+        });
+        UserState.data.inventory.push(rewardedItem);
+        UserState.data.totalScore = (UserState.data.totalScore || 0) + itemVal;
+        await addPoints(basePointReward, '분석 완료 보상');
+        checkDailyQuests('test');
+    }
 
+    // Dynamic Aura Background
     app.innerHTML = `
-        <div class="result-card fade-in" id="capture-target" data-cat="${test.category}">
-            <span class="test-category">분석 리포트</span>
-            <div class="result-img" style="background-image: url('${result.img}'); background-size:cover; background-position:center;"></div>
-            <h2 style="color:var(--accent-color); margin-top:1rem;">[${result.title}]</h2>
-            
-            <!-- 통계 바 -->
-            <div style="margin: 1.5rem 0;">
-                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:var(--text-sub);">
-                    <span>${test.results.A.title} (${stats.A}%)</span>
-                    <span>${test.results.B.title} (${stats.B}%)</span>
+        <div class="aura-bg-container">
+            <div class="aura-sphere" style="background: ${themeColor}; top: -100px; left: -100px; opacity: 0.2;"></div>
+            <div class="aura-sphere" style="background: ${themeColor}; bottom: -100px; right: -100px; opacity: 0.1; animation-delay: -5s;"></div>
+        </div>
+        <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
+            <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44; backdrop-filter: blur(5px);">
+                <div class="result-img" style="height: 320px; background: url('${result.img}') center/cover; position: relative;">
+                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(to top, var(--card-bg), transparent);"></div>
                 </div>
-                <div class="stat-bar-container">
-                    <div class="stat-bar-fill" style="width: ${stats.A}%; background: linear-gradient(90deg, #f472b6, #818cf8);"></div>
+                <div style="padding: 1.5rem 1.5rem 2.5rem; text-align: center;">
+                    <div style="display:flex; justify-content:center; gap:8px; margin-bottom:1.5rem;" class="result-tag-floating">
+                        ${tags.map(tag => `<span style="background:${themeColor}22; color:${themeColor}; padding:6px 14px; border-radius:50px; font-size:0.85rem; font-weight:800;">${tag}</span>`).join('')}
+                    </div>
+                    <h2 style="font-size: 2.6rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em;">${result.title}</h2>
+                    
+                    <div style="min-height: 8rem; margin-bottom: 2.5rem;">
+                        <p id="typing-desc" style="font-size: 1.2rem; line-height: 1.9; color: var(--text-main); word-break: keep-all; font-weight: 500;"></p>
+                    </div>
+                    
+                    <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 24px; padding: 2.5rem 1rem; margin-bottom: 3rem; border: 1px solid var(--border-color); position: relative;">
+                        <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-sub); font-weight: 800; letter-spacing: 0.1em;">나의 7단계 심층 지표</h4>
+                        <canvas id="radarChart" width="220" height="220" style="margin: 0 auto;"></canvas>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem;">
+                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">에너지 ${Math.round(stats.energy)}%</div>
+                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">논리 ${Math.round(stats.logic)}%</div>
+                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">공감 ${Math.round(stats.empathy)}%</div>
+                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">독창성 ${Math.round(stats.creativity)}%</div>
+                        </div>
+                    </div>
+
+                    <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 2.2rem; border-radius: 24px; margin-bottom: 2.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -10px; right: -10px; font-size: 5rem; opacity: 0.1;">✨</div>
+                        <span style="font-size: 0.85rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 1rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
+                        <div style="font-size: 2.2rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.6rem; text-shadow: 0 0 15px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
+                        <p style="opacity: 0.7; font-size: 0.9rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
+                        <button class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px;" onclick="location.hash='#home'">메인으로</button>
+                        <button class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor};" onclick="window.globalShareSite()">공유하기</button>
+                    </div>
                 </div>
             </div>
+        </div>
+    `;
 
-            <div class="result-desc" style="text-align:left; line-height:1.8; margin-bottom:1.5rem;"><p>${result.desc}</p></div>
-            
-            <div class="result-actions" data-html2canvas-ignore="true">
-                <button id="like-btn" class="btn-secondary" style="width:auto; padding:0.6rem 1.5rem; border-radius:50px; margin-bottom:1rem;">❤️ 좋아요 <span id="like-count-${testId}">${testLikesData[testId] || 0}</span></button>
-                <p class="text-sub" style="font-weight:800; color:var(--accent-secondary); margin-bottom:1.5rem;">보상 +${reward}P 지급 완료!</p>
-                
-                <div class="share-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:0.8rem;">
-                    <button class="btn-primary" id="save-img-btn" style="background:var(--accent-color);">📸 이미지 저장</button>
-                    <button class="btn-primary" id="share-link-btn" style="background:var(--text-main);">🔗 링크 공유</button>
-                </div>
-                <button class="btn-secondary" style="width:100%; margin-top:1rem;" onclick="location.hash='#home'">다른 테스트 보러 가기</button>
-            </div>
-        </div>`;
-
-    document.getElementById('like-btn').onclick = () => handleLike(testId);
-    document.getElementById('share-link-btn').onclick = () => shareTest(testId, `나의 결과: ${result.title}`);
-    
-    document.getElementById('save-img-btn').onclick = async () => {
-        const btn = document.getElementById('save-img-btn');
-        btn.textContent = '생성 중...';
-        try {
-            const target = document.getElementById('capture-target');
-            const canvas = await html2canvas(target, { backgroundColor: getComputedStyle(document.body).getPropertyValue('--card-bg').trim(), scale: 2 });
-            const link = document.createElement('a');
-            link.download = `SevenCheck_${test.title}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-            btn.textContent = '📸 저장 완료!';
-            setTimeout(() => btn.textContent = '📸 이미지 저장', 2000);
-        } catch (e) {
-            console.error(e);
-            alert("이미지 저장 실패");
-            btn.textContent = '📸 이미지 저장';
+    // 1. Typing Effect Logic
+    const descEl = document.getElementById('typing-desc');
+    let i = 0;
+    const type = () => {
+        if (i < result.desc.length) {
+            descEl.innerHTML = result.desc.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+            i++;
+            setTimeout(type, 35);
+        } else {
+            descEl.innerHTML = result.desc;
         }
     };
-}
+    setTimeout(type, 600);
 
-function renderPrivacy() {
-    app.innerHTML = `
-        <div class="card legal-page fade-in">
-            <h2 style="margin-bottom: 2rem; color: var(--accent-color);">🔒 개인정보처리방침</h2>
-            <div class="legal-content" style="line-height: 1.8; font-size: 0.95rem; color: var(--text-main);">
-                <p>SevenCheck(이하 '회사')은 고객님의 개인정보를 중요시하며, "개인정보보호법" 등 관련 법령을 준수하고 있습니다.</p>
-                <h4 style="margin-top: 1.5rem;">1. 수집하는 개인정보 항목</h4>
-                <p>회사는 서비스 이용을 위해 구글 계정 정보(이름, 이메일, 프로필 사진)를 수집합니다. 또한 서비스 이용 과정에서 포인트 획득 및 사용 이력, 게임 통계 등이 생성될 수 있습니다.</p>
-                <h4 style="margin-top: 1.5rem;">2. 개인정보의 수집 및 이용목적</h4>
-                <p>- 서비스 제공 및 본인 확인<br>- 개인 맞춤형 심리 분석 결과 제공<br>- 오락실 포인트 및 아이템 관리<br>- 랭킹 등재 및 커뮤니티 활동 관리</p>
-                <h4 style="margin-top: 1.5rem;">3. 개인정보의 보유 및 이용기간</h4>
-                <p>회원 탈퇴 시까지 보유하며, 법령에 따른 의무 보유 기간이 있는 경우 해당 기간까지 보관 후 지체 없이 파기합니다.</p>
-                <h4 style="margin-top: 1.5rem;">4. 이용자의 권리</h4>
-                <p>이용자는 언제든지 자신의 개인정보를 조회하거나 수정할 수 있으며, 회원 탈퇴를 통해 개인정보 이용 동의를 철회할 수 있습니다.</p>
-            </div>
-        </div>`;
-}
+    // 2. Custom Radar Drawing
+    const canvas = document.getElementById('radarChart');
+    if (canvas) {
+        const ctx = canvas.getContext('2d');
+        const cx = 110, cy = 110, r = 85;
+        const labels = ['energy', 'logic', 'empathy', 'creativity'];
+        
+        ctx.strokeStyle = '#e2e8f0';
+        ctx.lineWidth = 1;
+        [0.3, 0.6, 1].forEach(scale => {
+            ctx.beginPath();
+            labels.forEach((_, idx) => {
+                const angle = (idx * 90 - 90) * Math.PI / 180;
+                const x = cx + Math.cos(angle) * r * scale;
+                const y = cy + Math.sin(angle) * r * scale;
+                idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+            });
+            ctx.closePath();
+            ctx.stroke();
+        });
 
+        ctx.fillStyle = themeColor + '44';
+        ctx.strokeStyle = themeColor;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        labels.forEach((label, idx) => {
+            const angle = (idx * 90 - 90) * Math.PI / 180;
+            const val = stats[label] / 100;
+            const x = cx + Math.cos(angle) * r * val;
+            const y = cy + Math.sin(angle) * r * val;
+            idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+    }
+}
 function renderAbout() {
     app.innerHTML = `
         <div class="card guide-container fade-in">
@@ -1693,28 +1737,39 @@ function renderTestExecution(testId) {
     const test = TESTS.find(t => t.id === testId);
     if (!test) return;
     let step = 0;
-    const answers = [];
+    const traitScores = { energy: 0, logic: 0, empathy: 0, creativity: 0 };
 
     const updateStep = () => {
-        if (step >= 7) { renderResult(testId, answers); return; }
+        if (step >= 7) { renderResult(testId, traitScores); return; }
         const qData = test.questions[step];
         app.innerHTML = `
-            <div class="test-container fade-in" data-cat="${test.category}">
-                <div class="test-header-info">
-                    <span class="step-counter">Question ${String(step + 1).padStart(2, '0')} / 07</span>
-                    <div class="progress-mini"><div class="progress-mini-fill" style="width:${((step + 1) / 7) * 100}%"></div></div>
+            <div class="test-container fade-in" style="padding: 4rem 1.5rem; max-width: 500px; margin: 0 auto; text-align: center;">
+                <div style="margin-bottom: 3.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 900; color: var(--accent-color); font-size: 0.85rem; letter-spacing: 0.1em;">QUESTION ${String(step + 1).padStart(2, '0')} / 07</span>
+                        <span style="font-weight: 800; color: var(--text-sub); font-size: 0.85rem;">${Math.round(((step + 1) / 7) * 100)}%</span>
+                    </div>
+                    <div style="height: 8px; background: var(--border-color); border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
+                        <div style="width: ${((step + 1) / 7) * 100}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                    </div>
                 </div>
-                <h2 class="test-question">${qData.q}</h2>
-                <div class="options-grid">
+                <h2 style="font-size: 1.9rem; font-weight: 800; margin-bottom: 4rem; line-height: 1.5; word-break: keep-all;">${qData.q}</h2>
+                <div style="display: grid; gap: 1.25rem;">
                     ${qData.options.map((opt, idx) => `
-                        <button class="option-btn fade-in" style="animation-delay: ${idx * 0.1}s" data-type="${opt.type}">
+                        <button class="option-btn-v2 fade-in" style="animation-delay: ${idx * 0.1}s; padding: 1.8rem 1.5rem; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 20px; font-size: 1.15rem; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm); line-height: 1.4;" 
+                            data-scores='${JSON.stringify(opt.scores || {e: (opt.type==='A'?2:0), p: (opt.type==='B'?2:0)})}'>
                             ${opt.text}
                         </button>`).join('')}
                 </div>
             </div>`;
-        app.querySelectorAll('.option-btn').forEach(btn => {
+        
+        app.querySelectorAll('.option-btn-v2').forEach(btn => {
             btn.onclick = () => {
-                answers.push(btn.dataset.type);
+                const scores = JSON.parse(btn.dataset.scores);
+                if(scores.e) traitScores.energy += scores.e;
+                if(scores.l) traitScores.logic += scores.l;
+                if(scores.p) traitScores.empathy += scores.p;
+                if(scores.c) traitScores.creativity += scores.c;
                 step++;
                 updateStep();
             };
