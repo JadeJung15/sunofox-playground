@@ -1387,6 +1387,12 @@ async function renderResult(testId, traitScores) {
         if (typeof checkDailyQuests === 'function') checkDailyQuests('test');
     }
 
+    // 추천 테스트 추출 (v2.1.0 추가)
+    const recommendedTests = TESTS
+        .filter(t => t.id !== testId)
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 3);
+
     // Dynamic Aura Background
     app.innerHTML = `
         <div class="aura-bg-container">
@@ -1430,6 +1436,25 @@ async function renderResult(testId, traitScores) {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
                         <button class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px;" onclick="location.hash='#home'">메인으로</button>
                         <button id="save-story-btn" class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>📸</span> 인스타용 저장</button>
+                    </div>
+
+                    <!-- 추천 테스트 및 전체보기 (v2.1.0 추가) -->
+                    <div class="recommended-section" style="margin-top: 4rem; padding-top: 3rem; border-top: 1px dashed var(--border-color);" data-html2canvas-ignore="true">
+                        <h3 style="text-align:center; margin-bottom: 2.5rem; font-size: 1.4rem; font-weight: 900; color: var(--text-main);">✨ 이런 분석은 어때요?</h3>
+                        <div class="test-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
+                            ${recommendedTests.map(t => `
+                                <div class="test-card" onclick="location.hash='#test/${t.id}'" style="margin-bottom:0; cursor:pointer;">
+                                    <div class="test-thumb" style="background-image: url('${t.thumb}'); height: 120px; border-radius: 12px;"></div>
+                                    <div class="test-info" style="padding: 0.8rem; text-align: left;">
+                                        <span class="test-category-tag" style="font-size: 0.6rem; padding: 2px 6px;">${t.category}</span>
+                                        <h4 style="font-size: 0.85rem; margin-top: 0.4rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${t.title}</h4>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div style="text-align: center; margin-top: 3rem;">
+                            <button class="btn-secondary" style="padding: 1rem 3rem; font-weight: 800; border-radius: 50px; width: auto; border-color: var(--border-color); color: var(--text-sub);" onclick="location.hash='#7check'">📋 전체 리스트 보기</button>
+                        </div>
                     </div>
                 </div>
             </div>
