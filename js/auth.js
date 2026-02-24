@@ -223,16 +223,19 @@ export function updateUI(isLoggedIn = !!UserState.user) {
             el.innerHTML = `<span class="tier-badge ${tier.class}">${tier.name}</span>`;
         });
 
-        // 푸터 관리자 링크 및 버전 제어
+        // 푸터 관리자 링크 제어
         const footerAdmin = document.getElementById('footer-admin-link');
-        const siteVersion = document.getElementById('site-version');
         if (footerAdmin) footerAdmin.classList.toggle('hidden', !UserState.isMaster);
-        if (siteVersion) siteVersion.classList.toggle('hidden', !UserState.isMaster);
+        
+        // 버전 정보는 모두에게 공개
+        const siteVersion = document.getElementById('site-version');
+        if (siteVersion) siteVersion.classList.remove('hidden');
     } else {
         document.getElementById('login-btn')?.classList.remove('hidden');
         document.getElementById('header-profile')?.classList.add('hidden');
         document.getElementById('footer-admin-link')?.classList.add('hidden');
-        document.getElementById('site-version')?.classList.add('hidden');
+        // 비로그인 상태에서도 버전과 통계는 보이도록 유지
+        document.getElementById('site-version')?.classList.remove('hidden');
     }
 }
 

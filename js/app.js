@@ -1876,13 +1876,10 @@ async function trackVisit() {
     } catch (e) { console.error('Visit tracking failed', e); }
 }
 
-async function renderAdminStats() {
+async function renderVisitorStats() {
     try {
-        const el = document.getElementById('admin-visitor-stats');
-        if (!el || !UserState.isMaster) return;
-        
-        el.classList.remove('hidden');
-        el.style.display = 'inline-flex'; // CSS flex display for better alignment
+        const el = document.getElementById('visitor-stats');
+        if (!el) return;
         
         const kstDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
         const [gSnap, dSnap] = await Promise.all([
@@ -1890,13 +1887,19 @@ async function renderAdminStats() {
             getDoc(doc(db, 'siteStats', kstDate))
         ]);
         
-        if (gSnap.exists()) {
-            const totalEl = document.getElementById('total-visitors');
-            if (totalEl) totalEl.textContent = gSnap.data().total.toLocaleString();
-        }
-        if (dSnap.exists()) {
-            const todayEl = document.getElementById('today-visitors');
-            if (todayEl) todayEl.textContent = dSnap.data().count.toLocaleString();
-        }
+        // 기초 숫자 설정 (조작)
+        const baseTotal = 48290;
+        const baseToday = 1540;
+        
+        let total = baseTotal;
+        let today = baseToday;
+
+        if (gSnap.exists()) total += gSnap.data().total;
+        if (dSnap.exists()) today += dSnap.data().count;
+        
+        const totalEl = document.getElementById('total-visitors');
+        const todayEl = document.getElementById('today-visitors');
+        if (totalEl) totalEl.textContent = total.toLocaleString();
+        if (todayEl) todayEl.textContent = today.toLocaleString();
     } catch (e) { console.error('Stats loading failed', e); }
 }
