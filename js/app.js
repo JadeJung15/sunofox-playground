@@ -1815,7 +1815,7 @@ function renderGuide() {
                         </div>
                         <div style="background: var(--bg-color); padding: 1.25rem; border-radius: 12px;">
                             <h4 style="color: var(--accent-secondary); margin-bottom: 0.5rem;">참여 보상</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">테스트 완료 시 기본 10P가 지급되며, 부스터 사용 시 20P를 획득합니다.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">테스트 완료 시 기본 10P와 분석 결과에 따른 <strong>희귀 아이템</strong>이 지급됩니다.</p>
                         </div>
                     </div>
                 </div>
@@ -1827,11 +1827,11 @@ function renderGuide() {
                     <div style="display: flex; flex-direction: column; gap: 1.25rem;">
                         <div>
                             <h4 style="color: var(--accent-color); margin-bottom: 0.5rem; font-size: 1.1rem;">포인트(P) 활용처</h4>
-                            <p style="font-size: 0.95rem; line-height: 1.6;">모은 포인트는 오락실 게임 참여, 복권 구매, 게시글 강조, 그리고 상점에서 희귀 이모지를 교환하는 데 사용할 수 있습니다.</p>
+                            <p style="font-size: 0.95rem; line-height: 1.6;">모은 포인트는 오락실 게임 참여, 게시글 강조, 그리고 상점에서 희귀 이모지, 테두리, 배경을 교환하는 데 사용됩니다.</p>
                         </div>
                         <div style="background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); padding: 1.5rem; border-radius: 15px; border: 2px solid var(--accent-soft);">
                             <h4 style="color: var(--accent-color); margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">⚡ 슈퍼 부스터 (Super Booster)</h4>
-                            <p style="font-size: 0.9rem; line-height: 1.6; font-weight: 600;">오락실에서 부스터를 충전하면 다음 20회의 테스트 완료 보상이 <strong>무조건 2배(20P)</strong>로 적용됩니다. 빠른 성장을 위한 필수 아이템입니다!</p>
+                            <p style="font-size: 0.9rem; line-height: 1.6; font-weight: 600;">오락실에서 부스터를 충전하면 다음 20회의 테스트 완료 보상이 <strong>무조건 2배(20P)</strong>로 적용되어 빠른 성장이 가능합니다.</p>
                         </div>
                     </div>
                 </div>
@@ -1843,32 +1843,44 @@ function renderGuide() {
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem;">
                         <div style="border-left: 3px solid var(--accent-color); padding-left: 1rem;">
                             <h4 style="margin-bottom: 0.4rem;">⛏️ 포인트 채굴</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">별도의 비용 없이 클릭만으로 소량의 포인트를 지속적으로 생산합니다.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">비용 없이 클릭만으로 5~15P를 지속적으로 생산합니다.</p>
                         </div>
                         <div style="border-left: 3px solid #fda085; padding-left: 1rem;">
-                            <h4 style="margin-bottom: 0.4rem;">🎫 럭키 복권</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">최대 30,000P 당첨의 기회! 당신의 행운을 시험해 보세요.</p>
+                            <h4 style="margin-bottom: 0.4rem;">🎰 이모지 슬롯</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">3개의 이모지를 맞춰 최대 <strong>5,000P 잭팟</strong>을 노려보세요.</p>
+                        </div>
+                        <div style="border-left: 3px solid #f43f5e; padding-left: 1rem;">
+                            <h4 style="margin-bottom: 0.4rem;">🧨 폭탄 돌리기</h4>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">안전한 전선을 끊어 포인트를 누적하세요. 위험하지만 보상은 강력합니다.</p>
                         </div>
                         <div style="border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
                             <h4 style="margin-bottom: 0.4rem;">⚗️ 아이템 연금술</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">아이템 6개를 합성하여 오직 연금술로만 나오는 <strong>초희귀 아이템</strong>을 연성합니다.</p>
-                        </div>
-                        <div style="border-left: 3px solid #f43f5e; padding-left: 1rem;">
-                            <h4 style="margin-bottom: 0.4rem;">🏪 중고장터</h4>
-                            <p style="font-size: 0.85rem; color: var(--text-sub);">수집한 아이템이 너무 많다면 장터에 판매하여 즉시 포인트로 환전하세요.</p>
+                            <p style="font-size: 0.85rem; color: var(--text-sub);">낮은 등급 아이템 6개를 합성하여 확정적으로 상위 아이템을 연성합니다.</p>
                         </div>
                     </div>
                 </div>
             </details>
 
             <details class="profile-details" open>
+                <summary>✨ 실시간 프로필 동기화</summary>
+                <div class="content-area">
+                    <p style="margin-bottom: 1rem; line-height: 1.7;">SevenCheck은 최신 웹 기술을 통해 <strong>실시간 프로필 동기화</strong>를 지원합니다.</p>
+                    <ul style="font-size: 0.95rem; line-height: 1.8; color: var(--text-main);">
+                        <li>✅ 닉네임이나 이모지를 변경하면 <strong>과거에 쓴 모든 게시물과 댓글</strong>이 즉시 업데이트됩니다.</li>
+                        <li>✅ 상점에서 구매한 <strong>오라, 테두리, 배경</strong>도 실시간으로 모든 화면에 반영됩니다.</li>
+                        <li>✅ 내가 획득한 티어(등급) 배지는 랭킹과 프로필에서 실시간으로 확인할 수 있습니다.</li>
+                    </ul>
+                </div>
+            </details>
+
+            <details class="profile-details">
                 <summary>🏆 등급 및 랭킹</summary>
                 <div class="content-area">
                     <p style="margin-bottom: 1.25rem;">보유한 모든 아이템의 가치를 합산한 <strong>'아이템 점수'</strong>로 당신의 명예가 결정됩니다.</p>
                     <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-color); padding: 1.5rem; border-radius: 12px; font-weight: 800; font-size: 0.85rem; overflow-x: auto; white-space: nowrap; gap: 10px;">
                         <span>ROOKIE</span> ➔ <span>BRONZE</span> ➔ <span>SILVER</span> ➔ <span>GOLD</span> ➔ <span>PLATINUM</span> ➔ <span style="color: var(--accent-color);">DIAMOND</span>
                     </div>
-                    <p style="margin-top: 1.25rem; font-size: 0.95rem;">상위 10명의 수집가는 <strong>랭킹</strong> 페이지에 실시간으로 등재되어 모든 사용자에게 공개됩니다.</p>
+                    <p style="margin-top: 1.25rem; font-size: 0.95rem;">상위 10명의 수집가는 <strong>명예의 전당</strong>에 실시간으로 등재되어 모든 사용자에게 공개됩니다.</p>
                 </div>
             </details>
 
@@ -1876,7 +1888,7 @@ function renderGuide() {
                 <summary>💬 커뮤니티 매너</summary>
                 <div class="content-area" style="line-height: 1.8; font-size: 0.95rem;">
                     <p>1. 모든 사용자는 서로를 존중하며 따뜻한 언어를 사용해야 합니다.</p>
-                    <p>2. <strong>게시글 강조(Premium)</strong> 기능을 사용하면 리스트 상단에 화려한 효과와 함께 고정됩니다.</p>
+                    <p>2. <strong>게시글 강조(Premium)</strong> 기능을 사용하면 화려한 효과와 함께 리스트 상단에 노출됩니다.</p>
                     <p>3. 도배, 욕설, 광고 등 부적절한 활동은 서비스 이용이 제한될 수 있습니다.</p>
                 </div>
             </details>
