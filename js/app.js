@@ -509,7 +509,7 @@ const TESTS = [
         }
     },
     {
-        id: 'f1', category: '사주', title: '오늘의 영적 타로 운세', desc: '당신의 무의식이 이끄는 카드를 통해 오늘 하루의 흐름과 필요한 조언을 드립니다.', thumb: unsplash('1601024445121-e5b075b576e5'),
+        id: 'f1', category: '사주', title: '오늘의 영적 타로 운세', desc: '당신의 무의식이 이끄는 카드를 통해 오늘 하루의 흐름과 필요한 조언을 드립니다.', thumb: 'https://images.pexels.com/photos/7534232/pexels-photo-7534232.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '지금 눈앞에 네 장의 카드가 있습니다. 가장 끌리는 것은?', options: [{ text: '화려한 태양이 그려진 카드', type: 'A' }, { text: '신비로운 달이 그려진 카드', type: 'B' }] },
             { q: '오늘 아침 눈을 떴을 때 가장 먼저 드는 생각은?', options: [{ text: '오늘은 뭔가 좋은 일이 생길 것 같아', type: 'A' }, { text: '조금 피곤하지만 차분하게 시작해보자', type: 'B' }] },
@@ -520,12 +520,12 @@ const TESTS = [
             { q: '오늘 하루를 마무리하며 듣고 싶은 음악은?', options: [{ text: '심장이 뛰는 신나는 비트의 음악', type: 'A' }, { text: '마음을 울리는 잔잔한 피아노 선율', type: 'B' }] }
         ],
         results: {
-            A: { title: '태양의 카드 (The Sun)', desc: '오늘은 당신에게 긍정적인 에너지가 가득한 날입니다. 망설였던 일이 있다면 과감하게 도전해보세요. 당신의 밝은 기운이 주변 사람들에게도 행운을 가져다줄 것입니다. 금전운과 대인관계운이 모두 최상입니다.', img: unsplash('1534361960057-19889db9621e') },
-            B: { title: '여사제 카드 (The High Priestess)', desc: '오늘은 직관력이 빛나는 날입니다. 활동적으로 움직이기보다는 내면의 소리에 귀를 기울여보세요. 복잡했던 고민들이 의외로 쉽게 풀릴 수 있습니다. 조용히 사색하거나 공부하기에 아주 좋은 하루입니다.', img: unsplash('1507679799987-c7377ec486e8') }
+            A: { title: '태양의 카드 (The Sun)', desc: '오늘은 당신에게 긍정적인 에너지가 가득한 날입니다. 망설였던 일이 있다면 과감하게 도전해보세요. 당신의 밝은 기운이 주변 사람들에게도 행운을 가져다줄 것입니다. 금전운과 대인관계운이 모두 최상입니다.', img: 'https://images.pexels.com/photos/2832432/pexels-photo-2832432.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '여사제 카드 (The High Priestess)', desc: '오늘은 직관력이 빛나는 날입니다. 활동적으로 움직이기보다는 내면의 소리에 귀를 기울여보세요. 복잡했던 고민들이 의외로 쉽게 풀릴 수 있습니다. 조용히 사색하거나 공부하기에 아주 좋은 하루입니다.', img: 'https://images.pexels.com/photos/311039/pexels-photo-311039.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
-        id: 'f2', category: '사주', title: '타고난 재물운 그릇', desc: '당신이 태어날 때부터 가지고 있는 재물의 크기와 돈을 모으는 방식을 분석합니다.', thumb: unsplash('1565514020176-8740771009a6'),
+        id: 'f2', category: '사주', title: '타고난 재물운 그릇', desc: '당신이 태어날 때부터 가지고 있는 재물의 크기와 돈을 모으는 방식을 분석합니다.', thumb: 'https://images.pexels.com/photos/4386442/pexels-photo-4386442.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '지갑 속에 현금이 얼마나 있어야 안심이 되나요?', options: [{ text: '비상금으로 5만원 이상은 있어야 한다', type: 'A' }, { text: '카드만 있으면 되니 현금은 없어도 된다', type: 'B' }] },
             { q: '길에서 100원을 주웠다면?', options: [{ text: '소소한 행운이라 생각하며 저금통에 넣는다', type: 'A' }, { text: '100원으로 뭘 해, 그냥 주머니에 둔다', type: 'B' }] },
@@ -536,8 +536,8 @@ const TESTS = [
             { q: '투자(주식/코인)에 대한 당신의 생각은?', options: [{ text: '원금 손실은 절대 안 된다. 안전이 최고!', type: 'A' }, { text: '하이 리스크 하이 리턴! 과감하게 투자한다', type: 'B' }] }
         ],
         results: {
-            A: { title: '티끌 모아 태산형', desc: '당신은 성실함과 꼼꼼함으로 부를 축적하는 타입입니다. 낭비를 싫어하고 체계적으로 관리하기 때문에, 시간이 지날수록 재산이 눈덩이처럼 불어날 것입니다. 대기만성형 부자가 될 운명입니다.', img: unsplash('1579621970563-ebec7560ff3e') },
-            B: { title: '일확천금 사업가형', desc: '당신은 돈의 흐름을 읽는 감각이 뛰어나고 배포가 큽니다. 작은 돈에 연연하기보다는 큰 그림을 그려 부를 창출합니다. 사업이나 투자를 통해 한 번에 큰 부를 얻을 수 있는 잠재력을 가졌습니다.', img: unsplash('1554224155-6726b3ff858f') }
+            A: { title: '티끌 모아 태산형', desc: '당신은 성실함과 꼼꼼함으로 부를 축적하는 타입입니다. 낭비를 싫어하고 체계적으로 관리하기 때문에, 시간이 지날수록 재산이 눈덩이처럼 불어날 것입니다. 대기만성형 부자가 될 운명입니다.', img: 'https://images.pexels.com/photos/1447418/pexels-photo-1447418.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '일확천금 사업가형', desc: '당신은 돈의 흐름을 읽는 감각이 뛰어나고 배포가 큽니다. 작은 돈에 연연하기보다는 큰 그림을 그려 부를 창출합니다. 사업이나 투자를 통해 한 번에 큰 부를 얻을 수 있는 잠재력을 가졌습니다.', img: 'https://images.pexels.com/photos/6770610/pexels-photo-6770610.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
@@ -557,7 +557,7 @@ const TESTS = [
         }
     },
     {
-        id: 'f4', category: '사주', title: '행운을 부르는 컬러 & 아이템', desc: '당신의 부족한 기운을 채워주고 좋은 운을 불러오는 맞춤형 개운 아이템을 추천합니다.', thumb: unsplash('1507608816759-54f48f0af0ee'),
+        id: 'f4', category: '사주', title: '행운을 부르는 컬러 & 아이템', desc: '당신의 부족한 기운을 채워주고 좋은 운을 불러오는 맞춤형 개운 아이템을 추천합니다.', thumb: 'https://images.pexels.com/photos/1457801/pexels-photo-1457801.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '평소 옷장에 가장 많은 옷 색깔은?', options: [{ text: '블랙, 그레이 등 무채색 계열', type: 'A' }, { text: '베이지, 파스텔 등 밝은 색 계열', type: 'B' }] },
             { q: '마음이 가장 편안해지는 장소는?', options: [{ text: '탁 트인 바다나 강가', type: 'A' }, { text: '나무가 울창한 숲이나 산', type: 'B' }] },
@@ -568,8 +568,8 @@ const TESTS = [
             { q: '중요한 미팅이 있을 때 챙기는 것은?', options: [{ text: '자신감을 주는 향수나 립스틱', type: 'A' }, { text: '신뢰감을 주는 시계나 깔끔한 구두', type: 'B' }] }
         ],
         results: {
-            A: { title: '열정의 레드 & 골드', desc: '당신에게는 불의 기운이 행운을 가져다줍니다. 붉은 계열의 소품이나 골드 액세서리를 착용해보세요. 적극적인 에너지가 당신의 매력을 높여주고 재물운을 상승시켜 줄 것입니다.', img: unsplash('1525909002-1b05e0c869d8') },
-            B: { title: '치유의 그린 & 우드', desc: '당신에게는 나무의 기운이 필요합니다. 초록색 아이템이나 원목 소재의 물건을 가까이하세요. 마음의 안정을 찾고 대인관계가 더욱 부드러워지는 효과를 볼 수 있습니다.', img: unsplash('1518310383802-640c2de311b2') }
+            A: { title: '열정의 레드 & 골드', desc: '당신에게는 불의 기운이 행운을 가져다줍니다. 붉은 계열의 소품이나 골드 액세서리를 착용해보세요. 적극적인 에너지가 당신의 매력을 높여주고 재물운을 상승시켜 줄 것입니다.', img: 'https://images.pexels.com/photos/3419692/pexels-photo-3419692.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '치유의 그린 & 우드', desc: '당신에게는 나무의 기운이 필요합니다. 초록색 아이템이나 원목 소재의 물건을 가까이하세요. 마음의 안정을 찾고 대인관계가 더욱 부드러워지는 효과를 볼 수 있습니다.', img: 'https://images.pexels.com/photos/1072179/pexels-photo-1072179.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
