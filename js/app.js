@@ -84,10 +84,10 @@ const TESTS = [
             { q: '과거의 창피했던 기억이 떠오르면?', options: [{ text: '그때 왜 그랬을까 분석해본다', scores: {l:2, p:1} }, { text: '머리를 흔들며 강제로 생각을 지운다', scores: {e:1, c:2} }] }
         ],
         results: {
-            energy: { title: '강인한 철벽 방어형', desc: '스트레스 상황에서 정면 돌파하려는 강한 의지를 가졌습니다.', img: unsplash('1499209974431-9dac3e5d9774'), color: '#475569', tags: ['#강철멘탈', '#정면돌파', '#단호함'] },
-            logic: { title: '침착한 전략적 분석가', desc: '문제를 논리적으로 해체하여 감정에 휘둘리지 않고 해결합니다.', img: unsplash('1454165833762-621f2f57b2d1'), color: '#334155', tags: ['#분석가', '#이성적', '#차분함'] },
-            empathy: { title: '유연한 감성 수용자', desc: '감정을 있는 그대로 받아들이고 스스로를 치유하는 능력이 뛰어납니다.', img: unsplash('1474418397713-7dedd394996e'), color: '#94a3b8', tags: ['#회복탄력성', '#수용', '#힐러'] },
-            creativity: { title: '창의적 승화의 대가', desc: '스트레스를 예술이나 새로운 아이디어로 승화시키는 독특한 능력이 있습니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#승화', '#아이디어', '#특별함'] }
+            energy: { title: '강인한 철벽 방어형', desc: '스트레스 상황에서 정면 돌파하려는 강한 의지를 가졌습니다.', img: 'https://images.pexels.com/photos/2832382/pexels-photo-2832382.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#475569', tags: ['#강철멘탈', '#정면돌파', '#단호함'] },
+            logic: { title: '침착한 전략적 분석가', desc: '문제를 논리적으로 해체하여 감정에 휘둘리지 않고 해결합니다.', img: 'https://images.pexels.com/photos/373543/pexels-photo-373543.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#334155', tags: ['#분석가', '#이성적', '#차분함'] },
+            empathy: { title: '유연한 감성 수용자', desc: '감정을 있는 그대로 받아들이고 스스로를 치유하는 능력이 뛰어납니다.', img: 'https://images.pexels.com/photos/7130503/pexels-photo-7130503.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#94a3b8', tags: ['#회복탄력성', '#수용', '#힐러'] },
+            creativity: { title: '창의적 승화의 대가', desc: '스트레스를 예술이나 새로운 아이디어로 승화시키는 독특한 능력이 있습니다.', img: 'https://images.pexels.com/photos/2832432/pexels-photo-2832432.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#승화', '#아이디어', '#특별함'] }
         }
     },
     {
