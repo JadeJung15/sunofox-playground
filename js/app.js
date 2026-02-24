@@ -1342,14 +1342,54 @@ async function renderResult(testId, traitScores) {
     
     const result = (test.results[dominantTrait]) ? test.results[dominantTrait] : (traitScores.energy >= 4 ? test.results.A : test.results.B);
     const themeColor = result.color || '#6366f1';
-    const tags = result.tags || ['#분석완료', '#세븐체크'];
 
-    const stats = {
-        energy: Math.min(100, (traitScores.energy / 14) * 100),
-        logic: Math.min(100, (traitScores.logic / 14) * 100),
-        empathy: Math.min(100, (traitScores.empathy / 14) * 100),
-        creativity: Math.min(100, (traitScores.creativity / 14) * 100)
+    let basePointReward = 10;
+    if (UserState.user && UserState.data.boosterCount > 0) {
+        basePointReward = 20;
+        await updateDoc(doc(db, 'users', UserState.user.uid), { boosterCount: increment(-1) });
+        UserState.data.boosterCount -= 1;
+    }
+
+    if (UserState.user) {
+        await addPoints(basePointReward, '분석 완료 보상');
+        checkDailyQuests('test');
+    }
+
+    app.innerHTML = `
+        <div class="aura-bg-container">
+            <div class="aura-sphere" style="background: ${themeColor}; top: -100px; left: -100px; opacity: 0.2;"></div>
+            <div class="aura-sphere" style="background: ${themeColor}; bottom: -100px; right: -100px; opacity: 0.1;"></div>
+        </div>
+        <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
+            <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44;">
+                <div class="result-img" style="height: 320px; background: url('${result.img}') center/cover;"></div>
+                <div style="padding: 2.5rem 1.5rem; text-align: center;">
+                    <h2 style="font-size: 2.4rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1rem;">${result.title}</h2>
+                    <p id="typing-desc" style="font-size: 1.15rem; line-height: 1.8; color: var(--text-main); margin-bottom: 2.5rem; min-height: 6rem;"></p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
+                        <button class="btn-primary" style="background: ${themeColor}; border: none; height: 55px; font-weight: 800; font-size: 1rem;" onclick="location.hash='#home'">메인으로</button>
+                        <button class="btn-secondary" id="btn-share-result" style="height: 55px; font-weight: 800; font-size: 1rem; border-color: ${themeColor}; color: ${themeColor};">🔗 결과 공유 (+30P)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 1. Typing Effect
+    const descEl = document.getElementById('typing-desc');
+    let i = 0;
+    const type = () => {
+        if (i < result.desc.length) {
+            descEl.innerHTML = result.desc.substring(0, i + 1) + '<span class="typing-cursor"></span>';
+            i++; setTimeout(type, 35);
+        } else { descEl.innerHTML = result.desc; }
     };
+    setTimeout(type, 500);
+
+    // 2. Share Event
+    document.getElementById('btn-share-result').onclick = () => shareTest(testId, `[SevenCheck] 나의 결과: ${result.title}`);
+};
 
     let basePointReward = 10;
     if (UserState.user && UserState.data.boosterCount > 0) {
