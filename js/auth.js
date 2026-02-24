@@ -201,6 +201,40 @@ async function loadUserData(user) {
     if (!UserState.data.arcadeStats) UserState.data.arcadeStats = { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
 }
 
+// 사용자 프로필 캐시 및 조회 로직 추가
+const profileCache = new Map();
+
+export function updateProfileCache(uid, partialData) {
+    if (!uid) return;
+    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
+    profileCache.set(uid, { ...current, ...partialData });
+}
+
+export async function fetchUserProfile(uid) {
+    if (!uid) return null;
+    if (profileCache.has(uid)) return profileCache.get(uid);
+
+    try {
+        const userSnap = await getDoc(doc(db, "users", uid));
+        if (userSnap.exists()) {
+            const data = userSnap.data();
+            const profile = {
+                nickname: data.nickname || "익명",
+                emoji: data.emoji || "👤",
+                nameColor: data.nameColor || "var(--text-main)",
+                activeAura: data.activeAura || "NONE",
+                activeBorder: data.activeBorder || "NONE",
+                activeBackground: data.activeBackground || "NONE"
+            };
+            profileCache.set(uid, profile);
+            return profile;
+        }
+    } catch (e) {
+        console.error("Profile fetch error:", e);
+    }
+    return { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
+}
+
 export function updateUI(isLoggedIn = !!UserState.user) {
     if (isLoggedIn && UserState.data) {
         document.getElementById('login-btn')?.classList.add('hidden');
@@ -278,6 +312,14 @@ async function handleEmojiExchange(emoji) {
         });
         addLog(UserState.user.uid, 'score', -(UserState.data.totalScore - newScore), `이모지 교환: ${emoji}`);
         UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore = newScore; UserState.data.emoji = emoji;
+        
+        // 캐시 업데이트
+        if (profileCache.has(UserState.user.uid)) {
+            const cached = profileCache.get(UserState.user.uid);
+            cached.emoji = emoji;
+            profileCache.set(UserState.user.uid, cached);
+        }
+
         updateUI(); alert("교환 완료!");
         if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
     } catch (e) { alert("오류 발생"); }
@@ -287,11 +329,29 @@ async function changeNameColor(color) {
     const unlocked = UserState.data.unlockedColors || ['#333333'];
     if (unlocked.includes(color)) {
         await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
-        UserState.data.nameColor = color; updateUI(); return;
+        UserState.data.nameColor = color; 
+        
+        // 캐시 업데이트
+        if (profileCache.has(UserState.user.uid)) {
+            const cached = profileCache.get(UserState.user.uid);
+            cached.nameColor = color;
+            profileCache.set(UserState.user.uid, cached);
+        }
+
+        updateUI(); return;
     }
     if (await usePoints(2000, `닉네임 색상 변경: ${color}`)) {
         await updateDoc(doc(db, "users", UserState.user.uid), { unlockedColors: arrayUnion(color), nameColor: color });
-        UserState.data.unlockedColors.push(color); UserState.data.nameColor = color; updateUI();
+        UserState.data.unlockedColors.push(color); UserState.data.nameColor = color; 
+        
+        // 캐시 업데이트
+        if (profileCache.has(UserState.user.uid)) {
+            const cached = profileCache.get(UserState.user.uid);
+            cached.nameColor = color;
+            profileCache.set(UserState.user.uid, cached);
+        }
+
+        updateUI();
     }
 }
 
@@ -321,6 +381,14 @@ async function changeNickname() {
             await updateDoc(doc(db, "users", UserState.user.uid), updateData);
             UserState.data.nickname = newName;
             UserState.data.nicknameChanged = true;
+            
+            // 캐시 업데이트
+            if (profileCache.has(UserState.user.uid)) {
+                const cached = profileCache.get(UserState.user.uid);
+                cached.nickname = newName;
+                profileCache.set(UserState.user.uid, cached);
+            }
+
             updateUI();
             if (msg) msg.textContent = "성공적으로 변경되었습니다!";
             input.value = '';

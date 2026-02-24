@@ -1,5 +1,5 @@
 // js/app.js - Premium Content & Core Logic
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade, updateProfileCache } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, saveAsStoryImage } from './share.js';
 import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
@@ -1048,6 +1048,10 @@ function renderProfile() {
             const activeKey = `active${type}`;
             await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
             UserState.data[activeKey] = id;
+            
+            // 캐시 업데이트 추가
+            updateProfileCache(UserState.user.uid, { [activeKey]: id });
+
             renderProfile();
             updateUI();
         };

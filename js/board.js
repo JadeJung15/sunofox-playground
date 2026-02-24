@@ -1,5 +1,5 @@
 import { db } from './firebase-init.js';
-import { UserState, usePoints, getTier } from './auth.js';
+import { UserState, usePoints, getTier, fetchUserProfile, updateProfileCache } from './auth.js';
 import { 
     collection, 
     addDoc, 
@@ -179,6 +179,10 @@ export async function renderBoard(container) {
                 await updateDoc(doc(db, "users", UserState.user.uid), updateObj);
                 UserState.data[unlockedKey].push(id);
                 UserState.data[activeKey] = id;
+                
+                // 캐시 업데이트
+                updateProfileCache(UserState.user.uid, { [activeKey]: id });
+
                 alert(`${info.name} 구매 및 장착 완료!`);
                 renderBoard(container);
             }
@@ -189,6 +193,10 @@ export async function renderBoard(container) {
             const activeKey = `active${type}`;
             await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
             UserState.data[activeKey] = id;
+            
+            // 캐시 업데이트
+            updateProfileCache(UserState.user.uid, { [activeKey]: id });
+
             renderBoard(container);
         }
     });
@@ -199,6 +207,10 @@ export async function renderBoard(container) {
             const activeKey = `active${type}`;
             await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: 'NONE' });
             UserState.data[activeKey] = 'NONE';
+            
+            // 캐시 업데이트
+            updateProfileCache(UserState.user.uid, { [activeKey]: 'NONE' });
+
             renderBoard(container);
         };
     });
@@ -223,12 +235,6 @@ export async function renderBoard(container) {
             submitBtn.disabled = true;
             await addDoc(collection(db, "posts"), {
                 uid: UserState.user.uid,
-                author: UserState.data.nickname || "익명",
-                authorEmoji: UserState.data.emoji || "👤",
-                authorColor: UserState.data.nameColor || "#333",
-                appliedAura: UserState.data.activeAura || 'NONE',
-                appliedBorder: UserState.data.activeBorder || 'NONE',
-                appliedBackground: UserState.data.activeBackground || 'NONE',
                 content: content,
                 isPremium: isPremium,
                 createdAt: serverTimestamp()
@@ -254,21 +260,24 @@ async function loadPosts(container) {
             const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
             const canDelete = UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin);
             
+            // 실시간 프로필 정보 조회
+            const profile = await fetchUserProfile(data.uid);
+
             const commentsRef = collection(db, "posts", postId, "comments");
             const countSnap = await getCountFromServer(commentsRef);
             const commentCount = countSnap.data().count;
 
-            let auraClass = (data.appliedAura && data.appliedAura !== 'NONE') ? AURA_SHOP[data.appliedAura]?.class || '' : '';
-            let borderClass = (data.appliedBorder && data.appliedBorder !== 'NONE') ? BORDER_SHOP[data.appliedBorder]?.class || '' : '';
-            let bgClass = (data.appliedBackground && data.appliedBackground !== 'NONE') ? BACKGROUND_SHOP[data.appliedBackground]?.class || '' : '';
+            let auraClass = (profile.activeAura && profile.activeAura !== 'NONE') ? AURA_SHOP[profile.activeAura]?.class || '' : '';
+            let borderClass = (profile.activeBorder && profile.activeBorder !== 'NONE') ? BORDER_SHOP[profile.activeBorder]?.class || '' : '';
+            let bgClass = (profile.activeBackground && profile.activeBackground !== 'NONE') ? BACKGROUND_SHOP[profile.activeBackground]?.class || '' : '';
 
             const postEl = document.createElement('div');
             postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} ${auraClass} ${bgClass} fade-in`;
             postEl.innerHTML = `
                 <div class="post-header">
                     <div class="post-author-info">
-                        <div class="author-emoji-circle ${borderClass}">${data.authorEmoji || '👤'}</div>
-                        <span class="post-author" style="color:${data.authorColor || 'var(--text-main)'}">${data.author}</span>
+                        <div class="author-emoji-circle ${borderClass}">${profile.emoji || '👤'}</div>
+                        <span class="post-author" style="color:${profile.nameColor || 'var(--text-main)'}">${profile.nickname}</span>
                     </div>
                     <span class="post-date">${date}</span>
                 </div>
@@ -310,7 +319,7 @@ async function loadPosts(container) {
                 try {
                     submitCommentBtn.disabled = true;
                     await addDoc(collection(db, "posts", postId, "comments"), {
-                        uid: UserState.user.uid, author: UserState.data.nickname, authorEmoji: UserState.data.emoji || "👤",
+                        uid: UserState.user.uid,
                         content, createdAt: serverTimestamp()
                     });
                     cInput.value = ''; loadComments(postId, data.uid);
@@ -333,20 +342,27 @@ async function loadComments(postId, postAuthorUid) {
     try {
         const snap = await getDocs(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")));
         if (snap.empty) { listContainer.innerHTML = '<p class="text-sub" style="font-size:0.7rem; padding:0.5rem;">첫 댓글을 남겨보세요!</p>'; return; }
-        listContainer.innerHTML = snap.docs.map(dSnap => {
+        
+        const commentHtmls = [];
+        for (const dSnap of snap.docs) {
             const d = dSnap.data();
             const canDelete = UserState.user && (d.uid === UserState.user.uid || UserState.isAdmin);
-            return `
+            
+            // 댓글 작성자 프로필 조회
+            const profile = await fetchUserProfile(d.uid);
+            
+            commentHtmls.push(`
                 <div class="comment-item">
                     <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:0.9rem;">${d.authorEmoji || '👤'}</span>
-                        <span style="font-weight:800; font-size:0.75rem;">${d.author}</span>
+                        <span style="font-size:0.9rem;">${profile.emoji || '👤'}</span>
+                        <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
                         ${canDelete ? `<button class="btn-comment-delete" data-id="${dSnap.id}" style="background:none; border:none; color:#ef4444; font-size:0.65rem; cursor:pointer;">삭제</button>` : ''}
                     </div>
                     <p style="font-size:0.8rem; margin-top:2px;">${d.content}</p>
                 </div>
-            `;
-        }).join('');
+            `);
+        }
+        listContainer.innerHTML = commentHtmls.join('');
         
         listContainer.querySelectorAll('.btn-comment-delete').forEach(btn => {
             btn.onclick = async () => {
