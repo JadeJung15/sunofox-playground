@@ -874,15 +874,22 @@ function renderTestCard(t) {
     const likes = testLikesData[t.id] || 0;
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'">
-        <div class="thumb-wrapper">
-            <div class="test-thumb" style="background-image: url('${t.thumb}')">
-                <div class="like-badge">❤️ ${likes}</div>
+        <div class="thumb-wrapper" style="position: relative;">
+            <div class="test-thumb" style="background-image: url('${t.thumb}');">
+                <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);"></div>
+                <div class="like-badge" style="background: rgba(0,0,0,0.6); color: white; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">❤️ ${likes}</div>
             </div>
         </div>
         <div class="test-info">
-            <span class="test-category-tag">${t.category}</span>
-            <h3>${t.title}</h3>
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <span class="test-category-tag">${t.category}</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-sub); display: flex; align-items: center; gap: 4px;"><span>⏱️</span> 3분</span>
+            </div>
+            <h3 style="margin-top: 0.5rem;">${t.title}</h3>
             <p>${t.desc}</p>
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px dashed var(--border-color); display: flex; justify-content: flex-end;">
+                <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-color);">테스트 시작 ➔</span>
+            </div>
         </div>
     </div>`;
 }
@@ -1388,8 +1395,9 @@ async function renderResult(testId, traitScores) {
         </div>
         <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
             <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44; backdrop-filter: blur(5px);">
-                <div class="result-img" style="height: 320px; background: url('${result.img}') center/cover; position: relative;">
-                    <div style="position: absolute; bottom: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(to top, var(--card-bg), transparent);"></div>
+                <div style="padding: 1.5rem 1.5rem 0;">
+                    <div class="result-img" style="height: 300px; background: url('${result.img}') center/cover; position: relative; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 4px solid #fff;">
+                    </div>
                 </div>
                 <div style="padding: 1.5rem 1.5rem 2.5rem; text-align: center;">
                     <div style="display:flex; justify-content:center; gap:8px; margin-bottom:1.5rem;" class="result-tag-floating">
@@ -1397,8 +1405,8 @@ async function renderResult(testId, traitScores) {
                     </div>
                     <h2 style="font-size: 2.6rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em;">${result.title}</h2>
                     
-                    <div style="min-height: 8rem; margin-bottom: 2.5rem;">
-                        <p id="typing-desc" style="font-size: 1.2rem; line-height: 1.9; color: var(--text-main); word-break: keep-all; font-weight: 500;"></p>
+                    <div style="min-height: 8rem; margin-bottom: 2.5rem; background: rgba(255,255,255,0.5); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
+                        <p id="typing-desc" style="font-size: 1.15rem; line-height: 1.9; color: var(--text-main); word-break: keep-all; font-weight: 600;"></p>
                     </div>
                     
                     <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 24px; padding: 2.5rem 1rem; margin-bottom: 3rem; border: 1px solid var(--border-color); position: relative;">
@@ -1776,33 +1784,60 @@ function renderTestExecution(testId) {
     if (!test) return;
     let step = 0;
     const traitScores = { energy: 0, logic: 0, empathy: 0, creativity: 0 };
+    let history = []; // 뒤로가기를 위한 상태 저장
 
     const updateStep = () => {
         if (step >= 7) { renderResult(testId, traitScores); return; }
         const qData = test.questions[step];
         app.innerHTML = `
-            <div class="test-container fade-in" style="padding: 4rem 1.5rem; max-width: 500px; margin: 0 auto; text-align: center;">
-                <div style="margin-bottom: 3.5rem;">
+            <div class="test-container slide-up" data-cat="${test.category}" style="padding: 2rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center; position: relative;">
+                <button id="test-back-btn" class="btn-secondary" style="position: absolute; top: 1rem; left: 1rem; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; border: none; background: rgba(0,0,0,0.05); display: ${step > 0 ? 'inline-block' : 'none'};">← 이전</button>
+                
+                <div class="test-visual-header" style="margin-top: 3rem; margin-bottom: 2rem;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: url('${test.thumb}') center/cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 3px solid var(--card-bg);"></div>
+                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-sub); margin-top: 0.8rem; letter-spacing: 0.05em;">${test.title}</div>
+                </div>
+
+                <div style="margin-bottom: 3rem;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span style="font-weight: 900; color: var(--accent-color); font-size: 0.85rem; letter-spacing: 0.1em;">QUESTION ${String(step + 1).padStart(2, '0')} / 07</span>
+                        <span class="step-counter">QUESTION ${String(step + 1).padStart(2, '0')} / 07</span>
                         <span style="font-weight: 800; color: var(--text-sub); font-size: 0.85rem;">${Math.round(((step + 1) / 7) * 100)}%</span>
                     </div>
-                    <div style="height: 8px; background: var(--border-color); border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.05);">
-                        <div style="width: ${((step + 1) / 7) * 100}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);"></div>
+                    <div class="progress-mini">
+                        <div class="progress-mini-fill" style="width: ${((step + 1) / 7) * 100}%;"></div>
                     </div>
                 </div>
-                <h2 style="font-size: 1.9rem; font-weight: 800; margin-bottom: 4rem; line-height: 1.5; word-break: keep-all;">${qData.q}</h2>
-                <div style="display: grid; gap: 1.25rem;">
+                
+                <h2 class="test-question">${qData.q}</h2>
+                
+                <div class="options-grid">
                     ${qData.options.map((opt, idx) => `
-                        <button class="option-btn-v2 fade-in" style="animation-delay: ${idx * 0.1}s; padding: 1.8rem 1.5rem; background: var(--card-bg); border: 2px solid var(--border-color); border-radius: 20px; font-size: 1.15rem; font-weight: 700; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-sm); line-height: 1.4;" 
+                        <button class="option-btn slide-up" style="animation-delay: ${idx * 0.1}s;" 
                             data-scores='${JSON.stringify(opt.scores || {e: (opt.type==='A'?2:0), p: (opt.type==='B'?2:0)})}'>
-                            ${opt.text}
+                            <span class="opt-label">${String.fromCharCode(65 + idx)}</span>
+                            <span class="opt-text">${opt.text}</span>
                         </button>`).join('')}
                 </div>
             </div>`;
         
-        app.querySelectorAll('.option-btn-v2').forEach(btn => {
+        const backBtn = document.getElementById('test-back-btn');
+        if(backBtn) {
+            backBtn.onclick = () => {
+                if(step > 0) {
+                    step--;
+                    const prevScores = history.pop();
+                    traitScores.energy = prevScores.energy;
+                    traitScores.logic = prevScores.logic;
+                    traitScores.empathy = prevScores.empathy;
+                    traitScores.creativity = prevScores.creativity;
+                    updateStep();
+                }
+            };
+        }
+
+        app.querySelectorAll('.option-btn').forEach(btn => {
             btn.onclick = () => {
+                history.push({...traitScores}); // 현재 상태 저장
                 const scores = JSON.parse(btn.dataset.scores);
                 if(scores.e) traitScores.energy += scores.e;
                 if(scores.l) traitScores.logic += scores.l;
