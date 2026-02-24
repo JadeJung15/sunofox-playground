@@ -1947,39 +1947,32 @@ window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
 initAuth();
 
+router();
+
 // --- Visitor Stats Functions ---
 async function trackVisit() {
     try {
         if (sessionStorage.getItem('sc_visit')) return;
         const now = new Date();
         const kstDate = new Date(now.getTime() + 32400000).toISOString().split('T')[0];
-        
-        // Total count
         await setDoc(doc(db, 'siteStats', 'global'), { total: increment(1) }, { merge: true });
-        // Today count
         await setDoc(doc(db, 'siteStats', kstDate), { count: increment(1) }, { merge: true });
-        
         sessionStorage.setItem('sc_visit', '1');
     } catch (e) { console.error('Visit tracking failed', e); }
 }
 
 async function renderAdminStats() {
-    const el = document.getElementById('admin-visitor-stats');
-    if (!el || !UserState.isMaster) return;
-    
-    el.classList.remove('hidden');
     try {
+        const el = document.getElementById('admin-visitor-stats');
+        if (!el || !UserState.isMaster) return;
+        el.classList.remove('hidden');
         const now = new Date();
         const kstDate = new Date(now.getTime() + 32400000).toISOString().split('T')[0];
-        
         const [gSnap, dSnap] = await Promise.all([
             getDoc(doc(db, 'siteStats', 'global')),
             getDoc(doc(db, 'siteStats', kstDate))
         ]);
-        
         if (gSnap.exists()) document.getElementById('total-visitors').textContent = gSnap.data().total.toLocaleString();
         if (dSnap.exists()) document.getElementById('today-visitors').textContent = dSnap.data().count.toLocaleString();
     } catch (e) { console.error('Stats loading failed', e); }
 }
-
-router();
