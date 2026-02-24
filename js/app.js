@@ -1,7 +1,7 @@
 // js/app.js - Premium Content & Core Logic
 import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade } from './auth.js';
 import { initArcade } from './arcade.js';
-import { copyLink, shareTest } from './share.js';
+import { copyLink } from './share.js';
 import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
@@ -1342,54 +1342,14 @@ async function renderResult(testId, traitScores) {
     
     const result = (test.results[dominantTrait]) ? test.results[dominantTrait] : (traitScores.energy >= 4 ? test.results.A : test.results.B);
     const themeColor = result.color || '#6366f1';
-
-    let basePointReward = 10;
-    if (UserState.user && UserState.data.boosterCount > 0) {
-        basePointReward = 20;
-        await updateDoc(doc(db, 'users', UserState.user.uid), { boosterCount: increment(-1) });
-        UserState.data.boosterCount -= 1;
-    }
-
-    if (UserState.user) {
-        await addPoints(basePointReward, '분석 완료 보상');
-        checkDailyQuests('test');
-    }
-
-    app.innerHTML = `
-        <div class="aura-bg-container">
-            <div class="aura-sphere" style="background: ${themeColor}; top: -100px; left: -100px; opacity: 0.2;"></div>
-            <div class="aura-sphere" style="background: ${themeColor}; bottom: -100px; right: -100px; opacity: 0.1;"></div>
-        </div>
-        <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
-            <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44;">
-                <div class="result-img" style="height: 320px; background: url('${result.img}') center/cover;"></div>
-                <div style="padding: 2.5rem 1.5rem; text-align: center;">
-                    <h2 style="font-size: 2.4rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1rem;">${result.title}</h2>
-                    <p id="typing-desc" style="font-size: 1.15rem; line-height: 1.8; color: var(--text-main); margin-bottom: 2.5rem; min-height: 6rem;"></p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
-                        <button class="btn-primary" style="background: ${themeColor}; border: none; height: 55px; font-weight: 800; font-size: 1rem;" onclick="location.hash='#home'">메인으로</button>
-                        <button class="btn-secondary" id="btn-share-result" style="height: 55px; font-weight: 800; font-size: 1rem; border-color: ${themeColor}; color: ${themeColor};">🔗 결과 공유 (+30P)</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // 1. Typing Effect
-    const descEl = document.getElementById('typing-desc');
-    let i = 0;
-    const type = () => {
-        if (i < result.desc.length) {
-            descEl.innerHTML = result.desc.substring(0, i + 1) + '<span class="typing-cursor"></span>';
-            i++; setTimeout(type, 35);
-        } else { descEl.innerHTML = result.desc; }
+    const tags = result.tags || [];
+    const maxScore = 14;
+    const stats = {
+        energy:     Math.min(Math.round((traitScores.energy     / maxScore) * 100), 100),
+        logic:      Math.min(Math.round((traitScores.logic      / maxScore) * 100), 100),
+        empathy:    Math.min(Math.round((traitScores.empathy    / maxScore) * 100), 100),
+        creativity: Math.min(Math.round((traitScores.creativity / maxScore) * 100), 100),
     };
-    setTimeout(type, 500);
-
-    // 2. Share Event
-    document.getElementById('btn-share-result').onclick = () => shareTest(testId, `[SevenCheck] 나의 결과: ${result.title}`);
-};
 
     let basePointReward = 10;
     if (UserState.user && UserState.data.boosterCount > 0) {
@@ -1535,6 +1495,42 @@ function renderAbout() {
                     </ul>
                 </div>
                 <p>우리는 단순히 결과를 보여주는 것에 그치지 않고, 당신이 가진 고유한 매력(Aura)을 발견하고 이를 가꿀 수 있는 커뮤니티를 만들어 갑니다.</p>
+            </div>
+        </div>`;
+}
+
+function renderPrivacy() {
+    app.innerHTML = `
+        <div class="card legal-page fade-in">
+            <h2 style="margin-bottom: 2rem; color: var(--accent-color);">🔒 개인정보처리방침</h2>
+            <div class="legal-content" style="line-height: 1.8; font-size: 0.95rem; color: var(--text-main);">
+                <p style="margin-bottom: 1.5rem;">SevenCheck Studio(이하 "서비스")는 이용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 및 관련 법령을 준수합니다.</p>
+
+                <h4 style="margin-top: 1.5rem;">1. 수집하는 개인정보 항목</h4>
+                <p>- 회원가입 시: 이메일 주소, 닉네임 (Google 소셜 로그인 경유)<br>
+                   - 서비스 이용 시: 테스트 결과, 포인트 및 아이템 정보, 게시글/댓글, 접속 기록</p>
+
+                <h4 style="margin-top: 1.5rem;">2. 개인정보의 수집 및 이용 목적</h4>
+                <p>- 회원 식별 및 서비스 제공<br>
+                   - 랭킹, 도감 등 게임화 기능 운영<br>
+                   - 서비스 개선 및 통계 분석</p>
+
+                <h4 style="margin-top: 1.5rem;">3. 개인정보의 보유 및 이용 기간</h4>
+                <p>회원 탈퇴 시까지 보유하며, 탈퇴 즉시 파기합니다. 단, 관련 법령에 따라 일정 기간 보존이 필요한 경우 해당 기간 동안 보관합니다.</p>
+
+                <h4 style="margin-top: 1.5rem;">4. 제3자 서비스 이용 안내 (Google AdSense)</h4>
+                <p>본 서비스는 Google AdSense를 통해 광고를 게재합니다. Google은 쿠키를 사용하여 이용자의 관심사에 기반한 광고를 표시할 수 있습니다.</p>
+                <p style="margin-top: 0.75rem;">- Google의 광고 쿠키 사용으로 인해, 이용자가 본 서비스 또는 다른 웹사이트를 방문할 때 Google이 광고를 게재할 수 있습니다.<br>
+                   - 이용자는 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener" style="color: var(--accent-color);">Google 광고 설정</a> 페이지에서 맞춤 광고를 비활성화할 수 있습니다.<br>
+                   - 또한 <a href="https://www.aboutads.info/choices/" target="_blank" rel="noopener" style="color: var(--accent-color);">aboutads.info</a>를 방문하여 관심 기반 광고에 사용되는 제3자 벤더의 쿠키를 비활성화할 수 있습니다.</p>
+
+                <h4 style="margin-top: 1.5rem;">5. 이용자의 권리</h4>
+                <p>이용자는 언제든지 자신의 개인정보를 조회, 수정, 삭제할 수 있습니다. 개인정보 관련 문의는 아래 연락처로 접수하십시오.</p>
+
+                <h4 style="margin-top: 1.5rem;">6. 개인정보 보호 책임자</h4>
+                <p>이메일: sunofox.official@gmail.com</p>
+
+                <p style="margin-top: 2rem; font-size: 0.85rem; color: var(--text-sub);">본 방침은 2025년 1월 1일부터 시행됩니다.</p>
             </div>
         </div>`;
 }
