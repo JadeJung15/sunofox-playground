@@ -173,7 +173,7 @@ const TESTS = [
         }
     },
     {
-        id: 'p10', category: '성격', title: '자존감 온도 측정기', desc: '당신의 자존감 상태와 외부 자극에 대한 마음의 회복탄력성을 측정합니다.', thumb: unsplash('1535930749574-1399327ce78f'),
+        id: 'p10', category: '성격', title: '자존감 온도 측정기', desc: '당신의 자존감 상태와 외부 자극에 대한 마음의 회복탄력성을 측정합니다.', thumb: 'https://images.pexels.com/photos/1051073/pexels-photo-1051073.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '거울 속 나의 모습을 볼 때 드는 생각은?', options: [{ text: '이 정도면 꽤 괜찮지! 만족한다', type: 'A' }, { text: '자꾸 단점이 보여서 고치고 싶다', type: 'B' }] },
             { q: '타인에게 칭찬을 받았을 때 당신은?', options: [{ text: '기분 좋게 감사하며 온전히 받아들인다', type: 'A' }, { text: '빈말이 아닐까 의심하거나 쑥스러워한다', type: 'B' }] },
@@ -184,8 +184,8 @@ const TESTS = [
             { q: '오늘 하루 수고한 나에게 해주고 싶은 말은?', options: [{ text: '정말 고생 많았어, 넌 최고야!', type: 'A' }, { text: '내일은 좀 더 열심히 살아야겠다', type: 'B' }] }
         ],
         results: {
-            A: { title: '햇살 가득 맑은 하늘형', desc: '당신의 자존감은 매우 건강하고 안정적입니다. 자신을 사랑하는 마음이 타인에게도 긍정적인 영향을 미칩니다.', img: unsplash('1490730141103-6cac27aaab94') },
-            B: { title: '은은한 달빛 구름형', desc: '당신은 섬세하고 사려 깊은 마음을 가졌지만, 때로는 자신에게 너무 엄격할 때가 있습니다. 당신은 충분히 아름다운 사람입니다.', img: unsplash('1532767153582-b1a0e5145009') }
+            A: { title: '햇살 가득 맑은 하늘형', desc: '당신의 자존감은 매우 건강하고 안정적입니다. 자신을 사랑하는 마음이 타인에게도 긍정적인 영향을 미칩니다.', img: 'https://images.pexels.com/photos/1490730/pexels-photo-1490730.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '은은한 달빛 구름형', desc: '당신은 섬세하고 사려 깊은 마음을 가졌지만, 때로는 자신에게 너무 엄격할 때가 있습니다. 당신은 충분히 아름다운 사람입니다.', img: 'https://images.pexels.com/photos/1532767/pexels-photo-1532767.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
