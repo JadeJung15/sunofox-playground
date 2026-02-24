@@ -1539,6 +1539,59 @@ function renderAbout() {
         </div>`;
 }
 
+function renderPrivacy() {
+    app.innerHTML = `
+        <div class="card legal-page fade-in">
+            <h2 style="margin-bottom: 2rem; color: var(--accent-color);">🔐 개인정보처리방침</h2>
+            <div class="legal-content" style="line-height: 1.8; font-size: 0.95rem; color: var(--text-main);">
+                <p style="background: var(--bg-color); padding: 1rem 1.25rem; border-radius: var(--radius-md); border-left: 3px solid var(--accent-color); margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-sub);">
+                    시행일: 2025년 1월 1일 &nbsp;|&nbsp; SevenCheck Studio는 이용자의 개인정보를 소중히 여기며, 「개인정보 보호법」을 준수합니다.
+                </p>
+
+                <h4 style="margin-top: 1.5rem;">1. 총칙</h4>
+                <p>SevenCheck Studio(이하 "서비스")는 이용자의 개인정보를 수집·이용함에 있어 관련 법령을 철저히 준수합니다. 본 방침은 서비스 이용 과정에서 수집되는 개인정보의 항목, 수집·이용 목적, 보유 기간, 그리고 이용자의 권리에 대해 안내합니다.</p>
+
+                <h4 style="margin-top: 1.5rem;">2. 수집하는 개인정보 항목</h4>
+                <p>서비스는 Google OAuth 로그인 및 서비스 이용 과정에서 아래 정보를 수집합니다.</p>
+                <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); margin-top: 0.75rem;">
+                    <p style="margin: 0; font-weight: 700; margin-bottom: 0.5rem;">자동 수집 항목 (Google 로그인 시)</p>
+                    <p style="margin: 0; color: var(--text-sub);">이메일 주소, 닉네임(표시 이름), 프로필 사진 URL, 고유 사용자 ID(UID)</p>
+                    <p style="margin-top: 1rem; font-weight: 700; margin-bottom: 0.5rem;">서비스 이용 중 생성·수집되는 정보</p>
+                    <p style="margin: 0; color: var(--text-sub);">심리 테스트 결과 및 유형, 보유 포인트(P) 및 아이템 현황, 작성한 게시글·댓글 내용, 서비스 접속 기록 및 이용 시간</p>
+                </div>
+
+                <h4 style="margin-top: 1.5rem;">3. 개인정보의 수집 및 이용 목적</h4>
+                <p>수집된 개인정보는 아래 목적에 한해 사용되며, 목적 외 용도로는 활용하지 않습니다.</p>
+                <p>- 회원 식별 및 인증, 서비스 이용 자격 부여<br>- 심리 테스트 결과 제공 및 개인화 분석 리포트 생성<br>- 포인트·아이템 등 서비스 내 재화 관리<br>- 커뮤니티 게시판 운영 및 커뮤니티 서비스 제공<br>- 부정 이용 행위 탐지 및 서비스 보안 유지<br>- 공지사항 전달 및 서비스 개선</p>
+
+                <h4 style="margin-top: 1.5rem;">4. 개인정보의 보유 및 이용 기간</h4>
+                <p>이용자의 개인정보는 회원 탈퇴 또는 서비스 이용 목적 달성 즉시 파기합니다. 단, 관계 법령에 따라 일정 기간 보존이 필요한 경우 해당 법령이 정한 기간 동안 보관됩니다.</p>
+                <p>- 서비스 이용 관련 분쟁 기록: 3년 (전자상거래 등에서의 소비자 보호에 관한 법률)<br>- 접속 로그 기록: 3개월 (통신비밀보호법)</p>
+
+                <h4 style="margin-top: 1.5rem;">5. 개인정보의 제3자 제공</h4>
+                <p>서비스는 이용자의 개인정보를 원칙적으로 외부에 제공하지 않습니다. 다만, 이용자의 사전 동의가 있거나 법령에 근거한 경우(수사기관의 요청 등) 예외적으로 제공할 수 있습니다.</p>
+
+                <h4 style="margin-top: 1.5rem;">6. 개인정보 처리 위탁</h4>
+                <p>서비스는 원활한 서비스 제공을 위해 아래 업체에 개인정보 처리 업무를 위탁하고 있습니다.</p>
+                <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); margin-top: 0.75rem;">
+                    <p style="margin: 0;"><strong>수탁사:</strong> Google LLC (Firebase)<br><strong>위탁 업무:</strong> 클라우드 인프라(인증, 데이터베이스, 호스팅) 제공<br><strong>위탁 기간:</strong> 서비스 이용 계약 종료 시까지<br><strong>개인정보 처리 방침:</strong> <span style="color: var(--accent-color);">policies.google.com/privacy</span></p>
+                </div>
+
+                <h4 style="margin-top: 1.5rem;">7. 이용자의 권리</h4>
+                <p>이용자는 언제든지 아래 권리를 행사할 수 있습니다.</p>
+                <p>- <strong>조회·수정:</strong> 서비스 내 프로필 설정에서 닉네임 등을 직접 변경하실 수 있습니다.<br>- <strong>삭제·탈퇴:</strong> 계정 삭제 요청 시 모든 개인정보와 서비스 내 데이터가 즉시 삭제됩니다.<br>- <strong>문의:</strong> 권리 행사 및 개인정보 관련 문의는 하단 문의하기를 이용해 주세요.</p>
+
+                <h4 style="margin-top: 1.5rem;">8. 개인정보 보호책임자</h4>
+                <div style="background: var(--bg-color); padding: 1.25rem; border-radius: var(--radius-md); margin-top: 0.75rem;">
+                    <p style="margin: 0;"><strong>책임 부서:</strong> SevenCheck Studio 운영팀<br><strong>문의:</strong> 서비스 내 <a href="#contact" style="color: var(--accent-color); text-decoration: none; font-weight: 700;">문의하기</a> 채널을 통해 접수해 주세요.<br><strong>처리 기간:</strong> 접수 후 영업일 기준 5일 이내 답변</p>
+                </div>
+
+                <h4 style="margin-top: 1.5rem;">9. 방침 변경 안내</h4>
+                <p>본 개인정보처리방침은 법령·정책 변경 또는 서비스 업데이트에 따라 내용이 변경될 수 있습니다. 변경 시에는 서비스 공지사항 또는 본 페이지를 통해 사전에 안내해 드립니다.</p>
+            </div>
+        </div>`;
+}
+
 function renderTerms() {
     app.innerHTML = `
         <div class="card legal-page fade-in">
