@@ -1342,54 +1342,14 @@ async function renderResult(testId, traitScores) {
     
     const result = (test.results[dominantTrait]) ? test.results[dominantTrait] : (traitScores.energy >= 4 ? test.results.A : test.results.B);
     const themeColor = result.color || '#6366f1';
-
-    let basePointReward = 10;
-    if (UserState.user && UserState.data.boosterCount > 0) {
-        basePointReward = 20;
-        await updateDoc(doc(db, 'users', UserState.user.uid), { boosterCount: increment(-1) });
-        UserState.data.boosterCount -= 1;
-    }
-
-    if (UserState.user) {
-        await addPoints(basePointReward, '분석 완료 보상');
-        checkDailyQuests('test');
-    }
-
-    app.innerHTML = `
-        <div class="aura-bg-container">
-            <div class="aura-sphere" style="background: ${themeColor}; top: -100px; left: -100px; opacity: 0.2;"></div>
-            <div class="aura-sphere" style="background: ${themeColor}; bottom: -100px; right: -100px; opacity: 0.1;"></div>
-        </div>
-        <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
-            <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44;">
-                <div class="result-img" style="height: 320px; background: url('${result.img}') center/cover;"></div>
-                <div style="padding: 2.5rem 1.5rem; text-align: center;">
-                    <h2 style="font-size: 2.4rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1rem;">${result.title}</h2>
-                    <p id="typing-desc" style="font-size: 1.15rem; line-height: 1.8; color: var(--text-main); margin-bottom: 2.5rem; min-height: 6rem;"></p>
-                    
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
-                        <button class="btn-primary" style="background: ${themeColor}; border: none; height: 55px; font-weight: 800; font-size: 1rem;" onclick="location.hash='#home'">메인으로</button>
-                        <button class="btn-secondary" id="btn-share-result" style="height: 55px; font-weight: 800; font-size: 1rem; border-color: ${themeColor}; color: ${themeColor};">🔗 결과 공유 (+30P)</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    // 1. Typing Effect
-    const descEl = document.getElementById('typing-desc');
-    let i = 0;
-    const type = () => {
-        if (i < result.desc.length) {
-            descEl.innerHTML = result.desc.substring(0, i + 1) + '<span class="typing-cursor"></span>';
-            i++; setTimeout(type, 35);
-        } else { descEl.innerHTML = result.desc; }
+    const tags = result.tags || [];
+    const maxScore = 14; // 7문항 × 최대 2점
+    const stats = {
+        energy:     Math.min(Math.round((traitScores.energy     / maxScore) * 100), 100),
+        logic:      Math.min(Math.round((traitScores.logic      / maxScore) * 100), 100),
+        empathy:    Math.min(Math.round((traitScores.empathy    / maxScore) * 100), 100),
+        creativity: Math.min(Math.round((traitScores.creativity / maxScore) * 100), 100),
     };
-    setTimeout(type, 500);
-
-    // 2. Share Event
-    document.getElementById('btn-share-result').onclick = () => shareTest(testId, `[SevenCheck] 나의 결과: ${result.title}`);
-};
 
     let basePointReward = 10;
     if (UserState.user && UserState.data.boosterCount > 0) {
@@ -1519,6 +1479,61 @@ async function renderResult(testId, traitScores) {
         ctx.stroke();
     }
 }
+
+function renderPrivacy() {
+    app.innerHTML = `
+        <div class="card legal-page fade-in" style="max-width: 800px; margin: 0 auto; padding: 2.5rem;">
+            <h2 style="margin-bottom: 0.5rem; color: var(--accent-color);">🔒 개인정보처리방침</h2>
+            <p style="font-size: 0.8rem; color: var(--text-sub); margin-bottom: 2rem;">최종 수정일: 2026년 2월 24일</p>
+            <div class="legal-content" style="line-height: 1.9; font-size: 0.95rem; color: var(--text-main);">
+                <p style="margin-bottom: 1.5rem; font-weight: 600; padding: 1rem 1.2rem; background: var(--bg-color); border-left: 4px solid var(--accent-color); border-radius: 0 8px 8px 0;">SevenCheck Studio(이하 "서비스")는 「개인정보 보호법」 및 관련 법령을 준수하며, 이용자의 개인정보를 소중히 보호합니다. 본 방침은 서비스가 어떠한 정보를 수집하고, 어떻게 이용하는지를 안내합니다.</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">1. 수집하는 개인정보 항목</h4>
+                <p>서비스는 아래 항목의 개인정보를 수집합니다.<br>
+                - <strong>필수항목:</strong> 이메일 주소(소셜 로그인 시), 닉네임, 서비스 이용 기록<br>
+                - <strong>자동 생성정보:</strong> 포인트(P), 보유 아이템, 등급 및 점수, 방문 일시, IP 기반 방문 통계(비식별 처리)</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">2. 개인정보의 수집 및 이용 목적</h4>
+                <p>수집한 정보는 다음 목적으로만 이용됩니다.<br>
+                - 사용자 식별 및 로그인 서비스 제공<br>
+                - 랭킹 시스템 및 명예의 전당 운영<br>
+                - 서비스 개선을 위한 방문자 통계 분석<br>
+                - 부정 이용 방지 및 보안 관리</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">3. 개인정보의 보유 및 이용기간</h4>
+                <p>원칙적으로 서비스 탈퇴 시까지 보관하며, 사용자의 삭제 요청이 있을 경우 즉시 파기합니다. 단, 관계 법령에 따라 보존이 필요한 경우 해당 기간 동안 보관합니다.</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">4. 개인정보의 제3자 제공 및 위탁</h4>
+                <p>서비스는 아래 제3자에게 서비스 운영을 위해 업무를 위탁하며, 해당 사업자는 위탁된 업무 수행 목적 외 개인정보를 이용하지 않습니다.<br>
+                - <strong>Google Firebase (Firestore, Authentication, Hosting):</strong> 사용자 인증, 데이터 저장, 서비스 호스팅<br>
+                - 위탁된 데이터는 Google의 보안 가이드라인 및 개인정보처리방침에 따라 엄격히 관리됩니다.</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">5. 쿠키(Cookie) 및 광고 관련 안내 (Google AdSense)</h4>
+                <p>서비스는 Google AdSense를 통해 광고를 게재할 수 있습니다. 이와 관련하여 아래 내용을 고지합니다.</p>
+                <p style="margin-top: 0.8rem;">
+                - <strong>제3자 광고 쿠키:</strong> Google 등 제3자 광고 사업자가 쿠키를 사용하여 이용자의 관심사에 맞는 광고를 제공할 수 있습니다.<br>
+                - <strong>DoubleClick 쿠키:</strong> Google은 DoubleClick 쿠키를 사용하여 이전 방문 기록을 기반으로 광고를 게재합니다.<br>
+                - <strong>관심 기반 광고 거부:</strong> 이용자는 <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener" style="color: var(--accent-color);">Google 광고 설정</a>에서 개인 맞춤형 광고 사용을 거부할 수 있습니다.<br>
+                - <strong>서비스 내 저장소:</strong> 로컬 스토리지(다크모드 설정 등)와 세션 스토리지(당일 방문 여부 확인)를 사용합니다.</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">6. 사용자의 권리</h4>
+                <p>이용자는 언제든지 아래 권리를 행사할 수 있습니다.<br>
+                - 본인 개인정보 열람 요청<br>
+                - 오류가 있을 경우 정정 요청<br>
+                - 삭제(탈퇴) 요청<br>
+                - 처리 정지 요청<br><br>
+                위 권리 행사는 서비스 내 프로필 설정 또는 하단 문의 채널을 통해 가능하며, 요청 후 지체 없이 처리합니다.</p>
+
+                <h4 style="margin-top: 2rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border-color);">7. 개인정보 보호책임자</h4>
+                <p>개인정보 처리에 관한 업무를 총괄하며, 관련 불만 및 피해 구제에 관한 사항을 담당합니다.<br>
+                - <strong>담당:</strong> SevenCheck Studio 운영팀<br>
+                - <strong>문의:</strong> 서비스 내 <a href="#contact" style="color: var(--accent-color);">문의하기</a> 페이지를 이용해 주세요.</p>
+
+                <p style="margin-top: 2.5rem; font-size: 0.8rem; color: var(--text-sub); text-align: center;">본 방침은 법령 또는 서비스 정책 변경에 따라 사전 공지 후 수정될 수 있습니다.</p>
+            </div>
+        </div>`;
+}
+
 function renderAbout() {
     app.innerHTML = `
         <div class="card guide-container fade-in">
