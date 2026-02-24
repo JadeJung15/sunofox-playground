@@ -164,7 +164,6 @@ export async function renderBoard(container) {
         const equipBtn = e.target.closest('.btn-equip-item');
         
         if (buyBtn) {
-            if (!UserState.user) return alert("로그인이 필요합니다.");
             const { type, id } = buyBtn.dataset;
             const shop = type === 'Aura' ? AURA_SHOP : (type === 'Border' ? BORDER_SHOP : BACKGROUND_SHOP);
             const info = shop[id];
@@ -186,7 +185,6 @@ export async function renderBoard(container) {
         }
 
         if (equipBtn) {
-            if (!UserState.user) return alert("로그인이 필요합니다.");
             const { type, id } = equipBtn.dataset;
             const activeKey = `active${type}`;
             await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
@@ -198,7 +196,6 @@ export async function renderBoard(container) {
     const unequipIds = { 'btn-unequip-aura': 'Aura', 'btn-unequip-border': 'Border', 'btn-unequip-bg': 'Background' };
     Object.entries(unequipIds).forEach(([btnId, type]) => {
         document.getElementById(btnId).onclick = async () => {
-            if (!UserState.user) return alert("로그인이 필요합니다.");
             const activeKey = `active${type}`;
             await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: 'NONE' });
             UserState.data[activeKey] = 'NONE';
