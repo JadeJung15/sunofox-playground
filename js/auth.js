@@ -223,15 +223,16 @@ export function updateUI(isLoggedIn = !!UserState.user) {
             el.innerHTML = `<span class="tier-badge ${tier.class}">${tier.name}</span>`;
         });
 
-        // 푸터 관리자 링크 제어
+        // 푸터 관리자 링크 및 버전 제어
         const footerAdmin = document.getElementById('footer-admin-link');
-        if (footerAdmin) {
-            footerAdmin.classList.toggle('hidden', !UserState.isMaster);
-        }
+        const siteVersion = document.getElementById('site-version');
+        if (footerAdmin) footerAdmin.classList.toggle('hidden', !UserState.isMaster);
+        if (siteVersion) siteVersion.classList.toggle('hidden', !UserState.isMaster);
     } else {
         document.getElementById('login-btn')?.classList.remove('hidden');
         document.getElementById('header-profile')?.classList.add('hidden');
         document.getElementById('footer-admin-link')?.classList.add('hidden');
+        document.getElementById('site-version')?.classList.add('hidden');
     }
 }
 
