@@ -42,3 +42,33 @@ export async function shareResult(title, testId) {
         return await copyLink(url);
     }
 }
+
+export async function saveAsStoryImage(elementId, fileName = '7Check_Result.png') {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    try {
+        const canvas = await html2canvas(element, {
+            useCORS: true,
+            scale: 2, // 고해상도
+            backgroundColor: null
+        });
+        
+        const link = document.createElement('a');
+        link.download = fileName;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+
+        // 보상 지급 (링크 공유와 동일한 로직)
+        const now = Date.now();
+        if (now - lastShareTime > 10000) {
+            await addPoints(30, '이미지 저장 보상');
+            lastShareTime = now;
+        }
+        return true;
+    } catch (err) {
+        console.error('Image save failed', err);
+        alert('이미지 저장에 실패했습니다.');
+        return false;
+    }
+}

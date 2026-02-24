@@ -1,7 +1,7 @@
 // js/app.js - Premium Content & Core Logic
 import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade } from './auth.js';
 import { initArcade } from './arcade.js';
-import { copyLink } from './share.js';
+import { copyLink, saveAsStoryImage } from './share.js';
 import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
@@ -1429,12 +1429,49 @@ async function renderResult(testId, traitScores) {
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
                         <button class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px;" onclick="location.hash='#home'">메인으로</button>
-                        <button class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor};" onclick="window.globalShareSite()">공유하기</button>
+                        <button id="save-story-btn" class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>📸</span> 인스타용 저장</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 인스타 스토리 전용 숨겨진 레이아웃 (9:16) -->
+            <div id="story-capture-area" style="position: absolute; left: -9999px; width: 360px; height: 640px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', sans-serif;">
+                <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
+                <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 40px 30px;">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;">SEVEN CHECK REPORT</span>
+                    </div>
+                    
+                    <div style="width: 100%; aspect-ratio: 1; border-radius: 20px; background: url('${result.img}') center/cover; margin-bottom: 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3);"></div>
+                    
+                    <div style="text-align: center;">
+                        <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 15px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">${result.title}</h2>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;">
+                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:50px; font-size:0.75rem; font-weight:700; backdrop-filter:blur(5px);">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+
+                    <div style="margin-top: auto; text-align: center;">
+                        <div style="font-size: 1.4rem; font-weight: 900; margin-bottom: 5px;">7Check</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">지금 7Check에서 당신의 아우라를 확인하세요</div>
                     </div>
                 </div>
             </div>
         </div>
     `;
+
+    // 인스타용 저장 버튼 이벤트
+    const storyBtn = document.getElementById('save-story-btn');
+    if(storyBtn) {
+        storyBtn.onclick = async () => {
+            storyBtn.disabled = true;
+            storyBtn.textContent = "생성 중...";
+            const success = await saveAsStoryImage('story-capture-area', `7Check_${test.title.replace(/\s/g, '_')}.png`);
+            if(success) alert("인스타 스토리 최적화 이미지가 저장되었습니다! 📸\n30P가 적립되었습니다.");
+            storyBtn.disabled = false;
+            storyBtn.innerHTML = "<span>📸</span> 인스타용 저장";
+        };
+    }
 
     // 1. Typing Effect Logic
     const descEl = document.getElementById('typing-desc');
