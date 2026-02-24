@@ -717,45 +717,85 @@ async function handleLike(testId) {
 }
 
 async function router() {
-    // 인증 상태가 확정될 때까지 대기
-    if (app.innerHTML === '') {
-        app.innerHTML = '<div style="text-align:center; padding:5rem;"><div class="loading-spinner">보안 연결 확인 중...</div></div>';
-    }
-    await authReady;
-    trackVisit();
-    renderVisitorStats();
+    if (!app) return;
 
-    // 일일 퀘스트: 로그인 체크 (인증 완료 후 즉시)
-    if (UserState.user && typeof checkDailyQuests === 'function') {
-        checkDailyQuests('login');
-    }
+    try {
+        // 통계 및 방문 기록 (비동기 실행)
+        trackVisit().catch(e => console.error("Track visit failed:", e));
+        renderVisitorStats().catch(e => console.error("Stats render failed:", e));
 
-    const hash = window.location.hash || '#home';
-    navLinks.forEach(link => {
-        const filter = link.dataset.filter;
-        link.classList.toggle('active', (hash === '#home' && filter === '전체') || hash.includes(filter?.toLowerCase()));
-    });
+        // 일일 퀘스트: 로그인 체크 (인증 완료된 경우에만 실행)
+        if (UserState.user && typeof window.checkDailyQuests === 'function') {
+            window.checkDailyQuests('login').catch(e => console.error("Quest check failed:", e));
+        }
 
-    app.innerHTML = ''; 
-    if (hash === '#privacy') renderPrivacy();
-    else if (hash === '#about') renderAbout();
-    else if (hash === '#terms') renderTerms();
-    else if (hash === '#contact') renderContact();
-    else if (hash === '#arcade') renderArcade();
-    else if (hash === '#board') await renderBoard(app);
-    else if (hash === '#ranking') await renderRanking(app);
-    else if (hash === '#guide') renderGuide();
-    else if (hash === '#book') await renderEncyclopedia();
-    else if (hash === '#profile') renderProfile();
-    else if (hash === '#admin') renderAdmin();
-    else if (hash === '#7check') renderCategorySelection();
-    else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
-    else {
-        currentFilter = categoryMap[hash] || '전체';
-        await renderHome(hash);
+        const hash = window.location.hash || '#home';
+        
+        // 네비게이션 활성화 상태 업데이트
+        navLinks.forEach(link => {
+            const filter = link.dataset.filter;
+            if (filter) {
+                const isActive = (hash === '#home' && filter === '전체') || hash.includes(filter.toLowerCase());
+                link.classList.toggle('active', isActive);
+            }
+        });
+
+        app.innerHTML = ''; 
+        if (hash === '#privacy') renderPrivacy();
+        else if (hash === '#about') renderAbout();
+        else if (hash === '#terms') renderTerms();
+        else if (hash === '#contact') renderContact();
+        else if (hash === '#arcade') renderArcade();
+        else if (hash === '#board') await renderBoard(app);
+        else if (hash === '#ranking') await renderRanking(app);
+        else if (hash === '#guide') renderGuide();
+        else if (hash === '#book') await renderEncyclopedia();
+        else if (hash === '#profile') renderProfile();
+        else if (hash === '#admin') renderAdmin();
+        else if (hash === '#7check') renderCategorySelection();
+        else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
+        else {
+            currentFilter = categoryMap[hash] || '전체';
+            await renderHome(hash);
+        }
+    } catch (error) {
+        console.error("Routing error:", error);
+        app.innerHTML = `<div style="text-align:center; padding:5rem;"><h2>⚠️ 서비스를 불러올 수 없습니다</h2><p style="margin-top:1rem; color:var(--text-sub);">${error.message}</p><button onclick="location.hash='#home'; location.reload();" class="btn-primary" style="margin:2rem auto 0;">새로고침</button></div>`;
     }
     window.scrollTo(0, 0);
 }
+
+// 일일 퀘스트 처리 함수 복구 및 전역 정의
+window.checkDailyQuests = async function(type) {
+    if (!UserState.user || !UserState.data) return;
+    
+    try {
+        const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
+        const userRef = doc(db, "users", UserState.user.uid);
+        
+        // 퀘스트 데이터 초기화 확인
+        if (!UserState.data.quests || UserState.data.quests.date !== today) {
+            const newQuests = {
+                date: today,
+                list: { login: true, test: false, board: false }
+            };
+            await updateDoc(userRef, { quests: newQuests });
+            UserState.data.quests = newQuests;
+            if (type === 'login') return;
+        }
+
+        if (UserState.data.quests.list && UserState.data.quests.list[type] === false) {
+            const updatePath = `quests.list.${type}`;
+            await updateDoc(userRef, { [updatePath]: true });
+            UserState.data.quests.list[type] = true;
+            
+            await addPoints(50, `일일 퀘스트 완료: ${type}`);
+            console.log(`[Quest] ${type} completed!`);
+        }
+    } catch (e) {
+        console.error("Daily quest error:", e);
+    }
+};
 
 // =================================================================
 // 3. Page Renders
@@ -772,31 +812,6 @@ function renderCategorySelection() {
                 <div class="cat-large-card" onclick="location.hash='#personality'" style="--cat-color: var(--color-personality);">
                     <div class="cat-card-inner">
                         <span class="cat-icon">🧠</span>
-                        <h3>성격 분석</h3>
-                        <p>내면의 심리와 숨겨진 성향을<br>심층 분석합니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
-                </div>
-                <div class="cat-large-card" onclick="location.hash='#face'" style="--cat-color: var(--color-face);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">✨</span>
-                        <h3>비주얼/얼굴</h3>
-                        <p>이목구비와 첫인상이 주는<br>고유한 매력을 진단합니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
-                </div>
-                <div class="cat-large-card" onclick="location.hash='#fortune'" style="--cat-color: var(--color-fortune);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">🔮</span>
-                        <h3>오늘의 운세</h3>
-                        <p>영적 타로와 사주 관법으로<br>오늘의 운을 점쳐봅니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
-                </div>
-                <div class="cat-large-card" onclick="location.hash='#fun'" style="--cat-color: var(--color-fun);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">🎨</span>
-                        <h3>재미/심리</h3>
                         <p>일상의 소소한 취향과<br>재미있는 심리 테스트입니다.</p>
                         <span class="cat-go">시작하기 →</span>
                     </div>
@@ -2095,3 +2110,4 @@ async function renderVisitorStats() {
         if (todayEl) todayEl.textContent = today.toLocaleString();
     } catch (e) { console.error('Stats loading failed', e); }
 }
+authReady.then(() => { router(); });
