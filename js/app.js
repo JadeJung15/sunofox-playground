@@ -621,7 +621,7 @@ const TESTS = [
             }
         },
     {
-        id: 'z3', category: '재미', title: '무인도 생존 유형', desc: '비행기 추락으로 무인도에 떨어진 당신! 극한 상황에서 드러나는 당신의 생존 본능은?', thumb: unsplash('1502085671122-2d218cd434e6'),
+        id: 'z3', category: '재미', title: '무인도 생존 유형', desc: '비행기 추락으로 무인도에 떨어진 당신! 극한 상황에서 드러나는 당신의 생존 본능은?', thumb: 'https://images.pexels.com/photos/1007657/pexels-photo-1007657.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '눈을 떠보니 낯선 해변가다. 가장 먼저 할 일은?', options: [{ text: '주변을 탐색하며 물과 식량을 찾는다', type: 'A' }, { text: '크게 소리 치며 구조 요청을 보낸다', type: 'B' }] },
             { q: '수풀 속에서 부스럭 소리가 난다!', options: [{ text: '무기가 될 만한 돌을 집어 든다', type: 'A' }, { text: '일단 나무 뒤로 숨어 동태를 살핀다', type: 'B' }] },
@@ -632,8 +632,8 @@ const TESTS = [
             { q: '무인도 생활 3일 차, 당신의 심정은?', options: [{ text: '이곳의 생활에 점점 적응해간다', type: 'A' }, { text: '집에 가고 싶어서 매일 밤 운다', type: 'B' }] }
         ],
         results: {
-            A: { title: '베어 그릴스 뺨치는 생존왕', desc: '당신은 어떤 극한 상황에서도 살아남을 수 있는 강인한 정신력과 적응력을 가졌습니다. 리더십을 발휘하여 무인도를 지상 낙원으로 만들지도 모릅니다.', img: unsplash('1500530855697-b586d89ba3ee') },
-            B: { title: '운이 따라주는 기적의 생존자', desc: '당신은 생존 지식은 부족할지 몰라도, 타고난 운과 긍정적인 마인드로 위기를 넘깁니다. 주변의 도움을 잘 이끌어내며 결국 구조될 운명입니다.', img: unsplash('1506126613408-eca57c42797c') }
+            A: { title: '베어 그릴스 뺨치는 생존왕', desc: '당신은 어떤 극한 상황에서도 살아남을 수 있는 강인한 정신력과 적응력을 가졌습니다. 리더십을 발휘하여 무인도를 지상 낙원으로 만들지도 모릅니다.', img: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '운이 따라주는 기적의 생존자', desc: '당신은 생존 지식은 부족할지 몰라도, 타고난 운과 긍정적인 마인드로 위기를 넘깁니다. 주변의 도움을 잘 이끌어내며 결국 구조될 운명입니다.', img: 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
@@ -653,7 +653,7 @@ const TESTS = [
         }
     },
     {
-        id: 'z5', category: '재미', title: '나의 소울 칵테일 찾기', desc: '당신의 분위기와 현재 감정 상태에 딱 어울리는 칵테일 한 잔을 추천해 드립니다.', thumb: unsplash('1514362545857-3bc16c4c7d1b'),
+        id: 'z5', category: '재미', title: '나의 소울 칵테일 찾기', desc: '당신의 분위기와 현재 감정 상태에 딱 어울리는 칵테일 한 잔을 추천해 드립니다.', thumb: 'https://images.pexels.com/photos/1189257/pexels-photo-1189257.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '오늘 밤, 당신이 원하는 분위기는?', options: [{ text: '시끌벅적하고 화려한 파티 분위기', type: 'A' }, { text: '조명 은은한 재즈바의 차분한 분위기', type: 'B' }] },
             { q: '술을 마실 때 선호하는 맛은?', options: [{ text: '입안이 상큼해지는 달콤 상큼한 맛', type: 'A' }, { text: '묵직하고 쌉싸름한 어른의 맛', type: 'B' }] },
@@ -664,8 +664,8 @@ const TESTS = [
             { q: '내일 지구가 멸망한다면 마지막 한 잔은?', options: [{ text: '사랑하는 사람과 건배하며 마시는 샴페인', type: 'A' }, { text: '가장 비싸고 독한 위스키 스트레이트', type: 'B' }] }
         ],
         results: {
-            A: { title: '상큼한 피치 크러쉬 (Peach Crush)', desc: '당신은 톡톡 튀는 매력과 사랑스러움을 지닌 사람입니다. 달콤하고 상큼한 피치 크러쉬처럼 주변 사람들에게 기분 좋은 에너지를 전파합니다. 오늘은 핑크빛 칵테일로 기분을 업 시켜보세요!', img: unsplash('1597075687490-8f673c6c17f6') },
-            B: { title: '고독한 마티니 (Martini)', desc: '당신은 깊이 있고 지적인 분위기를 풍기는 사람입니다. 칵테일의 왕이라 불리는 마티니처럼, 겉은 차가워 보이지만 속은 뜨거운 열정을 품고 있습니다. 깔끔하고 드라이한 한 잔이 당신과 잘 어울립니다.', img: unsplash('1513558161293-cdaf765ed2fd') }
+            A: { title: '상큼한 피치 크러쉬 (Peach Crush)', desc: '당신은 톡톡 튀는 매력과 사랑스러움을 지닌 사람입니다. 달콤하고 상큼한 피치 크러쉬처럼 주변 사람들에게 기분 좋은 에너지를 전파합니다. 오늘은 핑크빛 칵테일로 기분을 업 시켜보세요!', img: 'https://images.pexels.com/photos/2480828/pexels-photo-2480828.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '고독한 마티니 (Martini)', desc: '당신은 깊이 있고 지적인 분위기를 풍기는 사람입니다. 칵테일의 왕이라 불리는 마티니처럼, 겉은 차가워 보이지만 속은 뜨거운 열정을 품고 있습니다. 깔끔하고 드라이한 한 잔이 당신과 잘 어울립니다.', img: 'https://images.pexels.com/photos/1283272/pexels-photo-1283272.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     }
 ];
