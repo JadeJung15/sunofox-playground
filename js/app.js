@@ -1462,7 +1462,8 @@ async function renderResult(testId, traitScores) {
                                 </div>
                             `).join('')}
                         </div>
-                        <div style="text-align: center; margin-top: 3rem;">
+                        <div style="text-align: center; margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
+                            <button id="result-share-btn" class="btn-primary" style="padding: 1rem 3rem; font-weight: 800; border-radius: 50px; width: auto; background: var(--accent-secondary);">🔗 이 테스트 다시 공유하기</button>
                             <button class="btn-secondary" style="padding: 1rem 3rem; font-weight: 800; border-radius: 50px; width: auto; border-color: var(--border-color); color: var(--text-sub);" onclick="location.hash='#7check'">📋 전체 리스트 보기</button>
                         </div>
                     </div>
@@ -1557,6 +1558,22 @@ async function renderResult(testId, traitScores) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+    }
+
+    // 결과 페이지 공유 버튼 이벤트 (v2.1.0 추가)
+    const resultShareBtn = document.getElementById('result-share-btn');
+    if(resultShareBtn) {
+        resultShareBtn.onclick = async () => {
+            const siteUrl = window.location.href;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
+                    await addPoints(30, '테스트 공유 보상');
+                } catch (e) {}
+            } else {
+                await copyLink(siteUrl);
+            }
+        };
     }
 }
 function renderAbout() {
@@ -1856,7 +1873,44 @@ function renderTestExecution(testId) {
     if (!test) return;
     let step = 0;
     const traitScores = { energy: 0, logic: 0, empathy: 0, creativity: 0 };
-    let history = []; // 뒤로가기를 위한 상태 저장
+    let history = []; 
+
+    const renderIntro = () => {
+        app.innerHTML = `
+            <div class="test-intro-container fade-in" style="padding: 2rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
+                <div class="test-visual-header" style="margin-top: 2rem; margin-bottom: 2.5rem;">
+                    <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 30px; background: url('${test.thumb}') center/cover; box-shadow: var(--shadow-lg); border: 4px solid var(--card-bg);"></div>
+                    <span class="test-category-tag" style="margin-top: 1.5rem; display: inline-block;">${test.category} 분석</span>
+                    <h2 style="font-size: 2rem; font-weight: 900; margin-top: 1rem; line-height: 1.3;">${test.title}</h2>
+                </div>
+                
+                <div class="card" style="padding: 2rem; margin-bottom: 2.5rem; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.3);">
+                    <h4 style="font-size: 0.9rem; color: var(--accent-color); font-weight: 800; margin-bottom: 1rem; letter-spacing: 0.1em;">TEST PURPOSE</h4>
+                    <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-main); font-weight: 600; word-break: keep-all;">${test.desc}</p>
+                </div>
+
+                <div style="display: grid; gap: 1rem;">
+                    <button id="test-start-btn" class="btn-primary" style="height: 65px; font-size: 1.2rem; font-weight: 900; border-radius: 20px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">테스트 시작하기</button>
+                    <button id="test-share-btn" class="btn-secondary" style="height: 60px; font-size: 1rem; font-weight: 800; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">🔗 이 테스트 공유하기</button>
+                </div>
+                
+                <button onclick="location.hash='#7check'" style="margin-top: 2rem; background: none; border: none; color: var(--text-sub); font-weight: 700; font-size: 0.9rem; text-decoration: underline; cursor: pointer;">다른 테스트 둘러보기</button>
+            </div>
+        `;
+
+        document.getElementById('test-start-btn').onclick = () => updateStep();
+        document.getElementById('test-share-btn').onclick = async () => {
+            const siteUrl = window.location.href;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
+                    await addPoints(30, '테스트 공유 보상');
+                } catch (e) {}
+            } else {
+                await copyLink(siteUrl);
+            }
+        };
+    };
 
     const updateStep = () => {
         if (step >= 7) { renderResult(testId, traitScores); return; }
@@ -1920,7 +1974,7 @@ function renderTestExecution(testId) {
             };
         });
     };
-    updateStep();
+    renderIntro(); // 인트로 화면부터 시작
 }
 
 let lastGlobalShareTime = 0;
