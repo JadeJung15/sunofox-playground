@@ -710,7 +710,7 @@ async function router() {
     }
     await authReady;
     trackVisit();
-    renderAdminStats();
+    renderVisitorStats();
 
     // 일일 퀘스트: 로그인 체크 (인증 완료 후 즉시)
     if (UserState.user && typeof checkDailyQuests === 'function') {
