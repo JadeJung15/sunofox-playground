@@ -109,7 +109,7 @@ const TESTS = [
         }
     },
     {
-        id: 'p6', category: '성격', title: '대화 습관 분석기', desc: '평소 대화 방식을 통해 당신이 타인과 관계를 맺는 핵심적인 특징을 분석합니다.', thumb: unsplash('1573497019940-1c28c88b4f3e'),
+        id: 'p6', category: '성격', title: '대화 습관 분석기', desc: '평소 대화 방식을 통해 당신이 타인과 관계를 맺는 핵심적인 특징을 분석합니다.', thumb: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '친구가 우울하다고 연락이 왔을 때?', options: [{ text: '이유를 물어보고 현실적인 위로를 한다', type: 'A' }, { text: '일단 만나서 기분을 풀어주려 노력한다', type: 'B' }] },
             { q: '대화 중 침묵이 흐를 때 당신은?', options: [{ text: '어색함을 참지 못하고 먼저 화제를 꺼낸다', type: 'A' }, { text: '침묵을 자연스럽게 받아들이고 기다린다', type: 'B' }] },
@@ -120,12 +120,12 @@ const TESTS = [
             { q: '통화와 카톡 중 더 선호하는 것은?', options: [{ text: '목소리로 감정을 느끼는 실시간 통화', type: 'A' }, { text: '생각을 정리해서 보낼 수 있는 메시지', type: 'B' }] }
         ],
         results: {
-            A: { title: '명쾌한 소통의 마스터', desc: '당신은 주관이 뚜렷하고 의사전달 능력이 뛰어납니다. 사람들에게 신뢰감을 주는 명확한 화법이 강점입니다.', img: unsplash('1552664730-d307ca884978') },
-            B: { title: '따뜻한 공감의 리스너', desc: '당신은 상대방의 마음을 어루만질 줄 아는 소통가입니다. 당신과 대화한 사람들은 모두 위로와 평온함을 얻습니다.', img: unsplash('1522202176988-66273c2fd55f') }
+            A: { title: '명쾌한 소통의 마스터', desc: '당신은 주관이 뚜렷하고 의사전달 능력이 뛰어납니다. 사람들에게 신뢰감을 주는 명확한 화법이 강점입니다.', img: 'https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '따뜻한 공감의 리스너', desc: '당신은 상대방의 마음을 어루만질 줄 아는 소통가입니다. 당신과 대화한 사람들은 모두 위로와 평온함을 얻습니다.', img: 'https://images.pexels.com/photos/3184391/pexels-photo-3184391.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
-        id: 'p7', category: '성격', title: '우정 스타일 리포트', desc: '당신이 친구들 사이에서 어떤 존재인지, 어떤 우정을 지향하는지 분석합니다.', thumb: unsplash('1511632765486-a01980e01a18'),
+        id: 'p7', category: '성격', title: '우정 스타일 리포트', desc: '당신이 친구들 사이에서 어떤 존재인지, 어떤 우정을 지향하는지 분석합니다.', thumb: 'https://images.pexels.com/photos/461049/pexels-photo-461049.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '친구의 생일이 다가오면 당신은?', options: [{ text: '미리 선물을 준비하고 깜짝 파티를 계획한다', type: 'A' }, { text: '축하 메시지와 함께 친구가 원하는 선물을 묻는다', type: 'B' }] },
             { q: '오랜만에 연락한 친구가 만나자고 하면?', options: [{ text: '무조건 시간을 비워 반갑게 만난다', type: 'A' }, { text: '나의 스케줄을 확인한 뒤 신중히 약속을 잡는다', type: 'B' }] },
@@ -136,12 +136,12 @@ const TESTS = [
             { q: '친구가 슬픈 일을 당했을 때 당신은?', options: [{ text: '함께 화내주고 울어주며 감정을 공유한다', type: 'A' }, { text: '든든하게 곁을 지키며 필요한 도움을 준다', type: 'B' }] }
         ],
         results: {
-            A: { title: '의리 넘치는 분위기 메이커', desc: '당신은 우정을 매우 소중히 여기며 친구들에게 즐거움을 주는 존재입니다. 당신 주변엔 항상 활기가 넘칩니다.', img: unsplash('1511632765486-a01980e01a18') },
-            B: { title: '한결같은 마음의 안식처', desc: '당신은 깊고 단단한 인간관계를 선호하는 사람입니다. 친구들은 당신의 조언과 침착함에서 큰 위안을 얻습니다.', img: unsplash('1543807535-eceef0bc6599') }
+            A: { title: '의리 넘치는 분위기 메이커', desc: '당신은 우정을 매우 소중히 여기며 친구들에게 즐거움을 주는 존재입니다. 당신 주변엔 항상 활기가 넘칩니다.', img: 'https://images.pexels.com/photos/1587014/pexels-photo-1587014.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '한결같은 마음의 안식처', desc: '당신은 깊고 단단한 인간관계를 선호하는 사람입니다. 친구들은 당신의 조언과 침착함에서 큰 위안을 얻습니다.', img: 'https://images.pexels.com/photos/3184433/pexels-photo-3184433.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
-        id: 'p8', category: '성격', title: '결단력 MBTI 테스트', desc: '당신이 선택의 기로에서 보여주는 결단력과 사고의 흐름을 분석합니다.', thumb: unsplash('1508345228704-935cc84bf5e2'),
+        id: 'p8', category: '성격', title: '결단력 MBTI 테스트', desc: '당신이 선택의 기로에서 보여주는 결단력과 사고의 흐름을 분석합니다.', thumb: 'https://images.pexels.com/photos/5849552/pexels-photo-5849552.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '점심 메뉴를 정할 때 당신은?', options: [{ text: '먹고 싶은 메뉴를 3초 안에 결정한다', type: 'A' }, { text: '리뷰와 메뉴판을 한참 동안 살펴본다', type: 'B' }] },
             { q: '물건을 살 때 더 중요한 기준은?', options: [{ text: '디자인과 첫인상', type: 'A' }, { text: '성능과 가성비 비교', type: 'B' }] },
@@ -152,8 +152,8 @@ const TESTS = [
             { q: '인생의 중대한 결정을 앞두고 있다면?', options: [{ text: '나의 가슴이 시키는 대로 선택한다', type: 'A' }, { text: '장단점 리스트를 적어보고 머리로 판단한다', type: 'B' }] }
         ],
         results: {
-            A: { title: '단호한 직관주의자', desc: '당신은 빠른 판단력과 실행력을 겸비한 리더 타입입니다. 불필요한 고민보다는 행동으로 결과를 만드는 사람입니다.', img: unsplash('1507679799987-c7377ec486e8') },
-            B: { title: '신중한 전략 분석가', desc: '당신은 돌다리도 두드려보고 건너는 완벽주의 성향을 가졌습니다. 당신의 결정은 언제나 오류가 적고 탄탄합니다.', img: unsplash('1454165833762-621f2f57b2d1') }
+            A: { title: '단호한 직관주의자', desc: '당신은 빠른 판단력과 실행력을 겸비한 리더 타입입니다. 불필요한 고민보다는 행동으로 결과를 만드는 사람입니다.', img: 'https://images.pexels.com/photos/590022/pexels-photo-590022.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '신중한 전략 분석가', desc: '당신은 돌다리도 두드려보고 건너는 완벽주의 성향을 가졌습니다. 당신의 결정은 언제나 오류가 적고 탄탄합니다.', img: 'https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
@@ -637,7 +637,7 @@ const TESTS = [
         }
     },
     {
-        id: 'z4', category: '재미', title: '탕수육 소스 취향 분석', desc: '부먹 vs 찍먹? 사소한 취향 속에 숨겨진 당신의 성격과 대인관계 스타일을 알아봅니다.', thumb: 'https://images.pexels.com/photos/16041521/pexels-photo-16041521.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'z4', category: '재미', title: '탕수육 소스 취향 분석', desc: '부먹 vs 찍먹? 사소한 취향 속에 숨겨진 당신의 성격과 대인관계 스타일을 알아봅니다.', thumb: 'https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '탕수육이 나왔다! 소스는 어떻게?', options: [{ text: '바삭함을 위해 소스를 찍어 먹는다 (찍먹)', type: 'A' }, { text: '촉촉함을 위해 소스를 부어 먹는다 (부먹)', type: 'B' }] },
             { q: '친구가 말도 없이 소스를 부어버렸다면?', options: [{ text: '이미 부은 거 어쩔 수 없지, 그냥 먹는다', type: 'A' }, { text: '"아 왜 부어!" 하며 진심으로 화를 낸다', type: 'B' }] },
@@ -648,7 +648,7 @@ const TESTS = [
             { q: '음식 먹을 때 가장 참을 수 없는 것은?', options: [{ text: '식감이 눅눅해지거나 맛이 섞이는 것', type: 'A' }, { text: '음식이 너무 뜨겁거나 식어서 맛없는 것', type: 'B' }] }
         ],
         results: {
-            A: { title: '확고한 취향의 원칙주의자', desc: '당신은 (찍먹파에 가깝군요!) 호불호가 분명하고 자신의 영역을 중요하게 생각합니다. 깔끔하고 효율적인 것을 선호하며, 남에게 피해를 주지도 받지도 않으려는 합리적인 성격입니다.', img: 'https://images.pexels.com/photos/1146760/pexels-photo-1146760.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            A: { title: '확고한 취향의 원칙주의자', desc: '당신은 (찍먹파에 가깝군요!) 호불호가 분명하고 자신의 영역을 중요하게 생각합니다. 깔끔하고 효율적인 것을 선호하며, 남에게 피해를 주지도 받지도 않으려는 합리적인 성격입니다.', img: 'https://images.pexels.com/photos/2673353/pexels-photo-2673353.jpeg?auto=compress&cs=tinysrgb&w=800' },
             B: { title: '둥글둥글한 융통성 대마왕', desc: '당신은 (부먹파에 가깝군요!) 상황에 따라 유연하게 대처하는 평화주의자입니다. 사람들과 어울리는 것을 좋아하고, 웬만하면 상대방에게 맞춰주는 배려심 깊은 성격입니다.', img: 'https://images.pexels.com/photos/1234535/pexels-photo-1234535.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
