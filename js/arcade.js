@@ -175,7 +175,7 @@ async function cutWire(index) {
         if(claimBtn) claimBtn.disabled = true;
         document.querySelectorAll('.wire-btn').forEach(btn => btn.disabled = true);
     } else {
-        const reward = [300, 500, 800, 1500][bombGameState.cutWires.length - 1];
+        const reward = [100, 300, 600, 1200][bombGameState.cutWires.length - 1];
         bombGameState.currentPool = reward;
         if(msgEl) msgEl.textContent = `성공! 현재 보상: ${reward}P (다음은 더 큽니다!)`;
         if(claimBtn) claimBtn.disabled = false;
