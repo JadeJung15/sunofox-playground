@@ -1869,8 +1869,7 @@ router();
 async function trackVisit() {
     try {
         if (sessionStorage.getItem('sc_visit')) return;
-        const now = new Date();
-        const kstDate = new Date(now.getTime() + 32400000).toISOString().split('T')[0];
+        const kstDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
         await setDoc(doc(db, 'siteStats', 'global'), { total: increment(1) }, { merge: true });
         await setDoc(doc(db, 'siteStats', kstDate), { count: increment(1) }, { merge: true });
         sessionStorage.setItem('sc_visit', '1');
@@ -1881,14 +1880,23 @@ async function renderAdminStats() {
     try {
         const el = document.getElementById('admin-visitor-stats');
         if (!el || !UserState.isMaster) return;
+        
         el.classList.remove('hidden');
-        const now = new Date();
-        const kstDate = new Date(now.getTime() + 32400000).toISOString().split('T')[0];
+        el.style.display = 'inline-flex'; // CSS flex display for better alignment
+        
+        const kstDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
         const [gSnap, dSnap] = await Promise.all([
             getDoc(doc(db, 'siteStats', 'global')),
             getDoc(doc(db, 'siteStats', kstDate))
         ]);
-        if (gSnap.exists()) document.getElementById('total-visitors').textContent = gSnap.data().total.toLocaleString();
-        if (dSnap.exists()) document.getElementById('today-visitors').textContent = dSnap.data().count.toLocaleString();
+        
+        if (gSnap.exists()) {
+            const totalEl = document.getElementById('total-visitors');
+            if (totalEl) totalEl.textContent = gSnap.data().total.toLocaleString();
+        }
+        if (dSnap.exists()) {
+            const todayEl = document.getElementById('today-visitors');
+            if (todayEl) todayEl.textContent = dSnap.data().count.toLocaleString();
+        }
     } catch (e) { console.error('Stats loading failed', e); }
 }
