@@ -1854,99 +1854,15 @@ const headerShareBtn = document.getElementById('share-site-btn');
     headerShareBtn.onclick = window.globalShareSite;
 }
 
-// --- Utility Functions for Grand Update ---
-
-async function checkDailyQuests(type) {
-    if (!UserState.user || !UserState.data) return;
-    
-    // 한국 시간(KST) 기준 날짜 문자열 생성 (보다 견고한 방식)
-    const now = new Date();
-    const kstOffset = 9 * 60 * 60 * 1000;
-    const kstTime = new Date(now.getTime() + kstOffset);
-    const today = kstTime.toISOString().split('T')[0];
-    
-    const userRef = doc(db, "users", UserState.user.uid);
-    let qData = UserState.data.quests || { date: null, list: {} };
-    
-    // 날짜가 바뀌었거나 데이터가 없으면 초기화
-    if (qData.date !== today) {
-        qData = { 
-            date: today, 
-            list: { login: false, test: 0, board: false } 
-        };
-        await updateDoc(userRef, { quests: qData });
-        UserState.data.quests = qData;
-    }
-
-    let updated = false;
-    const list = qData.list || { login: false, test: 0, board: false };
-
-    if (type === 'login' && !list.login) {
-        list.login = true;
-        await addPoints(50, "일일 퀘스트: 출석");
-        updated = true;
-    } else if (type === 'test' && (list.test || 0) < 3) {
-        list.test = (list.test || 0) + 1;
-        if (list.test === 3) await addPoints(100, "일일 퀘스트: 테스트 3회");
-        updated = true;
-    } else if (type === 'board' && !list.board) {
-        list.board = true;
-        await addPoints(50, "일일 퀘스트: 게시글 작성");
-        updated = true;
-    }
-    
-    if (updated) {
-        qData.list = list;
-        await updateDoc(userRef, { quests: qData });
-        UserState.data.quests = qData; // 로컬 메모리 최신화
-        if (document.getElementById('daily-quest-list')) loadDailyQuests();
-    }
-}
-
-function loadDailyQuests() {
-    const container = document.getElementById('daily-quest-list');
-    const summary = document.getElementById('quest-summary');
-    if (!container || !UserState.data?.quests) return;
-    
-    const q = UserState.data.quests.list || {};
-    const quests = [
-        { title: "매일매일 출석체크", desc: "오락실 방문하기", done: !!q.login, reward: 50 },
-        { title: "자아 탐구 생활", desc: "테스트 3회 완료", current: q.test || 0, max: 3, done: (q.test || 0) >= 3, reward: 100 },
-        { title: "나의 목소리", desc: "게시판에 글 한 개 쓰기", done: !!q.board, reward: 50 }
-    ];
-
-    const completedCount = quests.filter(qt => qt.done).length;
-    if (summary) {
-        summary.innerHTML = `📜 일일 퀘스트 <span style="margin-left:10px; color:var(--accent-color); font-size:0.9rem;">${completedCount} / ${quests.length} 완료</span>`;
-        if (completedCount === quests.length) {
-            summary.style.color = 'var(--accent-secondary)';
-            summary.innerHTML += ' ✅';
-        } else {
-            summary.style.color = 'inherit';
-        }
-    }
-
-    container.innerHTML = quests.map(quest => `
-        <div class="quest-item">
-            <div class="quest-info">
-                <h4 style="color: ${quest.done ? 'var(--text-sub)' : 'var(--text-main)'}">${quest.done ? '✅' : '⭐'} ${quest.title}</h4>
-                <p>${quest.desc} ${quest.max ? `(${quest.current}/${quest.max})` : ''}</p>
-            </div>
-            <div class="quest-status ${quest.done ? 'done' : ''}">
-                ${quest.done ? '완료' : `+${quest.reward}P`}
-            </div>
-        </div>
-    `).join('');
-}
-
-themeToggle.onclick = () => {    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+themeToggle.onclick = () => {
+    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     themeToggle.textContent = next === 'dark' ? '☀️' : '✨';
 };
+
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
 initAuth();
-
 router();
 
 // --- Visitor Stats Functions ---
