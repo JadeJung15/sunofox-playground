@@ -429,7 +429,7 @@ const TESTS = [
         }
     },
     {
-        id: 'v6', category: '얼굴', title: '얼굴형 맞춤 헤어 추천', desc: '당신의 두상과 비율을 분석하여 인생 헤어스타일을 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1560869713-7d0a294308ed?auto=format&fit=crop&w=800&q=80',
+        id: 'v6', category: '얼굴', title: '얼굴형 맞춤 헤어 추천', desc: '당신의 두상과 비율을 분석하여 인생 헤어스타일을 찾아드립니다.', thumb: 'https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '전체적인 얼굴의 길이는 어떤 편인가요?', options: [{ text: '가로보다 세로가 긴 편이다', type: 'A' }, { text: '가로와 세로 비율이 비슷한 편이다', type: 'B' }] },
             { q: '이마의 넓이는 어느 정도인가요?', options: [{ text: '이마가 시원하게 트인 편이다', type: 'A' }, { text: '이마가 좁고 아담한 편이다', type: 'B' }] },
@@ -440,12 +440,12 @@ const TESTS = [
             { q: '아침에 헤어 관리에 들이는 시간은?', options: [{ text: '드라이와 왁스로 꼼꼼하게 관리한다', type: 'A' }, { text: '툭툭 털고 나가도 되는 편한 게 좋다', type: 'B' }] }
         ],
         results: {
-            A: { title: '세련된 포마드 & 스트레이트', desc: '당신은 얼굴형을 과감히 드러내는 깔끔한 스타일이 최고입니다. 뚜렷한 이목구비를 강조하여 전문성을 돋보이게 하세요.', img: unsplash('1519345182560-3f2917c472ef') },
-            B: { title: '내추럴 리프컷 & 웨이브', desc: '당신은 부드러운 곡선이 들어간 헤어스타일이 얼굴형을 완벽하게 보완해줍니다. 자연스러운 볼륨감이 당신의 매력을 배가시킵니다.', img: unsplash('1522336572018-f2a9d597df31') }
+            A: { title: '세련된 포마드 & 스트레이트', desc: '당신은 얼굴형을 과감히 드러내는 깔끔한 스타일이 최고입니다. 뚜렷한 이목구비를 강조하여 전문성을 돋보이게 하세요.', img: 'https://images.pexels.com/photos/1805461/pexels-photo-1805461.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '내추럴 리프컷 & 웨이브', desc: '당신은 부드러운 곡선이 들어간 헤어스타일이 얼굴형을 완벽하게 보완해줍니다. 자연스러운 볼륨감이 당신의 매력을 배가시킵니다.', img: 'https://images.pexels.com/photos/3356170/pexels-photo-3356170.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
-        id: 'v7', category: '얼굴', title: '베스트 메이크업 톤', desc: '당신의 피부 온도와 이목구비 채도를 분석하여 가장 빛나는 컬러를 찾습니다.', thumb: 'https://images.unsplash.com/photo-1522335089204-7b4482fe3345?auto=format&fit=crop&w=800&q=80',
+        id: 'v7', category: '얼굴', title: '베스트 메이크업 톤', desc: '당신의 피부 온도와 이목구비 채도를 분석하여 가장 빛나는 컬러를 찾습니다.', thumb: 'https://images.pexels.com/photos/3373739/pexels-photo-3373739.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '평소 햇볕에 탔을 때 당신의 피부는?', options: [{ text: '붉게 달아오르다가 금방 원래대로 돌아온다', type: 'A' }, { text: '검게 그을리고 오랫동안 유지된다', type: 'B' }] },
             { q: '손목 안쪽의 혈관 색깔은 어떤가요?', options: [{ text: '푸른색이나 보라색에 가깝다', type: 'A' }, { text: '초록색이나 올리브색에 가깝다', type: 'B' }] },
@@ -456,12 +456,12 @@ const TESTS = [
             { q: '주변에서 당신의 피부 톤에 대해 뭐라고 하나요?', options: [{ text: '투명하고 창백해 보이는 편이다', type: 'A' }, { text: '건강하고 따뜻해 보이는 편이다', type: 'B' }] }
         ],
         results: {
-            A: { title: '청량한 쿨톤의 정석', desc: '당신은 맑고 깨끗한 쿨 계열의 컬러가 가장 잘 어울립니다. 실버 액세서리와 쿨한 립 컬러로 본연의 미모를 밝혀보세요.', img: unsplash('1596704017254-9b121068fb31') },
-            B: { title: '따스한 웜톤의 정석', desc: '당신은 포근하고 생기 넘치는 웜 계열의 컬러가 베스트입니다. 골드 주얼리와 따뜻한 베이지 톤이 당신을 더욱 돋보이게 합니다.', img: unsplash('1512496015851-a90fb38ba796') }
+            A: { title: '청량한 쿨톤의 정석', desc: '당신은 맑고 깨끗한 쿨 계열의 컬러가 가장 잘 어울립니다. 실버 액세서리와 쿨한 립 컬러로 본연의 미모를 밝혀보세요.', img: 'https://images.pexels.com/photos/247322/pexels-photo-247322.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '따스한 웜톤의 정석', desc: '당신은 포근하고 생기 넘치는 웜 계열의 컬러가 베스트입니다. 골드 주얼리와 따뜻한 베이지 톤이 당신을 더욱 돋보이게 합니다.', img: 'https://images.pexels.com/photos/2113855/pexels-photo-2113855.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
-        id: 'v8', category: '얼굴', title: '분위기 있는 패션 매칭', desc: '당신의 마스크와 체형 비율이 선호하는 최고의 패션 무드를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1490481651871-ab68ff25d43d?auto=format&fit=crop&w=800&q=80',
+        id: 'v8', category: '얼굴', title: '분위기 있는 패션 매칭', desc: '당신의 마스크와 체형 비율이 선호하는 최고의 패션 무드를 분석합니다.', thumb: 'https://images.pexels.com/photos/1884581/pexels-photo-1884581.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '당신의 어깨 라인은 어떤 편인가요?', options: [{ text: '직각에 가깝고 뚜렷한 편이다', type: 'A' }, { text: '곡선이 있고 부드러운 편이다', type: 'B' }] },
             { q: '얼굴에서 풍기는 전체적인 온도는?', options: [{ text: '이성적이고 차가운 느낌', type: 'A' }, { text: '감성적이고 따뜻한 느낌', type: 'B' }] },
@@ -472,8 +472,8 @@ const TESTS = [
             { q: '당신이 가장 좋아하는 계절의 옷은?', options: [{ text: '코트와 수트의 계절, 겨울', type: 'A' }, { text: '가볍고 화사한 린넨의 계절, 여름', type: 'B' }] }
         ],
         results: {
-            A: { title: '어반 아방가르드', desc: '당신은 독창적이고 세련된 스타일을 소화할 수 있는 강력한 마스크를 가졌습니다. 과감한 핏으로 독보적인 분위기를 연출하세요.', img: unsplash('1483985988355-763728e1935b') },
-            B: { title: '소프트 모더니즘', desc: '당신은 절제된 아름다움이 가장 잘 어울리는 비주얼입니다. 기본에 충실한 고급스러운 소재감이 당신의 품격을 높여줍니다.', img: unsplash('1434389677669-e08b427495f4') }
+            A: { title: '어반 아방가르드', desc: '당신은 독창적이고 세련된 스타일을 소화할 수 있는 강력한 마스크를 가졌습니다. 과감한 핏으로 독보적인 분위기를 연출하세요.', img: 'https://images.pexels.com/photos/1126993/pexels-photo-1126993.jpeg?auto=compress&cs=tinysrgb&w=800' },
+            B: { title: '소프트 모더니즘', desc: '당신은 절제된 아름다움이 가장 잘 어울리는 비주얼입니다. 기본에 충실한 고급스러운 소재감이 당신의 품격을 높여줍니다.', img: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     },
     {
