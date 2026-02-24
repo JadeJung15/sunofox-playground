@@ -55,7 +55,7 @@ const TESTS = [
         }
     },
     {
-        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: 'https://images.pexels.com/photos/16206417/pexels-photo-16206417.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: 'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '연인과 가고 싶은 첫 데이트 장소는?', options: [{ text: '북적이는 핫플레이스와 축제', scores: {e:2, c:1} }, { text: '조용하고 분위기 있는 골목 카페', scores: {p:2, l:1} }] },
             { q: '연락 빈도에 대한 당신의 생각은?', options: [{ text: '일상의 모든 것을 공유하고 싶다', scores: {e:1, p:2} }, { text: '각자의 시간을 존중하는 연락이 좋다', scores: {l:2, p:1} }] },
@@ -66,7 +66,7 @@ const TESTS = [
             { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하며 자극을 주는 관계', scores: {e:1, l:2} }, { text: '있는 그대로를 수용해주는 관계', scores: {p:2, c:1} }] }
         ],
         results: {
-            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.pexels.com/photos/15232938/pexels-photo-15232938.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
+            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
             logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: 'https://images.pexels.com/photos/15526647/pexels-photo-15526647.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
             empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: 'https://images.pexels.com/photos/14947741/pexels-photo-14947741.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
             creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: 'https://images.pexels.com/photos/15343619/pexels-photo-15343619.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
@@ -91,7 +91,7 @@ const TESTS = [
         }
     },
     {
-        id: 'p5', category: '성격', title: '나만의 여행 DNA', desc: '여행지에서 보여주는 행동으로 당신의 핵심 성격을 진단합니다.', thumb: unsplash('1469854523086-cc02fe5d8800'),
+        id: 'p5', category: '성격', title: '나만의 여행 DNA', desc: '여행지에서 보여주는 행동으로 당신의 핵심 성격을 진단합니다.', thumb: 'https://images.pexels.com/photos/1051073/pexels-photo-1051073.jpeg?auto=compress&cs=tinysrgb&w=800',
         questions: [
             { q: '여행 계획을 세울 때 당신의 스타일은?', options: [{ text: '시간 단위로 꼼꼼하게 동선을 짠다', scores: {l:2, e:1} }, { text: '목적지만 정하고 나머지는 가서 정한다', scores: {c:2, p:1} }] },
             { q: '공항에 도착했을 때 가장 먼저 드는 기분은?', options: [{ text: '늦지 않을지 걱정되고 분주하다', scores: {l:2, p:1} }, { text: '이미 떠난다는 사실로 즐겁다', scores: {e:2, c:1} }] },
@@ -102,10 +102,10 @@ const TESTS = [
             { q: '여행이 끝나고 돌아오는 길에 드는 생각?', options: [{ text: '집에 가서 쉬고 싶다는 생각', scores: {l:2, p:1} }, { text: '다음엔 어디로 갈까 하는 생각', scores: {e:1, c:2} }] }
         ],
         results: {
-            energy: { title: '열정적인 어드벤처러', desc: '새로운 세상을 직접 부딪히며 탐험하는 에너지가 넘치는 여행자입니다.', img: unsplash('1488646953014-85cb44e25828'), color: '#f97316', tags: ['#모험', '#열정', '#탐험가'] },
-            logic: { title: '철저한 전략 기획가', desc: '모든 상황을 예측하고 최적의 경로를 찾는 완벽주의 여행자입니다.', img: unsplash('1486312338219-ce68d2c6f44d'), color: '#334155', tags: ['#계획형', '#분석', '#안정성'] },
-            empathy: { title: '감성적인 낭만 방랑자', desc: '현지의 분위기와 사람들의 마음에 공감하며 여유를 즐기는 여행자입니다.', img: unsplash('1503220317375-aaad61436b1b'), color: '#10b981', tags: ['#감성', '#여유', '#낭만'] },
-            creativity: { title: '독창적인 무드 탐색가', desc: '남들은 가지 않는 숨은 명소를 찾고 자신만의 시각으로 기록하는 여행자입니다.', img: unsplash('1534361960057-19889db9621e'), color: '#8b5cf6', tags: ['#유니크', '#아티스트', '#기록'] }
+            energy: { title: '열정적인 어드벤처러', desc: '새로운 세상을 직접 부딪히며 탐험하는 에너지가 넘치는 여행자입니다.', img: 'https://images.pexels.com/photos/2108845/pexels-photo-2108845.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#f97316', tags: ['#모험', '#열정', '#탐험가'] },
+            logic: { title: '철저한 전략 기획가', desc: '모든 상황을 예측하고 최적의 경로를 찾는 완벽주의 여행자입니다.', img: 'https://images.pexels.com/photos/1008155/pexels-photo-1008155.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#334155', tags: ['#계획형', '#분석', '#안정성'] },
+            empathy: { title: '감성적인 낭만 방랑자', desc: '현지의 분위기와 사람들의 마음에 공감하며 여유를 즐기는 여행자입니다.', img: 'https://images.pexels.com/photos/238622/pexels-photo-238622.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#10b981', tags: ['#감성', '#여유', '#낭만'] },
+            creativity: { title: '독창적인 무드 탐색가', desc: '남들은 가지 않는 숨은 명소를 찾고 자신만의 시각으로 기록하는 여행자입니다.', img: 'https://images.pexels.com/photos/16148505/pexels-photo-16148505.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#유니크', '#아티스트', '#기록'] }
         }
     },
     {
@@ -665,7 +665,7 @@ const TESTS = [
         ],
         results: {
             A: { title: '상큼한 피치 크러쉬 (Peach Crush)', desc: '당신은 톡톡 튀는 매력과 사랑스러움을 지닌 사람입니다. 달콤하고 상큼한 피치 크러쉬처럼 주변 사람들에게 기분 좋은 에너지를 전파합니다. 오늘은 핑크빛 칵테일로 기분을 업 시켜보세요!', img: 'https://images.pexels.com/photos/2480828/pexels-photo-2480828.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '고독한 마티니 (Martini)', desc: '당신은 깊이 있고 지적인 분위기를 풍기는 사람입니다. 칵테일의 왕이라 불리는 마티니처럼, 겉은 차가워 보이지만 속은 뜨거운 열정을 품고 있습니다. 깔끔하고 드라이한 한 잔이 당신과 잘 어울립니다.', img: 'https://images.pexels.com/photos/1283272/pexels-photo-1283272.jpeg?auto=compress&cs=tinysrgb&w=800' }
+                        B: { title: '고독한 마티니 (Martini)', desc: '당신은 깊이 있고 지적인 분위기를 풍기는 사람입니다. 칵테일의 왕이라 불리는 마티니처럼, 겉은 차가워 보이지만 속은 뜨거운 열정을 품고 있습니다.  깔끔하고 드라이한 한 잔이 당신과 잘 어울립니다.', img: 'https://images.pexels.com/photos/613037/pexels-photo-613037.jpeg?auto=compress&cs=tinysrgb&w=800' }
         }
     }
 ];
