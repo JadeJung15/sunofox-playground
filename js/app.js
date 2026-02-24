@@ -709,6 +709,8 @@ async function router() {
         app.innerHTML = '<div style="text-align:center; padding:5rem;"><div class="loading-spinner">보안 연결 확인 중...</div></div>';
     }
     await authReady;
+    trackVisit();
+    renderAdminStats();
 
     // 일일 퀘스트: 로그인 체크 (인증 완료 후 즉시)
     if (UserState.user && typeof checkDailyQuests === 'function') {
@@ -1904,4 +1906,40 @@ themeToggle.onclick = () => {    const next = document.documentElement.getAttrib
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
 initAuth();
+
+// --- Visitor Stats Functions ---
+async function trackVisit() {
+    try {
+        if (sessionStorage.getItem('sc_visit')) return;
+        const now = new Date();
+        const kstDate = new Date(now.getTime() + 32400000).toISOString().split('T')[0];
+        
+        // Total count
+        await setDoc(doc(db, 'siteStats', 'global'), { total: increment(1) }, { merge: true });
+        // Today count
+        await setDoc(doc(db, 'siteStats', kstDate), { count: increment(1) }, { merge: true });
+        
+        sessionStorage.setItem('sc_visit', '1');
+    } catch (e) { console.error('Visit tracking failed', e); }
+}
+
+async function renderAdminStats() {
+    const el = document.getElementById('admin-visitor-stats');
+    if (!el || !UserState.isMaster) return;
+    
+    el.classList.remove('hidden');
+    try {
+        const now = new Date();
+        const kstDate = new Date(now.getTime() + 32400000).toISOString().split('T')[0];
+        
+        const [gSnap, dSnap] = await Promise.all([
+            getDoc(doc(db, 'siteStats', 'global')),
+            getDoc(doc(db, 'siteStats', kstDate))
+        ]);
+        
+        if (gSnap.exists()) document.getElementById('total-visitors').textContent = gSnap.data().total.toLocaleString();
+        if (dSnap.exists()) document.getElementById('today-visitors').textContent = dSnap.data().count.toLocaleString();
+    } catch (e) { console.error('Stats loading failed', e); }
+}
+
 router();
