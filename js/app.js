@@ -333,7 +333,7 @@ const TESTS = [
         }
     },
     {
-        id: 'p20', category: '성격', title: '나의 자아 성찰 리포트', desc: '당신이 스스로를 얼마나 잘 알고 있는지, 내면의 성숙도를 7단계로 분석합니다.', thumb: unsplash('1499209974431-9dac3e5d9774'),
+        id: 'p20', category: '성격', title: '나의 자아 성찰 리포트', desc: '당신이 스스로를 얼마나 잘 알고 있는지, 내면의 성숙도를 7단계로 분석합니다.', thumb: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=800&q=80',
         questions: [
             { q: '혼자 있는 시간을 어떻게 느끼나요?', options: [{ text: '에너지를 충전하는 소중하고 편안한 시간', type: 'A' }, { text: '외롭고 생각이 많아져서 조금 힘든 시간', type: 'B' }] },
             { q: '자신의 단점을 솔직하게 인정하나요?', options: [{ text: '인정하고 개선하려고 노력하는 편이다', type: 'A' }, { text: '단점을 마주하기 무서워 외면할 때가 많다', type: 'B' }] },
