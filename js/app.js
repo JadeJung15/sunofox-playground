@@ -1682,4 +1682,37 @@ async function renderVisitorStats() {
         if (todayEl) todayEl.textContent = today.toLocaleString();
     } catch (e) { console.error('Stats loading failed', e); }
 }
+
+// 모바일 드롭다운 메뉴 자동 닫기 및 토글 로직
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdown = document.querySelector('.nav-dropdown');
+    const dropbtn = document.querySelector('.nav-dropbtn');
+    const dropdownContent = document.querySelector('.dropdown-content');
+    
+    if (dropbtn && dropdownContent) {
+        // 드롭다운 버튼 클릭 시 토글 (모바일 대응)
+        dropbtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownContent.classList.toggle('force-hidden');
+        });
+
+        // 드롭다운 내부 링크 클릭 시 닫기
+        dropdownContent.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                dropdownContent.classList.add('force-hidden');
+                // 약간의 지연 후 클래스 제거하여 다음 hover/click 시 정상 작동하게 함
+                setTimeout(() => dropdownContent.classList.remove('force-hidden'), 500);
+            });
+        });
+
+        // 외부 클릭 시 닫기
+        document.addEventListener('click', (e) => {
+            if (!dropdown.contains(e.target)) {
+                dropdownContent.classList.add('force-hidden');
+                setTimeout(() => dropdownContent.classList.remove('force-hidden'), 100);
+            }
+        });
+    }
+});
+
 authReady.then(() => { router(); });
