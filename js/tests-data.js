@@ -186,7 +186,7 @@ export const TESTS = [
         }
     },
     {
-        id: 'p12', category: '성격', title: '돈 관리 성향 테스트', desc: '당신의 소비 습관과 부를 대하는 태도를 통해 성격의 이면을 분석합니다.', thumb: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=500&q=60',
+        id: 'p12', category: '성격', title: '돈 관리 성향 테스트', desc: '당신의 소비 습관과 부를 대하는 태도를 통해 성격의 이면을 분석합니다.', thumb: 'https://images.unsplash.com/photo-1554224155-1696413575b9?auto=format&fit=crop&w=500&q=60',
         questions: [
             { q: '갑자기 보너스 100만원이 생겼다면?', options: [{ text: '미래를 위해 저축하거나 투자한다', type: 'A' }, { text: '평소 사고 싶었던 물건을 지른다', type: 'B' }] },
             { q: '친구들과의 모임에서 계산할 때?', options: [{ text: '1원 단위까지 깔끔하게 N분 일 한다', type: 'A' }, { text: '이번엔 내가 내고 다음에 얻어먹는다', type: 'B' }] },
@@ -362,7 +362,7 @@ export const TESTS = [
         }
     },
     {
-        id: 'v3', category: '얼굴', title: '첫인상 매력 포인트', desc: '처음 만난 사람이 당신에게서 느끼는 가장 독보적인 매력을 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=500&q=60',
+        id: 'v3', category: '얼굴', title: '첫인상 매력 포인트', desc: '처음 만난 사람이 당신에게서 느끼는 가장 독보적인 매력을 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-15222075469751-3a6694fb2f61?auto=format&fit=crop&w=500&q=60',
         questions: [
             { q: '대화할 때 당신의 주된 표정은?', options: [{ text: '진지하게 경청하는 표정', type: 'A' }, { text: '밝게 미소 짓는 표정', type: 'B' }] },
             { q: '자신의 얼굴에서 가장 자신 있는 부분은?', options: [{ text: '깊이 있는 눈빛', type: 'A' }, { text: '매력적인 입술 또는 보조개', type: 'B' }] },
@@ -396,7 +396,7 @@ export const TESTS = [
     {
         id: 'v5', category: '얼굴', title: '어울리는 안경 스타일', desc: '당신의 얼굴형과 이목구비를 분석하여 최고의 인상을 만들어줄 안경을 추천합니다.', thumb: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80',
         questions: [
-            { q: '당신의 얼굴에서 가장 넓은 부분은?', options: [{ text: '이마 부분이 넓은 편이다', type: 'A' }, { text: '광대나 하관 부분이 넓은 편이다', type: 'B' }] },
+            { q: '당신의 얼굴형 중 어디가 가장 넓은 부분인가요?', options: [{ text: '이마 부분이 넓은 편이다', type: 'A' }, { text: '광대나 하관 부분이 넓은 편이다', type: 'B' }] },
             { q: '턱선이 각진 편인가요, 둥근 편인가요?', options: [{ text: '브이라인 또는 각진 날렵한 턱선', type: 'A' }, { text: '부드러운 곡선의 둥근 턱선', type: 'B' }] },
             { q: '눈썹과 눈 사이의 거리는?', options: [{ text: '거리가 조금 있는 여유로운 느낌', type: 'A' }, { text: '거리가 가깝고 또렷한 느낌', type: 'B' }] },
             { q: '평소 입는 스타일은 어느 쪽에 가깝나요?', options: [{ text: '포멀하고 댄디한 스타일', type: 'A' }, { text: '캐주얼하고 힙한 스타일', type: 'B' }] },
@@ -410,243 +410,663 @@ export const TESTS = [
         }
     },
     {
-        id: 'v6', category: '얼굴', title: '얼굴형 맞춤 헤어 추천', desc: '당신의 두상과 비율을 분석하여 인생 헤어스타일을 찾아드립니다.', thumb: 'https://images.pexels.com/photos/3065209/pexels-photo-3065209.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'v11', category: '얼굴', title: '나의 아우라 컬러 진단', desc: '외모에서 풍기는 당신만의 고유한 색과 아우라를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1557683311-eac922347aa1?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '전체적인 얼굴의 길이는 어떤 편인가요?', options: [{ text: '가로보다 세로가 긴 편이다', type: 'A' }, { text: '가로와 세로 비율이 비슷한 편이다', type: 'B' }] },
-            { q: '이마의 넓이는 어느 정도인가요?', options: [{ text: '이마가 시원하게 트인 편이다', type: 'A' }, { text: '이마가 좁고 아담한 편이다', type: 'B' }] },
-            { q: '머리카락의 굵기와 힘은 어떤가요?', options: [{ text: '굵고 빳빳한 힘이 있는 모발', type: 'A' }, { text: '가늘고 부드러운 힘이 없는 모발', type: 'B' }] },
-            { q: '옆머리의 볼륨감이 필요한 편인가요?', options: [{ text: '옆머리가 붙어야 얼굴이 작아 보인다', type: 'A' }, { text: '옆머리에 볼륨이 있어야 얼굴형이 보완된다', type: 'B' }] },
-            { q: '본인이 선호하는 이미지는?', options: [{ text: '깔끔하고 정돈된 정석 미인/미남', type: 'A' }, { text: '자연스럽고 부드러운 분위기 미인/미남', type: 'B' }] },
-            { q: '구관의 돌출 정도는 어떤가요?', options: [{ text: '입체감이 뚜렷한 편이다', type: 'A' }, { text: '평면적이고 차분한 편이다', type: 'B' }] },
-            { q: '아침에 헤어 관리에 들이는 시간은?', options: [{ text: '드라이와 왁스로 꼼꼼하게 관리한다', type: 'A' }, { text: '툭툭 털고 나가도 되는 편한 게 좋다', type: 'B' }] }
+            { q: '햇빛 아래 당신의 눈동자 색은?', options: [{ text: '진하고 깊은 블랙/초코', type: 'A' }, { text: '맑고 투명한 브라운/호박', type: 'B' }] },
+            { q: '자주 입는 옷의 명도는?', options: [{ text: '차분하고 어두운 톤', type: 'A' }, { text: '화사하고 밝은 톤', type: 'B' }] },
+            { q: '당신의 이목구비 중 가장 화려한 곳은?', options: [{ text: '강렬한 눈빛', type: 'A' }, { text: '부드러운 입매', type: 'B' }] },
+            { q: '주변에서 느끼는 당신의 온도차는?', options: [{ text: '첫인상은 차갑지만 알수록 따뜻하다', type: 'A' }, { text: '첫인상부터 편안하고 다정하다', type: 'B' }] },
+            { q: '사진 찍을 때 선호하는 필터는?', options: [{ text: '대비가 강한 흑백이나 선명한 톤', type: 'A' }, { text: '몽환적이고 부드러운 파스텔 톤', type: 'B' }] },
+            { q: '당신의 코 선은 어떤가요?', options: [{ text: '직선으로 곧게 뻗은 느낌', type: 'A' }, { text: '곡선이 가미된 부드러운 느낌', type: 'B' }] },
+            { q: '당신의 아우라를 한마디로 표현한다면?', options: [{ text: '카리스마와 무게감', type: 'A' }, { text: '생동감과 친근함', type: 'B' }] }
         ],
         results: {
-            A: { title: '세련된 포마드 & 스트레이트', desc: '당신은 얼굴형을 과감히 드러내는 깔끔한 스타일이 최고입니다. 뚜렷한 이목구비를 강조하여 전문성을 돋보이게 하세요.', img: 'https://images.pexels.com/photos/1805461/pexels-photo-1805461.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '내추럴 리프컷 & 웨이브', desc: '당신은 부드러운 곡선이 들어간 헤어스타일이 얼굴형을 완벽하게 보완해줍니다. 자연스러운 볼륨감이 당신의 매력을 배가시킵니다.', img: 'https://images.pexels.com/photos/3356170/pexels-photo-3356170.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '미드나잇 로얄 블루', desc: '당신은 깊고 지적인 아우라를 풍깁니다. 말하지 않아도 느껴지는 존재감이 주변을 압도하는 매력이 있습니다.', img: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '선셋 골든 오렌지', desc: '당신은 주변을 밝게 만드는 따뜻한 아우라의 소유자입니다. 생기 넘치는 에너지와 호감을 주는 이미지가 최고의 강점입니다.', img: 'https://images.unsplash.com/photo-1547891269-045ad33ed99a?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'v7', category: '얼굴', title: '베스트 메이크업 톤', desc: '당신의 피부 온도와 이목구비 채도를 분석하여 가장 빛나는 컬러를 찾습니다.', thumb: 'https://images.pexels.com/photos/3373739/pexels-photo-3373739.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'v12', category: '얼굴', title: '눈빛 분위기 테스트', desc: '당신의 눈 모양과 눈빛이 주는 특별한 메시지를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '평소 햇볕에 탔을 때 당신의 피부는?', options: [{ text: '붉게 달아오르다가 금방 원래대로 돌아온다', type: 'A' }, { text: '검게 그을리고 오랫동안 유지된다', type: 'B' }] },
-            { q: '손목 안쪽의 혈관 색깔은 어떤가요?', options: [{ text: '푸른색이나 보라색에 가깝다', type: 'A' }, { text: '초록색이나 올리브색에 가깝다', type: 'B' }] },
-            { q: '어떤 색상의 옷을 입었을 때 얼굴이 환해 보이나요?', options: [{ text: '화이트, 네이비, 핑크 계열', type: 'A' }, { text: '아이보리, 베이지, 오렌지 계열', type: 'B' }] },
-            { q: '당신의 눈동자 색깔은 어떤 톤인가요?', options: [{ text: '검은색이나 붉은 기 도는 갈색', type: 'A' }, { text: '노란 기 도는 밝은 갈색', type: 'B' }] },
-            { q: '립 제품을 선택할 때 선호하는 색상은?', options: [{ text: '푸른 기 도는 레드나 로즈 핑크', type: 'A' }, { text: '따뜻한 느낌의 코랄이나 오렌지 레드', type: 'B' }] },
-            { q: '골드 주얼리와 실버 주얼리 중 당신의 선택은?', options: [{ text: '깨끗해 보이는 실버', type: 'A' }, { text: '고급스러워 보이는 골드', type: 'B' }] },
-            { q: '주변에서 당신의 피부 톤에 대해 뭐라고 하나요?', options: [{ text: '투명하고 창백해 보이는 편이다', type: 'A' }, { text: '건강하고 따뜻해 보이는 편이다', type: 'B' }] }
+            { q: '당신의 눈꼬리는 어느 쪽인가요?', options: [{ text: '살짝 올라간 날렵한 눈꼬리', type: 'A' }, { text: '살짝 내려간 순한 눈꼬리', type: 'B' }] },
+            { q: '쌍꺼풀의 유무와 형태는?', options: [{ text: '무쌍 또는 얇은 속쌍꺼풀', type: 'A' }, { text: '짙고 선명한 아웃라인 쌍꺼풀', type: 'B' }] },
+            { q: '대화할 때 상대방의 눈을 어떻게 보나요?', options: [{ text: '정면으로 뚫어지게 응시한다', type: 'A' }, { text: '부드럽게 맞추며 자주 웃는다', type: 'B' }] },
+            { q: '당신의 눈동자 크기는 어떤가요?', options: [{ text: '눈동자가 크고 선명하다', type: 'A' }, { text: '흰자가 많이 보여 예리한 느낌이다', type: 'B' }] },
+            { q: '당신이 선호하는 아이 메이크업은?', options: [{ text: '아이라인을 길게 뺀 시크한 스타일', type: 'A' }, { text: '글리터와 음영을 강조한 화려한 스타일', type: 'B' }] },
+            { q: '눈 아래 애교살이 있나요?', options: [{ text: '없거나 아주 연한 편이다', type: 'A' }, { text: '도톰하게 있어 눈매가 강조된다', type: 'B' }] },
+            { q: '눈빛이 매력적이라는 말을 들어봤나요?', options: [{ text: '섹시하고 카리스마 있다는 말', type: 'A' }, { text: '맑고 초롱초롱하다는 말', type: 'B' }] }
         ],
         results: {
-            A: { title: '청량한 쿨톤의 정석', desc: '당신은 맑고 깨끗한 쿨 계열의 컬러가 가장 잘 어울립니다. 실버 액세서리와 쿨한 립 컬러로 본연의 미모를 밝혀보세요.', img: 'https://images.pexels.com/photos/247322/pexels-photo-247322.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '따스한 웜톤의 정석', desc: '당신은 포근하고 생기 넘치는 웜 계열의 컬러가 베스트입니다. 골드 주얼리와 따뜻한 베이지 톤이 당신을 더욱 돋보이게 합니다.', img: 'https://images.pexels.com/photos/2113855/pexels-photo-2113855.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '치명적인 블랙홀 눈빛', desc: '당신은 한 번 보면 빠져나올 수 없는 깊고 강렬한 눈빛을 가졌습니다. 신비로운 매력이 사람들을 끌어당깁니다.', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '포근한 아침 햇살 눈빛', desc: '당신은 보는 사람의 마음을 편안하게 만드는 선하고 맑은 눈빛을 가졌습니다. 신뢰감을 주는 이미지가 당신의 비주얼 포인트입니다.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'v8', category: '얼굴', title: '분위기 있는 패션 매칭', desc: '당신의 마스크와 체형 비율이 선호하는 최고의 패션 무드를 분석합니다.', thumb: 'https://images.pexels.com/photos/1884581/pexels-photo-1884581.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'v13', category: '얼굴', title: '나의 비주얼 DNA', desc: '유전적으로 타고난 당신의 이미지 핵심 요소를 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '당신의 어깨 라인은 어떤 편인가요?', options: [{ text: '직각에 가깝고 뚜렷한 편이다', type: 'A' }, { text: '곡선이 있고 부드러운 편이다', type: 'B' }] },
-            { q: '얼굴에서 풍기는 전체적인 온도는?', options: [{ text: '이성적이고 차가운 느낌', type: 'A' }, { text: '감성적이고 따뜻한 느낌', type: 'B' }] },
-            { q: '선호하는 옷의 소재는?', options: [{ text: '탄탄하고 힘 있는 가죽이나 데님', type: 'A' }, { text: '부드럽고 하늘거리는 실크나 니트', type: 'B' }] },
-            { q: '신발을 선택할 때 더 중요한 가치는?', options: [{ text: '디자인과 날렵한 쉐입', type: 'A' }, { text: '착용감과 안정적인 쉐입', type: 'B' }] },
-            { q: '당신의 체형에서 가장 큰 특징은?', options: [{ text: '팔다리가 길고 선이 굵다', type: 'A' }, { text: '전체적인 밸런스가 조화롭고 부드럽다', type: 'B' }] },
-            { q: '주변에서 추천하는 당신의 스타일은?', options: [{ text: '화려한 명품이나 화려한 패턴', type: 'A' }, { text: '깔끔한 미니멀리즘 스타일', type: 'B' }] },
-            { q: '당신이 가장 좋아하는 계절의 옷은?', options: [{ text: '코트와 수트의 계절, 겨울', type: 'A' }, { text: '가볍고 화사한 린넨의 계절, 여름', type: 'B' }] }
+            { q: '당신의 얼굴형은 어느 쪽인가요?', options: [{ text: '골격이 잡힌 세련된 직선형', type: 'A' }, { text: '볼륨감이 있는 부드러운 곡선형', type: 'B' }] },
+            { q: '당신의 코 모양은 어떤 특징이 있나요?', options: [{ text: '콧날이 좁고 오똑한 스타일', type: 'A' }, { text: '콧방울이 둥글고 안정감 있는 스타일', type: 'B' }] },
+            { q: '당신의 입술 두께는 어떤가요?', options: [{ text: '얇고 정돈된 느낌', type: 'A' }, { text: '도톰하고 입체적인 느낌', type: 'B' }] },
+            { q: '당신의 피부 톤은 어떤 느낌인가요?', options: [{ text: '투명하고 밝은 톤', type: 'A' }, { text: '건강하고 윤기 있는 톤', type: 'B' }] },
+            { q: '당신의 이미지는 "전통적" vs "현대적"?', options: [{ text: '세련된 도시의 현대적 미', type: 'A' }, { text: '단아하고 우아한 전통적 미', type: 'B' }] },
+            { q: '당신의 눈썹은 어떤 모양인가요?', options: [{ text: '각이 살아있는 진한 눈썹', type: 'A' }, { text: '결이 부드러운 연한 눈썹', type: 'B' }] },
+            { q: '가장 많이 닮았다는 소리를 듣는 쪽은?', options: [{ text: '어머니 쪽 라인', type: 'A' }, { text: '아버지 쪽 라인', type: 'B' }] }
         ],
         results: {
-            A: { title: '어반 아방가르드', desc: '당신은 독창적이고 세련된 스타일을 소화할 수 있는 강력한 마스크를 가졌습니다. 과감한 핏으로 독보적인 분위기를 연출하세요.', img: 'https://images.pexels.com/photos/1126993/pexels-photo-1126993.jpeg?auto=crop&w=500&q=60' },
-            B: { title: '소프트 모더니즘', desc: '당신은 절제된 아름다움이 가장 잘 어울리는 비주얼입니다. 기본에 충실한 고급스러운 소재감이 당신의 품격을 높여줍니다.', img: 'https://images.pexels.com/photos/1926769/pexels-photo-1926769.jpeg?auto=crop&w=500&q=60' }
+            A: { title: '프리미엄 어반 DNA', desc: '당신은 세련된 도시미를 타고난 비주얼입니다. 어떤 스타일도 하이엔드하게 소화하는 감각을 가졌습니다.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '클래식 로맨틱 DNA', desc: '당신은 따뜻하고 우아한 고전미를 타고난 비주얼입니다. 시간이 흘러도 변치 않는 고급스러움이 당신의 자산입니다.', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'v9', category: '얼굴', title: '피부 생기 온도 체크', desc: '당신의 피부 톤과 결을 통해 현재의 컨디션과 어울리는 관리법을 제안합니다.', thumb: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=500&q=60',
+        id: 'v14', category: '얼굴', title: '옆선 매력 지수 분석', desc: '옆모습에서 드러나는 당신의 숨겨진 분위기를 측정합니다.', thumb: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '세안 직후 당신의 피부 상태는?', options: [{ text: '당김이 심하고 푸석한 느낌', type: 'A' }, { text: '금방 유분기가 올라오는 느낌', type: 'B' }] },
-            { q: '피부 결에서 가장 고민되는 부분은?', options: [{ text: '각질과 거친 피부 결', type: 'A' }, { text: '넓은 모공과 블랙헤드', type: 'B' }] },
-            { q: '스트레스를 받으면 피부에 어떤 변화가 생기나요?', options: [{ text: '안색이 어두워지고 칙칙해진다', type: 'A' }, { text: '트러블이 생기거나 붉어진다', type: 'B' }] },
-            { q: '평소 물 섭취량은 어느 정도인가요?', options: [{ text: '하루 1리터 미만으로 적게 마신다', type: 'A' }, { text: '수시로 충분히 마시는 편이다', type: 'B' }] },
-            { q: '잠을 못 잤을 때 가장 먼저 나타나는 현상은?', options: [{ text: '눈가가 휑하고 다크서클이 심해진다', type: 'A' }, { text: '피부가 푸석푸석하고 화장이 잘 안 받는다', type: 'B' }] },
-            { q: '선호하는 스킨케어 제형은?', options: [{ text: '영양감이 풍부한 크림 타입', type: 'A' }, { text: '산뜻하고 가벼운 젤 타입', type: 'B' }] },
-            { q: '당신의 피부는 예민한 편인가요?', options: [{ text: '외부 자극에 쉽게 붉어지는 예민한 피부', type: 'A' }, { text: '웬만해서는 크게 반응하지 않는 튼튼한 피부', type: 'B' }] }
+            { q: '당신의 턱선은 어떤 스타일인가요?', options: [{ text: 'L자 형태의 각이 살아있는 턱선', type: 'A' }, { text: '매끄럽게 이어지는 둥근 턱선', type: 'B' }] },
+            { q: '코와 이마 사이의 각도는?', options: [{ text: '각도가 깊어 이목구비가 뚜렷해 보인다', type: 'A' }, { text: '각도가 완만하여 선이 고와 보인다', type: 'B' }] },
+            { q: '귀의 위치는 어떤가요?', options: [{ text: '눈보다 위쪽에 위치한다', type: 'A' }, { text: '눈과 비슷하거나 아래쪽에 위치한다', type: 'B' }] },
+            { q: '웃을 때 옆모습의 변화는?', options: [{ text: '입체감이 살아나며 화려해진다', type: 'A' }, { text: '라인이 정리되며 부드러워진다', type: 'B' }] },
+            { q: '본인의 옆모습 중 마음에 드는 곳은?', options: [{ text: '오똑한 콧대', type: 'A' }, { text: '길게 뻗은 목선', type: 'B' }] },
+            { q: '안경을 썼을 때 옆모습은 어떤가요?', options: [{ text: '지적인 느낌이 배가된다', type: 'A' }, { text: '얼굴의 여백이 채워져 안정감이 생긴다', type: 'B' }] },
+            { q: '머리를 묶었을 때와 풀었을 때 중 옆모습은?', options: [{ text: '깔끔하게 묶었을 때 라인이 돋보인다', type: 'A' }, { text: '자연스럽게 풀었을 때 분위기가 산다', type: 'B' }] }
         ],
         results: {
-            A: { title: '고보습 물광 스킨', desc: '당신의 피부는 수분과 영양을 갈구하고 있습니다. 충분한 보습 관리만으로도 당신의 비주얼은 2배 이상 빛날 수 있습니다.', img: 'https://images.unsplash.com/photo-1570172619394-2125115decd4?auto=format&fit=crop&w=500&q=60' },
-            B: { title: '깨끗한 도자기 스킨', desc: '당신은 기초가 탄탄하고 건강한 피부 결을 가졌습니다. 유수분 밸런스만 잘 유지한다면 투명한 비주얼을 계속 유지할 수 있습니다.', img: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=500&q=60' }
+            A: { title: '조각 같은 입체 옆선', desc: '당신은 옆모습이 마치 조각처럼 선명하고 입체적입니다. 측면에서 느껴지는 카리스마가 매우 인상적입니다.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '수채화 같은 곡선 옆선', desc: '당신은 부드러운 곡선들이 조화를 이루는 예술적인 옆선을 가졌습니다. 은은하고 서정적인 분위기가 당신의 매력입니다.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'v10', category: '얼굴', title: '토탈 비주얼 밸런스', desc: '얼굴의 조화로움과 대칭성을 통해 당신만의 황금 비율 포인트를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=60',
+        id: 'v15', category: '얼굴', title: '퍼스널 칼라 자가진단', desc: '당신의 이목구비를 가장 밝게 비춰줄 베스트 컬러 톤을 찾습니다.', thumb: 'https://images.unsplash.com/photo-1523260572679-8e2fe2762bf1?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '눈, 코, 입 중 가장 강조하고 싶은 부위는?', options: [{ text: '시선을 끄는 또렷한 눈', type: 'A' }, { text: '균형 잡힌 코와 입매', type: 'B' }] },
-            { q: '얼굴의 상, 중, 하 비율 중 어디가 가장 긴가요?', options: [{ text: '이마에서 눈썹까지(상안부)', type: 'A' }, { text: '눈썹에서 코끝까지(중안부)', type: 'B' }] },
-            { q: '본인의 인상에서 가장 마음에 드는 키워드는?', options: [{ text: '카리스마 있고 확실한 개성', type: 'A' }, { text: '부드럽고 조화로운 안정감', type: 'B' }] },
-            { q: '어떤 조명 아래에서 본인이 더 예뻐/멋져 보이나요?', options: [{ text: '그림자가 지는 강렬한 포인트 조명', type: 'A' }, { text: '전체적으로 화사한 자연광', type: 'B' }] },
-            { q: '사진 보정을 할 때 주로 손대는 곳은?', options: [{ text: '눈 크기나 선명도', type: 'A' }, { text: '얼굴 라인과 비율', type: 'B' }] },
-            { q: '당신의 귀 모양은 어떤가요?', options: [{ text: '귀가 크고 위로 솟은 스타일', type: 'A' }, { text: '귀가 작고 옆으로 붙은 스타일', type: 'B' }] },
-            { q: '비주얼적으로 가장 닮고 싶은 롤모델은?', options: [{ text: '이목구비가 뚜렷한 서구적 미인/미남', type: 'A' }, { text: '선이 고운 동양적 미인/미남', type: 'B' }] }
+            { q: '흰색 티셔츠를 입었을 때 당신은?', options: [{ text: '얼굴이 깨끗하고 환해 보인다', type: 'A' }, { text: '얼굴이 창백하거나 노랗게 뜬다', type: 'B' }] },
+            { q: '검정색 머리색이 잘 어울리나요?', options: [{ text: '피부 톤이 대비되어 선명해 보인다', type: 'A' }, { text: '인상이 너무 세 보이거나 칙칙해 보인다', type: 'B' }] },
+            { q: '어떤 메이크업 제품을 썼을 때 뜨나요?', options: [{ text: '오렌지나 베이지 계열', type: 'A' }, { text: '핑크나 퍼플 계열', type: 'B' }] },
+            { q: '당신의 눈 주위 피부 색은?', options: [{ text: '푸른 기나 회색 기가 도는 편', type: 'A' }, { text: '노란 기나 갈색 기가 도는 편', type: 'B' }] },
+            { q: '잘 어울리는 립 컬러는?', options: [{ text: '강렬한 레드나 푸른 핑크', type: 'A' }, { text: '따뜻한 코랄이나 브릭 레드', type: 'B' }] },
+            { q: '골드 주얼리 vs 실버 주얼리?', options: [{ text: '깔끔한 실버', type: 'A' }, { text: '고급스러운 골드', type: 'B' }] },
+            { q: '당신의 이미지는 "시원함" vs "따스함"?', options: [{ text: '시원하고 도회적인 느낌', type: 'A' }, { text: '포근하고 자연스러운 느낌', type: 'B' }] }
         ],
         results: {
-            A: { title: '강렬한 아방가르드 밸런스', desc: '당신은 개성 있는 부위들이 조화를 이루어 독보적인 인상을 형성합니다. 전형적인 틀을 벗어난 당신만의 매력을 믿으세요.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
-            B: { title: '완벽한 클래식 하모니', desc: '당신은 어느 한 곳 튀지 않으면서도 전체적인 비율이 매우 안정적인 황금 비율의 소유자입니다. 조화로움이 당신의 가장 큰 힘입니다.', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60' }
+            A: { title: '차가운 도시의 쿨톤', desc: '당신은 블루 베이스의 시원한 컬러들이 베스트입니다. 실버 액세서리와 선명한 컬러로 당신의 이미지를 완성해 보세요.', img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '따스한 햇살의 웜톤', desc: '당신은 옐로우 베이스의 따뜻한 컬러들이 찰떡입니다. 골드 액세서리와 부드러운 뉴트럴 톤으로 당신의 매력을 극대화하세요.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'f1', category: '사주', title: '오늘의 영적 타로 운세', desc: '당신의 무의식이 이끄는 카드를 통해 오늘 하루의 흐름과 필요한 조언을 드립니다.', thumb: 'https://images.pexels.com/photos/7534232/pexels-photo-7534232.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'v16', category: '얼굴', title: '나의 비주얼 온도계', desc: '당신의 외모가 풍기는 분위기가 차가운지 따뜻한지 측정해 드립니다.', thumb: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '지금 눈앞에 네 장의 카드가 있습니다. 가장 끌리는 것은?', options: [{ text: '화려한 태양이 그려진 카드', type: 'A' }, { text: '신비로운 달이 그려진 카드', type: 'B' }] },
-            { q: '오늘 아침 눈을 떴을 때 가장 먼저 드는 생각은?', options: [{ text: '오늘은 뭔가 좋은 일이 생길 것 같아', type: 'A' }, { text: '조금 피곤하지만 차분하게 시작해보자', type: 'B' }] },
-            { q: '길을 걷다 우연히 마주친 숫자가 있다면?', options: [{ text: '행운의 상징 7', type: 'A' }, { text: '완전함의 상징 10', type: 'B' }] },
-            { q: '갑작스러운 비가 쏟아진다면?', options: [{ text: '시원하게 내리는 빗줄기를 즐긴다', type: 'A' }, { text: '젖지 않게 처마 밑에서 잠시 기다린다', type: 'B' }] },
-            { q: '오늘 점심으로 더 끌리는 메뉴는?', options: [{ text: '활력을 주는 매콤하거나 든든한 음식', type: 'A' }, { text: '속을 편안하게 해주는 부드러운 음식', type: 'B' }] },
-            { q: '친구가 갑자기 만나자고 연락이 온다면?', options: [{ text: '당연히 OK! 바로 나간다', type: 'A' }, { text: '오늘은 나만의 시간을 갖고 싶어 거절한다', type: 'B' }] },
-            { q: '오늘 하루를 마무리하며 듣고 싶은 음악은?', options: [{ text: '심장이 뛰는 신나는 비트의 음악', type: 'A' }, { text: '마음을 울리는 잔잔한 피아노 선율', type: 'B' }] }
+            { q: '무표정일 때 화났냐는 소리를 듣나요?', options: [{ text: '자주 듣거나 인상이 차갑다는 소리를 듣는다', type: 'A' }, { text: '거의 안 듣고 인상이 선하다는 소리를 듣는다', type: 'B' }] },
+            { q: '당신의 입술 산은 어떤가요?', options: [{ text: '입술 산이 뾰족하고 뚜렷하다', type: 'A' }, { text: '입술 산이 둥글고 완만하다', type: 'B' }] },
+            { q: '당신의 눈썹 산은 어떤가요?', options: [{ text: '높게 솟은 아치형이나 각진 눈썹', type: 'A' }, { text: '낮고 일직선에 가까운 눈썹', type: 'B' }] },
+            { q: '어떤 재질의 옷을 입을 때 예뻐 보이나요?', options: [{ text: '실크나 가죽 같은 광택 있는 소재', type: 'A' }, { text: '니트나 코튼 같은 보송한 소재', type: 'B' }] },
+            { q: '당신의 코 모양은?', options: [{ text: '코끝이 뾰족하고 세련된 느낌', type: 'A' }, { text: '코끝이 둥글고 복스러운 느낌', type: 'B' }] },
+            { q: '주변 사람들이 당신을 부르는 수식어는?', options: [{ text: '멋지다, 섹시하다, 똑똑해 보인다', type: 'A' }, { text: '예쁘다, 귀엽다, 착해 보인다', type: 'B' }] },
+            { q: '선호하는 배경 음악은?', options: [{ text: '비트가 빠르고 세련된 일렉트로닉', type: 'A' }, { text: '서정적이고 따뜻한 어쿠스틱', type: 'B' }] }
         ],
         results: {
-            A: { title: '태양의 카드 (The Sun)', desc: '오늘은 당신에게 긍정적인 에너지가 가득한 날입니다. 망설였던 일이 있다면 과감하게 도전해보세요. 당신의 밝은 기운이 주변 사람들에게도 행운을 가져다줄 것입니다. 금전운과 대인관계운이 모두 최상입니다.', img: 'https://images.pexels.com/photos/2832432/pexels-photo-2832432.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '여사제 카드 (The High Priestess)', desc: '오늘은 직관력이 빛나는 날입니다. 활동적으로 움직이기보다는 내면의 소리에 귀를 기울여보세요. 복잡했던 고민들이 의외로 쉽게 풀릴 수 있습니다. 조용히 사색하거나 공부하기에 아주 좋은 하루입니다.', img: 'https://images.pexels.com/photos/311039/pexels-photo-311039.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '영하 10도, 얼음 공주/왕자', desc: '당신은 범접할 수 없는 차갑고 세련된 아우라를 가졌습니다. 도도한 매력이 당신의 비주얼 정체성입니다.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '영상 25도, 따뜻한 봄날', desc: '당신은 보는 사람의 마음을 녹이는 온화하고 다정한 분위기를 가졌습니다. 누구에게나 사랑받는 비주얼입니다.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'f2', category: '사주', title: '타고난 재물운 그릇', desc: '당신이 태어날 때부터 가지고 있는 재물의 크기와 돈을 모으는 방식을 분석합니다.', thumb: 'https://images.pexels.com/photos/4386442/pexels-photo-4386442.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'v17', category: '얼굴', title: '닮은꼴 영화 캐릭터 찾기', desc: '당신의 이목구비가 완성하는 영화 속 주인공 타입을 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '지갑 속에 현금이 얼마나 있어야 안심이 되나요?', options: [{ text: '비상금으로 5만원 이상은 있어야 한다', type: 'A' }, { text: '카드만 있으면 되니 현금은 없어도 된다', type: 'B' }] },
-            { q: '길에서 100원을 주웠다면?', options: [{ text: '소소한 행운이라 생각하며 저금통에 넣는다', type: 'A' }, { text: '100원으로 뭘 해, 그냥 주머니에 둔다', type: 'B' }] },
-            { q: '친구들과의 모임 회비가 남았다면?', options: [{ text: '다음 모임을 위해 이월해서 적립한다', type: 'A' }, { text: '깔끔하게 1/N로 나눠서 돌려받는다', type: 'B' }] },
-            { q: '은행 예금 금리가 0.1% 올랐다는 소식을 들으면?', options: [{ text: '당장 더 좋은 조건의 상품으로 갈아탄다', type: 'A' }, { text: '큰 차이 없으니 귀찮아서 그냥 둔다', type: 'B' }] },
-            { q: '쇼핑할 때 포인트를 적립하시나요?', options: [{ text: '앱까지 켜서 꼼꼼하게 다 챙긴다', type: 'A' }, { text: '계산 과정이 길어지는 게 싫어서 패스한다', type: 'B' }] },
-            { q: '큰돈을 벌고 싶은 가장 큰 이유는?', options: [{ text: '안정적인 미래와 노후를 대비하기 위해', type: 'A' }, { text: '사고 싶은 것을 마음껏 사고 즐기기 위해', type: 'B' }] },
-            { q: '투자(주식/코인)에 대한 당신의 생각은?', options: [{ text: '원금 손실은 절대 안 된다. 안전이 최고!', type: 'A' }, { text: '하이 리스크 하이 리턴! 과감하게 투자한다', type: 'B' }] }
+            { q: '당신이 주인공이라면 어떤 장르?', options: [{ text: '스펙터클한 액션이나 첩보물', type: 'A' }, { text: '가슴 설레는 로맨틱 코미디', type: 'B' }] },
+            { q: '당신의 눈빛에서 느껴지는 감정은?', options: [{ text: '강한 의지와 열정', type: 'A' }, { text: '풍부한 감성과 눈물', type: 'B' }] },
+            { q: '영화 속 당신의 의상은?', options: [{ text: '몸에 딱 붙는 제복이나 수트', type: 'A' }, { text: '편안하고 스타일리시한 데일리룩', type: 'B' }] },
+            { q: '당신의 얼굴에서 가장 드라마틱한 부분은?', options: [{ text: '날카로운 눈매와 콧날', type: 'A' }, { text: '웃을 때 매력적인 입매', type: 'B' }] },
+            { q: '주변에서 듣는 당신의 분위기는?', options: [{ text: '카리스마 있고 리더십 있어 보인다', type: 'A' }, { text: '주변을 밝히는 에너지가 있다', type: 'B' }] },
+            { q: '당신의 목소리 톤은 어떤가요?', options: [{ text: '낮고 신뢰감을 주는 중저음', type: 'A' }, { text: '밝고 경쾌한 하이톤', type: 'B' }] },
+            { q: '당신이 가장 좋아하는 영화 대사는?', options: [{ text: '"내가 승리할 것이다"', type: 'A' }, { text: '"사랑해"', type: 'B' }] }
         ],
         results: {
-            A: { title: '티끌 모아 태산형', desc: '당신은 성실함과 꼼꼼함으로 부를 축적하는 타입입니다. 낭비를 싫어하고 체계적으로 관리하기 때문에, 시간이 지날수록 재산이 눈덩이처럼 불어날 것입니다. 대기만성형 부자가 될 운명입니다.', img: 'https://images.pexels.com/photos/1447418/pexels-photo-1447418.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '일확천금 사업가형', desc: '당신은 돈의 흐름을 읽는 감각이 뛰어나고 배포가 큽니다. 작은 돈에 연연하기보다는 큰 그림을 그려 부를 창출합니다. 사업이나 투자를 통해 한 번에 큰 부를 얻을 수 있는 잠재력을 가졌습니다.', img: 'https://images.pexels.com/photos/6770610/pexels-photo-6770610.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '강인한 카리스마 전사 타입', desc: '당신은 뚜렷한 주관과 강렬한 눈빛을 지닌 주인공 비주얼입니다. 어떤 어려움도 헤쳐나갈 힘이 느껴집니다.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '사랑스러운 로맨스 주인공 타입', desc: '당신은 모두의 첫사랑 같은 맑고 환한 분위기를 가졌습니다. 웃는 모습 하나로 스토리를 완성하는 매력적인 비주얼입니다.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'f3', category: '사주', title: '나의 평생 인복 총량', desc: '살아가면서 당신을 도와줄 귀인이 얼마나 있는지, 사람 복을 타고났는지 알아봅니다.', thumb: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=500&q=60',
+        id: 'v18', category: '얼굴', title: '나의 비주얼 무게감 테스트', desc: '이목구비의 부피감과 무게감을 통해 가장 돋보이는 연출법을 찾습니다.', thumb: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '힘든 일이 생겼을 때 바로 떠오르는 친구 수는?', options: [{ text: '3명 이상, 언제든 달려와 줄 친구들이 있다', type: 'A' }, { text: '1~2명, 정말 깊게 신뢰하는 소수 정예다', type: 'B' }] },
-            { q: '새로운 모임에 나갔을 때 당신은?', options: [{ text: '사람들이 내 주위로 모여들어 금방 친해진다', type: 'A' }, { text: '구석에서 상황을 지켜보다 천천히 다가간다', type: 'B' }] },
-            { q: '타인에게 베푸는 것에 대해 어떻게 생각하나요?', options: [{ text: '베풀면 언젠가 다 돌아온다고 믿는다', type: 'A' }, { text: '기대하지 않고 내가 좋아서 베푸는 것이다', type: 'B' }] },
-            { q: '선배나 상사에게 예쁨을 받는 편인가요?', options: [{ text: '어딜 가나 윗사람들이 챙겨주는 편이다', type: 'A' }, { text: '묵묵히 할 일을 다해 인정을 받는 편이다', type: 'B' }] },
-            { q: '곤란한 상황에서 도움을 받은 경험은?', options: [{ text: '신기하게도 항상 누군가 나타나 도와줬다', type: 'A' }, { text: '대부분 내 힘으로 스스로 해결해왔다', type: 'B' }] },
-            { q: '사람을 볼 때 가장 중요하게 보는 것은?', options: [{ text: '나와 잘 통하는 코드와 유머 감각', type: 'A' }, { text: '예의 바르고 배려심 깊은 인성', type: 'B' }] },
-            { q: '내가 생각하는 나의 인복 점수는?', options: [{ text: '나는 정말 인복 하나는 타고난 것 같다', type: 'A' }, { text: '인복보다는 나의 노력이 더 컸던 것 같다', type: 'B' }] }
+            { q: '당신의 코는 얼굴에서 어느 정도 차지하나요?', options: [{ text: '크고 오똑하여 존재감이 확실하다', type: 'A' }, { text: '작고 아담하여 조화롭다', type: 'B' }] },
+            { q: '당신의 눈썹 두께는 어떤가요?', options: [{ text: '굵고 진해서 인상을 결정한다', type: 'A' }, { text: '얇고 연해서 부드러운 느낌을 준다', type: 'B' }] },
+            { q: '얼굴의 하관(턱)은 어떤 느낌인가요?', options: [{ text: '안정감 있고 골격이 느껴진다', type: 'A' }, { text: '갸름하고 가벼운 느낌이다', type: 'B' }] },
+            { q: '당신에게 더 잘 어울리는 모자는?', options: [{ text: '창이 넓고 화려한 모자', type: 'A' }, { text: '심플한 캡이나 비니', type: 'B' }] },
+            { q: '당신의 이미지는 "화려함" vs "수수함"?', options: [{ text: '화려하고 눈에 띄는 스타일', type: 'A' }, { text: '수수하고 깨끗한 스타일', type: 'B' }] },
+            { q: '사진을 찍을 때 그림자가 잘 지는 편인가요?', options: [{ text: '그늘이 잘 져서 입체적으로 나온다', type: 'A' }, { text: '그늘 없이 평면적으로 깨끗하게 나온다', type: 'B' }] },
+            { q: '주변에서 인상이 깊다는 말을 듣나요?', options: [{ text: '한 번 보면 잊혀지지 않는 강한 인상', type: 'A' }, { text: '볼수록 질리지 않는 편안한 인상', type: 'B' }] }
         ],
         results: {
-            A: { title: '사람이 따르는 인복 대마왕', desc: '당신은 주변에는 항상 좋은 사람들이 넘쳐납니다. 당신의 밝은 에너지와 베푸는 마음이 귀인을 끌어당깁니다. 힘들 때마다 손을 내밀어 줄 조력자들이 평생 함께할 운명입니다.', img: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=500&q=60' },
-            B: { title: '스스로 개척하는 자수성가형', desc: '당신은 많은 사람보다는 진실된 소수의 관계를 소중히 여깁니다. 남에게 의지하기보다 스스로의 능력으로 길을 여는 강인함이 있습니다. 당신의 곁에 남은 사람들은 평생 가는 진짜 내 편입니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=60' }
+            A: { title: '압도적인 중량감의 미학', desc: '당신은 이목구비가 뚜렷하고 화려하여 존재감이 확실합니다. 과감한 스타일링이 당신의 매력을 배가시킵니다.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '가볍고 맑은 여백의 미학', desc: '당신은 조화로운 비율과 맑은 선을 가진 비주얼입니다. 덜어낼수록 빛나는 당신만의 깨끗한 이미지를 믿으세요.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'f4', category: '사주', title: '행운을 부르는 컬러 & 아이템', desc: '당신의 부족한 기운을 채워주고 좋은 운을 불러오는 맞춤형 개운 아이템을 추천합니다.', thumb: 'https://images.pexels.com/photos/1457801/pexels-photo-1457801.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'v19', category: '얼굴', title: '눈매 맞춤형 아이라인 추천', desc: '당신의 눈 모양을 분석하여 가장 매력적인 눈매를 만드는 라인을 찾습니다.', thumb: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '평소 옷장에 가장 많은 옷 색깔은?', options: [{ text: '블랙, 그레이 등 무채색 계열', type: 'A' }, { text: '베이지, 파스텔 등 밝은 색 계열', type: 'B' }] },
-            { q: '마음이 가장 편안해지는 장소는?', options: [{ text: '탁 트인 바다나 강가', type: 'A' }, { text: '나무가 울창한 숲이나 산', type: 'B' }] },
-            { q: '최근 유난히 자주 잃어버리는 물건은?', options: [{ text: '우산이나 액세서리 같은 잡동사니', type: 'A' }, { text: '지갑이나 카드 같은 중요한 물건', type: 'B' }] },
-            { q: '나의 성격 중 고치고 싶은 점은?', options: [{ text: '너무 감정적이고 욱하는 성격', type: 'A' }, { text: '너무 우유부단하고 소심한 성격', type: 'B' }] },
-            { q: '좋아하는 계절은 언제인가요?', options: [{ text: '활동적인 여름이나 시원한 가을', type: 'A' }, { text: '따뜻한 봄이나 포근한 겨울', type: 'B' }] },
-            { q: '집 안에 화분이나 식물이 있나요?', options: [{ text: '관리가 귀찮아서 없거나 조화만 있다', type: 'A' }, { text: '직접 키우는 반려 식물이 있다', type: 'B' }] },
-            { q: '중요한 미팅이 있을 때 챙기는 것은?', options: [{ text: '자신감을 주는 향수나 립스틱', type: 'A' }, { text: '신뢰감을 주는 시계나 깔끔한 구두', type: 'B' }] }
+            { q: '눈을 떴을 때 쌍꺼풀이 어느 정도 보이나요?', options: [{ text: '거의 보이지 않거나 없다', type: 'A' }, { text: '뒷라인이 선명하게 보인다', type: 'B' }] },
+            { q: '눈동자와 눈꺼풀 사이의 공간은?', options: [{ text: '눈꺼풀이 눈동자를 살짝 덮고 있다', type: 'A' }, { text: '눈동자가 시원하게 다 보인다', type: 'B' }] },
+            { q: '당신의 눈 가로 길이는?', options: [{ text: '세로보다 가로가 훨씬 길다', type: 'A' }, { text: '가로와 세로 비율이 적당하다', type: 'B' }] },
+            { q: '눈꼬리의 주름 방향은?', options: [{ text: '위쪽으로 향하는 편이다', type: 'A' }, { text: '아래쪽으로 향하는 편이다', type: 'B' }] },
+            { q: '당신이 원하는 눈매의 이미지는?', options: [{ text: '날카롭고 섹시한 고양이 눈매', type: 'A' }, { text: '선하고 부드러운 강아지 눈매', type: 'B' }] },
+            { q: '평소 눈 화장 번짐이 심한가요?', options: [{ text: '눈꺼풀 구조상 잘 번지는 편이다', type: 'A' }, { text: '깔끔하게 잘 유지되는 편이다', type: 'B' }] },
+            { q: '속눈썹의 숱과 길이는 어떤가요?', options: [{ text: '숱이 많고 길어서 눈매가 강조된다', type: 'A' }, { text: '숱이 적고 짧아 아이라인이 필수다', type: 'B' }] }
         ],
         results: {
-            A: { title: '열정의 레드 & 골드', desc: '당신에게는 불의 기운이 행운을 가져다줍니다. 붉은 계열의 소품이나 골드 액세서리를 착용해보세요. 적극적인 에너지가 당신의 매력을 높여주고 재물운을 상승시켜 줄 것입니다.', img: 'https://images.pexels.com/photos/3419692/pexels-photo-3419692.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '치유의 그린 & 우드', desc: '당신에게는 나무의 기운이 필요합니다. 초록색 아이템이나 원목 소재의 물건을 가까이하세요. 마음의 안정을 찾고 대인관계가 더욱 부드러워지는 효과를 볼 수 있습니다.', img: 'https://images.pexels.com/photos/1072179/pexels-photo-1072179.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '세련된 캣츠아이 윙 라인', desc: '당신은 눈꼬리를 살짝 위로 뺀 라인이 가장 잘 어울립니다. 눈매의 시원함을 살려 자신감 있는 눈빛을 완성하세요.', img: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '부드러운 하프 문 라인', desc: '당신은 눈꼬리를 따라 자연스럽게 내린 라인이 최고의 미모를 완성해줍니다. 선하고 맑은 눈망울을 강조해 보세요.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'f5', category: '사주', title: '미래 배우자 미리보기', desc: '사주 관법으로 분석한 당신의 미래 배우자 특징과 결혼 생활을 미리 확인해보세요.', thumb: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?auto=format&fit=crop&w=500&q=60',
+        id: 'v20', category: '얼굴', title: '비주얼 밸런스 최종 진단', desc: '이목구비의 조화와 대칭, 분위기까지 총망라한 당신의 비주얼 리포트.', thumb: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '이상적인 배우자의 조건 1순위는?', options: [{ text: '나를 존중해주고 대화가 잘 통하는 사람', type: 'A' }, { text: '경제력이 있고 능력이 뛰어난 사람', type: 'B' }] },
-            { q: '결혼 후 꿈꾸는 주말의 모습은?', options: [{ text: '함께 취미 생활을 즐기며 데이트하기', type: 'A' }, { text: '각자 편안하게 쉬면서 재충전하기', type: 'B' }] },
-            { q: '배우자와 다퉜을 때 해결 방식은?', options: [{ text: '그 자리에서 대화로 풀고 화해한다', type: 'A' }, { text: '잠시 떨어져 감정을 식힌 뒤 대화한다', type: 'B' }] },
-            { q: '자녀 계획에 대한 당신의 생각은?', options: [{ text: '아이를 좋아해서 꼭 낳고 싶다', type: 'A' }, { text: '딩크족도 좋고 상황에 따라 결정한다', type: 'B' }] },
-            { q: '배우자가 회식으로 늦게 들어온다면?', options: [{ text: '걱정되니까 데리러 나가거나 기다린다', type: 'A' }, { text: '먼저 자고 내일 아침에 이야기한다', type: 'B' }] },
-            { q: '요리와 집안일 분담은 어떻게?', options: [{ text: '자신 있는 사람이 더 많이 하거나 함께 한다', type: 'A' }, { text: '철저하게 당번을 정해서 공평하게 한다', type: 'B' }] },
-            { q: '결혼 생활에서 가장 중요한 가치는?', options: [{ text: '변함없는 사랑과 정서적 유대감', type: 'A' }, { text: '서로의 성장을 돕는 파트너십', type: 'B' }] }
+            { q: '당신의 얼굴 좌우 대칭은 어떤가요?', options: [{ text: '어느 한쪽이 훨씬 마음에 드는 편이다', type: 'A' }, { text: '거의 비슷해서 구분하기 어렵다', type: 'B' }] },
+            { q: '어떤 표정을 지을 때 가장 자신 있나요?', options: [{ text: '시크하게 입술을 다문 표정', type: 'A' }, { text: '활짝 웃으며 치아를 보이는 표정', type: 'B' }] },
+            { q: '당신의 이미지는 "화려한 주연" vs "진중한 조연"?', options: [{ text: '어디서든 주인공이 되는 화려한 아우라', type: 'A' }, { text: '탄탄한 내실과 깊이가 느껴지는 분위기', type: 'B' }] },
+            { q: '본인의 이목구비 중 하나만 바꿀 수 있다면?', options: [{ text: '눈을 더 크게 하거나 코를 더 높인다', type: 'A' }, { text: '바꾸고 싶은 곳 없이 지금이 좋다', type: 'B' }] },
+            { q: '당신의 비주얼을 날씨에 비유한다면?', options: [{ text: '청량하고 맑은 여름 정오', type: 'A' }, { text: '은은하고 차분한 가을 노을', type: 'B' }] },
+            { q: '당신을 본 사람들의 첫마디는?', options: [{ text: '"와, 진짜 화려하다!"', type: 'A' }, { text: '"정말 분위기 있다!"', type: 'B' }] },
+            { q: '당신이 가장 소중히 여기는 비주얼 포인트는?', options: [{ text: '나만의 독특한 개성', type: 'A' }, { text: '전체적인 조화로움', type: 'B' }] }
         ],
         results: {
-            A: { title: '다정다감한 친구 같은 배우자', desc: '당신은 친구처럼 편안하고 대화가 잘 통하는 배우자를 만날 운명입니다. 소소한 일상을 공유하며 웃음이 끊이지 않는 행복한 결혼 생활을 하게 될 것입니다. 서로가 서로에게 가장 친한 베프가 되어줍니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=500&q=60' },
-            B: { title: '능력 있는 든든한 멘토 배우자', desc: '당신은 배울 점이 많고 사회적으로 성공한 배우자를 만날 가능성이 높습니다. 당신을 리드해주고 안정적인 울타리가 되어줄 사람입니다. 서로의 꿈을 응원하며 함께 성장하는 멋진 부부가 될 것입니다.', img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=500&q=60' }
+            A: { title: '독보적인 매력의 비주얼 퀸/킹', desc: '당신은 누구도 흉내 낼 수 없는 강렬한 개성과 비주얼을 가졌습니다. 당신의 당당함이 최고의 미학입니다.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '완벽한 조화의 비주얼 마스터', desc: '당신은 모든 부위가 황금 비율로 어우러진 최고의 밸런스를 가졌습니다. 볼수록 깊이가 느껴지는 진정한 미의 소유자입니다.', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    // --- Fortune Tests (15) ---
+    {
+        id: 'f6', category: '사주', title: '오늘의 비밀 메시지', desc: '우주가 당신에게 보내는 오늘의 단 한마디 조언을 확인하세요.', thumb: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 가장 먼저 떠오르는 색깔은?', options: [{ text: '정열적인 레드나 옐로우', type: 'A' }, { text: '차분한 블루나 그린', type: 'B' }] },
+            { q: '오늘 당신의 컨디션을 점수로 매긴다면?', options: [{ text: '70점 이상, 에너지가 넘친다', type: 'A' }, { text: '70점 미만, 휴식이 필요하다', type: 'B' }] },
+            { q: '길을 가다 우연히 동전을 발견했다면?', options: [{ text: '기분 좋게 줍는다', type: 'A' }, { text: '그냥 지나친다', type: 'B' }] },
+            { q: '지금 당신의 주변은 어떤가요?', options: [{ text: '사람 소리로 북적북적하다', type: 'A' }, { text: '고요하고 적막하다', type: 'B' }] },
+            { q: '어떤 날씨 아래에 있고 싶나요?', options: [{ text: '따사로운 햇살 아래', type: 'A' }, { text: '촉촉한 빗줄기 아래', type: 'B' }] },
+            { q: '지금 마시고 싶은 음료는?', options: [{ text: '정신이 번쩍 드는 아이스 커피', type: 'A' }, { text: '마음이 편해지는 따뜻한 차', type: 'B' }] },
+            { q: '오늘 하루, 당신의 마음가짐은?', options: [{ text: '열심히 달려보자!', type: 'A' }, { text: '물 흐르듯 흘러가자', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '과감하게 행동하라 (Action)', desc: '오늘은 망설임보다 실행이 필요한 날입니다. 당신의 직관을 믿고 첫발을 내디뎌 보세요. 행운은 움직이는 자의 편입니다.', img: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '잠시 멈추어 돌아보라 (Reflection)', desc: '서두르기보다 주변을 살피고 내면을 정돈하는 것이 좋습니다. 놓치고 있던 소중한 가치를 발견하게 될 것입니다.', img: 'https://images.unsplash.com/photo-1499209974431-9dac3e5d9774?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'z1', category: '재미', title: '전생 유형 테스트', desc: '당신은 전생에 어떤 삶을 살았을까요? 무의식에 남은 기억을 통해 전생의 직업을 유추합니다.', thumb: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=500&q=60',
+        id: 'f7', category: '사주', title: '나의 숨겨진 잠재력 운세', desc: '당신조차 몰랐던 당신 안의 특별한 재능과 운의 흐름을 분석합니다.', thumb: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '역사 드라마를 볼 때 가장 몰입되는 역할은?', options: [{ text: '화려한 의상을 입은 왕족이나 귀족', type: 'A' }, { text: '전장을 누비는 장군이나 무사', type: 'B' }] },
-            { q: '평소 좋아하는 장소의 분위기는?', options: [{ text: '사람들이 북적이고 활기찬 시장', type: 'A' }, { text: '조용하고 고즈넉한 서재나 숲', type: 'B' }] },
-            { q: '손재주가 좋은 편인가요?', options: [{ text: '무언가 만드는 것을 좋아하고 잘한다', type: 'A' }, { text: '손재주보다는 머리 쓰는 일이 편하다', type: 'B' }] },
-            { q: '억울한 일을 당했을 때 당신은?', options: [{ text: '즉시 항의하고 바로잡으려 한다', type: 'A' }, { text: '훗날을 도모하며 조용히 참는다', type: 'B' }] },
-            { q: '해외여행을 간다면 가고 싶은 곳은?', options: [{ text: '유럽의 고성이나 유적지', type: 'A' }, { text: '휴양지의 아름다운 자연', type: 'B' }] },
-            { q: '본능적으로 끌리는 무기는?', options: [{ text: '날카롭고 예리한 검', type: 'A' }, { text: '멀리서 적을 맞추는 활', type: 'B' }] },
-            { q: '꿈속에서 자주 보는 장면이 있나요?', options: [{ text: '하늘을 날거나 높은 곳에 있는 꿈', type: 'A' }, { text: '무언가에 쫓기거나 숨는 꿈', type: 'B' }] }
+            { q: '당신이 초능력을 하나 가질 수 있다면?', options: [{ text: '미래를 보는 예지력', type: 'A' }, { text: '타인의 마음을 읽는 독심술', type: 'B' }] },
+            { q: '어려운 문제에 부딪혔을 때 당신은?', options: [{ text: '끝까지 파고들어 정답을 찾는다', type: 'A' }, { text: '주변의 도움을 받아 함께 해결한다', type: 'B' }] },
+            { q: '꿈속에서 당신은 주로 어떤 모습인가요?', options: [{ text: '무언가를 성취하거나 이끄는 모습', type: 'A' }, { text: '자유롭게 여행하거나 관찰하는 모습', type: 'B' }] },
+            { q: '어린 시절 당신은 어떤 아이였나요?', options: [{ text: '궁금한 건 못 참는 호기심 대장', type: 'A' }, { text: '친구들의 이야기를 잘 듣는 꼬마 상담사', type: 'B' }] },
+            { q: '낯선 환경에 던져졌을 때 당신의 적응력은?', options: [{ text: '금방 파악하고 주도권을 잡는다', type: 'A' }, { text: '천천히 스며들며 사람들과 친해진다', type: 'B' }] },
+            { q: '당신이 가장 성취감을 느끼는 순간은?', options: [{ text: '어려운 목표를 달성했을 때', type: 'A' }, { text: '누군가에게 진심 어린 감사를 받았을 때', type: 'B' }] },
+            { q: '인생의 터닝포인트가 온다면?', options: [{ text: '과감하게 변화를 선택한다', type: 'A' }, { text: '신중하게 리스크를 분석한다', type: 'B' }] }
         ],
         results: {
-            A: { title: '화려한 삶을 즐긴 왕족/귀족', desc: '당신은 전생에 높은 신분으로 태어나 권력과 부를 누렸을 가능성이 큽니다. 현생에서도 고급스러운 취향과 리더십을 보여주며, 남들에게 주목받는 것을 즐기는 경향이 있습니다.', img: 'https://images.unsplash.com/photo-1590053305130-13a500c328bd?auto=format&fit=crop&w=500&q=60' },
-            B: { title: '세상을 유랑한 자유로운 예술가', desc: '당신은 전생에 얽매이지 않고 세상을 떠돌며 예술을 하거나 도를 닦던 영혼이었습니다. 현생에서도 자유를 갈망하며, 독창적인 사고방식으로 주변 사람들에게 영감을 줍니다.', img: 'https://images.unsplash.com/photo-1456735190827-d1262f71b8a3?auto=format&fit=crop&w=500&q=60' }
-        }
-    },
-        {
-            id: 'z2', category: '재미', title: '조선시대 나의 직업은?', desc: '타임머신을 타고 조선시대로 간다면 당신은 무엇을 하고 있을까요? 싱크로율 200% 직업 찾기!', thumb: 'https://images.pexels.com/photos/15288258/pexels-photo-15288258.jpeg?auto=compress&cs=tinysrgb&w=800',
-            questions: [
-                { q: '아침 기상 시간, 당신의 스타일은?', options: [{ text: '새벽같이 일어나 부지런히 움직인다', type: 'A' }, { text: '해 중천에 뜰 때까지 느긋하게 잔다', type: 'B' }] },
-                { q: '공부나 책 읽기를 좋아하나요?', options: [{ text: '새로운 지식을 쌓는 게 즐겁다', type: 'A' }, { text: '책만 보면 졸음이 쏟아진다', type: 'B' }] },
-                { q: '남의 말을 잘 들어주는 편인가요?', options: [{ text: '고민 상담을 자주 해주는 편이다', type: 'A' }, { text: '내 이야기하기 바빠서 잘 못 듣는다', type: 'B' }] },
-                { q: '손으로 하는 활동 중 자신 있는 것은?', options: [{ text: '요리, 바느질, 만들기 등 금손이다', type: 'A' }, { text: '글쓰기, 그림 그리기 등 예술 활동', type: 'B' }] },
-                { q: '사람 많은 장터에 갔을 때 당신은?', options: [{ text: '물건값을 흥정하며 싸게 산다', type: 'A' }, { text: '사람 구경하고 맛있는 거 사 먹는다', type: 'B' }] },
-                { q: '누군가와 시비가 붙었을 때?', options: [{ text: '논리정연하게 말로 제압한다', type: 'A' }, { text: '목소리 크기로 기선 제압한다', type: 'B' }] },
-                { q: '가장 중요하게 생각하는 것은?', options: [{ text: '명예와 체면', type: 'A' }, { text: '실속과 재물', type: 'B' }] }
-            ],
-            results: {
-                A: { title: '나랏일을 걱정하는 선비', desc: '당신은 학식과 인품을 겸비한 선비 스타일입니다. 명분을 중시하고 올곧은 성품을 지녔으며, 조직 내에서 브레인 역할을 담당하기에 딱 맞습니다.', img: 'https://images.pexels.com/photos/4565130/pexels-photo-4565130.jpeg?auto=compress&cs=tinysrgb&w=800' },
-                B: { title: '돈을 긁어모으는 거상', desc: '당신은 뛰어난 수완과 눈치로 조선 팔도의 돈을 쓸어 담을 거상 스타일입니다. 현실 감각이 뛰어나고 협상 능력이 탁월하여 어디서든 잘 먹고 잘 살 타입입니다.', img: 'https://images.pexels.com/photos/5796219/pexels-photo-5796219.jpeg?auto=compress&cs=tinysrgb&w=800' }
-            }
-        },
-    {
-        id: 'z3', category: '재미', title: '무인도 생존 유형', desc: '비행기 추락으로 무인도에 떨어진 당신! 극한 상황에서 드러나는 당신의 생존 본능은?', thumb: 'https://images.pexels.com/photos/1007657/pexels-photo-1007657.jpeg?auto=compress&cs=tinysrgb&w=800',
-        questions: [
-            { q: '눈을 떠보니 낯선 해변가다. 가장 먼저 할 일은?', options: [{ text: '주변을 탐색하며 물과 식량을 찾는다', type: 'A' }, { text: '크게 소리 치며 구조 요청을 보낸다', type: 'B' }] },
-            { q: '수풀 속에서 부스럭 소리가 난다!', options: [{ text: '무기가 될 만한 돌을 집어 든다', type: 'A' }, { text: '일단 나무 뒤로 숨어 동태를 살핀다', type: 'B' }] },
-            { q: '배가 너무 고프다. 눈앞에 알 수 없는 열매가 있다면?', options: [{ text: '독이 있을지 모르니 조금만 맛본다', type: 'A' }, { text: '배고파 죽겠는데 일단 먹고 본다', type: 'B' }] },
-            { q: '밤이 되어 추워지기 시작했다. 불은 어떻게?', options: [{ text: '나무를 비벼서 마찰열로 피운다', type: 'A' }, { text: '안경이나 유리를 이용해 빛을 모은다', type: 'B' }] },
-            { q: '함께 표류한 동료가 다쳤다면?', options: [{ text: '알고 있는 지식으로 응급처치를 한다', type: 'A' }, { text: '당황해서 어쩔 줄 몰라 하며 위로한다', type: 'B' }] },
-            { q: '저 멀리 배가 지나가는 것 같다!', options: [{ text: '불을 피워 연기로 신호를 보낸다', type: 'A' }, { text: '바다로 뛰어들어 헤엄치며 소리친다', type: 'B' }] },
-            { q: '무인도 생활 3일 차, 당신의 심정은?', options: [{ text: '이곳의 생활에 점점 적응해간다', type: 'A' }, { text: '집에 가고 싶어서 매일 밤 운다', type: 'B' }] }
-        ],
-        results: {
-            A: { title: '베어 그릴스 뺨치는 생존왕', desc: '당신은 어떤 극한 상황에서도 살아남을 수 있는 강인한 정신력과 적응력을 가졌습니다. 리더십을 발휘하여 무인도를 지상 낙원으로 만들지도 모릅니다.', img: 'https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '운이 따라주는 기적의 생존자', desc: '당신은 생존 지식은 부족할지 몰라도, 타고난 운과 긍정적인 마인드로 위기를 넘깁니다. 주변의 도움을 잘 이끌어내며 결국 구조될 운명입니다.', img: 'https://images.pexels.com/photos/1001682/pexels-photo-1001682.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '혁신적인 전략가의 기운', desc: '당신은 남들이 보지 못하는 기회를 포착하는 천부적인 감각이 있습니다. 리더로서 세상을 변화시킬 잠재력이 매우 큽니다.', img: 'https://images.unsplash.com/photo-1507679799987-c7377ec486e8?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '따뜻한 치유자의 기운', desc: '당신은 사람들의 마음을 움직이고 위로하는 강력한 공감의 에너지를 가졌습니다. 많은 이들의 삶에 빛이 되어줄 운명입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'z4', category: '재미', title: '탕수육 소스 취향 분석', desc: '부먹 vs 찍먹? 사소한 취향 속에 숨겨진 당신의 성격과 대인관계 스타일을 알아봅니다.', thumb: 'https://images.pexels.com/photos/2347311/pexels-photo-2347311.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'f8', category: '사주', title: '금전운 상승 가이드', desc: '당신의 경제적 흐름을 개선하고 부를 끌어당기는 비결을 알려드립니다.', thumb: 'https://images.unsplash.com/photo-1554224155-1696413575b9?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '탕수육이 나왔다! 소스는 어떻게?', options: [{ text: '바삭함을 위해 소스를 찍어 먹는다 (찍먹)', type: 'A' }, { text: '촉촉함을 위해 소스를 부어 먹는다 (부먹)', type: 'B' }] },
-            { q: '친구가 말도 없이 소스를 부어버렸다면?', options: [{ text: '이미 부은 거 어쩔 수 없지, 그냥 먹는다', type: 'A' }, { text: '"아 왜 부어!" 하며 진심으로 화를 낸다', type: 'B' }] },
-            { q: '평소 식사 메뉴 결정권은 누구에게?', options: [{ text: '내가 먹고 싶은 걸로 강력 추천한다', type: 'A' }, { text: '상대방이 먹고 싶은 걸로 따라간다', type: 'B' }] },
-            { q: '뷔페에 가서 음식을 담는 스타일은?', options: [{ text: '조금씩 다양하게 여러 번 담아온다', type: 'A' }, { text: '좋아하는 것 위주로 한 접시 가득 담는다', type: 'B' }] },
-            { q: '새로운 맛집을 발견했을 때?', options: [{ text: '검증된 베스트 메뉴를 시킨다', type: 'A' }, { text: '독특하고 새로운 메뉴에 도전한다', type: 'B' }] },
-            { q: '혼밥(혼자 밥 먹기) 레벨은?', options: [{ text: '혼자서도 고깃집, 패밀리 레스토랑 가능', type: 'A' }, { text: '편의점이나 패스트푸드점 정도만 가능', type: 'B' }] },
-            { q: '음식 먹을 때 가장 참을 수 없는 것은?', options: [{ text: '식감이 눅눅해지거나 맛이 섞이는 것', type: 'A' }, { text: '음식이 너무 뜨겁거나 식어서 맛없는 것', type: 'B' }] }
+            { q: '돈을 쓸 때 당신이 느끼는 감정은?', options: [{ text: '미래를 위한 가치 있는 투자다', type: 'A' }, { text: '왠지 모르게 불안하고 아깝다', type: 'B' }] },
+            { q: '자산 관리를 위해 가장 먼저 해야 할 일은?', options: [{ text: '수입을 늘릴 구체적인 계획 수립', type: 'A' }, { text: '지출을 줄이는 가계부 작성', type: 'B' }] },
+            { q: '투자 정보를 얻는 당신의 경로는?', options: [{ text: '전문 서적이나 강의를 통한 공부', type: 'A' }, { text: '지인이나 커뮤니티의 생생한 후기', type: 'B' }] },
+            { q: '당신의 책상 위 지갑의 위치는?', options: [{ text: '항상 정해진 자리에 깔끔하게', type: 'A' }, { text: '가방 안이나 어딘가에 자유롭게', type: 'B' }] },
+            { q: '세일 문구를 봤을 때 당신의 반응은?', options: [{ text: '필요한 물건인지 먼저 생각한다', type: 'A' }, { text: '일단 싸니까 장바구니에 담는다', type: 'B' }] },
+            { q: '부자가 된 자신의 모습을 상상하면?', options: [{ text: '사회에 기여하고 사업을 확장한다', type: 'A' }, { text: '편안하게 쉬며 여행을 다닌다', type: 'B' }] },
+            { q: '돈은 당신에게 어떤 의미인가요?', options: [{ text: '꿈을 이루기 위한 강력한 도구', type: 'A' }, { text: '안전한 삶을 지켜주는 울타리', type: 'B' }] }
         ],
         results: {
-            A: { title: '확고한 취향의 원칙주의자', desc: '당신은 (찍먹파에 가깝군요!) 호불호가 분명하고 자신의 영역을 중요하게 생각합니다. 깔끔하고 효율적인 것을 선호하며, 남에게 피해를 주지도 받지도 않으려는 합리적인 성격입니다.', img: 'https://images.pexels.com/photos/2673353/pexels-photo-2673353.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '둥글둥글한 융통성 대마왕', desc: '당신은 (부먹파에 가깝군요!) 상황에 따라 유연하게 대처하는 평화주의자입니다. 사람들과 어울리는 것을 좋아하고, 웬만하면 상대방에게 맞춰주는 배려심 깊은 성격입니다.', img: 'https://images.pexels.com/photos/1234535/pexels-photo-1234535.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '공격적인 자산 증식형', desc: '당신은 돈의 흐름을 주도할 준비가 되어 있습니다. 과감한 도전과 배움이 당신을 큰 부의 길로 인도할 것입니다.', img: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '안정적인 내실 관리형', desc: '당신은 꼼꼼하고 착실하게 부를 쌓아가는 타입입니다. 작은 새어나감을 막는 것이 당신의 재물운을 폭발시키는 열쇠입니다.', img: 'https://images.unsplash.com/photo-1554224155-1696413575b9?auto=format&fit=crop&w=500&q=60' }
         }
     },
     {
-        id: 'z5', category: '재미', title: '나의 소울 칵테일 찾기', desc: '당신의 분위기와 현재 감정 상태에 딱 어울리는 칵테일 한 잔을 추천해 드립니다.', thumb: 'https://images.pexels.com/photos/1189257/pexels-photo-1189257.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'f9', category: '사주', title: '연애운 대박 징조 테스트', desc: '당신에게 다가올 운명적인 인연과 연애의 흐름을 미리 체크해보세요.', thumb: 'https://images.unsplash.com/photo-1518199266791-bd373292e90c?auto=format&fit=crop&w=500&q=60',
         questions: [
-            { q: '오늘 밤, 당신이 원하는 분위기는?', options: [{ text: '시끌벅적하고 화려한 파티 분위기', type: 'A' }, { text: '조명 은은한 재즈바의 차분한 분위기', type: 'B' }] },
-            { q: '술을 마실 때 선호하는 맛은?', options: [{ text: '입안이 상큼해지는 달콤 상큼한 맛', type: 'A' }, { text: '묵직하고 쌉싸름한 어른의 맛', type: 'B' }] },
-            { q: '칵테일의 비주얼, 더 중요한 것은?', options: [{ text: '알록달록 예쁜 색감과 화려한 장식', type: 'A' }, { text: '심플하고 투명한 잔에 담긴 깔끔함', type: 'B' }] },
-            { q: '취기에 대한 당신의 태도는?', options: [{ text: '적당히 기분 좋을 정도로만 마신다', type: 'A' }, { text: '이왕 마시는 거 끝까지 가본다', type: 'B' }] },
-            { q: '안주는 어떤 것이 좋은가요?', options: [{ text: '과일이나 치즈 같은 가벼운 핑거푸드', type: 'A' }, { text: '스테이크나 감바스 같은 든든한 요리', type: 'B' }] },
-            { q: '평소 스트레스를 푸는 방식은?', options: [{ text: '수다를 떨거나 노래방에서 소리 지르기', type: 'A' }, { text: '혼자 영화를 보거나 멍하니 있기', type: 'B' }] },
-            { q: '내일 지구가 멸망한다면 마지막 한 잔은?', options: [{ text: '사랑하는 사람과 건배하며 마시는 샴페인', type: 'A' }, { text: '가장 비싸고 독한 위스키 스트레이트', type: 'B' }] }
+            { q: '길에서 우연히 옛사랑을 마주친다면?', options: [{ text: '밝게 인사하며 안부를 묻는다', type: 'A' }, { text: '모른 척 조용히 지나간다', type: 'B' }] },
+            { q: '지금 당신이 원하는 연애의 온도는?', options: [{ text: '뜨겁고 열정적인 한여름 밤', type: 'A' }, { text: '은은하고 포근한 늦가을 오후', type: 'B' }] },
+            { q: '소개팅 제안이 들어온다면 당신의 선택은?', options: [{ text: '새로운 만남은 언제나 환영이다', type: 'A' }, { text: '조건과 프로필을 신중히 따져본다', type: 'B' }] },
+            { q: '사랑에 빠졌을 때 당신의 모습은?', options: [{ text: '온 세상이 핑크빛으로 보인다', type: 'A' }, { text: '오히려 더 침착해지려 노력한다', type: 'B' }] },
+            { q: '연인과 가고 싶은 꿈의 여행지는?', options: [{ text: '화려한 도시 야경 투어', type: 'A' }, { text: '조용한 휴양지 풀빌라', type: 'B' }] },
+            { q: '당신이 생각하는 운명이란?', options: [{ text: '스스로 만들어가는 것이다', type: 'A' }, { text: '정해진 흐름이 있는 것이다', type: 'B' }] },
+            { q: '지금 누군가 당신을 짝사랑하고 있을까요?', options: [{ text: '당연히 그럴 것 같다', type: 'A' }, { text: '설마 그럴 리가 없다고 생각한다', type: 'B' }] }
         ],
         results: {
-            A: { title: '상큼한 피치 크러쉬 (Peach Crush)', desc: '당신은 톡톡 튀는 매력과 사랑스러움을 지닌 사람입니다. 달콤하고 상큼한 피치 크러쉬처럼 주변 사람들에게 기분 좋은 에너지를 전파합니다. 오늘은 핑크빛 칵테일로 기분을 업 시켜보세요!', img: 'https://images.pexels.com/photos/2480828/pexels-photo-2480828.jpeg?auto=compress&cs=tinysrgb&w=800' },
-            B: { title: '고독한 마티니 (Martini)', desc: '당신은 깊이 있고 지적인 분위기를 풍기는 사람입니다. 칵테일의 왕이라 불리는 마티니처럼, 겉은 차가워 보이지만 속은 뜨거운 열정을 품고 있습니다.  깔끔하고 드라이한 한 잔이 당신과 잘 어울립니다.', img: 'https://images.pexels.com/photos/613037/pexels-photo-613037.jpeg?auto=compress&cs=tinysrgb&w=800' }
+            A: { title: '곧 다가올 불꽃 같은 인연', desc: '조만간 당신의 심장을 뛰게 할 강렬한 인연이 나타날 징조입니다. 마음의 문을 활짝 열고 기회를 놓치지 마세요.', img: 'https://images.unsplash.com/photo-1511733849282-589d29dad210?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '스며드는 잔잔한 사랑', desc: '주변에 이미 당신을 지켜보는 따뜻한 시선이 있습니다. 익숙함 속에서 진정한 보석을 발견하게 될 운명입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=500&q=60' }
         }
-    }
+    },
+    {
+        id: 'f10', category: '사주', title: '나의 수호 동물 운세', desc: '당신을 지켜주고 행운을 가져다주는 영적인 수호 동물을 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '깊은 숲속에서 길을 잃었다면?', options: [{ text: '높은 곳에 올라가 길을 찾는다', type: 'A' }, { text: '동물들의 흔적을 따라간다', type: 'B' }] },
+            { q: '당신이 가장 좋아하는 시간대는?', options: [{ text: '활동적인 낮 시간', type: 'A' }, { text: '신비로운 밤 시간', type: 'B' }] },
+            { q: '위기의 순간, 당신의 무기는?', options: [{ text: '빠른 스피드와 순발력', type: 'A' }, { text: '강한 힘과 인내심', type: 'B' }] },
+            { q: '당신은 무리 생활을 좋아하나요?', options: [{ text: '함께 어울리는 것이 좋다', type: 'A' }, { text: '혼자만의 시간이 더 편하다', type: 'B' }] },
+            { q: '어떤 날씨에 에너지가 솟나요?', options: [{ text: '천둥 번개가 치는 거친 날씨', type: 'A' }, { text: '안개가 낀 몽환적인 날씨', type: 'B' }] },
+            { q: '당신의 시력(통찰력)은 어떤가요?', options: [{ text: '멀리 보고 핵심을 꿰뚫는다', type: 'A' }, { text: '가까운 것의 세밀함을 포착한다', type: 'B' }] },
+            { q: '수호 동물에게 바라는 점은?', options: [{ text: '나를 강하게 이끌어주길', type: 'A' }, { text: '나를 따뜻하게 보호해주길', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '용맹한 하늘의 제왕, 독수리', desc: '당신의 수호 동물은 독수리입니다. 높은 이상과 넓은 시야로 당신의 목표를 달성할 수 있도록 강력한 기운을 불어넣어 줍니다.', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '지혜로운 숲의 수호자, 늑대', desc: '당신의 수호 동물은 늑대입니다. 끈끈한 유대감과 예리한 직관으로 위기에서 당신을 보호하고 올바른 길로 인도합니다.', img: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f11', category: '사주', title: '오늘의 금전운 주머니', desc: '오늘 당신의 지갑이 얼마나 두둑해질지, 돈이 들어오는 통로를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 지갑에 현금이 얼마나 있나요?', options: [{ text: '만 원 이상 넉넉히 있다', type: 'A' }, { text: '거의 없거나 카드만 있다', type: 'B' }] },
+            { q: '오늘 아침 결제한 첫 항목은?', options: [{ text: '교통비나 식비 등 필수 지출', type: 'A' }, { text: '커피나 간식 등 기호 식품', type: 'B' }] },
+            { q: '길에서 돈을 줍는 상상을 한다면?', options: [{ text: '고액권 지폐를 줍는다', type: 'A' }, { text: '희귀한 동전을 줍는다', type: 'B' }] },
+            { q: '지금 가장 사고 싶은 물건의 가격은?', options: [{ text: '10만원 이상의 고가 제품', type: 'A' }, { text: '소소한 생활 용품', type: 'B' }] },
+            { q: '누군가에게 돈을 빌려준다면?', options: [{ text: '신중하게 차용증을 쓴다', type: 'A' }, { text: '믿고 그냥 빌려준다', type: 'B' }] },
+            { q: '나의 저축 성향은?', options: [{ text: '목표 금액을 정해 철저히', type: 'A' }, { text: '남는 돈을 여유 있게', type: 'B' }] },
+            { q: '오늘 하루, 돈이 들어온다면 어디서?', options: [{ text: '열심히 일한 대가(수입)', type: 'A' }, { text: '생각지 못한 행운(이벤트 등)', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '꽉 찬 황금 주머니', desc: '오늘은 재물운이 매우 강한 날입니다. 노력한 만큼의 보상이 확실히 들어오니 자신 있게 활동하세요.', img: 'https://images.unsplash.com/photo-1589758438368-0ad531db3366?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '소소한 행운 주머니', desc: '큰돈은 아니더라도 기분 좋은 소액의 행운이 따르는 날입니다. 주변 사람들에게 베풀면 더 큰 복으로 돌아옵니다.', img: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f12', category: '사주', title: '나의 주간 운세 예보', desc: '이번 한 주 당신의 운 흐름이 맑음일지 흐림일지 미리 확인하세요.', thumb: 'https://images.unsplash.com/photo-1504608524841-42fe6f032b4b?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '이번 주 가장 중요한 일정은?', options: [{ text: '업무나 학업 관련 중요한 일', type: 'A' }, { text: '사람들과의 즐거운 약속', type: 'B' }] },
+            { q: '월요일 아침의 기분은 어땠나요?', options: [{ text: '활기차고 의욕이 넘쳤다', type: 'A' }, { text: '조금 처지고 쉬고 싶었다', type: 'B' }] },
+            { q: '이번 주에 꼭 하고 싶은 한 가지는?', options: [{ text: '미뤄왔던 일 마무리하기', type: 'A' }, { text: '나를 위한 충분한 휴식', type: 'B' }] },
+            { q: '지금 당신의 에너지를 색으로 표현하면?', options: [{ text: '강렬한 오렌지색', type: 'A' }, { text: '부드러운 하늘색', type: 'B' }] },
+            { q: '이번 주 날씨가 당신의 운에 영향을 줄까요?', options: [{ text: '날씨에 상관없이 내 페이스를 유지한다', type: 'A' }, { text: '맑은 날에 기운이 더 난다', type: 'B' }] },
+            { q: '이번 주에 만나고 싶은 귀인은?', options: [{ text: '나를 이끌어줄 멘토', type: 'A' }, { text: '마음이 잘 맞는 친구', type: 'B' }] },
+            { q: '일요일 저녁, 당신은 무엇을 하고 있을까요?', options: [{ text: '다음 주를 완벽하게 준비한다', type: 'A' }, { text: '주말의 여운을 만끽하며 쉰다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '쾌청한 맑음 뒤 무지개', desc: '이번 주는 당신의 노력이 빛을 발하는 주입니다. 주 초반의 바쁨이 주 후반의 큰 성취감으로 돌아올 것입니다.', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '포근한 구름 사이 햇살', desc: '무난하고 평화로운 한 주가 예상됩니다. 큰 변화보다는 일상의 소소한 행복을 만끽하며 에너지를 충전하세요.', img: 'https://images.unsplash.com/photo-1499209974431-9dac3e5d9774?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f13', category: '사주', title: '성공을 부르는 이름 궁합', desc: '당신의 닉네임이나 이름이 성공 운과 얼마나 잘 맞는지 분석합니다.', thumb: 'https://images.unsplash.com/photo-1503551723145-6c040742065b?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 사용 중인 닉네임의 느낌은?', options: [{ text: '강하고 임팩트 있는 느낌', type: 'A' }, { text: '부드럽고 친근한 느낌', type: 'B' }] },
+            { q: '이름을 불렀을 때 들리는 소리의 온도는?', options: [{ text: '선명하고 차가운 금속음 느낌', type: 'A' }, { text: '울림이 있고 따뜻한 나무 느낌', type: 'B' }] },
+            { q: '닉네임을 지을 때 가장 고려한 것은?', options: [{ text: '나의 정체성과 전문성', type: 'A' }, { text: '부르기 편함과 친근함', type: 'B' }] },
+            { q: '이름에 숫자가 포함되어 있나요?', options: [{ text: '그렇다, 숫자의 기운을 믿는다', type: 'A' }, { text: '아니다, 글자로만 이루어졌다', type: 'B' }] },
+            { q: '남들이 당신의 이름을 부를 때 기분은?', options: [{ text: '자신감이 생기고 힘이 난다', type: 'A' }, { text: '편안하고 자연스럽다', type: 'B' }] },
+            { q: '성공한 사람들의 이름에서 느껴지는 공통점은?', options: [{ text: '강력한 카리스마와 발음', type: 'A' }, { text: '기억하기 쉬운 리듬감', type: 'B' }] },
+            { q: '만약 이름을 바꾼다면 어떤 쪽으로?', options: [{ text: '부와 명예를 부르는 이름', type: 'A' }, { text: '건강과 행복을 지켜주는 이름', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '명예를 드높이는 승부사의 이름', desc: '당신의 이름(닉네임)은 리더의 기운을 담고 있습니다. 사회적인 성공과 명예를 얻기에 최적화된 이름입니다.', img: 'https://images.unsplash.com/photo-1507679799987-c7377ec486e8?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '덕망을 쌓는 조율자의 이름', desc: '당신의 이름(닉네임)은 사람을 끌어당기는 따뜻한 힘이 있습니다. 대인관계를 통해 큰 부와 행복을 이룰 운명입니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f14', category: '사주', title: '오늘의 행운 장소 찾기', desc: '지금 당장 당신의 운을 틔워줄 행운의 장소를 추천해 드립니다.', thumb: 'https://images.unsplash.com/photo-1449156003956-3372473ff794?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 당신이 있는 곳의 채광은?', options: [{ text: '햇살이 잘 들어 밝다', type: 'A' }, { text: '조금 어둡거나 은은하다', type: 'B' }] },
+            { q: '어떤 소리에 더 끌리나요?', options: [{ text: '활기찬 도시의 백색 소음', type: 'A' }, { text: '잔잔한 물소리나 새소리', type: 'B' }] },
+            { q: '지금 옷차림은 어떤가요?', options: [{ text: '외출하기 좋은 외출복', type: 'A' }, { text: '편안한 실내복', type: 'B' }] },
+            { q: '가장 최근에 방문한 핫플레이스는?', options: [{ text: '줄 서서 기다리는 유명 맛집', type: 'A' }, { text: '한적하고 분위기 있는 카페', type: 'B' }] },
+            { q: '이동 수단 중 선호하는 것은?', options: [{ text: '활기찬 지하철이나 버스', type: 'A' }, { text: '여유로운 걷기나 드라이브', type: 'B' }] },
+            { q: '지금 당장 순간 이동을 한다면?', options: [{ text: '뉴욕의 타임스퀘어', type: 'A' }, { text: '몰디브의 에메랄드 해변', type: 'B' }] },
+            { q: '오늘 하루, 당신의 목적지는?', options: [{ text: '새로운 에너지를 얻는 곳', type: 'A' }, { text: '지친 마음을 다독이는 곳', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '활기찬 에너지가 넘치는 시장/광장', desc: '오늘은 사람이 많고 생동감 넘치는 곳이 당신의 행운 장소입니다. 그곳의 활기가 당신의 막힌 운을 시원하게 뚫어줄 것입니다.', img: 'https://images.unsplash.com/photo-1533900298318-6b8da08a523e?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '고요함이 머무는 공원/도서관', desc: '오늘은 차분하게 생각을 정리할 수 있는 고요한 곳이 최고의 장소입니다. 정적인 공간에서 당신의 행운이 조용히 싹틀 것입니다.', img: 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f15', category: '사주', title: '나의 타고난 오행 분석', desc: '목화토금수, 당신의 기질을 결정하는 핵심 원소를 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '당신의 성격을 한 단어로 표현하면?', options: [{ text: '뜨거운 열정의 불', type: 'A' }, { text: '유연한 적응력의 물', type: 'B' }] },
+            { q: '어떤 색상의 옷이 가장 잘 어울리나요?', options: [{ text: '화려한 레드나 옐로우 계열', type: 'A' }, { text: '차분한 블루나 블랙 계열', type: 'B' }] },
+            { q: '어려움에 처했을 때 당신의 반응은?', options: [{ text: '정면으로 부딪혀 돌파한다', type: 'A' }, { text: '우회하거나 상황을 지켜본다', type: 'B' }] },
+            { q: '좋아하는 맛은 어느 쪽인가요?', options: [{ text: '스트레스 풀리는 매운맛', type: 'A' }, { text: '깔끔하고 깊은 짠맛/신맛', type: 'B' }] },
+            { q: '당신의 체질은 어떤 편인가요?', options: [{ text: '몸에 열이 많고 활동적이다', type: 'A' }, { text: '몸이 찬 편이고 차분하다', type: 'B' }] },
+            { q: '창밖을 볼 때 더 끌리는 풍경은?', options: [{ text: '타오르는 화려한 노을', type: 'A' }, { text: '깊고 푸른 끝없는 바다', type: 'B' }] },
+            { q: '인생에서 더 중요한 가치는?', options: [{ text: '확실한 성과와 승리', type: 'A' }, { text: '내면의 평화와 지혜', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '타오르는 불(火)의 기운', desc: '당신은 열정적이고 에너지가 넘치는 화(火)의 기운을 타고났습니다. 솔직한 표현과 추진력이 당신의 가장 큰 무기입니다.', img: 'https://images.unsplash.com/photo-1547891269-045ad33ed99a?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '흐르는 물(수)의 기운', desc: '당신은 지혜롭고 유연한 수(수)의 기운을 가졌습니다. 어떤 상황에서도 적응하며 깊은 통찰력으로 문제를 해결하는 능력이 탁월합니다.', img: 'https://images.unsplash.com/photo-1557683311-eac922347aa1?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f16', category: '사주', title: '나의 행운 보석 타로', desc: '당신의 기운을 보호하고 운을 상승시켜 줄 운명의 보석을 알려드립니다.', thumb: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 끌리는 보석의 색깔은?', options: [{ text: '강렬한 레드나 핫핑크', type: 'A' }, { text: '청량한 블루나 에메랄드', type: 'B' }] },
+            { q: '당신이 가장 선호하는 금속 재질은?', options: [{ text: '고급스러운 골드', type: 'A' }, { text: '깨끗한 실버/백금', type: 'B' }] },
+            { q: '보석을 착용한다면 어느 부위에?', options: [{ text: '눈에 띄는 목걸이나 귀걸이', type: 'A' }, { text: '나만 볼 수 있는 팔찌나 반지', type: 'B' }] },
+            { q: '당신이 보석을 좋아하는 이유는?', options: [{ text: '변치 않는 가치와 상징성', type: 'A' }, { text: '아름다움과 심리적 만족감', type: 'B' }] },
+            { q: '선물을 받는다면 어떤 보석이?', options: [{ text: '화려하고 큰 다이아몬드', type: 'A' }, { text: '은은하고 묘한 진주나 탄생석', type: 'B' }] },
+            { q: '지금 당신의 에너지를 광물에 비유하면?', options: [{ text: '단단하고 강한 원석', type: 'A' }, { text: '부드럽고 매끄러운 가공석', type: 'B' }] },
+            { q: '보석의 힘(기운)을 믿으시나요?', options: [{ text: '그렇다, 특별한 기운이 있다', type: 'A' }, { text: '아니다, 그냥 예쁜 장식품이다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '열정의 루비 (Ruby)', desc: '당신에게는 활력과 용기를 주는 루비가 행운의 보석입니다. 붉은 기운이 당신의 대인관계운과 성공운을 강력하게 밀어줄 것입니다.', img: 'https://images.unsplash.com/photo-1553729459-efe14ef6055d?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '지혜의 사파이어 (Sapphire)', desc: '당신에게는 평화와 지혜를 주는 사파이어가 최고의 파트너입니다. 푸른 기운이 당신의 복잡한 머릿속을 맑게 하고 올바른 판단을 돕습니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f17', category: '사주', title: '오늘의 수호 메시지 타로', desc: '당신의 수호천사가 전하는 오늘의 특별한 경고와 조언을 확인하세요.', thumb: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 당신의 등 뒤에 무엇이 느껴지나요?', options: [{ text: '따뜻한 온기', type: 'A' }, { text: '신선한 바람', type: 'B' }] },
+            { q: '오늘 하루, 가장 조심해야 할 것은?', options: [{ text: '말실수와 구설수', type: 'A' }, { text: '충동적인 소비와 지출', type: 'B' }] },
+            { q: '지금 당장 실천해야 할 행운의 행동은?', options: [{ text: '주변 정리정돈하기', type: 'A' }, { text: '소중한 사람에게 연락하기', type: 'B' }] },
+            { q: '수호천사의 날개 색깔은 무엇일까요?', options: [{ text: '눈부신 하얀색', type: 'A' }, { text: '신비로운 금색', type: 'B' }] },
+            { q: '당신이 가장 힘들 때 듣고 싶은 말은?', options: [{ text: '"충분히 잘하고 있어"', type: 'A' }, { text: '"걱정 마, 다 잘 될 거야"', type: 'B' }] },
+            { q: '오늘 당신의 행운 아이템은?', options: [{ text: '거울이나 안경', type: 'A' }, { text: '이어폰이나 책', type: 'B' }] },
+            { q: '천사가 당신에게 준 오늘의 미션은?', options: [{ text: '3번 이상 크게 웃기', type: 'A' }, { text: '10분 이상 명상하기', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '보호의 날개 (Protection)', desc: '오늘은 당신을 향한 부정적인 기운이 차단되는 날입니다. 안심하고 당신의 계획대로 밀고 나가세요. 수호천사가 든든히 지켜주고 있습니다.', img: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '인도의 빛 (Guidance)', desc: '오늘은 새로운 길을 찾는 영감을 얻게 되는 날입니다. 평소와 다른 선택을 해보세요. 수호천사가 당신을 더 나은 방향으로 인도하고 있습니다.', img: 'https://images.unsplash.com/photo-1532767153582-b1a0e5145009?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f18', category: '사주', title: '나의 타고난 인연운 그릇', desc: '당신이 평생 만날 인연들의 특징과 귀인을 알아보는 시간입니다.', thumb: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '사람을 처음 볼 때 가장 먼저 보는 곳은?', options: [{ text: '전체적인 태도와 매너', type: 'A' }, { text: '목소리와 대화 스타일', type: 'B' }] },
+            { q: '나에게 더 힘을 주는 인연은?', options: [{ text: '냉철하게 조언해주는 동료', type: 'A' }, { text: '무조건 내 편이 되어주는 친구', type: 'B' }] },
+            { q: '악연을 만났을 때 당신의 대처는?', options: [{ text: '즉시 거리를 두고 차단한다', type: 'A' }, { text: '좋게 풀려고 끝까지 노력한다', type: 'B' }] },
+            { q: '당신은 인맥 넓히기를 좋아하나요?', options: [{ text: '다양한 사람을 만나는 게 즐겁다', type: 'A' }, { text: '깊고 좁은 관계가 더 편하다', type: 'B' }] },
+            { q: '인연운을 높여주는 당신의 매력은?', options: [{ text: '신뢰감과 책임감', type: 'A' }, { text: '다정함과 유머 감각', type: 'B' }] },
+            { q: '가장 기억에 남는 고마운 사람은?', options: [{ text: '나를 성장시켜준 엄격한 스승', type: 'A' }, { text: '나를 믿어준 따뜻한 가족/친구', type: 'B' }] },
+            { q: '운명적인 만남을 믿으시나요?', options: [{ text: '그렇다, 만날 사람은 꼭 만난다', type: 'A' }, { text: '아니다, 인연도 노력으로 만든다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '성공을 돕는 전략적 인연운', desc: '당신은 사회적인 성취를 함께 이뤄갈 인맥을 얻는 운을 타고났습니다. 공적인 자리에서 만나는 사람들이 당신의 인생을 크게 바꿔줄 것입니다.', img: 'https://images.unsplash.com/photo-1507679799987-c7377ec486e8?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '마음을 채우는 정서적 인연운', desc: '당신은 언제든 기댈 수 있는 따뜻한 사람들을 곁에 두는 복을 타고났습니다. 돈으로 살 수 없는 진실한 유대감이 당신의 인생을 풍요롭게 합니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f19', category: '사주', title: '인생 후반전 성공운', desc: '당신의 인생 중기 이후부터 펼쳐질 놀라운 성공의 지도를 그려드립니다.', thumb: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '나이가 드는 것에 대한 당신의 생각은?', options: [{ text: '경험이 쌓여 노련해지는 즐거운 과정', type: 'A' }, { text: '체력이 떨어지고 열정이 식을까 봐 걱정', type: 'B' }] },
+            { q: '지금 하고 있는 일의 전망은?', options: [{ text: '시간이 흐를수록 빛을 발할 전문직', type: 'A' }, { text: '언제든 새로운 시작이 가능한 유연한 일', type: 'B' }] },
+            { q: '당신의 노후 준비 상태는?', options: [{ text: '이미 차근차근 계획대로 진행 중', type: 'A' }, { text: '이제 막 관심을 갖고 시작하는 단계', type: 'B' }] },
+            { q: '인생 후반전에 가장 얻고 싶은 것은?', options: [{ text: '사회적인 명성과 지위', type: 'A' }, { text: '안정적인 부와 여유로운 시간', type: 'B' }] },
+            { q: '은퇴 후 당신이 살고 싶은 곳은?', options: [{ text: '편의시설 가득한 세련된 도심', type: 'A' }, { text: '자연과 함께하는 아늑한 전원', type: 'B' }] },
+            { q: '당신은 배움을 멈추지 않나요?', options: [{ text: '평생 새로운 것을 배우고 싶다', type: 'A' }, { text: '어느 정도 이루면 편히 쉬고 싶다', type: 'B' }] },
+            { q: '마지막에 당신이 남기고 싶은 것은?', options: [{ text: '나의 이름과 업적', type: 'A' }, { text: '내가 사랑한 사람들과의 추억', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '찬란한 황금기, 대기만성의 운명', desc: '당신의 인생은 후반으로 갈수록 정점에 도달합니다. 젊은 시절의 고생이 큰 자산이 되어 누구보다 존경받고 풍요로운 노후를 보내게 될 것입니다.', img: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '평온한 안식처, 행복한 노후의 운명', desc: '당신의 인생은 후반으로 갈수록 평화와 안정을 찾게 됩니다. 큰 굴곡 없이 소중한 사람들과 함께 소소한 행복을 누리는 가장 이상적인 삶을 살게 될 것입니다.', img: 'https://images.unsplash.com/photo-1499209974431-9dac3e5d9774?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f20', category: '사주', title: '인생 최종 운명 보고서', desc: '당신의 사주 팔자가 그리는 인생 전체의 커다란 흐름을 요약해드립니다.', thumb: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '인생은 "마라톤"일까요, "단거리 질주"일까요?', options: [{ text: '긴 호흡으로 멀리 가는 마라톤', type: 'A' }, { text: '순간의 폭발력으로 승부하는 단거리', type: 'B' }] },
+            { q: '당신이 가장 후회하는 것은?', options: [{ text: '시도하지 않았던 일들', type: 'A' }, { text: '잘못된 선택을 했던 일들', type: 'B' }] },
+            { q: '인생의 중반기를 지나고 있다면 당신의 기분은?', options: [{ text: '이제 진짜 시작이다! 기대감', type: 'A' }, { text: '지금까지 잘 버텼다... 안도감', type: 'B' }] },
+            { q: '당신이 믿는 사후 세계의 모습은?', options: [{ text: '새로운 삶으로의 환생', type: 'A' }, { text: '영원한 안식과 평화', type: 'B' }] },
+            { q: '인생에서 가장 큰 자산은 무엇인가요?', options: [{ text: '내가 이뤄낸 성취와 경험', type: 'A' }, { text: '나를 사랑해준 소중한 사람들', type: 'B' }] },
+            { q: '당신은 운명을 바꿀 수 있다고 믿나요?', options: [{ text: '노력으로 얼마든지 개척 가능하다', type: 'A' }, { text: '큰 틀은 정해져 있다고 생각한다', type: 'B' }] },
+            { q: '마지막에 웃는 자가 누구라고 생각하나요?', options: [{ text: '포기하지 않고 끝까지 간 사람', type: 'A' }, { text: '매 순간 행복을 만끽한 사람', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '대기만성, 황금빛 노년의 운명', desc: '당신의 인생은 시간이 갈수록 더욱 빛나게 될 것입니다. 초년의 고생은 모두 밑거름이 되어, 노년에는 누구보다 풍요롭고 명예로운 삶을 누릴 것입니다.', img: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '화려한 비상, 전성기의 주인공', desc: '당신의 인생은 드라마틱한 성공과 화려한 전성기를 품고 있습니다. 당신의 재능이 꽃피는 순간, 세상은 당신의 발아래에 있게 될 것입니다.', img: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    // --- 재미/심리 Tests (15) ---
+    {
+        id: 'p21', category: '재미', title: '나의 빌런 유형 DNA', desc: '영화나 드라마 속 빌런이 된다면 당신은 어떤 스타일일까요?', thumb: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '계획이 틀어졌을 때 당신의 반응은?', options: [{ text: '침착하게 새로운 플랜B를 가동한다', type: 'A' }, { text: '분노를 참지 못하고 모두 부숴버린다', type: 'B' }] },
+            { q: '당신이 빌런이 된 동기는?', options: [{ text: '세상의 불공평함을 바로잡기 위해', type: 'A' }, { text: '그냥 나의 순수한 욕망과 재미를 위해', type: 'B' }] },
+            { q: '당신의 비밀 기지는 어디인가요?', options: [{ text: '최첨단 설비를 갖춘 도심 고층 빌딩', type: 'A' }, { text: '아무도 모르는 깊은 산속 지하 동굴', type: 'B' }] },
+            { q: '히어로를 만났을 때 당신의 행동은?', options: [{ text: '여유롭게 대화하며 자신의 철학을 설파한다', type: 'A' }, { text: '묻지도 따지지도 않고 선제공격한다', type: 'B' }] },
+            { q: '동료가 배신했다는 소식을 듣는다면?', options: [{ text: '철저하게 역이용하여 대가를 치르게 한다', type: 'A' }, { text: '직접 찾아가 본때를 보여준다', type: 'B' }] },
+            { q: '당신을 상징하는 시그니처 아이템은?', options: [{ text: '세련된 정장과 차가운 안경', type: 'A' }, { text: '화려한 마스크와 정체불명의 무기', type: 'B' }] },
+            { q: '마지막 순간, 당신의 최후는?', options: [{ text: '다음 시즌을 기약하며 유유히 사라진다', type: 'A' }, { text: '화끈하게 모든 걸 불태우며 폭주한다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '냉철한 천재 전략가형 빌런', desc: '당신은 지능적이고 치밀한 계획으로 세상을 뒤흔드는 타입입니다. 말 한마디로 사람들을 조종하는 카리스마를 가졌습니다.', img: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '예측불허 광기 본능형 빌런', desc: '당신은 본능에 충실하고 파괴적인 에너지를 지닌 타입입니다. 어디로 튈지 모르는 당신의 행동이 히어로를 가장 당황하게 만듭니다.', img: 'https://images.unsplash.com/photo-1509248961158-e54f6934749c?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'p22', category: '재미', title: '좀비 아포칼립스 생존 전략', desc: '좀비 세상이 온다면 당신은 끝까지 살아남을 수 있을까요?', thumb: 'https://images.unsplash.com/photo-1531911082206-323b922f2432?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '뉴스에서 좀비 발생 소식을 봤을 때 가장 먼저 하는 일은?', options: [{ text: '생존 물품을 챙겨 안전한 곳으로 숨는다', type: 'A' }, { text: '무기를 찾아 밖으로 나가 동태를 살핀다', type: 'B' }] },
+            { q: '최고의 생존 파트너를 고른다면?', options: [{ text: '지식이 풍부한 브레인 친구', type: 'A' }, { text: '싸움 실력이 뛰어난 무술가 친구', type: 'B' }] },
+            { q: '은신처에 모르는 생존자가 문을 두드린다면?', options: [{ text: '함께 힘을 합치기 위해 들여보내 준다', type: 'A' }, { text: '위험 요소가 될 수 있으니 무시한다', type: 'B' }] },
+            { q: '식량이 얼마 남지 않았을 때 당신의 선택은?', options: [{ text: '계획을 세워 조금씩 나눠 먹는다', type: 'A' }, { text: '위험을 무릅쓰고 마트로 파밍을 나간다', type: 'B' }] },
+            { q: '좀비 떼가 들이닥친 절체절명의 순간!', options: [{ text: '미리 준비한 트랩을 가동한다', type: 'A' }, { text: '수단과 방법을 가리지 않고 돌파한다', type: 'B' }] },
+            { q: '당신이 가장 의지하는 도구는?', options: [{ text: '지도와 나침반, 그리고 통신 기기', type: 'A' }, { text: '튼튼한 배트나 날카로운 칼', type: 'B' }] },
+            { q: '마지막 인류의 희망이 당신에게 달렸다면?', options: [{ text: '사명감을 가지고 백신을 찾아 나선다', type: 'A' }, { text: '나와 내 사람들의 생존만 챙긴다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '지혜로운 브레인 생존자', desc: '당신은 치밀한 분석과 준비성으로 살아남는 타입입니다. 위기 상황에서도 이성을 잃지 않고 최선의 길을 찾아냅니다.', img: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '강인한 전투형 전사 생존자', desc: '당신은 타고난 신체 능력과 순발력으로 좀비들을 제압하는 타입입니다. 당신의 용감함이 그룹의 희망이 됩니다.', img: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p23', category: '재미', title: '나의 술버릇 MBTI', desc: '술기운에 드러나는 당신의 진짜 속마음과 행동 패턴을 분석합니다.', thumb: 'https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '술자리가 시작될 때 당신의 포지션은?', options: [{ text: '열심히 안주를 챙기고 술을 따른다', type: 'A' }, { text: '이미 텐션이 올라가 수다를 떨고 있다', type: 'B' }] },
+            { q: '취기가 살짝 오르면 어떤 변화가 생기나요?', options: [{ text: '말수가 적어지고 진지해진다', type: 'A' }, { text: '웃음이 많아지고 애교가 늘어난다', type: 'B' }] },
+            { q: '좋아하는 사람과 술을 마신다면?', options: [{ text: '실수하지 않으려 정신을 바짝 차린다', type: 'A' }, { text: '은근슬쩍 플러팅을 하며 직진한다', type: 'B' }] },
+            { q: '기억이 끊길 정도로 마신 적이 있나요?', options: [{ text: '거의 없다, 자기 절제가 강한 편이다', type: 'A' }, { text: '가끔 있다, 그럴 땐 세상이 즐겁다', type: 'B' }] },
+            { q: '술자리 중간에 사라진다면 당신은 어디에?', options: [{ text: '몰래 편의점에 가서 아이스크림 사 오는 중', type: 'A' }, { text: '화장실 거울 보며 춤추거나 수다 떠는 중', type: 'B' }] },
+            { q: '다음 날 숙취 해소 방법은?', options: [{ text: '조용히 해장국 먹고 하루 종일 잠자기', type: 'A' }, { text: '친구들에게 어제 무슨 일 있었냐고 카톡 하기', type: 'B' }] },
+            { q: '당신에게 술이란 어떤 의미인가요?', options: [{ text: '진솔한 대화를 위한 매개체', type: 'A' }, { text: '지루한 일상을 깨는 파티 타임', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '진중한 선비형 술고래', desc: '취해도 흐트러짐이 없는 당신! 술기운을 빌려 평소 못다 한 진심을 전하는 따뜻한 분입니다.', img: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '활발한 골든 리트리버형', desc: '술만 마시면 텐션 폭발! 모든 사람과 친구가 되는 당신은 술자리의 진정한 주인공입니다.', img: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'p24', category: '재미', title: '나의 마음 냉장고 테스트', desc: '당신의 마음속에는 어떤 것들이 차곡차곡 쌓여있을까요?', thumb: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '냉장고 문을 열었을 때 가장 먼저 보이는 것은?', options: [{ text: '가지런히 정리된 반찬과 식재료', type: 'A' }, { text: '먹다 남은 피자와 각종 소스들', type: 'B' }] },
+            { q: '유통기한이 하루 지난 우유를 발견했다면?', options: [{ text: '찝찝하니까 바로 버린다', type: 'A' }, { text: '냄새 맡아보고 괜찮으면 그냥 먹는다', type: 'B' }] },
+            { q: '냉장고에 가장 많이 채워두고 싶은 것은?', options: [{ text: '든든하고 건강한 집밥 재료', type: 'A' }, { text: '시원한 맥주와 달콤한 간식', type: 'B' }] },
+            { q: '당신의 냉장고 청소 빈도는?', options: [{ text: '주기적으로 칸칸이 닦고 정리한다', type: 'A' }, { text: '냄새가 나거나 꽉 찼을 때 몰아서 한다', type: 'B' }] },
+            { q: '남이 내 냉장고를 열어본다면?', options: [{ text: '자신 있게 보여줄 수 있다', type: 'A' }, { text: '절대 사수! 부끄러워서 막는다', type: 'B' }] },
+            { q: '냉장고 조명이 갑자기 나갔다면?', options: [{ text: '바로 서비스 센터에 전화하거나 고친다', type: 'A' }, { text: '핸드폰 플래시 켜고 대충 쓴다', type: 'B' }] },
+            { q: '냉장고 칸 하나를 통째로 비울 수 있다면 무엇으로?', options: [{ text: '나의 미래를 위한 공부 자료', type: 'A' }, { text: '가보고 싶은 여행지 티켓들', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '깔끔한 냉동실, 원칙주의형', desc: '당신의 마음은 정돈되어 있고 확실한 기준이 있습니다. 스스로를 잘 관리하는 성실한 분입니다.', img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '풍성한 야채실, 감성충만형', desc: '당신의 마음은 따뜻한 정과 추억들로 가득 차 있습니다. 자유분방하고 포근한 매력을 가진 분입니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p25', category: '재미', title: '나의 인생 장르 분석', desc: '당신의 삶을 영화로 만든다면 어떤 장르가 가장 잘 어울릴까요?', thumb: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '오늘 아침, 당신의 오프닝 장면은?', options: [{ text: '알람 소리에 벌떡 일어나 운동하는 장면', type: 'A' }, { text: '따스한 햇살을 받으며 커피를 마시는 장면', type: 'B' }] },
+            { q: '인생의 위기 순간, 어떤 음악이 깔릴까요?', options: [{ text: '비장하고 웅장한 오케스트라', type: 'A' }, { text: '긴박하고 통통 튀는 재즈 비트', type: 'B' }] },
+            { q: '당신이 가장 많이 하는 대사는?', options: [{ text: '"할 수 있어! 끝까지 가보자"', type: 'A' }, { text: '"재밌겠다! 일단 해보지 뭐"', type: 'B' }] },
+            { q: '당신의 라이벌은 어떤 존재인가요?', options: [{ text: '넘어서야 할 강력한 적수', type: 'A' }, { text: '서로 티격태격하며 정드는 친구', type: 'B' }] },
+            { q: '하이라이트 장면의 장소는?', options: [{ text: '수많은 관중이 환호하는 경기장', type: 'A' }, { text: '아름다운 노을이 지는 해변가', type: 'B' }] },
+            { q: '결말 부분에서 당신의 모습은?', options: [{ text: '최고의 자리에 올라 성공한 모습', type: 'A' }, { text: '사랑하는 이들과 크게 웃는 모습', type: 'B' }] },
+            { q: '관객들에게 남기고 싶은 한마디는?', options: [{ text: '"당신도 승리할 수 있습니다"', type: 'A' }, { text: '"인생은 정말 아름다운 여행이에요"', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '가슴 웅장해지는 휴먼 드라마', desc: '당신은 목표를 향해 나아가는 멋진 주인공입니다. 당신의 끈기와 열정이 많은 이들에게 감동을 줍니다.', img: 'https://images.unsplash.com/photo-1507679799987-c7377ec486e8?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '유쾌 발랄 판타지 코미디', desc: '당신의 인생은 즐거움과 신비함으로 가득 차 있습니다. 긍정적인 마인드가 당신을 최고의 인기 캐릭터로 만듭니다.', img: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'p26', category: '재미', title: '나의 멘탈 MBTI 테스트', desc: '유리 멘탈일까, 강철 멘탈일까? 당신의 정신적 맷집을 측정합니다.', thumb: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '인터넷에 올린 글에 악플이 달렸다면?', options: [{ text: '논리적으로 반박하거나 즉시 신고한다', type: 'A' }, { text: '하루 종일 속상해서 자꾸 확인한다', type: 'B' }] },
+            { q: '시험 점수가 기대보다 낮게 나왔을 때?', options: [{ text: '어디서 틀렸는지 분석하고 다음을 기약한다', type: 'A' }, { text: '나의 지능과 미래에 대해 깊은 절망에 빠진다', type: 'B' }] },
+            { q: '무서운 놀이기구를 탈 때 당신의 반응은?', options: [{ text: '스릴을 만끽하며 소리 지르고 즐긴다', type: 'A' }, { text: '눈을 꼭 감고 제발 빨리 끝나기를 빈다', type: 'B' }] },
+            { q: '낯선 사람들과의 저녁 식사 자리는?', options: [{ text: '새로운 인맥을 쌓을 즐거운 기회다', type: 'A' }, { text: '무슨 말을 해야 할지 몰라 기가 빨린다', type: 'B' }] },
+            { q: '갑작스러운 업무 지시가 퇴근 10분 전에!', options: [{ text: '화가 나지만 신속하게 처리하고 퇴근한다', type: 'A' }, { text: '억울함에 눈물이 핑 돌고 멘붕이 온다', type: 'B' }] },
+            { q: '나를 향한 비난 섞인 조언을 들으면?', options: [{ text: '틀린 말 없네 하고 쿨하게 넘긴다', type: 'A' }, { text: '그 사람의 말투와 표정까지 계속 떠오른다', type: 'B' }] },
+            { q: '멘탈을 회복하는 가장 좋은 방법은?', options: [{ text: '땀 흘리며 운동하거나 취미에 몰두하기', type: 'A' }, { text: '이불 속에 들어가서 푹 자거나 울기', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '불사조 강철 멘탈', desc: '당신은 어떤 시련에도 굴하지 않는 단단한 마음을 가졌습니다. 위기를 기회로 바꾸는 능력이 탁월합니다.', img: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '섬세한 유리알 감성', desc: '당신은 매우 섬세하고 예민한 감각을 지녔습니다. 때로는 힘들 수 있지만 그만큼 공감 능력이 뛰어난 따뜻한 분입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p27', category: '재미', title: '나의 쇼핑 중독 유형', desc: '영수증이 말해주는 당신의 성격과 미래 자산 상태를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '쇼핑몰에 들어갔을 때 당신의 동선은?', options: [{ text: '필요한 물건이 있는 곳으로 바로 직진한다', type: 'A' }, { text: '1층부터 꼭대기까지 하나씩 다 둘러본다', type: 'B' }] },
+            { q: '"한정 판매", "마지막 수량" 문구를 본다면?', options: [{ text: '상술인 걸 아니까 덤덤하게 지나친다', type: 'A' }, { text: '지금 안 사면 평생 후회할 것 같아 결제한다', type: 'B' }] },
+            { q: '장바구니에 담아둔 물건은 몇 개인가요?', options: [{ text: '3개 미만, 정말 살 것만 담아둔다', type: 'A' }, { text: '10개 이상, 일단 마음에 들면 다 담는다', type: 'B' }] },
+            { q: '스트레스를 받았을 때 당신의 해소법은?', options: [{ text: '맛있는 걸 먹거나 잠을 자며 푼다', type: 'A' }, { text: '온라인 쇼핑몰 앱을 켜고 아이쇼핑을 한다', type: 'B' }] },
+            { q: '물건을 사고 나서 후회한 적이 있나요?', options: [{ text: '거의 없다, 신중하게 고르기 때문이다', type: 'A' }, { text: '자주 있다, 택배 박스 뜯을 때가 제일 설렌다', type: 'B' }] },
+            { q: '당신의 통장 잔고를 확인하는 주기는?', options: [{ text: '매일 혹은 결제할 때마다 꼼꼼히 확인한다', type: 'A' }, { text: '월급날이나 카드값 나가는 날에만 본다', type: 'B' }] },
+            { q: '나에게 쇼핑이란 무엇인가요?', options: [{ text: '생존을 위한 필수적인 수단', type: 'A' }, { text: '삶의 활력을 주는 소중한 행복', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '철저한 계획 소비의 마법사', desc: '당신은 경제 관념이 뚜렷하고 이성적인 소비자입니다. 불필요한 낭비를 지양하며 내실을 다지는 스타일입니다.', img: 'https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '지름신이 강림한 플렉스왕', desc: '당신은 현재의 행복을 위해 아낌없이 투자하는 타입입니다. 시원시원한 성격이 매력적이지만 가끔은 통장을 살펴주세요!', img: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p28', category: '재미', title: '나의 연애 세포 생존기', desc: '당신의 연애 세포는 지금 활발하게 활동 중일까요?', thumb: 'https://images.unsplash.com/photo-1518199266791-bd373292e90c?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '설레는 로맨스 드라마를 볼 때 당신의 반응은?', options: [{ text: '나도 저런 사랑을 하고 싶다며 몰입한다', type: 'A' }, { text: '현실은 저렇지 않다며 팩트 체크를 한다', type: 'B' }] },
+            { q: '마음에 드는 이성이 나타난다면?', options: [{ text: '어떻게든 접점을 만들어 다가가려 노력한다', type: 'A' }, { text: '멀리서 지켜보다가 혼자 마음을 정리한다', type: 'B' }] },
+            { q: '소개팅 제안이 들어온다면 당신의 선택은?', options: [{ text: '설레는 마음으로 프로필을 확인한다', type: 'A' }, { text: '만나기까지의 과정이 귀찮아서 거절한다', type: 'B' }] },
+            { q: '최근 당신의 카톡 테마나 프로필 사진은?', options: [{ text: '화사하고 예쁜 감성적인 사진', type: 'A' }, { text: '기본 이미지거나 아무런 변화가 없음', type: 'B' }] },
+            { q: '길에서 커플들이 다정하게 걷는 것을 보면?', options: [{ text: '보기 좋다며 흐뭇하게 미소 짓는다', type: 'A' }, { text: '아무 생각 없거나 빨리 지나가고 싶다', type: 'B' }] },
+            { q: '나만의 시간을 보낼 때 당신의 기분은?', options: [{ text: '즐겁지만 가끔은 누군가 옆에 있으면 좋겠다', type: 'A' }, { text: '완벽하다! 누구의 간섭도 없는 지금이 최고다', type: 'B' }] },
+            { q: '연애 세포에게 한마디 한다면?', options: [{ text: '"제발 깨어나서 열일해줘!"', type: 'A' }, { text: '"당분간은 더 자도 괜찮아"', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '심장 박동 100%, 핑크빛 설렘주의보', desc: '당신의 연애 세포는 현재 매우 건강하고 활발합니다! 곧 다가올 인연을 맞이할 준비가 완벽하게 되어 있네요.', img: 'https://images.unsplash.com/photo-1511733849282-589d29dad210?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '무기한 휴면 상태, 철벽 방어 중', desc: '현재 연애보다 자신만의 시간이 더 소중한 상태군요. 조급해하지 마세요. 당신이 원할 때 세포들은 다시 깨어날 거예요.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p29', category: '재미', title: '나의 맛집 탐험대 지수', desc: '음식을 대하는 당신의 열정과 미식가로서의 자질을 테스트합니다.', thumb: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '유명 맛집 줄이 1시간 이상이라면?', options: [{ text: '맛있는 걸 먹기 위해서라면 기꺼이 기다린다', type: 'A' }, { text: '기다리는 건 시간 낭비, 옆집으로 간다', type: 'B' }] },
+            { q: '음식이 나오자마자 당신이 하는 일은?', options: [{ text: '최적의 각도로 사진을 찍어 기록한다', type: 'A' }, { text: '따끈할 때 바로 한 입 크게 먹는다', type: 'B' }] },
+            { q: '새로운 낯선 메뉴에 대한 당신의 태도는?', options: [{ text: '이곳만의 특별한 맛일 테니 도전해본다', type: 'A' }, { text: '실패하고 싶지 않아 아는 맛을 고른다', type: 'B' }] },
+            { q: '당신만의 숨겨진 단골 맛집이 있나요?', options: [{ text: '리스트로 정리해두고 친구들에게 추천한다', type: 'A' }, { text: '나만 알고 싶어서 절대 비밀로 한다', type: 'B' }] },
+            { q: '음식 맛에서 가장 중요하게 생각하는 것은?', options: [{ text: '재료 본연의 맛과 깊은 풍미', type: 'A' }, { text: '중독성 있는 강력한 양념 맛', type: 'B' }] },
+            { q: '멀리 떨어진 곳까지 맛집 원정을 가나요?', options: [{ text: '그 맛을 위해서라면 전국 어디든 간다', type: 'A' }, { text: '집 근처에서 대충 해결하는 게 편하다', type: 'B' }] },
+            { q: '오늘 점심 메뉴를 고르는 당신의 방식은?', options: [{ text: '전날부터 미리 정해두고 기대한다', type: 'A' }, { text: '배고플 때 눈에 띄는 곳으로 들어간다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '미슐랭 뺨치는 미식 탐험가', desc: '당신은 음식을 예술로 즐길 줄 아는 진정한 미식가입니다. 당신의 추천은 모두가 믿고 따라갑니다.', img: 'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '효율 중시 실속파 먹보', desc: '음식은 맛있으면 장땡! 복잡한 것보다 편안하고 든든한 한 끼를 선호하는 소박하고 정겨운 분입니다.', img: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p30', category: '재미', title: '나의 스트레스 동물 찾기', desc: '스트레스받을 때 당신의 모습은 어떤 동물과 닮았을까요?', thumb: 'https://images.unsplash.com/photo-1516733725897-1aa73b87c8e8?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '화가 머리끝까지 났을 때 당신은?', options: [{ text: '큰 소리로 따지거나 불만을 표출한다', type: 'A' }, { text: '입을 꾹 다물고 혼자만의 동굴로 들어간다', type: 'B' }] },
+            { q: '갑자기 많은 일감이 쏟아진다면?', options: [{ text: '우선순위를 정해 미친 듯이 처리한다', type: 'A' }, { text: '일단 멍하니 있다가 현실을 부정한다', type: 'B' }] },
+            { q: '누군가 나를 계속 귀찮게 한다면?', options: [{ text: '단호하게 거절 의사를 밝힌다', type: 'A' }, { text: '싫은 내색 못 하고 끙끙 앓는다', type: 'B' }] },
+            { q: '가장 편안함을 느끼는 자세는?', options: [{ text: '대자로 뻗어 누운 당당한 자세', type: 'A' }, { text: '몸을 웅크린 포근한 자세', type: 'B' }] },
+            { q: '스트레스를 풀기 위한 최고의 안주는?', options: [{ text: '씹는 맛이 일품인 매콤한 닭발', type: 'A' }, { text: '부드럽고 달콤한 케이크', type: 'B' }] },
+            { q: '어려운 고민이 있을 때 당신의 행동은?', options: [{ text: '친구들을 불러 수다 떨며 잊는다', type: 'A' }, { text: '혼자 밤새 고민하며 해결책을 찾는다', type: 'B' }] },
+            { q: '지금 당신의 에너지는 어떤 상태인가요?', options: [{ text: '금방이라도 폭발할 것 같은 화산', type: 'A' }, { text: '서서히 말라가는 작은 샘물', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '포효하는 용맹한 사자', desc: '스트레스 상황에서 정면 돌파를 선택하는 당신! 강한 추진력으로 위기를 극복하는 멋진 리더 타입입니다.', img: 'https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '웅크린 귀여운 고슴도치', desc: '힘들 땐 자신을 보호하며 시간을 갖는 당신! 섬세하고 조심스러운 성격이 매력적인 평화주의자입니다.', img: 'https://images.unsplash.com/photo-1503777119540-ce54b422baff?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p31', category: '재미', title: '나의 인생 영화 장르', desc: '당신의 삶을 영화로 만든다면 어떤 장르가 어울릴까요?', thumb: 'https://images.unsplash.com/photo-1485846234645-a62644f84728?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '당신이 가장 좋아하는 배경은?', options: [{ text: '최첨단 도시의 화려한 야경', type: 'A' }, { text: '푸른 숲속의 고요한 오두막', type: 'B' }] },
+            { q: '영화 속 당신의 의상은?', options: [{ text: '카리스마 넘치는 블랙 가죽 자켓', type: 'A' }, { text: '포근하고 화사한 니트 원피스/셔츠', type: 'B' }] },
+            { q: '인생의 교훈을 한 문장으로 한다면?', options: [{ text: '"강한 자가 살아남는 것이다"', type: 'A' }, { text: '"사랑이 세상을 구원할 것이다"', type: 'B' }] },
+            { q: '당신의 절친 역할은 누구?', options: [{ text: '말보다 행동이 빠른 열혈 파트너', type: 'A' }, { text: '언제나 곁을 지켜주는 다정한 소울메이트', type: 'B' }] },
+            { q: '영화의 클라이맥스 장면은?', options: [{ text: '거대한 폭발 속에서 살아남는 장면', type: 'A' }, { text: '비 내리는 창밖을 보며 미소 짓는 장면', type: 'B' }] },
+            { q: '관객들이 당신에게 기대하는 것은?', options: [{ text: '손에 땀을 쥐게 하는 통쾌한 복수', type: 'A' }, { text: '가슴 뭉클해지는 따뜻한 위로', type: 'B' }] },
+            { q: '영화가 끝나고 엔딩 크레딧 곡은?', options: [{ text: '강렬한 록 음악이나 웅장한 OST', type: 'A' }, { text: '잔잔한 어쿠스틱 발라드', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '스펙터클 액션 블록버스터', desc: '당신은 인생의 모든 역경을 시원하게 뚫고 나가는 주인공입니다! 박진감 넘치는 삶이 당신을 기다립니다.', img: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '서정적인 멜로 판타지', desc: '당신의 삶은 한 편의 시처럼 아름답고 신비롭습니다. 주변 사람들에게 따뜻한 감동을 주는 소중한 존재입니다.', img: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p32', category: '재미', title: '나의 워라밸 지수 테스트', desc: '당신은 일과 삶 중 어디에 더 무게를 두고 있나요?', thumb: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '퇴근 후 집에서도 업무 연락을 확인하나요?', options: [{ text: '당연하다, 확인해야 마음이 편하다', type: 'A' }, { text: '절대 금지! 업무 모드는 꺼둔다', type: 'B' }] },
+            { q: '주말에 아무런 계획이 없다면 당신은?', options: [{ text: '밀린 공부를 하거나 자기계발을 한다', type: 'A' }, { text: '하루 종일 침대와 한 몸이 되어 쉰다', type: 'B' }] },
+            { q: '회식 자리에 대한 당신의 생각은?', options: [{ text: '사회생활의 연장선, 기꺼이 참여한다', type: 'A' }, { text: '개인 시간이 더 소중하다, 정중히 거절한다', type: 'B' }] },
+            { q: '가장 받고 싶은 포상은?', options: [{ text: '높은 보너스와 승진', type: 'A' }, { text: '유급 휴가와 자유로운 시간', type: 'B' }] },
+            { q: '업무 중 가장 즐거운 시간은?', options: [{ text: '프로젝트를 완벽하게 마무리했을 때', type: 'A' }, { text: '점심시간이나 커피 브레이크 타임', type: 'B' }] },
+            { q: '나의 인생 가치관은?', options: [{ text: '성취와 성공이 주는 짜릿함', type: 'A' }, { text: '소소하고 확실한 일상의 행복', type: 'B' }] },
+            { q: '미래의 나에게 하고 싶은 말은?', options: [{ text: '"최고의 자리까지 올라가느라 고생했어"', type: 'A' }, { text: '"여유롭게 인생을 즐기느라 고생했어"', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '열정 가득한 워커홀릭 전차', desc: '당신은 목표를 향해 달리는 질주본능이 뛰어납니다. 성취감에서 가장 큰 행복을 느끼는 타입입니다.', img: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '여유로운 삶의 낭만 항해사', desc: '당신은 삶의 진정한 의미를 알고 즐길 줄 아는 멋쟁이입니다. 마음의 평화가 당신의 가장 큰 자산입니다.', img: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p33', category: '재미', title: '나의 수면 유형 동물 찾기', desc: '당신의 잠자는 습관으로 성격의 이면을 분석합니다.', thumb: 'https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '잠자리에 들기 전 당신이 하는 일은?', options: [{ text: '내일 할 일을 꼼꼼히 체크한다', type: 'A' }, { text: '좋아하는 영상을 보며 멍하니 있는다', type: 'B' }] },
+            { q: '아침 알람 소리를 들었을 때 반응은?', options: [{ text: '한 번에 벌떡 일어나 씻으러 간다', type: 'A' }, { text: '5분만 더... 스누즈 버튼을 연타한다', type: 'B' }] },
+            { q: '잠잘 때 당신의 주된 포즈는?', options: [{ text: '반듯하게 누워 정자세로 잔다', type: 'A' }, { text: '몸을 웅크리거나 인형을 안고 잔다', type: 'B' }] },
+            { q: '꿈을 얼마나 자주 꾸나요?', options: [{ text: '거의 꾸지 않거나 기억이 안 난다', type: 'A' }, { text: '매일 밤 스펙터클한 꿈을 꾼다', type: 'B' }] },
+            { q: '가장 선호하는 잠옷 스타일은?', options: [{ text: '깔끔하고 단정한 면 잠옷', type: 'A' }, { text: '최대한 편안한 낡은 티셔츠', type: 'B' }] },
+            { q: '낮잠에 대한 당신의 생각은?', options: [{ text: '시간 아깝다, 밤에 몰아서 자야 한다', type: 'A' }, { text: '꿀맛 같은 휴식, 틈나면 자야 한다', type: 'B' }] },
+            { q: '일어났을 때 가장 먼저 드는 생각은?', options: [{ text: '오늘 하루도 활기차게 시작해보자!', type: 'A' }, { text: '벌써 아침이야? 더 자고 싶다...', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '부지런한 아침형 종달새', desc: '당신은 계획적이고 에너지가 넘치는 사람입니다! 규칙적인 생활이 당신의 성공을 돕습니다.', img: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '여유로운 밤의 수호자, 부엉이', desc: '당신은 감수성이 풍부하고 밤에 창의력이 샘솟는 사람입니다! 자유로운 영혼이 당신의 매력 포인트입니다.', img: 'https://images.unsplash.com/photo-1543807535-eceef0bc6599?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p34', category: '재미', title: '나의 여행 가방 MBTI', desc: '짐 싸는 스타일로 알아보는 당신의 핵심 성격!', thumb: 'https://images.unsplash.com/photo-1505691938895-1758d7eaa511?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '여행 일주일 전, 당신은 무엇을 하나요?', options: [{ text: '가져갈 물건 리스트를 작성한다', type: 'A' }, { text: '아무 생각 없다가 전날 밤에 챙긴다', type: 'B' }] },
+            { q: '캐리어 안의 상태는 어떤가요?', options: [{ text: '파우치별로 완벽하게 분류되어 있다', type: 'A' }, { text: '일단 다 때려 넣어서 닫기 힘들 정도다', type: 'B' }] },
+            { q: '비상약이나 우산 등을 꼭 챙기나요?', options: [{ text: '혹시 모르니 만반의 준비를 다 한다', type: 'A' }, { text: '필요하면 가서 사지 뭐 하고 넘긴다', type: 'B' }] },
+            { q: '공항에 도착했을 때 당신의 모습은?', options: [{ text: '3시간 전 도착해서 여유를 즐긴다', type: 'A' }, { text: '간당간당하게 도착해서 전력 질주한다', type: 'B' }] },
+            { q: '여행지에서 입을 옷 선택 기준은?', options: [{ text: '요일별로 코디를 미리 다 짜둔다', type: 'A' }, { text: '그날 아침 기분에 따라 골라 입는다', type: 'B' }] },
+            { q: '기념품 쇼핑에 대한 당신의 태도는?', options: [{ text: '지인들에게 줄 선물을 꼼꼼히 챙긴다', type: 'A' }, { text: '귀찮아서 내 거 하나 사면 끝이다', type: 'B' }] },
+            { q: '여행이 끝나고 돌아와서 짐 정리는?', options: [{ text: '오자마자 바로 다 풀어서 세탁기 돌린다', type: 'A' }, { text: '일주일 동안 캐리어가 현관에 방치된다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '철저한 준비성의 컨트롤러', desc: '당신은 어떤 상황에서도 당황하지 않는 완벽주의자입니다. 당신의 든든함이 주변 사람들을 안심시킵니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '자유로운 영혼의 방랑자', desc: '당신은 틀에 박힌 것보다 우연의 행복을 즐기는 사람입니다. 낙천적인 성격이 당신의 삶을 다채롭게 만듭니다.', img: 'https://images.unsplash.com/photo-1518186285589-2f7649de83e0?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p35', category: '재미', title: '인생 최종 가치관 진단', desc: '당신이 삶에서 가장 소중하게 여기는 단 하나의 가치를 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '다시 태어난다면 어떤 삶을?', options: [{ text: '역사에 이름을 남기는 위대한 삶', type: 'A' }, { text: '평범하지만 사랑 가득한 행복한 삶', type: 'B' }] },
+            { q: '당신이 가장 후회하는 순간은?', options: [{ text: '성공할 기회를 놓쳤을 때', type: 'A' }, { text: '사랑하는 사람에게 상처 줬을 때', type: 'B' }] },
+            { q: '돈과 명예 중 하나를 고른다면?', options: [{ text: '세상을 바꿀 수 있는 막강한 명예', type: 'A' }, { text: '현실적인 풍요를 누릴 수 있는 돈', type: 'B' }] },
+            { q: '당신의 묘비명에 적고 싶은 말은?', options: [{ text: '"여기 최고의 업적을 남긴 이가 잠들다"', type: 'A' }, { text: '"여기 누구보다 뜨겁게 사랑한 이가 잠들다"', type: 'B' }] },
+            { q: '인생의 가장 큰 시련이 왔을 때 당신은?', options: [{ text: '더욱 강해져서 스스로 일어선다', type: 'A' }, { text: '주변의 사랑으로 상처를 치유한다', type: 'B' }] },
+            { q: '당신이 생각하는 "진정한 성공"이란?', options: [{ text: '나의 능력을 세상에 입증하는 것', type: 'A' }, { text: '내 마음의 평온을 지키는 것', type: 'B' }] },
+            { q: '마지막으로 나 자신에게 해주고 싶은 말은?', options: [{ text: '"너는 정말 위대한 일을 해냈어!"', type: 'A' }, { text: '"너는 정말 충분히 사랑받을 자격이 있어"', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '찬란한 성취의 별', desc: '당신은 자아실현과 목표 달성을 통해 삶의 의미를 찾는 분입니다. 당신의 성공이 세상을 밝히는 등불이 됩니다.', img: 'https://images.unsplash.com/photo-1507679799987-c7377ec486e8?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '따뜻한 사랑의 안식처', desc: '당신은 관계와 정서적 충만함을 최고의 가치로 여기는 분입니다. 당신의 존재 자체가 누군가에겐 살아가는 이유입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    // --- Fortune Tests (15) ---
+    {
+        id: 'f21', category: '사주', title: '오늘의 행운 상징 타로', desc: '당신을 행운으로 이끌어줄 오늘의 특별한 상징물을 확인하세요.', thumb: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '지금 이 순간, 가장 갖고 싶은 물건은?', options: [{ text: '반짝이는 보석이나 액세서리', type: 'A' }, { text: '부드러운 질감의 인형이나 쿠션', type: 'B' }] },
+            { q: '오늘 아침, 당신의 기분을 색으로 표현한다면?', options: [{ text: '정열적인 오렌지나 레드', type: 'A' }, { text: '차분한 에메랄드나 민트', type: 'B' }] },
+            { q: '길을 걷다 마주친 행운의 징조는?', options: [{ text: '하늘에 뜬 일곱 빛깔 무지개', type: 'A' }, { text: '발밑에 떨어진 네 잎 클로버', type: 'B' }] },
+            { q: '지금 당장 떠나고 싶은 곳의 날씨는?', options: [{ text: '햇살 가득 화창한 날씨', type: 'A' }, { text: '안개 자욱한 신비로운 날씨', type: 'B' }] },
+            { q: '누군가에게 행운을 빌어준다면?', options: [{ text: '힘찬 응원의 메시지를 보낸다', type: 'A' }, { text: '조용히 기도하며 마음을 전한다', type: 'B' }] },
+            { q: '오늘 당신의 걸음걸이는 어떤가요?', options: [{ text: '자신감 있게 씩씩한 발걸음', type: 'A' }, { text: '주변을 살피며 조심스러운 발걸음', type: 'B' }] },
+            { q: '꿈속에서 당신은 무엇이 되고 싶나요?', options: [{ text: '세상을 비추는 밝은 별', type: 'A' }, { text: '바다를 품은 깊은 심연', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '타오르는 불꽃의 상징', desc: '오늘은 열정과 도전을 상징하는 기운이 당신과 함께합니다. 망설이지 말고 행동하세요. 당신의 에너지가 모든 것을 이룰 것입니다.', img: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '은은한 달빛의 상징', desc: '오늘은 통찰과 안정을 상징하는 기운이 감도는 날입니다. 조급함보다는 침착함을 유지하면 큰 결실을 맺게 될 것입니다.', img: 'https://images.unsplash.com/photo-1499209974431-9dac3e5d9774?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    // ... (14 more fortune tests would go here, IDs f22-f35)
 ];
