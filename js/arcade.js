@@ -18,6 +18,8 @@ export function initArcade() {
         if (target.id === 'alchemy-5-btn') await playAlchemy(5);
         if (target.id === 'alchemy-10-btn') await playAlchemy(10);
         
+        if (target.id === 'fusion-btn') await playFusion();
+        
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'slot-spin-btn') await playSlotMachine();
         if (target.id === 'bomb-start-btn') await startBombGame();
@@ -292,6 +294,73 @@ async function playAlchemy(count) {
         }, 1500);
     } else {
         buttons.forEach(btn => { if(btn) btn.disabled = false; });
+    }
+}
+
+async function playFusion() {
+    if (!UserState.user) return alert("로그인이 필요합니다!");
+    
+    const cost = 2500;
+    const resultEl = document.getElementById('fusion-result');
+    if (!resultEl) return;
+
+    const availableRares = UserState.data.inventory.filter(name => ITEM_GRADES['RARE'].includes(name));
+
+    if (availableRares.length < 1) {
+        alert("재료로 사용할 RARE 등급 아이템이 없습니다!");
+        return;
+    }
+
+    if (!confirm(`RARE 아이템 1개를 제물로 바쳐 전설 아이템을 연성하시겠습니까? (비용: ${cost}P)`)) return;
+
+    const fusionBtn = document.getElementById('fusion-btn');
+    if (fusionBtn) fusionBtn.disabled = true;
+
+    if (await usePoints(cost, "별빛 융합 시행")) {
+        await updateArcadeStat('alchemy'); // 통계는 연금술과 공유
+        resultEl.innerHTML = '<span class="loading-dots">우주의 기운을 모으는 중...</span>';
+        
+        setTimeout(async () => {
+            try {
+                const userRef = doc(db, "users", UserState.user.uid);
+                let currentInv = [...UserState.data.inventory];
+                
+                // RARE 제물 1개 제거
+                const idx = currentInv.findIndex(name => ITEM_GRADES['RARE'].includes(name));
+                const sacrificedItem = currentInv[idx];
+                if (idx > -1) currentInv.splice(idx, 1);
+
+                // LEGENDARY 등급 중 랜덤 선택 (연금술 전용 포함)
+                const legendaryItems = ITEM_GRADES['LEGENDARY'];
+                const resultItem = legendaryItems[Math.floor(Math.random() * legendaryItems.length)];
+
+                currentInv.push(resultItem);
+                const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
+                
+                await updateDoc(userRef, { 
+                    inventory: currentInv, 
+                    totalScore: recalcScore, 
+                    discoveredItems: arrayUnion(resultItem) 
+                });
+
+                UserState.data.inventory = currentInv;
+                UserState.data.totalScore = recalcScore;
+
+                resultEl.innerHTML = `<div style="animation: float 2s infinite ease-in-out;"><strong>✨ [${resultItem}] 연성 성공!</strong><br><small>${sacrificedItem}이(가) 승화되었습니다.</small></div>`;
+                
+                if (window.location.hash === '#arcade') {
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
+                }
+                updateUI();
+            } catch (e) {
+                console.error(e);
+                resultEl.textContent = "융합 중 폭주가 발생했습니다!";
+            } finally {
+                if (fusionBtn) fusionBtn.disabled = false;
+            }
+        }, 2000);
+    } else {
+        if (fusionBtn) fusionBtn.disabled = false;
     }
 }
 

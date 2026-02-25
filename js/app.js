@@ -6,7 +6,7 @@ import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from './tests-data.js?v=2.2.1';
+import { TESTS } from './tests-data.js?v=2.2.3';
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -768,6 +768,32 @@ function renderArcade() {
                     <div id="market-ui-container"></div>
                     <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-color); color:var(--accent-color); font-weight: 800;">판매 목록 열기</button>
                 </div>
+                <!-- 별빛 융합 (신규 기능) -->
+                <div class="card arcade-item-card fusion-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">✨ 별빛 융합</h3>
+                        <span style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">LEGENDARY</span>
+                    </div>
+                    
+                    <div style="background:var(--bg-color); padding:1rem; border-radius:12px; margin-bottom:1.25rem; border:1px solid var(--border-color); text-align:center;">
+                        <p style="font-size:0.8rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">필요한 제물</p>
+                        <div style="display:flex; justify-content:center; gap:1rem; align-items:center;">
+                            <div style="background:var(--card-bg); padding:0.5rem 1rem; border-radius:10px; border:1px solid #f59e0b;">
+                                <small style="display:block; font-size:0.6rem; color:var(--text-sub);">RARE 등급</small>
+                                <strong style="color:#f59e0b;">1개</strong> (보유: <span id="count-rare-fusion">0</span>)
+                            </div>
+                            <span style="font-size:1.5rem;">+</span>
+                            <div style="background:var(--card-bg); padding:0.5rem 1rem; border-radius:10px; border:1px solid var(--accent-color);">
+                                <small style="display:block; font-size:0.6rem; color:var(--text-sub);">융합 비용</small>
+                                <strong style="color:var(--accent-color);">2,500P</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="fusion-result" style="text-align:center; font-weight:800; color:#f59e0b; margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(245, 158, 11, 0.05); border-radius:10px;">전설의 기운이 감돌고 있습니다</div>
+                    
+                    <button id="fusion-btn" class="btn-primary" style="background:linear-gradient(135deg, #f59e0b, #ef4444); width:100%; height:55px; font-weight:900; font-size:1.1rem; border:none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">융합 시작 (100% 전설 획득)</button>
+                </div>
             </div>
 
             <div class="card booster-section fade-in" style="margin-top:2.5rem; background:linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border: 2px solid var(--accent-soft); padding: 2rem; border-radius: var(--radius-lg);">
@@ -794,9 +820,12 @@ function renderArcade() {
         const commonEl = document.getElementById('count-common');
         const uncommonEl = document.getElementById('count-uncommon');
         const rareEl = document.getElementById('count-rare');
+        const rareFusionEl = document.getElementById('count-rare-fusion');
+        
         if (commonEl) commonEl.textContent = counts.COMMON;
         if (uncommonEl) uncommonEl.textContent = counts.UNCOMMON;
         if (rareEl) rareEl.textContent = counts.RARE;
+        if (rareFusionEl) rareFusionEl.textContent = counts.RARE;
     };
     updateAlchemyCounts();
 
