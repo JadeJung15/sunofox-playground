@@ -2,6 +2,8 @@ import { auth, db } from './firebase-init.js';
 import { 
     onAuthStateChanged, 
     signInWithPopup, 
+    signInWithRedirect,
+    getRedirectResult,
     GoogleAuthProvider, 
     signOut 
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
@@ -91,6 +93,15 @@ export function initAuth() {
     if (authInitialized) return;
     authInitialized = true;
 
+    // 리디렉션 결과 처리
+    getRedirectResult(auth).catch(error => {
+        if (error.code === 'auth/disallowed-useragent') {
+            alert("구글 정책으로 인해 현재 브라우저에서는 로그인이 불가능합니다. 외부 브라우저(Chrome, Safari 등)를 사용해 주세요.");
+        } else {
+            console.error("Auth redirect error:", error);
+        }
+    });
+
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             UserState.user = user;
@@ -110,7 +121,17 @@ export function initAuth() {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
             const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider).catch(console.error);
+            
+            // 인앱 브라우저 감지 로직 (카카오톡, 라인 등)
+            const ua = navigator.userAgent.toLowerCase();
+            const isInApp = ua.indexOf('kakaotalk') > -1 || ua.indexOf('line') > -1 || ua.indexOf('naver') > -1;
+
+            if (isInApp) {
+                alert("구글 보안 정책으로 인해 인앱 브라우저에서는 로그인이 차단될 수 있습니다. 오른쪽 상단 점 3개 버튼을 눌러 '외부 브라우저로 열기'를 선택해 주세요.");
+            }
+
+            // 팝업 대신 리디렉션 사용 (disallowed_useragent 방지)
+            signInWithRedirect(auth, provider).catch(console.error);
         }
         if (target.id === 'logout-btn') {
             signOut(auth).then(() => { location.hash = '#home'; });
