@@ -1322,7 +1322,9 @@ function renderTestExecution(testId) {
         app.innerHTML = `
             <div class="test-intro-container fade-in" style="padding: 2rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
                 <div class="test-visual-header" style="margin-top: 2rem; margin-bottom: 2.5rem;">
-                    <div style="width: 120px; height: 120px; margin: 0 auto; border-radius: 30px; background: url('${test.thumb}') center/cover; box-shadow: var(--shadow-lg); border: 4px solid var(--card-bg);"></div>
+                    <div class="test-thumb-wrapper" style="width: 120px; height: 120px; margin: 0 auto; border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 4px solid var(--card-bg);">
+                        <img src="${test.thumb}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
+                    </div>
                     <span class="test-category-tag" style="margin-top: 1.5rem; display: inline-block;">${test.category} 분석</span>
                     <h2 style="font-size: 2rem; font-weight: 900; margin-top: 1rem; line-height: 1.3;">${test.title}</h2>
                 </div>
@@ -1368,7 +1370,9 @@ function renderTestExecution(testId) {
                 <button id="test-back-btn" class="btn-secondary" style="position: absolute; top: 1rem; left: 1rem; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; border: none; background: rgba(0,0,0,0.05); display: ${step > 0 ? 'inline-block' : 'none'};">← 이전</button>
                 
                 <div class="test-visual-header" style="margin-top: 3rem; margin-bottom: 2rem;">
-                    <div style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; background: url('${test.thumb}') center/cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 3px solid var(--card-bg);"></div>
+                    <div class="test-thumb-mini-wrapper" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 3px solid var(--card-bg);">
+                        <img src="${test.thumb}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
+                    </div>
                     <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-sub); margin-top: 0.8rem; letter-spacing: 0.05em;">${test.title}</div>
                 </div>
 
