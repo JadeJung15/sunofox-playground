@@ -294,7 +294,7 @@ const profileCache = new Map();
 
 export function updateProfileCache(uid, partialData) {
     if (!uid) return;
-    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", bio: "", points: 0, totalScore: 0, inventory: [], activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
+    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", bio: "", points: 0, totalScore: 0, inventory: [], isMaster: false, activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
     profileCache.set(uid, { ...current, ...partialData });
 }
 
@@ -314,6 +314,7 @@ export async function fetchUserProfile(uid) {
                 points: data.points || 0,
                 totalScore: data.totalScore || 0,
                 inventory: data.inventory || [],
+                isMaster: data.isMaster || false,
                 activeAura: data.activeAura || "NONE",
                 activeBorder: data.activeBorder || "NONE",
                 activeBackground: data.activeBackground || "NONE"
@@ -324,7 +325,7 @@ export async function fetchUserProfile(uid) {
     } catch (e) {
         console.error("Profile fetch error:", e);
     }
-    return { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
+    return { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", isMaster: false, activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
 }
 
 let rankCache = { data: null, timestamp: 0 };

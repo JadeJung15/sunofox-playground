@@ -528,22 +528,42 @@ window.showProfileModal = async (uid) => {
     const overlay = document.getElementById('profile-modal-overlay');
     const profile = await fetchUserProfile(uid);
     const tier = getTier(profile.totalScore || 0);
+    const isMasterUser = profile.isMaster;
+
+    const modal = overlay.querySelector('.profile-card-modal');
+    const avatarEl = document.getElementById('pm-avatar');
+    const statsContainer = overlay.querySelector('.profile-card-stats');
+
+    // 스킨 효과 적용
+    const auraClass = (profile.activeAura && profile.activeAura !== 'NONE') ? AURA_SHOP[profile.activeAura]?.class || '' : '';
+    const borderClass = (profile.activeBorder && profile.activeBorder !== 'NONE') ? BORDER_SHOP[profile.activeBorder]?.class || '' : '';
+    const bgClass = (profile.activeBackground && profile.activeBackground !== 'NONE') ? BACKGROUND_SHOP[profile.activeBackground]?.class || '' : '';
+
+    modal.className = `profile-card-modal ${bgClass}`;
+    avatarEl.className = `profile-card-avatar ${borderClass} ${auraClass}`;
     
     document.getElementById('pm-avatar').textContent = profile.emoji || '👤';
-    document.getElementById('pm-nickname').textContent = profile.nickname;
+    document.getElementById('pm-nickname').textContent = (isMasterUser ? '💎 ' : '') + profile.nickname;
     document.getElementById('pm-nickname').style.color = profile.nameColor || 'inherit';
-    document.getElementById('pm-tier').textContent = tier.name;
+    document.getElementById('pm-tier').textContent = isMasterUser ? 'MASTER' : tier.name;
     document.getElementById('pm-bio').textContent = profile.bio || "작성된 자기소개가 없습니다.";
-    document.getElementById('pm-points').textContent = (profile.points || 0).toLocaleString();
-    document.getElementById('pm-score').textContent = (profile.totalScore || 0).toLocaleString();
-    document.getElementById('pm-items').textContent = (profile.inventory || []).length;
-    
-    // 랭킹 표시 (비동기 로드)
-    const rankEl = document.getElementById('pm-rank');
-    rankEl.textContent = "Loading...";
-    fetchUserRank(uid).then(rank => {
-        rankEl.textContent = typeof rank === 'number' ? `${rank}위` : rank;
-    });
+
+    // 마스터인 경우 통계 숨기기
+    if (isMasterUser) {
+        statsContainer.style.display = 'none';
+    } else {
+        statsContainer.style.display = 'grid';
+        document.getElementById('pm-points').textContent = (profile.points || 0).toLocaleString();
+        document.getElementById('pm-score').textContent = (profile.totalScore || 0).toLocaleString();
+        document.getElementById('pm-items').textContent = (profile.inventory || []).length;
+        
+        // 랭킹 표시 (비동기 로드)
+        const rankEl = document.getElementById('pm-rank');
+        rankEl.textContent = "Loading...";
+        fetchUserRank(uid).then(rank => {
+            rankEl.textContent = typeof rank === 'number' ? `${rank}위` : rank;
+        });
+    }
     
     // 자기소개 수정 버튼 처리 (본인인 경우만 표시)
     const editBioBtn = document.getElementById('btn-edit-bio');
