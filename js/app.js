@@ -945,41 +945,41 @@ async function renderResult(testId, traitScores) {
             <div class="aura-sphere" style="background: ${themeColor}; top: -100px; left: -100px; opacity: 0.2;"></div>
             <div class="aura-sphere" style="background: ${themeColor}; bottom: -100px; right: -100px; opacity: 0.1; animation-delay: -5s;"></div>
         </div>
-        <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
-            <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44; backdrop-filter: blur(5px);">
-                <div style="padding: 1.5rem 1.5rem 0;">
-                    <div class="result-img-wrapper" style="height: 300px; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 4px solid #fff;">
+        <div class="result-page fade-in" style="min-height: 100vh; padding: 1.5rem 0.75rem;">
+            <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-lg); border: 1px solid ${themeColor}22; backdrop-filter: blur(10px);">
+                <div style="padding: 1.25rem 1.25rem 0;">
+                    <div class="result-img-wrapper" style="height: 220px; position: relative; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.12); border: 2px solid #fff;">
                         <img src="${result.img}" alt="${result.title}" 
                              style="width: 100%; height: 100%; object-fit: cover;" 
                              onerror="window.handleImgError(this)">
                     </div>
                 </div>
-                <div style="padding: 1.5rem 1.5rem 2.5rem; text-align: center;">
-                    <div style="display:flex; justify-content:center; gap:8px; margin-bottom:1.5rem;" class="result-tag-floating">
-                        ${tags.map(tag => `<span style="background:${themeColor}22; color:${themeColor}; padding:6px 14px; border-radius:50px; font-size:0.85rem; font-weight:800;">${tag}</span>`).join('')}
+                <div style="padding: 1.25rem 1.25rem 2rem; text-align: center;">
+                    <div style="display:flex; justify-content:center; gap:6px; margin-bottom:1.25rem;" class="result-tag-floating">
+                        ${tags.map(tag => `<span style="background:${themeColor}15; color:${themeColor}; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:800; border:1px solid ${themeColor}22;">${tag}</span>`).join('')}
                     </div>
-                    <h2 style="font-size: 2.6rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em;">${result.title}</h2>
+                    <h2 style="font-size: 2.1rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em; line-height: 1.1;">${result.title}</h2>
                     
-                    <div style="min-height: 8rem; margin-bottom: 2.5rem; background: rgba(255,255,255,0.5); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);">
-                        <p id="typing-desc" style="font-size: 1.15rem; line-height: 1.9; color: var(--text-main); word-break: keep-all; font-weight: 600;"></p>
+                    <div style="min-height: 6rem; margin-bottom: 2rem; background: rgba(var(--accent-rgb), 0.03); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
+                        <p id="typing-desc" style="font-size: 1.05rem; line-height: 1.8; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: left;"></p>
                     </div>
                     
-                    <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 24px; padding: 2.5rem 1rem; margin-bottom: 3rem; border: 1px solid var(--border-color); position: relative;">
-                        <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-sub); font-weight: 800; letter-spacing: 0.1em;">나의 7단계 심층 지표</h4>
-                        <canvas id="radarChart" width="220" height="220" style="margin: 0 auto;"></canvas>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem;">
-                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">에너지 ${Math.round(stats.energy)}%</div>
-                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">논리 ${Math.round(stats.logic)}%</div>
-                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">공감 ${Math.round(stats.empathy)}%</div>
-                            <div style="font-size: 0.75rem; color: ${themeColor}; font-weight: 800;">독창성 ${Math.round(stats.creativity)}%</div>
+                    <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 0.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative;">
+                        <h4 style="margin-bottom: 1.25rem; font-size: 0.85rem; color: var(--text-sub); font-weight: 800; letter-spacing: 0.05em;">7단계 심층 아우라 지표</h4>
+                        <canvas id="radarChart" width="200" height="200" style="margin: 0 auto; max-width: 100%;"></canvas>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.25rem; padding: 0 1rem;">
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">에너지 ${Math.round(stats.energy)}%</div>
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">논리 ${Math.round(stats.logic)}%</div>
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">공감 ${Math.round(stats.empathy)}%</div>
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">독창성 ${Math.round(stats.creativity)}%</div>
                         </div>
                     </div>
 
-                    <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 2.2rem; border-radius: 24px; margin-bottom: 2.5rem; box-shadow: 0 10px 25px rgba(0,0,0,0.1); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: -10px; right: -10px; font-size: 5rem; opacity: 0.1;">✨</div>
-                        <span style="font-size: 0.85rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 1rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
-                        <div style="font-size: 2.2rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.6rem; text-shadow: 0 0 15px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
-                        <p style="opacity: 0.7; font-size: 0.9rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
+                    <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.75rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -5px; right: -5px; font-size: 4rem; opacity: 0.1;">✨</div>
+                        <span style="font-size: 0.75rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.75rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
+                        <div style="font-size: 1.8rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.4rem; text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
+                        <p style="opacity: 0.7; font-size: 0.8rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
@@ -1105,32 +1105,38 @@ async function renderResult(testId, traitScores) {
         ctx.stroke();
     }
 
-    // 결과 페이지 공유 버튼 이벤트 (v2.1.0 추가)
+    // 결과 페이지 공유 버튼 이벤트 (개선: 결과가 아닌 테스트 링크 공유)
     const resultShareBtn = document.getElementById('result-share-btn');
     if(resultShareBtn) {
         resultShareBtn.onclick = async () => {
-            const siteUrl = window.location.href;
+            const testUrl = `${window.location.origin}/#test/${testId}`; // 결과가 아닌 테스트 시작 링크
+            const shareText = `[${test.title}] 당신도 한번 도전해보세요! 딱 7번의 질문으로 찾는 나의 본모습 ✨`;
+            
             if (navigator.share) {
                 try {
-                    await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
-                    await addPoints(30, '테스트 공유 보상');
+                    await navigator.share({ 
+                        title: 'SevenCheck 심리분석', 
+                        text: shareText, 
+                        url: testUrl 
+                    });
+                    await addPoints(30, '테스트 추천 보상');
                 } catch (e) {}
             } else {
-                await copyLink(siteUrl);
+                await copyLink(testUrl);
             }
         };
     }
 
-    // 인스타용 저장 버튼 이벤트
+    // 공유이미지 저장 버튼 이벤트
     const storyBtn = document.getElementById('save-story-btn');
     if(storyBtn) {
         storyBtn.onclick = async () => {
             storyBtn.disabled = true;
-            storyBtn.textContent = "생성 중...";
-            const success = await saveAsStoryImage('story-capture-area', `7Check_${test.title.replace(/\s/g, '_')}.png`);
-            if(success) alert("인스타 스토리 최적화 이미지가 저장되었습니다! 📸\n30P가 적립되었습니다.");
+            storyBtn.textContent = "이미지 생성 중...";
+            const success = await saveAsStoryImage('story-capture-area', `7Check_${testId}.png`);
+            if(success) alert("공유용 고해상도 리포트가 저장되었습니다! 📸\n30P가 적립되었습니다.");
             storyBtn.disabled = false;
-            storyBtn.innerHTML = "<span>📸</span> 인스타용 저장";
+            storyBtn.innerHTML = "<span>📸</span> 공유이미지 저장";
         };
     }
 }
