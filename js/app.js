@@ -55,25 +55,29 @@ async function fetchAllLikes() {
 
 async function handleLike(testId) {
     if (!UserState.user) return alert("로그인이 필요합니다.");
-    if (sessionStorage.getItem(`liked_${testId}`)) return alert("이미 완료한 투표입니다.");
+    
+    // 하루 1회 제한 로직 (한국 시간 기준)
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
+    const likeKey = `liked_${testId}_${today}`;
+    
+    if (localStorage.getItem(likeKey)) {
+        alert("오늘 이미 이 테스트에 하트를 누르셨습니다! ❤️");
+        return;
+    }
+
     try {
         const statsRef = doc(db, "testStats", testId);
         await setDoc(statsRef, { likes: increment(1) }, { merge: true });
-        sessionStorage.setItem(`liked_${testId}`, "true");
+        
+        localStorage.setItem(likeKey, "true");
         testLikesData[testId] = (testLikesData[testId] || 0) + 1;
-        await addPoints(5);
+        await addPoints(5, '테스트 추천 보상');
         
-        // 1. 플로팅 아이콘 업데이트
-        const floatingIcon = document.getElementById(`like-icon-floating-${testId}`);
-        if (floatingIcon) floatingIcon.textContent = '❤️';
-        
-        // 2. 하단 카운트 뱃지 업데이트
-        const countEl = document.getElementById(`like-count-${testId}`);
-        if (countEl) countEl.textContent = testLikesData[testId];
-        
-        // 3. 버튼 활성화 상태 클래스 추가
-        const btn = document.getElementById(`like-btn-${testId}`);
-        if (btn) btn.classList.add('active');
+        // UI 즉시 업데이트
+        const counter = document.getElementById(`like-count-${testId}`);
+        const badge = document.getElementById(`like-badge-${testId}`);
+        if (counter) counter.textContent = testLikesData[testId];
+        if (badge) badge.style.background = "#ef4444";
         
         alert("감사합니다! 5P가 적립되었습니다. ❤️");
     } catch (e) { console.error(e); }
@@ -307,26 +311,22 @@ async function renderHome(hash) {
 
 function renderTestCard(t) {
     const likes = testLikesData[t.id] || 0;
-    const isLiked = sessionStorage.getItem(`liked_${t.id}`);
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
+    const isLikedToday = localStorage.getItem(`liked_${t.id}_${today}`);
+    
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative;">
         <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 15px;">
             <img src="${t.thumb}" alt="${t.title}" 
                  style="width: 100%; height: 100%; object-fit: cover;" 
                  onerror="window.handleImgError(this)">
-            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
+            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%); pointer-events: none;"></div>
             
-            <!-- 플로팅 하트 버튼 (개선됨) -->
-            <button id="like-btn-${t.id}" 
-                    class="like-btn-floating ${isLiked ? 'active' : ''}" 
-                    onclick="event.stopPropagation(); handleLike('${t.id}')"
-                    style="position:absolute; top:12px; right:12px; z-index:20; width:40px; height:40px; border-radius:50%; background:#fff; border:none; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,0.2); cursor:pointer;">
-                <span id="like-icon-floating-${t.id}" style="font-size:1.2rem; line-height:1;">${isLiked ? '❤️' : '🤍'}</span>
-            </button>
-
-            <!-- 좋아요 카운트 뱃지 (썸네일 내부 좌측 하단) -->
-            <div style="position:absolute; bottom:12px; left:12px; z-index:10; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px); padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:4px; border: 1px solid rgba(255,255,255,0.2);">
-                <span>❤️</span> <span id="like-count-${t.id}">${likes}</span>
+            <!-- 단일화된 하트 버튼 (좌측 하단) -->
+            <div id="like-badge-${t.id}" 
+                 onclick="event.stopPropagation(); handleLike('${t.id}')"
+                 style="position:absolute; bottom:12px; left:12px; z-index:20; background: ${isLikedToday ? '#ef4444' : 'rgba(0,0,0,0.6)'}; color: #fff; backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; display: flex; align-items:center; gap:6px; border: 1px solid rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s ease;">
+                <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${likes}</span>
             </div>
         </div>
         <div class="test-info">
@@ -1004,7 +1004,16 @@ async function renderResult(testId, traitScores) {
                         </div>
                     </div>
 
-                    <div style="margin-top: auto; text-align: center;">
+                    <div style="margin-top: auto; text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
+                        <div style="font-size: 1.6rem; font-weight: 900; margin-bottom: 4px; letter-spacing: -0.02em;">SevenCheck</div>
+                        <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 800; color: #fbbf24;">https://sunofox-test.web.app</div>
+                        <div style="font-size: 0.65rem; opacity: 0.7; margin-top: 6px;">나를 찾는 가장 정교한 7단계 분석</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    const fullOldString = `                    <div style="margin-top: auto; text-align: center;">
                         <div style="font-size: 1.4rem; font-weight: 900; margin-bottom: 5px;">7Check</div>
                         <div style="font-size: 0.7rem; opacity: 0.8; font-weight: 600;">지금 7Check에서 당신의 아우라를 확인하세요</div>
                     </div>
