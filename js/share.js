@@ -48,10 +48,34 @@ export async function saveAsStoryImage(elementId, fileName = '7Check_Result.png'
     if (!element) return;
 
     try {
+        // 이미지들이 로드될 때까지 대기
+        const images = element.getElementsByTagName('img');
+        const loadPromises = Array.from(images).map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve;
+            });
+        });
+        await Promise.all(loadPromises);
+
         const canvas = await html2canvas(element, {
             useCORS: true,
-            scale: 2, // 고해상도
-            backgroundColor: null
+            scale: 2, // 고해상도 유지
+            backgroundColor: null,
+            logging: false,
+            allowTaint: true,
+            width: element.offsetWidth,
+            height: element.offsetHeight,
+            onclone: (clonedDoc) => {
+                // 복제된 문서에서 캡처 영역을 가시화하여 정확한 계산 유도
+                const clonedElement = clonedDoc.getElementById(elementId);
+                if (clonedElement) {
+                    clonedElement.style.position = 'relative';
+                    clonedElement.style.left = '0';
+                    clonedElement.style.top = '0';
+                }
+            }
         });
         
         const link = document.createElement('a');
@@ -59,7 +83,7 @@ export async function saveAsStoryImage(elementId, fileName = '7Check_Result.png'
         link.href = canvas.toDataURL('image/png');
         link.click();
 
-        // 보상 지급 (링크 공유와 동일한 로직)
+        // 보상 지급
         const now = Date.now();
         if (now - lastShareTime > 10000) {
             await addPoints(30, '이미지 저장 보상');

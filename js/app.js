@@ -1055,28 +1055,28 @@ async function renderResult(testId, traitScores) {
             </div>
 
             <!-- 인스타 스토리 전용 숨겨진 레이아웃 (9:16) -->
-            <div id="story-capture-area" style="position: absolute; left: -9999px; width: 360px; height: 640px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', sans-serif;">
+            <div id="story-capture-area" style="position: absolute; left: -9999px; width: 360px; height: 640px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', sans-serif; display: block;">
                 <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
-                <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 40px 30px;">
+                <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 40px 30px; box-sizing: border-box;">
                     <div style="text-align: center; margin-bottom: 20px;">
                         <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;">SEVEN CHECK REPORT</span>
                     </div>
                     
-                    <div class="story-img-wrapper" style="width: 100%; aspect-ratio: 1; border-radius: 20px; overflow:hidden; margin-bottom: 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
-                        <img src="${result.img}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
+                    <!-- 이미지 찌그러짐 방지를 위해 고정 크기 및 배경 이미지 방식 사용 -->
+                    <div class="story-img-wrapper" style="width: 300px; height: 300px; border-radius: 20px; overflow:hidden; margin: 0 auto 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3); background-image: url('${result.img}'); background-size: cover; background-position: center; flex-shrink: 0;">
                     </div>
                     
-                    <div style="text-align: center;">
-                        <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 15px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">${result.title}</h2>
+                    <div style="text-align: center; width: 100%;">
+                        <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 15px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3); word-break: keep-all;">${result.title}</h2>
                         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;">
-                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:50px; font-size:0.75rem; font-weight:700; backdrop-filter:blur(5px);">${tag}</span>`).join('')}
+                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:50px; font-size:0.7rem; font-weight:700; backdrop-filter:blur(5px);">${tag}</span>`).join('')}
                         </div>
                     </div>
 
                     <div style="margin-top: auto; text-align: center; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
-                        <div style="font-size: 2.2rem; margin-bottom: 5px;">🦊</div>
-                        <div style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">SevenCheck</div>
-                        <div style="font-size: 0.7rem; opacity: 0.8; margin-top: 8px; letter-spacing: 0.1em; font-weight: 700;">PREMIUM ANALYSIS REPORT</div>
+                        <div style="font-size: 2rem; margin-bottom: 5px;">🦊</div>
+                        <div style="font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">SevenCheck</div>
+                        <div style="font-size: 0.65rem; opacity: 0.8; margin-top: 8px; letter-spacing: 0.1em; font-weight: 700;">PREMIUM ANALYSIS REPORT</div>
                     </div>
                 </div>
             </div>
