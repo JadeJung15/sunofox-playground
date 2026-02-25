@@ -341,9 +341,9 @@ async function playAlchemy(count) {
     const resultEl = document.getElementById('alchemy-result');
     if (!resultEl) return;
 
-    let cost = 300;
-    if (count === 5) cost = 1350;
-    else if (count === 10) cost = 2500;
+    let cost = 500;
+    if (count === 5) cost = 2200;
+    else if (count === 10) cost = 4000;
 
     // [개선] 드롭다운 대신 active 박스에서 등급 가져오기
     const activeBox = document.querySelector('.alchemy-grade-box.active');
@@ -402,7 +402,7 @@ async function playAlchemy(count) {
                 let upgradeSuccessCount = 0;
 
                 for (let i = 0; i < count; i++) {
-                    const isUpgrade = Math.random() < 0.7;
+                    const isUpgrade = Math.random() < 0.5;
                     const finalGrade = isUpgrade ? nextGrade : selectedGrade;
                     if(isUpgrade) upgradeSuccessCount++;
                     const pool = ITEM_GRADES[finalGrade];
