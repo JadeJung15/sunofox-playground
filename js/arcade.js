@@ -110,18 +110,39 @@ async function playGacha(count, cost) {
                     if (!newResultEl) return;
 
                     const summary = drawnItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                    
+                    // 등급별 정렬 및 색상 적용
                     const resultTagsHTML = Object.entries(summary).map(([name, num]) => {
                         const grade = getGrade(name);
-                        const color = grade === 'RARE' ? '#f59e0b' : (grade === 'UNCOMMON' ? '#3b82f6' : '#94a3b8');
-                        return `<span style="display:inline-block; background:rgba(0,0,0,0.05); color:${color}; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(0,0,0,0.1);">${name} x${num}</span>`;
+                        let color = '#94a3b8'; // COMMON
+                        let bg = 'rgba(148, 163, 184, 0.1)';
+                        
+                        if (grade === 'LEGENDARY') { color = '#f59e0b'; bg = 'rgba(245, 158, 11, 0.1)'; }
+                        else if (grade === 'RARE') { color = '#3b82f6'; bg = 'rgba(59, 130, 246, 0.1)'; }
+                        else if (grade === 'UNCOMMON') { color = '#10b981'; bg = 'rgba(16, 185, 129, 0.1)'; }
+
+                        return `<span style="display:inline-block; background:${bg}; color:${color}; padding:3px 10px; border-radius:6px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid ${color}33;">${name} x${num}</span>`;
                     }).join('');
 
                     newResultEl.innerHTML = `
                         <div style="animation: bounce 0.5s; text-align:center; width:100%;">
-                            <div style="margin-bottom:8px;"><strong style="font-size:0.95rem; color:var(--accent-color);">📦 획득 아이템 리스트</strong></div>
-                            <div style="margin-bottom:10px; display:flex; flex-wrap:wrap; justify-content:center;">${resultTagsHTML}</div>
-                            <div style="border-top:1px dashed var(--border-color); padding-top:8px;">
-                                <strong style="color:#10b981; font-size:0.9rem;">총 +${totalAddedScore.toLocaleString()}점 획득!</strong>
+                            <div style="margin-bottom:10px;">
+                                <strong style="font-size:1rem; color:var(--accent-color);">📦 뽑기 결과 (${count}회 실행)</strong>
+                            </div>
+                            <div style="margin-bottom:15px; display:flex; flex-wrap:wrap; justify-content:center;">${resultTagsHTML}</div>
+                            
+                            <div style="background:rgba(0,0,0,0.02); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid var(--border-color); max-width: 320px; margin: 0 auto;">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                    <span style="font-weight:700; color:var(--text-sub);">소모 포인트:</span>
+                                    <span style="color:#ef4444; font-weight:900;">-${cost.toLocaleString()}P</span>
+                                </div>
+                                <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
+                                    <span style="font-weight:700; color:var(--text-sub);">획득 아이템 가치:</span>
+                                    <strong style="color:#10b981; font-size:0.95rem;">+${totalAddedScore.toLocaleString()}점</strong>
+                                </div>
+                                <div style="text-align:right; margin-top:6px; font-size:0.7rem; opacity:0.8;">
+                                    <span style="font-weight:800; color:var(--accent-color);">아이템 점수가 내 랭킹에 반영되었습니다.</span>
+                                </div>
                             </div>
                         </div>
                     `;

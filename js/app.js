@@ -345,7 +345,13 @@ function renderTestCard(t) {
 
 function renderProfile() {
     if (!UserState.user) {
-        app.innerHTML = `<div class="card" style="text-align:center; padding:4rem;"><h2>👤 로그인이 필요합니다</h2><button id="login-btn" class="btn-primary" style="margin:1.5rem auto 0;">로그인하기</button></div>`;
+        app.innerHTML = `
+            <div class="card" style="text-align:center; padding:4rem;">
+                <div style="font-size: 4rem; margin-bottom: 1.5rem;">👤</div>
+                <h2>로그인이 필요합니다</h2>
+                <p class="text-sub" style="margin-top: 1rem;">상단 메뉴의 <strong>[로그인]</strong> 버튼을 눌러 서비스를 시작해 보세요.</p>
+            </div>
+        `;
         return;
     }
     const inv = UserState.data.inventory || [];

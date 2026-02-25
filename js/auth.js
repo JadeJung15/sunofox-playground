@@ -121,6 +121,8 @@ export function initAuth() {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
             const provider = new GoogleAuthProvider();
+            // Google Login Custom Parameters (Optional but recommended)
+            provider.setCustomParameters({ prompt: 'select_account' });
             
             // 인앱 브라우저 감지 로직 (카카오톡, 라인 등)
             const ua = navigator.userAgent.toLowerCase();
@@ -130,8 +132,18 @@ export function initAuth() {
                 alert("구글 보안 정책으로 인해 인앱 브라우저에서는 로그인이 차단될 수 있습니다. 오른쪽 상단 점 3개 버튼을 눌러 '외부 브라우저로 열기'를 선택해 주세요.");
             }
 
-            // 팝업 대신 리디렉션 사용 (disallowed_useragent 방지)
-            signInWithRedirect(auth, provider).catch(console.error);
+            // IDX 및 모바일 환경 호환성을 위해 Redirect 방식 우선 사용
+            try {
+                await signInWithRedirect(auth, provider);
+            } catch (error) {
+                console.error("Login Error:", error);
+                // Redirect 실패 시 Popup 시도 (폴백)
+                try {
+                    await signInWithPopup(auth, provider);
+                } catch (popupError) {
+                    alert("로그인 중 오류가 발생했습니다. 브라우저 설정을 확인해 주세요.");
+                }
+            }
         }
         if (target.id === 'logout-btn') {
             signOut(auth).then(() => { location.hash = '#home'; });
@@ -257,9 +269,12 @@ export async function fetchUserProfile(uid) {
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
+    const loginBtn = document.getElementById('login-btn');
+    const headerProfile = document.getElementById('header-profile');
+    
     if (isLoggedIn && UserState.data) {
-        document.getElementById('login-btn')?.classList.add('hidden');
-        document.getElementById('header-profile')?.classList.remove('hidden');
+        if (loginBtn) loginBtn.classList.add('hidden');
+        if (headerProfile) headerProfile.classList.remove('hidden');
         
         const tier = getTier(UserState.data.totalScore || 0);
         
@@ -286,9 +301,10 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         const siteVersion = document.getElementById('site-version');
         if (siteVersion) siteVersion.classList.remove('hidden');
     } else {
-        document.getElementById('login-btn')?.classList.remove('hidden');
-        document.getElementById('header-profile')?.classList.add('hidden');
-        document.getElementById('footer-admin-link')?.classList.add('hidden');
+        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (headerProfile) headerProfile.classList.add('hidden');
+        const footerAdmin = document.getElementById('footer-admin-link');
+        if (footerAdmin) footerAdmin.classList.add('hidden');
         // 비로그인 상태에서도 버전과 통계는 보이도록 유지
         document.getElementById('site-version')?.classList.remove('hidden');
     }
