@@ -113,8 +113,10 @@ export function initAuth() {
             UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
             await loadUserData(user);
             updateUI(true);
+            if (typeof setupNotificationListener === 'function') setupNotificationListener(user.uid);
         } else {
             UserState.user = null; UserState.data = null; UserState.isAdmin = false; UserState.isMaster = false;
+            if (window.unsubNotifications) window.unsubNotifications();
             updateUI(false);
         }
         authResolve(); // 인증 상태 확인 완료 신호

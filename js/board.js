@@ -1,4 +1,4 @@
-import { db } from './firebase-init.js';
+import { db, storage } from './firebase-init.js';
 import { UserState, usePoints, addPoints, getTier, fetchUserProfile, updateProfileCache } from './auth.js';
 import { 
     collection, 
@@ -12,10 +12,31 @@ import {
     doc,
     updateDoc,
     arrayUnion,
+    arrayRemove,
     getCountFromServer,
     increment,
-    getDoc
+    getDoc,
+    startAfter,
+    onSnapshot,
+    where
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-storage.js";
+
+export const CATEGORIES = {
+    'ALL': { name: '전체', icon: '🌐', class: 'cat-all' },
+    'FREE': { name: '자유', icon: '💬', class: 'cat-free' },
+    'INFO': { name: '정보', icon: '💡', class: 'cat-info' },
+    'BRAG': { name: '인증', icon: '💎', class: 'cat-brag' },
+    'EVENT': { name: '이벤트', icon: '🎁', class: 'cat-event' }
+};
+
+export const REACTION_TYPES = [
+    { emoji: '🔥', label: '핫해요', color: '#f97316' },
+    { emoji: '👏', label: '박수', color: '#f59e0b' },
+    { emoji: '💡', label: '유익해요', color: '#3b82f6' },
+    { emoji: '💎', label: '최고예요', color: '#ec4899' },
+    { emoji: '🤣', label: '웃겨요', color: '#10b981' }
+];
 
 export const AURA_SHOP = {
     'PLATINUM': { name: '플래티넘 오라', price: 5000, minScore: 5000000, class: 'aura-platinum' },
@@ -33,7 +54,6 @@ export const BORDER_SHOP = {
     'B_CYAN': { name: '시안 보더', price: 1000, minScore: 0, class: 'border-cyan' },
     'B_GRAY': { name: '그레이 보더', price: 1000, minScore: 0, class: 'border-gray' },
     'B_BLACK': { name: '블랙 보더', price: 1000, minScore: 0, class: 'border-black' },
-    // 스페셜 3종 (점수 + 포인트)
     'S_LEGEND': { name: '🔱 전설의 증표', price: 30000, minScore: 5000000, class: 'border-s-legend' },
     'S_GALAXY': { name: '🌌 은하의 파동', price: 50000, minScore: 8000000, class: 'border-s-galaxy' },
     'S_GOD': { name: '💎 신의 광채', price: 100000, minScore: 15000000, class: 'border-s-god' }
@@ -50,22 +70,43 @@ export const BACKGROUND_SHOP = {
     'BG_MINT': { name: '민트 프레쉬', price: 1500, minScore: 0, class: 'bg-mint' },
     'BG_SKY': { name: '스카이 블루', price: 1500, minScore: 0, class: 'bg-sky' },
     'BG_SAND': { name: '샌드 베이지', price: 1500, minScore: 0, class: 'bg-sand' },
-    // 스페셜 3종 (점수 + 포인트)
     'SBG_NEON': { name: '🎮 사이버 네온', price: 25000, minScore: 4000000, class: 'bg-s-neon' },
     'SBG_SPACE': { name: '🚀 심우주 탐사', price: 45000, minScore: 7000000, class: 'bg-s-space' },
     'SBG_PARADISE': { name: '🏝️ 무릉도원', price: 80000, minScore: 12000000, class: 'bg-s-paradise' }
 };
 
+let lastVisiblePost = null;
+let currentSort = 'desc'; 
+let currentCategory = 'ALL';
+let currentSearch = '';
+let postUnsubscribe = null;
+let isLoadingMore = false;
+
 export async function renderBoard(container) {
     container.innerHTML = `
         <div class="card board-container fade-in">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem; flex-wrap:wrap; gap:1rem;">
-                <h2>💬 자유 게시판</h2>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+                <h2 style="font-size:1.5rem; font-weight:900;">💬 커뮤니티 게시판</h2>
                 <div style="display:flex; gap:0.5rem;">
-                    <button id="btn-aura-shop" class="btn-secondary" style="width:auto; padding:0.5rem 0.8rem; font-size:0.75rem; border-color:var(--accent-color); color:var(--accent-color);">✨ 오라</button>
-                    <button id="btn-border-shop" class="btn-secondary" style="width:auto; padding:0.5rem 0.8rem; font-size:0.75rem; border-color:var(--color-face); color:var(--color-face);">🖼️ 테두리</button>
-                    <button id="btn-bg-shop" class="btn-secondary" style="width:auto; padding:0.5rem 0.8rem; font-size:0.75rem; border-color:var(--color-fortune); color:var(--color-fortune);">🎨 배경</button>
+                    <button id="btn-aura-shop" class="btn-secondary" style="width:auto; padding:0.4rem 0.8rem; font-size:0.7rem;">✨ 오라</button>
+                    <button id="btn-border-shop" class="btn-secondary" style="width:auto; padding:0.4rem 0.8rem; font-size:0.7rem;">🖼️ 테두리</button>
+                    <button id="btn-bg-shop" class="btn-secondary" style="width:auto; padding:0.4rem 0.8rem; font-size:0.7rem;">🎨 배경</button>
                 </div>
+            </div>
+
+            <!-- Best Posts Section -->
+            <div id="best-posts-section" style="margin-bottom:2rem; display:none;">
+                <h3 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🔥 실시간 인기 게시글</h3>
+                <div id="best-posts-list" class="best-posts-slider"></div>
+            </div>
+
+            <!-- Category Tabs -->
+            <div class="board-tabs">
+                ${Object.entries(CATEGORIES).map(([key, cat]) => `
+                    <div class="board-tab ${currentCategory === key ? 'active' : ''}" data-category="${key}">
+                        ${cat.icon} ${cat.name}
+                    </div>
+                `).join('')}
             </div>
 
             <!-- Shop UIs -->
@@ -102,18 +143,64 @@ export async function renderBoard(container) {
                 <button id="btn-unequip-bg" class="btn-secondary" style="width:100%; margin-top:1rem; font-size:0.75rem; padding:0.5rem;">배경 해제하기</button>
             </div>
             
-            <div id="post-form" class="post-form">
-                <textarea id="post-content" placeholder="함께 나누고 싶은 이야기를 적어보세요." maxlength="200"></textarea>
-                <div class="post-options" style="display:flex; align-items:center; gap:1rem; margin-top:0.5rem;">
-                    <label style="font-size:0.85rem; cursor:pointer;">
-                        <input type="checkbox" id="post-premium"> 📣 게시글 강조 (300P)
+            <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem; flex-wrap:wrap; gap:0.5rem;">
+                <input type="text" id="board-search" value="${currentSearch}" placeholder="🔍 게시글 검색..." style="padding:0.6rem; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-color); flex:1; min-width:200px; color:var(--text-main); font-size:0.9rem;">
+                <select id="board-sort" style="padding:0.6rem; border-radius:12px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-main); font-size:0.9rem; font-weight:700;">
+                    <option value="desc" ${currentSort === 'desc' ? 'selected' : ''}>🕒 최신순</option>
+                    <option value="popular" ${currentSort === 'popular' ? 'selected' : ''}>🔥 인기순</option>
+                </select>
+            </div>
+
+            <div id="post-form" class="post-form" style="background:var(--bg-color); border:1px solid var(--border-color); border-radius:15px; padding:1.2rem; margin-bottom:2rem;">
+                <div style="display:flex; gap:0.5rem; margin-bottom:0.8rem;">
+                    <select id="post-category-select" style="padding:0.4rem 0.8rem; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); font-size:0.8rem; font-weight:800;">
+                        <option value="FREE">💬 자유글</option>
+                        <option value="INFO">💡 정보공유</option>
+                        <option value="BRAG">💎 자랑하기</option>
+                        <option value="EVENT">🎁 이벤트</option>
+                    </select>
+                </div>
+                <textarea id="post-content" placeholder="함께 나누고 싶은 이야기를 적어보세요. (작성 시 10P 지급!)" maxlength="500" style="background:var(--card-bg); border-radius:10px;"></textarea>
+                <div id="post-image-preview" style="display:none; margin-top:0.5rem; max-height:200px; overflow:hidden; border-radius:8px;"></div>
+                <div class="post-options" style="display:flex; align-items:center; gap:0.8rem; margin-top:1rem; flex-wrap:wrap;">
+                    <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:0.8rem; color:var(--text-sub); background:var(--card-bg); padding:0.5rem 0.8rem; border-radius:10px; border:1px solid var(--border-color); font-weight:700;">
+                        📷 사진
+                        <input type="file" id="post-image" accept="image/*" style="display:none;">
                     </label>
-                    <button id="submit-post" class="btn-primary" style="width:100px; margin-left:auto;">등록</button>
+                    <label style="font-size:0.8rem; cursor:pointer; color:var(--text-sub); font-weight:700;">
+                        <input type="checkbox" id="post-premium"> 📣 강조 (+300P)
+                    </label>
+                    <button id="submit-post" class="btn-primary" style="padding:0.6rem 1.5rem; border-radius:10px; font-weight:900; margin-left:auto;">등록하기</button>
                 </div>
             </div>
 
             <div id="posts-list" class="posts-list">
                 <div class="loading-spinner">불러오는 중...</div>
+            </div>
+            
+            <div id="scroll-trigger"></div>
+            
+            <div id="load-more-container" style="text-align:center; margin-top:1rem; display:none;">
+                <button id="btn-load-more" class="btn-secondary" style="width:100%; max-width:300px; padding:0.8rem;">글 더 보기</button>
+            </div>
+        </div>
+
+        <!-- Profile Card Modal Overlay -->
+        <div id="profile-modal-overlay" class="modal-overlay">
+            <div class="profile-card-modal">
+                <div class="profile-card-banner"></div>
+                <div class="profile-card-content">
+                    <div id="pm-avatar" class="profile-card-avatar">👤</div>
+                    <div id="pm-nickname" class="profile-card-nickname">닉네임</div>
+                    <div id="pm-tier" class="profile-card-tier">ROOKIE</div>
+                    <p id="pm-bio" style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1.5rem;">작성된 자기소개가 없습니다.</p>
+                    <div class="profile-card-stats">
+                        <div class="pc-stat-item"><span>포인트</span><span id="pm-points">0</span></div>
+                        <div class="pc-stat-item"><span>전체점수</span><span id="pm-score">0</span></div>
+                        <div class="pc-stat-item"><span>아이템</span><span id="pm-items">0</span></div>
+                    </div>
+                </div>
+                <button id="close-profile-modal" style="position:absolute; top:15px; right:15px; background:rgba(255,255,255,0.2); border:none; color:#fff; width:30px; height:30px; border-radius:50%; cursor:pointer;">✕</button>
             </div>
         </div>
     `;
@@ -125,10 +212,8 @@ export async function renderBoard(container) {
         return Object.entries(shopData).map(([id, info]) => {
             const isOwned = UserState.data?.[unlockedKey]?.includes(id);
             const isActive = UserState.data?.[activeKey] === id;
-            const previewStyle = type === 'Background' ? `background:var(--bg-color); border:1px solid var(--border-color);` : '';
-            
             return `
-                <div class="buy-card ${info.class}" style="background:var(--card-bg); padding:1rem; border-radius:12px; text-align:center; border:1px solid var(--border-color); ${previewStyle}">
+                <div class="buy-card ${info.class}" style="background:var(--card-bg); padding:1rem; border-radius:12px; text-align:center; border:1px solid var(--border-color);">
                     <div style="width:40px; height:40px; border-radius:50%; margin:0 auto 0.5rem; background:#eee; display:flex; align-items:center; justify-content:center; border: 2px solid transparent;">👤</div>
                     <h4 style="font-size:0.8rem; margin-bottom:0.2rem;">${info.name}</h4>
                     <p style="font-size:0.65rem; color:var(--text-sub); margin-bottom:0.6rem;">${info.price.toLocaleString()}P<br><small>(필수: ${info.minScore.toLocaleString()}점)</small></p>
@@ -141,85 +226,119 @@ export async function renderBoard(container) {
         }).join('');
     }
 
-    // --- Event Bindings ---
     const listContainer = document.getElementById('posts-list');
-    loadPosts(listContainer);
+    
+    // Initial Load
+    loadPosts(listContainer, false);
+    loadBestPosts();
+
+    // Infinite Scroll via IntersectionObserver
+    const observer = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !isLoadingMore && lastVisiblePost) {
+            loadPosts(listContainer, true);
+        }
+    }, { threshold: 1.0 });
+    observer.observe(document.getElementById('scroll-trigger'));
+
+    // Category Tab Events
+    container.querySelectorAll('.board-tab').forEach(tab => {
+        tab.onclick = () => {
+            currentCategory = tab.dataset.category;
+            container.querySelectorAll('.board-tab').forEach(t => t.classList.toggle('active', t === tab));
+            lastVisiblePost = null;
+            loadPosts(listContainer, false);
+        };
+    });
+
+    document.getElementById('board-search').oninput = (e) => {
+        currentSearch = e.target.value.trim().toLowerCase();
+        lastVisiblePost = null;
+        loadPosts(listContainer, false);
+    };
+
+    document.getElementById('board-sort').onchange = (e) => {
+        currentSort = e.target.value;
+        lastVisiblePost = null;
+        loadPosts(listContainer, false);
+    };
 
     const toggleShop = (shopId) => {
         document.querySelectorAll('.shop-panel').forEach(p => {
-            if (p.id === shopId) p.style.display = p.style.display === 'none' ? 'block' : 'none';
-            else p.style.display = 'none';
+            p.style.display = p.id === shopId && p.style.display === 'none' ? 'block' : 'none';
         });
     };
-
     document.getElementById('btn-aura-shop').onclick = () => toggleShop('aura-shop-ui');
     document.getElementById('btn-border-shop').onclick = () => toggleShop('border-shop-ui');
     document.getElementById('btn-bg-shop').onclick = () => toggleShop('bg-shop-ui');
-    
-    container.querySelectorAll('.close-shop').forEach(btn => {
-        btn.onclick = () => document.getElementById(btn.dataset.target).style.display = 'none';
-    });
+    container.querySelectorAll('.close-shop').forEach(btn => btn.onclick = () => document.getElementById(btn.dataset.target).style.display = 'none');
 
-    // 구매 및 장착 통합 처리
+    // Profile Modal Events
+    document.getElementById('close-profile-modal').onclick = () => document.getElementById('profile-modal-overlay').style.display = 'none';
+    document.getElementById('profile-modal-overlay').onclick = (e) => { if(e.target.id === 'profile-modal-overlay') e.target.style.display = 'none'; };
+
+    // Image Preview
+    const imageInput = document.getElementById('post-image');
+    const imagePreview = document.getElementById('post-image-preview');
+    let selectedImageFile = null;
+
+    imageInput.onchange = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) return alert("이미지 크기는 5MB 이하여야 합니다.");
+            selectedImageFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.innerHTML = `<img src="${e.target.result}" style="width:100%; object-fit:contain; border-radius:8px;"> <button id="remove-image" style="margin-top:4px; font-size:0.75rem; color:#ef4444; border:none; background:none; cursor:pointer;">이미지 삭제</button>`;
+                imagePreview.style.display = 'block';
+                document.getElementById('remove-image').onclick = () => {
+                    selectedImageFile = null; imageInput.value = ''; imagePreview.style.display = 'none';
+                };
+            };
+            reader.readAsDataURL(file);
+        }
+    };
+
+    // Shop Item Actions
     container.addEventListener('click', async (e) => {
         const buyBtn = e.target.closest('.btn-buy-item');
         const equipBtn = e.target.closest('.btn-equip-item');
-        
         if (buyBtn) {
             const { type, id } = buyBtn.dataset;
-            const shop = type === 'Aura' ? AURA_SHOP : (type === 'Border' ? BORDER_SHOP : BACKGROUND_SHOP);
-            const info = shop[id];
-            const unlockedKey = `unlocked${type}s`;
-            const activeKey = `active${type}`;
-
+            const info = (type === 'Aura' ? AURA_SHOP : (type === 'Border' ? BORDER_SHOP : BACKGROUND_SHOP))[id];
             if (UserState.data.totalScore < info.minScore) return alert(`아이템 점수가 부족합니다. (필요: ${info.minScore.toLocaleString()}점)`);
             if (await usePoints(info.price, `${type} 구매: ${info.name}`)) {
-                const updateObj = {
-                    [unlockedKey]: arrayUnion(id),
-                    [activeKey]: id
-                };
-                await updateDoc(doc(db, "users", UserState.user.uid), updateObj);
-                UserState.data[unlockedKey].push(id);
-                UserState.data[activeKey] = id;
-                
-                // 캐시 업데이트
-                updateProfileCache(UserState.user.uid, { [activeKey]: id });
-
-                alert(`${info.name} 구매 및 장착 완료!`);
+                await updateDoc(doc(db, "users", UserState.user.uid), { [`unlocked${type}s`]: arrayUnion(id), [`active${type}`]: id });
+                UserState.data[`unlocked${type}s`].push(id); UserState.data[`active${type}`] = id;
+                updateProfileCache(UserState.user.uid, { [`active${type}`]: id });
                 renderBoard(container);
             }
         }
-
         if (equipBtn) {
             const { type, id } = equipBtn.dataset;
-            const activeKey = `active${type}`;
-            await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
-            UserState.data[activeKey] = id;
-            
-            // 캐시 업데이트
-            updateProfileCache(UserState.user.uid, { [activeKey]: id });
-
+            await updateDoc(doc(db, "users", UserState.user.uid), { [`active${type}`]: id });
+            UserState.data[`active${type}`] = id;
+            updateProfileCache(UserState.user.uid, { [`active${type}`]: id });
             renderBoard(container);
         }
     });
 
-    const unequipIds = { 'btn-unequip-aura': 'Aura', 'btn-unequip-border': 'Border', 'btn-unequip-bg': 'Background' };
-    Object.entries(unequipIds).forEach(([btnId, type]) => {
-        document.getElementById(btnId).onclick = async () => {
-            const activeKey = `active${type}`;
-            await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: 'NONE' });
-            UserState.data[activeKey] = 'NONE';
-            
-            // 캐시 업데이트
-            updateProfileCache(UserState.user.uid, { [activeKey]: 'NONE' });
-
+    // Unequip Actions
+    ['aura', 'border', 'bg'].forEach(t => {
+        const btn = document.getElementById(`btn-unequip-${t}`);
+        if(btn) btn.onclick = async () => {
+            const type = t === 'bg' ? 'Background' : (t.charAt(0).toUpperCase() + t.slice(1));
+            await updateDoc(doc(db, "users", UserState.user.uid), { [`active${type}`]: 'NONE' });
+            UserState.data[`active${type}`] = 'NONE';
+            updateProfileCache(UserState.user.uid, { [`active${type}`]: 'NONE' });
             renderBoard(container);
         };
     });
 
+    // Submit Post
     const submitBtn = document.getElementById('submit-post');
     const contentInput = document.getElementById('post-content');
     const premiumCheck = document.getElementById('post-premium');
+    const categorySelect = document.getElementById('post-category-select');
 
     if (!UserState.user) {
         contentInput.disabled = true; submitBtn.disabled = true;
@@ -228,215 +347,250 @@ export async function renderBoard(container) {
 
     submitBtn.onclick = async () => {
         if (!UserState.user) return alert("로그인이 필요합니다.");
+        const now = Date.now();
+        const lastPost = sessionStorage.getItem('lastPostTime');
+        if (lastPost && now - parseInt(lastPost) < 15000) return alert("15초 후에 다시 작성 가능합니다.");
+
         const content = contentInput.value.trim();
-        if (!content) return alert("내용을 입력해주세요.");
+        if (!content && !selectedImageFile) return alert("내용을 입력해주세요.");
         let isPremium = premiumCheck.checked;
         if (isPremium && !(await usePoints(300, "게시글 강조"))) return;
 
         try {
             submitBtn.disabled = true;
+            let imageUrl = null;
+            if (selectedImageFile) {
+                const storageRef = ref(storage, `posts/${UserState.user.uid}_${now}_${selectedImageFile.name}`);
+                await uploadBytes(storageRef, selectedImageFile);
+                imageUrl = await getDownloadURL(storageRef);
+            }
+
             await addDoc(collection(db, "posts"), {
                 uid: UserState.user.uid,
-                content: content,
-                isPremium: isPremium,
+                content,
+                imageUrl,
+                isPremium,
+                category: categorySelect.value,
+                likedBy: [],
+                reactions: {},
+                reports: [],
+                searchContent: content.toLowerCase(),
+                likeCount: 0,
                 createdAt: serverTimestamp()
             });
-            if (window.checkDailyQuests) window.checkDailyQuests('board'); 
+
+            sessionStorage.setItem('lastPostTime', now.toString());
+            await addPoints(10, '게시글 작성 보상');
             contentInput.value = ''; premiumCheck.checked = false;
-            loadPosts(listContainer);
+            selectedImageFile = null; imageInput.value = ''; imagePreview.style.display = 'none';
+            lastVisiblePost = null; loadPosts(listContainer, false);
         } catch (e) { alert("등록 실패"); }
         finally { submitBtn.disabled = false; }
     };
 }
 
-async function loadPosts(container) {
+async function loadBestPosts() {
+    const bestList = document.getElementById('best-posts-list');
+    const section = document.getElementById('best-posts-section');
+    if(!bestList) return;
     try {
-        const q = query(collection(db, "posts"), orderBy("createdAt", "desc"), limit(50));
+        const q = query(collection(db, "posts"), orderBy("likeCount", "desc"), limit(5));
         const snap = await getDocs(q);
-        if (snap.empty) { container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">게시글이 없습니다.</p>`; return; }
-
-        container.innerHTML = '';
-        for (const docSnap of snap.docs) {
-            const data = docSnap.data();
-            const postId = docSnap.id;
-            const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
-            const canDelete = UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin);
-            
-            // 실시간 프로필 정보 조회
+        if(snap.empty) return;
+        section.style.display = 'block';
+        bestList.innerHTML = '';
+        for(const d of snap.docs) {
+            const data = d.data();
             const profile = await fetchUserProfile(data.uid);
-
-            const commentsRef = collection(db, "posts", postId, "comments");
-            const countSnap = await getCountFromServer(commentsRef);
-            const commentCount = countSnap.data().count;
-
-            let auraClass = (profile.activeAura && profile.activeAura !== 'NONE') ? AURA_SHOP[profile.activeAura]?.class || '' : '';
-            let borderClass = (profile.activeBorder && profile.activeBorder !== 'NONE') ? BORDER_SHOP[profile.activeBorder]?.class || '' : '';
-            let bgClass = (profile.activeBackground && profile.activeBackground !== 'NONE') ? BACKGROUND_SHOP[profile.activeBackground]?.class || '' : '';
-
-            const postEl = document.createElement('div');
-            postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} ${auraClass} ${bgClass} fade-in`;
-            
-            const likedBy = data.likedBy || [];
-            const likeCount = likedBy.length;
-            const isLiked = UserState.user && likedBy.includes(UserState.user.uid);
-
-            postEl.innerHTML = `
-                <div class="post-header">
-                    <div class="post-author-info">
-                        <div class="author-emoji-circle ${borderClass}">${profile.emoji || '👤'}</div>
-                        <span class="post-author" style="color:${profile.nameColor || 'var(--text-main)'}">${profile.nickname}</span>
-                    </div>
-                    <span class="post-date">${date}</span>
-                </div>
-                <div class="post-content">${data.content}</div>
-                <div class="post-footer">
-                    <div style="display:flex; gap:1rem; align-items:center;">
-                        <button class="btn-like-post ${isLiked ? 'liked' : ''}" data-id="${postId}" data-uid="${data.uid}" style="background:none; border:none; color:${isLiked ? '#ef4444' : 'var(--text-sub)'}; font-size:0.85rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                            ${isLiked ? '❤️' : '🤍'} 좋아요 <b>${likeCount > 0 ? likeCount : ''}</b>
-                        </button>
-                        <button class="btn-toggle-comments" data-id="${postId}" style="background:none; border:none; color:var(--text-sub); font-size:0.85rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
-                            💬 댓글 ${commentCount > 0 ? `<b>(${commentCount})</b>` : ''}
-                        </button>
-                    </div>
-                    ${canDelete ? `<button class="btn-delete" data-id="${postId}">삭제</button>` : ''}
-                </div>
-                <div id="comment-section-${postId}" class="comment-section" style="display:none;">
-                    <div id="comments-list-${postId}" class="comments-list"></div>
-                    <div class="comment-form">
-                        <input type="text" id="comment-input-${postId}" placeholder="댓글을 입력하세요..." maxlength="100">
-                        <button class="btn-submit-comment" data-id="${postId}">작성</button>
-                    </div>
+            const div = document.createElement('div');
+            div.className = 'best-post-mini fade-in';
+            div.innerHTML = `
+                <div style="font-size:0.75rem; color:var(--accent-color); font-weight:800; margin-bottom:4px;">${CATEGORIES[data.category]?.name || '자유'}</div>
+                <div style="font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:8px;">${data.content}</div>
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:0.7rem; color:var(--text-sub);">${profile.nickname}</span>
+                    <span style="font-size:0.7rem;">❤️ ${data.likeCount}</span>
                 </div>
             `;
-            container.appendChild(postEl);
-
-            // 이벤트 바인딩
-            postEl.querySelector('.btn-like-post').onclick = () => handlePostLike(postId, data.uid, postEl);
-            
-            postEl.querySelector('.btn-delete')?.addEventListener('click', async () => {
-                if (confirm("삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, "posts", postId));
-                    loadPosts(container);
-                }
-            });
-
-            postEl.querySelector('.btn-toggle-comments').onclick = () => {
-                const sec = postEl.querySelector(`#comment-section-${postId}`);
-                const isOpen = sec.style.display === 'block';
-                sec.style.display = isOpen ? 'none' : 'block';
-                if (!isOpen) loadComments(postId, data.uid);
-            };
-
-            const submitCommentBtn = postEl.querySelector('.btn-submit-comment');
-            submitCommentBtn.onclick = async () => {
-                const cInput = postEl.querySelector(`#comment-input-${postId}`);
-                const content = cInput.value.trim();
-                if (!content || !UserState.user) return;
-                try {
-                    submitCommentBtn.disabled = true;
-                    await addDoc(collection(db, "posts", postId, "comments"), {
-                        uid: UserState.user.uid,
-                        content, createdAt: serverTimestamp()
-                    });
-                    cInput.value = ''; loadComments(postId, data.uid);
-                    if (data.uid !== UserState.user.uid) {
-                        await addDoc(collection(db, "users", data.uid, "notifications"), {
-                            type: "comment", message: `"${UserState.data.nickname}"님이 내 글에 댓글을 남겼습니다.`,
-                            relatedId: postId, isRead: false, createdAt: serverTimestamp()
-                        });
-                    }
-                } catch (e) { alert("오류"); }
-                finally { submitCommentBtn.disabled = false; }
-            };
+            bestList.appendChild(div);
         }
-    } catch (e) { console.error(e); container.innerHTML = `<p class="error-msg">로드 오류</p>`; }
+    } catch(e) {}
 }
 
-async function handlePostLike(postId, authorUid, postEl) {
-    if (!UserState.user) return alert("로그인이 필요합니다.");
-    if (UserState.user.uid === authorUid) return alert("자신의 글에는 좋아요를 누를 수 없습니다.");
-
-    const likeBtn = postEl.querySelector('.btn-like-post');
-    if (likeBtn.classList.contains('liked')) return alert("이미 좋아요를 누르셨습니다.");
-
-    try {
-        likeBtn.disabled = true;
-        const postRef = doc(db, "posts", postId);
-        
-        // 1. 중복 체크 (트랜잭션 대신 멱등성 보장하는 arrayUnion 사용)
-        await updateDoc(postRef, {
-            likedBy: arrayUnion(UserState.user.uid)
-        });
-
-        // 2. 포인트 지급 (누른 사람 +1P)
-        await addPoints(1, "게시글 좋아요 보상 (Liker)");
-
-        // 3. 포인트 지급 (받은 사람 +1P)
-        const authorRef = doc(db, "users", authorUid);
-        await updateDoc(authorRef, {
-            points: increment(1)
-        });
-
-        // 4. 알림 전송
-        await addDoc(collection(db, "users", authorUid, "notifications"), {
-            type: "like",
-            message: `"${UserState.data.nickname}"님이 내 글을 좋아합니다. (+1P)`,
-            relatedId: postId,
-            isRead: false,
-            createdAt: serverTimestamp()
-        });
-
-        // 5. UI 업데이트
-        const countSpan = likeBtn.querySelector('b');
-        const currentCount = parseInt(countSpan.textContent || "0");
-        countSpan.textContent = currentCount + 1;
-        likeBtn.innerHTML = `❤️ 좋아요 <b>${currentCount + 1}</b>`;
-        likeBtn.style.color = '#ef4444';
-        likeBtn.classList.add('liked');
-
-    } catch (e) {
-        console.error("Like failed:", e);
-        alert("좋아요 처리 중 오류가 발생했습니다.");
-    } finally {
-        likeBtn.disabled = false;
+async function loadPosts(container, isLoadMore = false) {
+    if(isLoadingMore) return;
+    if (!isLoadMore) {
+        container.innerHTML = `<div class="loading-spinner">불러오는 중...</div>`;
+        if(postUnsubscribe) postUnsubscribe();
     }
+    isLoadingMore = true;
+
+    try {
+        let postsRef = collection(db, "posts");
+        let qConstraints = [];
+        if (currentCategory !== 'ALL') qConstraints.push(where("category", "==", currentCategory));
+        if (currentSort === 'popular') qConstraints.push(orderBy("likeCount", "desc"));
+        qConstraints.push(orderBy("createdAt", "desc"));
+        qConstraints.push(limit(15));
+        if (isLoadMore && lastVisiblePost) qConstraints.push(startAfter(lastVisiblePost));
+
+        const q = query(postsRef, ...qConstraints);
+        const snap = await getDocs(q);
+        
+        if (snap.empty) { 
+            if (!isLoadMore) container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">게시글이 없습니다.</p>`; 
+            isLoadingMore = false; return; 
+        }
+
+        if (!isLoadMore) container.innerHTML = '';
+        lastVisiblePost = snap.docs[snap.docs.length - 1];
+        
+        for (const docSnap of snap.docs) {
+            const data = docSnap.data();
+            if (currentSearch && !data.searchContent?.includes(currentSearch)) continue;
+            renderSinglePost(container, docSnap.id, data);
+        }
+    } catch (e) { console.error(e); }
+    finally { isLoadingMore = false; }
 }
 
-async function loadComments(postId, postAuthorUid) {
-    const listContainer = document.getElementById(`comments-list-${postId}`);
-    if (!listContainer) return;
-    try {
-        const snap = await getDocs(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")));
-        if (snap.empty) { listContainer.innerHTML = '<p class="text-sub" style="font-size:0.7rem; padding:0.5rem;">첫 댓글을 남겨보세요!</p>'; return; }
-        
-        const commentHtmls = [];
-        for (const dSnap of snap.docs) {
-            const d = dSnap.data();
-            const canDelete = UserState.user && (d.uid === UserState.user.uid || UserState.isAdmin);
-            
-            // 댓글 작성자 프로필 조회
-            const profile = await fetchUserProfile(d.uid);
-            
-            commentHtmls.push(`
-                <div class="comment-item">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <span style="font-size:0.9rem;">${profile.emoji || '👤'}</span>
-                        <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
-                        ${canDelete ? `<button class="btn-comment-delete" data-id="${dSnap.id}" style="background:none; border:none; color:#ef4444; font-size:0.65rem; cursor:pointer;">삭제</button>` : ''}
-                    </div>
-                    <p style="font-size:0.8rem; margin-top:2px;">${d.content}</p>
+async function renderSinglePost(container, postId, data) {
+    const profile = await fetchUserProfile(data.uid);
+    const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
+    
+    let auraClass = (profile.activeAura && profile.activeAura !== 'NONE') ? AURA_SHOP[profile.activeAura]?.class || '' : '';
+    let borderClass = (profile.activeBorder && profile.activeBorder !== 'NONE') ? BORDER_SHOP[profile.activeBorder]?.class || '' : '';
+    let bgClass = (profile.activeBackground && profile.activeBackground !== 'NONE') ? BACKGROUND_SHOP[profile.activeBackground]?.class || '' : '';
+
+    const postEl = document.createElement('div');
+    postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} ${auraClass} ${bgClass} fade-in`;
+    
+    const likedBy = data.likedBy || [];
+    const isLiked = UserState.user && likedBy.includes(UserState.user.uid);
+    const reactions = data.reactions || {};
+
+    postEl.innerHTML = `
+        <div class="post-header">
+            <div class="post-author-info" style="cursor:pointer;" onclick="showProfileModal('${data.uid}')">
+                <div class="author-emoji-circle ${borderClass}">${profile.emoji || '👤'}</div>
+                <div style="display:flex; flex-direction:column;">
+                    <span class="post-author" style="color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
+                    <span class="post-date">${date}</span>
                 </div>
-            `);
-        }
-        listContainer.innerHTML = commentHtmls.join('');
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+                <span class="post-category-badge ${CATEGORIES[data.category]?.class || 'cat-free'}">${CATEGORIES[data.category]?.name || '자유'}</span>
+                <button class="btn-report-post" data-id="${postId}" style="background:none; border:none; opacity:0.3; cursor:pointer;">🚨</button>
+            </div>
+        </div>
+        <div class="post-content">${data.content || ''}</div>
+        ${data.imageUrl ? `<div style="margin-top:10px;"><img src="${data.imageUrl}" style="max-width:100%; border-radius:12px; cursor:pointer;" onclick="window.open('${data.imageUrl}', '_blank')"></div>` : ''}
         
-        listContainer.querySelectorAll('.btn-comment-delete').forEach(btn => {
-            btn.onclick = async () => {
-                if (confirm("삭제하시겠습니까?")) {
-                    await deleteDoc(doc(db, "posts", postId, "comments", btn.dataset.id));
-                    loadComments(postId, postAuthorUid);
-                }
-            };
+        <div class="reaction-bar">
+            ${REACTION_TYPES.map(r => {
+                const count = (reactions[r.emoji] || []).length;
+                const isReacted = UserState.user && (reactions[r.emoji] || []).includes(UserState.user.uid);
+                return `<button class="reaction-btn ${isReacted ? 'reacted' : ''}" onclick="handlePostReaction('${postId}', '${r.emoji}')">
+                    <span>${r.emoji}</span> <span class="reaction-count">${count || ''}</span>
+                </button>`;
+            }).join('')}
+        </div>
+
+        <div class="post-footer">
+            <button class="btn-toggle-comments" onclick="toggleComments('${postId}', '${data.uid}')">💬 댓글</button>
+            ${(UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin)) ? `<button class="btn-delete" onclick="deletePost('${postId}')">삭제</button>` : ''}
+        </div>
+        <div id="comment-section-${postId}" class="comment-section" style="display:none;">
+            <div id="comments-list-${postId}" class="comments-list"></div>
+            <div class="comment-form">
+                <input type="text" id="comment-input-${postId}" placeholder="댓글 입력... (+2P)" maxlength="100">
+                <button class="btn-submit-comment" onclick="submitComment('${postId}', '${data.uid}')">작성</button>
+            </div>
+        </div>
+    `;
+    container.appendChild(postEl);
+}
+
+window.showProfileModal = async (uid) => {
+    const overlay = document.getElementById('profile-modal-overlay');
+    const profile = await fetchUserProfile(uid);
+    const tier = getTier(profile.totalScore || 0);
+    
+    document.getElementById('pm-avatar').textContent = profile.emoji || '👤';
+    document.getElementById('pm-nickname').textContent = profile.nickname;
+    document.getElementById('pm-nickname').style.color = profile.nameColor || 'inherit';
+    document.getElementById('pm-tier').textContent = tier.name;
+    document.getElementById('pm-bio').textContent = profile.bio || "작성된 자기소개가 없습니다.";
+    document.getElementById('pm-points').textContent = (profile.points || 0).toLocaleString();
+    document.getElementById('pm-score').textContent = (profile.totalScore || 0).toLocaleString();
+    document.getElementById('pm-items').textContent = (profile.inventory || []).length;
+    
+    overlay.style.display = 'flex';
+};
+
+window.handlePostReaction = async (postId, emoji) => {
+    if (!UserState.user) return alert("로그인이 필요합니다.");
+    const postRef = doc(db, "posts", postId);
+    const postSnap = await getDoc(postRef);
+    const reactions = postSnap.data().reactions || {};
+    const userList = reactions[emoji] || [];
+
+    if (userList.includes(UserState.user.uid)) {
+        await updateDoc(postRef, { [`reactions.${emoji}`]: arrayRemove(UserState.user.uid) });
+    } else {
+        if (!(await usePoints(5, "반응 남기기"))) return;
+        await updateDoc(postRef, { [`reactions.${emoji}`]: arrayUnion(UserState.user.uid) });
+        // Award 1P to author
+        await updateDoc(doc(db, "users", postSnap.data().uid), { points: increment(1) });
+    }
+    // Simple way to refresh: just reload posts or ideally update the specific post element
+    renderBoard(document.querySelector('.board-container').parentElement);
+};
+
+window.toggleComments = async (postId, authorUid) => {
+    const sec = document.getElementById(`comment-section-${postId}`);
+    const isOpen = sec.style.display === 'block';
+    sec.style.display = isOpen ? 'none' : 'block';
+    if (!isOpen) loadComments(postId);
+};
+
+window.submitComment = async (postId, authorUid) => {
+    const input = document.getElementById(`comment-input-${postId}`);
+    const content = input.value.trim();
+    if(!content || !UserState.user) return;
+    try {
+        await addDoc(collection(db, "posts", postId, "comments"), {
+            uid: UserState.user.uid, content, createdAt: serverTimestamp()
         });
-    } catch (e) {}
+        await addPoints(2, '댓글 작성 보상');
+        input.value = '';
+        loadComments(postId);
+    } catch(e) {}
+};
+
+window.deletePost = async (postId) => {
+    if(confirm("정말 삭제하시겠습니까?")) {
+        await deleteDoc(doc(db, "posts", postId));
+        renderBoard(document.querySelector('.board-container').parentElement);
+    }
+};
+
+async function loadComments(postId) {
+    const list = document.getElementById(`comments-list-${postId}`);
+    const snap = await getDocs(query(collection(db, "posts", postId, "comments"), orderBy("createdAt", "asc")));
+    list.innerHTML = snap.empty ? '<p style="font-size:0.7rem; color:var(--text-sub);">첫 댓글을 남겨보세요!</p>' : '';
+    for(const d of snap.docs) {
+        const c = d.data();
+        const profile = await fetchUserProfile(c.uid);
+        const div = document.createElement('div');
+        div.className = 'comment-item';
+        div.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
+                <span style="font-size:0.6rem; color:var(--text-sub);">${c.createdAt ? new Date(c.createdAt.toMillis()).toLocaleDateString() : ''}</span>
+            </div>
+            <p style="font-size:0.8rem; margin-top:2px;">${c.content}</p>
+        `;
+        list.appendChild(div);
+    }
 }

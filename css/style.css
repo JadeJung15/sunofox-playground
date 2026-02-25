@@ -1508,3 +1508,155 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 
 .hidden { display: none !important; }
+
+/* --- Bulletin Board Overhaul Styles --- */
+
+/* Tab UI */
+.board-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none;
+}
+.board-tabs::-webkit-scrollbar { display: none; }
+.board-tab {
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-sub);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+.board-tab.active {
+    background: var(--accent-color);
+    color: white;
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+/* Post Reactions */
+.reaction-bar {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+}
+.reaction-btn {
+    padding: 4px 10px;
+    border-radius: 50px;
+    background: var(--bg-color);
+    border: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s;
+}
+.reaction-btn:hover {
+    border-color: var(--accent-color);
+    background: var(--card-bg);
+}
+.reaction-btn.reacted {
+    background: rgba(99, 102, 241, 0.1);
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+}
+.reaction-count { font-weight: 800; font-size: 0.75rem; }
+
+/* Profile Card Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s;
+}
+.profile-card-modal {
+    background: var(--card-bg);
+    width: 90%;
+    max-width: 400px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    position: relative;
+    box-shadow: var(--shadow-lg);
+    animation: slideUp 0.3s;
+}
+.profile-card-banner {
+    height: 100px;
+    background: linear-gradient(135deg, var(--accent-color), #8b5cf6);
+}
+.profile-card-content {
+    padding: 2rem;
+    text-align: center;
+    margin-top: -50px;
+}
+.profile-card-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    border: 4px solid var(--card-bg);
+    box-shadow: var(--shadow-md);
+}
+.profile-card-nickname { font-size: 1.4rem; font-weight: 900; margin-bottom: 0.5rem; }
+.profile-card-tier { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; margin-bottom: 1rem; }
+.profile-card-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.pc-stat-item span:first-child { font-size: 0.7rem; color: var(--text-sub); display: block; }
+.pc-stat-item span:last-child { font-size: 0.9rem; font-weight: 800; }
+
+/* Best Post Section */
+.best-posts-slider {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem 0 1.5rem;
+    scrollbar-width: none;
+}
+.best-post-mini {
+    min-width: 200px;
+    background: var(--card-bg);
+    border: 1px solid var(--accent-soft);
+    padding: 1rem;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+/* Category Badges */
+.post-category-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 900;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+.cat-free { background: #e2e8f0; color: #475569; }
+.cat-info { background: #dbeafe; color: #1e40af; }
+.cat-brag { background: #fef3c7; color: #92400e; }
+.cat-event { background: #fce7f3; color: #9d174d; }
+
+/* Infinite Scroll Trigger */
+#scroll-trigger { height: 20px; width: 100%; }
