@@ -182,13 +182,21 @@ const SLOT_EMOJIS = ['🎰', '💎', '🔥', '✨', '🍒', '7️⃣'];
 async function playSlotMachine() {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     const cost = 300;
-    if (await usePoints(cost)) {
+    
+    const resultEl = document.getElementById('slot-machine-container');
+    if (!resultEl) return;
+
+    if (await usePoints(cost, "이모지 슬롯")) {
         await updateArcadeStat('slot');
         const reels = [document.getElementById('slot-1'), document.getElementById('slot-2'), document.getElementById('slot-3')];
         const btn = document.getElementById('slot-spin-btn');
         if(!reels[0] || !btn) return;
         btn.disabled = true;
         
+        // 기존 결과 텍스트 제거 (있을 경우)
+        const oldResult = document.getElementById('slot-result-display');
+        if(oldResult) oldResult.remove();
+
         let spinCount = 0;
         const spinInterval = setInterval(() => {
             reels.forEach(r => r.textContent = SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]);
@@ -198,16 +206,53 @@ async function playSlotMachine() {
                 const final = reels.map(() => SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]);
                 reels.forEach((r, i) => r.textContent = final[i]);
                 
-                let winMsg = "💀 아쉬워요! 다시 도전해보세요.";
                 let winPoints = 0;
+                let winMsg = "";
+                let subMsg = "아쉽네요, 다음 기회를 노려보세요!";
+                let statusColor = "var(--text-sub)";
                 
                 const unique = new Set(final).size;
-                if (unique === 1) { winPoints = 5000; winMsg = "🎉 JACKPOT!!! 5,000P 획득!"; }
-                else if (unique === 2) { winPoints = 600; winMsg = "✨ 2개 일치! 600P 획득!"; }
+                if (unique === 1) { 
+                    winPoints = 5000; 
+                    winMsg = "🎉 JACKPOT!!!"; 
+                    subMsg = "축하합니다! 5,000P 잭팟에 당첨되셨습니다!";
+                    statusColor = "#f59e0b";
+                }
+                else if (unique === 2) { 
+                    winPoints = 600; 
+                    winMsg = "✨ 2개 일치!"; 
+                    subMsg = "나이스! 600P를 획득하셨습니다.";
+                    statusColor = "#10b981";
+                } else {
+                    winMsg = "💀 꽝";
+                }
                 
                 setTimeout(async () => {
                     if (winPoints > 0) await addPoints(winPoints, "슬롯머신 당첨");
-                    alert(winMsg);
+                    
+                    // 연금술 스타일 결과창 생성
+                    const resultDiv = document.createElement('div');
+                    resultDiv.id = 'slot-result-display';
+                    resultDiv.style.cssText = "margin-top:15px; animation:bounce 0.5s; text-align:center; width:100%;";
+                    resultDiv.innerHTML = `
+                        <div style="background:rgba(0,0,0,0.02); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid var(--border-color); max-width: 320px; margin: 0 auto;">
+                            <div style="text-align:center; margin-bottom:8px;">
+                                <strong style="font-size:1rem; color:${statusColor};">${winMsg}</strong>
+                            </div>
+                            <p style="text-align:center; font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">${subMsg}</p>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                <span style="font-weight:700; color:var(--text-sub);">사용 포인트:</span>
+                                <span style="color:#ef4444; font-weight:900;">-300P</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
+                                <span style="font-weight:700; color:var(--text-sub);">최종 획득:</span>
+                                <strong style="color:#10b981; font-size:0.95rem;">+${winPoints.toLocaleString()}P</strong>
+                            </div>
+                        </div>
+                    `;
+                    resultEl.parentNode.insertBefore(resultDiv, resultEl.nextSibling);
+                    
+                    updateUI();
                     btn.disabled = false;
                 }, 500);
             }
@@ -219,7 +264,12 @@ let bombGameState = { active: false, bombIndex: -1, currentPool: 0, cutWires: []
 async function startBombGame() {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     if (bombGameState.active) return;
-    if (await usePoints(200)) {
+    
+    // 기존 결과 제거
+    const oldResult = document.getElementById('bomb-result-box');
+    if(oldResult) oldResult.remove();
+
+    if (await usePoints(200, "폭탄 돌리기 시작")) {
         await updateArcadeStat('bomb');
         bombGameState = { active: true, bombIndex: Math.floor(Math.random() * 5), currentPool: 0, cutWires: [] };
         const msgEl = document.getElementById('bomb-msg');
@@ -250,7 +300,30 @@ async function cutWire(index) {
 
     if (index === bombGameState.bombIndex) {
         bombGameState.active = false;
-        alert("🧨 콰광!!! 폭탄이 터졌습니다!");
+        const finalPool = bombGameState.currentPool;
+        
+        // 폭발 결과 UI
+        const resultBox = document.createElement('div');
+        resultBox.id = 'bomb-result-box';
+        resultBox.style.cssText = "margin-top:15px; animation:shake 0.5s; text-align:center; width:100%;";
+        resultBox.innerHTML = `
+            <div style="background:rgba(244,63,94,0.05); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid #f43f5e; max-width: 320px; margin: 0 auto;">
+                <div style="text-align:center; margin-bottom:8px;">
+                    <strong style="font-size:1.1rem; color:#f43f5e;">🧨 콰광!!! 폭발함</strong>
+                </div>
+                <p style="text-align:center; font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">운이 나빴네요. 누적된 포인트가 모두 사라졌습니다.</p>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="font-weight:700; color:var(--text-sub);">누적했던 포인트:</span>
+                    <span style="color:#ef4444; font-weight:900; text-decoration:line-through;">${finalPool.toLocaleString()}P</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; border-top:1px dashed #f43f5e; padding-top:8px;">
+                    <span style="font-weight:700; color:var(--text-sub);">최종 획득:</span>
+                    <strong style="color:#ef4444; font-size:0.95rem;">0P</strong>
+                </div>
+            </div>
+        `;
+        document.getElementById('bomb-wires').parentNode.appendChild(resultBox);
+
         if(msgEl) msgEl.textContent = "폭발했습니다! (0P)";
         if(startBtn) startBtn.disabled = false;
         if(claimBtn) claimBtn.disabled = true;
@@ -261,7 +334,6 @@ async function cutWire(index) {
         if(msgEl) msgEl.textContent = `성공! 현재 보상: ${reward}P (다음은 더 큽니다!)`;
         if(claimBtn) claimBtn.disabled = false;
         if (bombGameState.cutWires.length === 4) {
-            alert("🎯 모든 안전한 전선을 제거했습니다!");
             await claimBombPoints();
         }
     }
@@ -276,11 +348,30 @@ async function claimBombPoints() {
 
     bombGameState.active = false;
     await addPoints(points, "폭탄 돌리기 성공");
-    alert(`🎉 안전하게 ${points}P를 챙겼습니다!`);
+    
+    // 성공 결과 UI
+    const resultBox = document.createElement('div');
+    resultBox.id = 'bomb-result-box';
+    resultBox.style.cssText = "margin-top:15px; animation:bounce 0.5s; text-align:center; width:100%;";
+    resultBox.innerHTML = `
+        <div style="background:rgba(16,185,129,0.05); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid #10b981; max-width: 320px; margin: 0 auto;">
+            <div style="text-align:center; margin-bottom:8px;">
+                <strong style="font-size:1.1rem; color:#10b981;">🎉 안전하게 탈출 성공!</strong>
+            </div>
+            <p style="text-align:center; font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">현명한 판단입니다. 포인트를 챙겨 퇴근합니다.</p>
+            <div style="display:flex; justify-content:space-between; border-top:1px dashed #10b981; padding-top:8px;">
+                <span style="font-weight:700; color:var(--text-sub);">최종 획득:</span>
+                <strong style="color:#10b981; font-size:0.95rem;">+${points.toLocaleString()}P</strong>
+            </div>
+        </div>
+    `;
+    document.getElementById('bomb-wires').parentNode.appendChild(resultBox);
+
     if(msgEl) msgEl.textContent = "성공적으로 탈출!";
     if(startBtn) startBtn.disabled = false;
     if(claimBtn) claimBtn.disabled = true;
     document.querySelectorAll('.wire-btn').forEach(btn => btn.disabled = true);
+    updateUI();
 }
 
 async function playAlchemy(count) {
