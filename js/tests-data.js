@@ -47,7 +47,7 @@ export const TESTS = [
             { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하며 자극을 주는 관계', scores: {e:1, l:2} }, { text: '있는 그대로를 수용해주는 관계', scores: {p:2, c:1} }] }
         ],
         results: {
-            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.unsplash.com/photo-1534126416832-a88fdf2911c2?auto=format&fit=crop&w=800&q=80', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
+            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.unsplash.com/photo-1518107616385-7ca4b258e0c8?auto=format&fit=crop&w=800&q=80', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
             logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80', color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
             empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=800&q=80', color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
             creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: 'https://images.unsplash.com/photo-1490730141103-6cac27aaab94?auto=format&fit=crop&w=800&q=80', color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
