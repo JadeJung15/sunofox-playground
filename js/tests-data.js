@@ -36,7 +36,7 @@ export const TESTS = [
         }
     },
     {
-        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: 'https://images.pexels.com/photos/1024960/pexels-photo-1024960.jpeg?auto=compress&cs=tinysrgb&w=800',
+        id: 'p3', category: '성격', title: '연애 가치관 리포트', desc: '사랑에 대한 당신의 무의식적 태도와 선호하는 연애 스타일을 분석합니다.', thumb: 'https://images.unsplash.com/photo-1518199266791-bd373292e90c?auto=format&fit=crop&w=800&q=80',
         questions: [
             { q: '연인과 가고 싶은 첫 데이트 장소는?', options: [{ text: '북적이는 핫플레이스와 축제', scores: {e:2, c:1} }, { text: '조용하고 분위기 있는 골목 카페', scores: {p:2, l:1} }] },
             { q: '연락 빈도에 대한 당신의 생각은?', options: [{ text: '일상의 모든 것을 공유하고 싶다', scores: {e:1, p:2} }, { text: '각자의 시간을 존중하는 연락이 좋다', scores: {l:2, p:1} }] },
@@ -47,10 +47,10 @@ export const TESTS = [
             { q: '이상적인 연인 관계의 모습은?', options: [{ text: '함께 성장하며 자극을 주는 관계', scores: {e:1, l:2} }, { text: '있는 그대로를 수용해주는 관계', scores: {p:2, c:1} }] }
         ],
         results: {
-            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
-            logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: 'https://images.pexels.com/photos/15526647/pexels-photo-15526647.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
-            empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: 'https://images.pexels.com/photos/14947741/pexels-photo-14947741.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
-            creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: 'https://images.pexels.com/photos/15343619/pexels-photo-15343619.jpeg?auto=compress&cs=tinysrgb&w=800', color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
+            energy: { title: '직진하는 불꽃 사랑', desc: '사랑에 있어 매우 솔직하고 열정적이며 연인에게 확신을 줍니다.', img: 'https://images.unsplash.com/photo-1518107616385-7ca4b258e0c8?auto=format&fit=crop&w=800&q=80', color: '#ef4444', tags: ['#열정', '#직진', '#사랑꾼'] },
+            logic: { title: '신중한 신뢰의 건축가', desc: '감정보다 신뢰와 안정을 중요하게 여기며 탄탄한 관계를 쌓아갑니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80', color: '#3b82f6', tags: ['#신뢰', '#안정', '#현명함'] },
+            empathy: { title: '은은하게 스며드는 사랑', desc: '한결같은 모습과 세심한 배려로 연인의 마음을 따뜻하게 녹입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=800&q=80', color: '#10b981', tags: ['#배려', '#다정함', '#해바라기'] },
+            creativity: { title: '영감을 주는 소울메이트', desc: '독특한 데이트와 깊은 대화로 연인과 특별한 세계를 공유합니다.', img: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80', color: '#8b5cf6', tags: ['#특별함', '#소울메이트', '#감성'] }
         }
     },
     {
