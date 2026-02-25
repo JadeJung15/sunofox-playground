@@ -159,6 +159,31 @@ function renderCategorySelection() {
                 <div class="cat-large-card" onclick="location.hash='#personality'" style="--cat-color: var(--color-personality);">
                     <div class="cat-card-inner">
                         <span class="cat-icon">🧠</span>
+                        <h3>성격 분석</h3>
+                        <p>내면의 심리와 숨겨진 성향을<br>심층 분석합니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#face'" style="--cat-color: var(--color-face);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">✨</span>
+                        <h3>비주얼/얼굴</h3>
+                        <p>이목구비와 첫인상이 주는<br>고유한 매력을 진단합니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#fortune'" style="--cat-color: var(--color-fortune);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🔮</span>
+                        <h3>오늘의 운세</h3>
+                        <p>영적 타로와 사주 관법으로<br>오늘의 운을 점쳐봅니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#fun'" style="--cat-color: var(--color-fun);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🎨</span>
+                        <h3>재미/심리</h3>
                         <p>일상의 소소한 취향과<br>재미있는 심리 테스트입니다.</p>
                         <span class="cat-go">시작하기 →</span>
                     </div>
