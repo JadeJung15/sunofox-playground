@@ -1007,33 +1007,33 @@ async function renderResult(testId, traitScores) {
                     <div style="display:flex; justify-content:center; gap:6px; margin-bottom:1.25rem;" class="result-tag-floating">
                         ${tags.map(tag => `<span style="background:${themeColor}15; color:${themeColor}; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:800; border:1px solid ${themeColor}22;">${tag}</span>`).join('')}
                     </div>
-                    <h2 style="font-size: 2.1rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em; line-height: 1.1;">${result.title}</h2>
+                    <h2 style="font-size: 2rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em; line-height: 1.2; word-break: keep-all;">${result.title}</h2>
                     
                     <div style="min-height: 6rem; margin-bottom: 2rem; background: rgba(var(--accent-rgb), 0.03); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
-                        <p id="typing-desc" style="font-size: 1.05rem; line-height: 1.8; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: left;"></p>
+                        <p id="typing-desc" style="font-size: 1rem; line-height: 1.7; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
                     </div>
                     
                     <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 0.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative;">
                         <h4 style="margin-bottom: 1.25rem; font-size: 0.85rem; color: var(--text-sub); font-weight: 800; letter-spacing: 0.05em;">7단계 심층 아우라 지표</h4>
                         <canvas id="radarChart" width="200" height="200" style="margin: 0 auto; max-width: 100%;"></canvas>
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.25rem; padding: 0 1rem;">
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">에너지 ${Math.round(stats.energy)}%</div>
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">논리 ${Math.round(stats.logic)}%</div>
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">공감 ${Math.round(stats.empathy)}%</div>
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:4px; border-radius:4px;">독창성 ${Math.round(stats.creativity)}%</div>
+                        <div class="radar-stats-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.25rem; padding: 0 1rem;">
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">에너지 ${Math.round(stats.energy)}%</div>
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">논리 ${Math.round(stats.logic)}%</div>
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">공감 ${Math.round(stats.empathy)}%</div>
+                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">독창성 ${Math.round(stats.creativity)}%</div>
                         </div>
                     </div>
 
-                    <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.75rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: -5px; right: -5px; font-size: 4rem; opacity: 0.1;">✨</div>
-                        <span style="font-size: 0.75rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.75rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
-                        <div style="font-size: 1.8rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.4rem; text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
-                        <p style="opacity: 0.7; font-size: 0.8rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
+                    <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -5px; right: -5px; font-size: 3rem; opacity: 0.1;">✨</div>
+                        <span style="font-size: 0.7rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
+                        <div style="font-size: 1.5rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.3rem; text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
+                        <p style="opacity: 0.7; font-size: 0.75rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
-                        <button id="result-share-btn" class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>🔗</span> 테스트 공유하기</button>
-                        <button id="save-story-btn" class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>📸</span> 공유이미지 저장</button>
+                    <div class="result-button-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
+                        <button id="result-share-btn" class="btn-primary" style="background: ${themeColor}; border: none; height: 55px; font-weight: 800; font-size: 1rem; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;"><span>🔗</span> 테스트 공유</button>
+                        <button id="save-story-btn" class="btn-secondary" style="height: 55px; font-weight: 800; font-size: 1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;"><span>📸</span> 이미지 저장</button>
                     </div>
 
                     <!-- 메인으로 이동 버튼 (중요도 하향 조정) -->

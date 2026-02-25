@@ -762,11 +762,30 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .emoji-grid { grid-template-columns: repeat(4, 1fr); }
   .logo { font-size: 1.3rem; }
   .card { padding: 1.25rem; }
-  .result-card { padding: 1.5rem; }
+  .result-card { padding: 0; } /* Internal padding is handled by inline styles in JS */
+  
+  /* Result Page Mobile Font Sizes */
+  .result-card h2 { font-size: 1.6rem !important; }
+  #typing-desc { font-size: 0.95rem !important; }
+  
+  .radar-chart-container { padding: 1.5rem 0.5rem !important; }
+  
+  /* Stack buttons on small mobile */
+  .result-button-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
 }
 
 @media (max-width: 480px) {
   .test-grid { grid-template-columns: 1fr; }
+  .hero-section h1 { font-size: 2rem; }
+  .hero-section p { font-size: 0.95rem; }
+  
+  /* Radar Chart Stats labels stack */
+  .radar-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
 
 /* =================================================================
