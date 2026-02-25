@@ -782,9 +782,18 @@ function renderArcade() {
                     </div>
 
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
-                        <button class="bet-btn btn-secondary" style="font-weight: 900; height:65px; border-radius:12px; background:var(--card-bg); border:2px solid var(--border-color);" data-game="dice3" data-choice="small">소(3~8)<br><small style="color:#10b981;">3.5배</small></button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 900; height:65px; border-radius:12px; background:var(--card-bg); border:2px solid var(--border-color);" data-game="dice3" data-choice="middle">중(9~12)<br><small style="color:#10b981;">2배</small></button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 900; height:65px; border-radius:12px; background:var(--card-bg); border:2px solid var(--border-color);" data-game="dice3" data-choice="big">대(13~18)<br><small style="color:#10b981;">3.5배</small></button>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#10b981; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배 ✨</span>
+                            <button class="bet-btn btn-primary" style="background:#10b981; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:12px;" data-game="dice3" data-choice="small">소(3~8)</button>
+                        </div>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2배 ✨</span>
+                            <button class="bet-btn btn-primary" style="background:#3b82f6; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:12px;" data-game="dice3" data-choice="middle">중(9~12)</button>
+                        </div>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f59e0b; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배 ✨</span>
+                            <button class="bet-btn btn-primary" style="background:#f59e0b; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:12px;" data-game="dice3" data-choice="big">대(13~18)</button>
+                        </div>
                     </div>
                 </div>
 
@@ -881,7 +890,7 @@ function renderArcade() {
                         <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:8px;"></button>
                     </div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
-                        <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; height:50px;">게임 시작 (200P)</button>
+                        <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; height:50px;">게임 시작 (300P)</button>
                         <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.8rem; height:50px; border-color:#f43f5e; color:#f43f5e;" disabled>포인트 챙기기</button>
                     </div>
                 </div>
@@ -1678,24 +1687,29 @@ document.addEventListener('DOMContentLoaded', () => {
     if (dropbtn && dropdownContent) {
         // 드롭다운 버튼 클릭 시 토글 (모바일 대응)
         dropbtn.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            dropdownContent.classList.toggle('force-hidden');
+            const isActive = dropdownContent.classList.contains('is-active');
+            
+            // 모든 드롭다운 닫기 (확장성 고려)
+            document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
+            
+            if (!isActive) {
+                dropdownContent.classList.add('is-active');
+            }
         });
 
         // 드롭다운 내부 링크 클릭 시 닫기
         dropdownContent.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
-                dropdownContent.classList.add('force-hidden');
-                // 약간의 지연 후 클래스 제거하여 다음 hover/click 시 정상 작동하게 함
-                setTimeout(() => dropdownContent.classList.remove('force-hidden'), 500);
+                dropdownContent.classList.remove('is-active');
             });
         });
 
         // 외부 클릭 시 닫기
         document.addEventListener('click', (e) => {
             if (!dropdown.contains(e.target)) {
-                dropdownContent.classList.add('force-hidden');
-                setTimeout(() => dropdownContent.classList.remove('force-hidden'), 100);
+                dropdownContent.classList.remove('is-active');
             }
         });
     }

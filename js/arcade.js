@@ -275,7 +275,7 @@ async function startBombGame() {
     const oldResult = document.getElementById('bomb-result-box');
     if(oldResult) oldResult.remove();
 
-    if (await usePoints(200, "폭탄 돌리기 시작")) {
+    if (await usePoints(300, "폭탄 돌리기 시작")) {
         await updateArcadeStat('bomb');
         bombGameState = { active: true, bombIndex: Math.floor(Math.random() * 5), currentPool: 0, cutWires: [] };
         const msgEl = document.getElementById('bomb-msg');

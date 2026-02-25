@@ -847,12 +847,20 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   to { opacity: 1; transform: translateY(0); }
 }
 
-.dropdown-content.force-hidden {
-  display: none !important;
+/* PC 환경에서만 호버 시 드롭다운 표시 */
+@media (hover: hover) and (pointer: fine) {
+  .nav-dropdown:hover .dropdown-content {
+    display: block;
+  }
 }
 
-.nav-dropdown:hover .dropdown-content {
-  display: block;
+/* JS에서 강제로 보여줄 때 사용 (모바일 클릭 대응) */
+.dropdown-content.is-active {
+  display: block !important;
+}
+
+.dropdown-content.force-hidden {
+  display: none !important;
 }
 
 .dropdown-content .nav-link {
