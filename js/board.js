@@ -194,6 +194,7 @@ export async function renderBoard(container) {
                     <div id="pm-nickname" class="profile-card-nickname">닉네임</div>
                     <div id="pm-tier" class="profile-card-tier">ROOKIE</div>
                     <p id="pm-bio" style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1.5rem;">작성된 자기소개가 없습니다.</p>
+                    <button id="btn-edit-bio" class="btn-secondary" style="display:none; margin: -1rem auto 1.5rem; padding: 0.3rem 0.8rem; font-size: 0.75rem; border-radius: 50px;">자기소개 수정</button>
                     <div class="profile-card-stats">
                         <div class="pc-stat-item"><span>포인트</span><span id="pm-points">0</span></div>
                         <div class="pc-stat-item"><span>전체점수</span><span id="pm-score">0</span></div>
@@ -379,6 +380,11 @@ export async function renderBoard(container) {
                 createdAt: serverTimestamp()
             });
 
+            // 작성 글 횟수 추가
+            await updateDoc(doc(db, "users", UserState.user.uid), {
+                postCount: increment(1)
+            });
+
             sessionStorage.setItem('lastPostTime', now.toString());
             await addPoints(10, '게시글 작성 보상');
             contentInput.value = ''; premiumCheck.checked = false;
@@ -429,8 +435,14 @@ async function loadPosts(container, isLoadMore = false) {
         let postsRef = collection(db, "posts");
         let qConstraints = [];
         if (currentCategory !== 'ALL') qConstraints.push(where("category", "==", currentCategory));
-        if (currentSort === 'popular') qConstraints.push(orderBy("likeCount", "desc"));
-        qConstraints.push(orderBy("createdAt", "desc"));
+        
+        // 정렬 로직 수정: 복합 인덱스 오류 방지를 위해 분기 처리
+        if (currentSort === 'popular') {
+            qConstraints.push(orderBy("likeCount", "desc"));
+        } else {
+            qConstraints.push(orderBy("createdAt", "desc"));
+        }
+        
         qConstraints.push(limit(15));
         if (isLoadMore && lastVisiblePost) qConstraints.push(startAfter(lastVisiblePost));
 
@@ -525,6 +537,27 @@ window.showProfileModal = async (uid) => {
     document.getElementById('pm-score').textContent = (profile.totalScore || 0).toLocaleString();
     document.getElementById('pm-items').textContent = (profile.inventory || []).length;
     
+    // 자기소개 수정 버튼 처리 (본인인 경우만 표시)
+    const editBioBtn = document.getElementById('btn-edit-bio');
+    if (UserState.user && UserState.user.uid === uid) {
+        editBioBtn.style.display = 'block';
+        editBioBtn.onclick = async () => {
+            const newBio = prompt("새로운 자기소개를 입력해주세요 (최대 50자):", profile.bio || "");
+            if (newBio !== null) {
+                if (newBio.length > 50) return alert("자기소개는 50자 이내로 작성해주세요.");
+                try {
+                    await updateDoc(doc(db, "users", uid), { bio: newBio });
+                    profile.bio = newBio;
+                    updateProfileCache(uid, { bio: newBio });
+                    document.getElementById('pm-bio').textContent = newBio || "작성된 자기소개가 없습니다.";
+                    alert("자기소개가 수정되었습니다.");
+                } catch (e) { alert("수정 실패"); }
+            }
+        };
+    } else {
+        editBioBtn.style.display = 'none';
+    }
+
     overlay.style.display = 'flex';
 };
 
@@ -584,10 +617,11 @@ async function loadComments(postId) {
         const profile = await fetchUserProfile(c.uid);
         const div = document.createElement('div');
         div.className = 'comment-item';
+        const cDate = c.createdAt ? new Date(c.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
-                <span style="font-size:0.6rem; color:var(--text-sub);">${c.createdAt ? new Date(c.createdAt.toMillis()).toLocaleDateString() : ''}</span>
+                <span style="font-size:0.6rem; color:var(--text-sub);">${cDate}</span>
             </div>
             <p style="font-size:0.8rem; margin-top:2px;">${c.content}</p>
         `;

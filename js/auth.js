@@ -230,7 +230,7 @@ async function loadUserData(user) {
             activeBackground: 'NONE',      // 현재 장착 중인 배경
             nicknameChanged: false, 
             lastNicknameChange: null, 
-            boosterCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
+            boosterCount: 0, postCount: 0, nameColor: '#333333', unlockedColors: ['#333333'],
             arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
             quests: { date: null, list: {} }, // 퀘스트 데이터 초기화
             createdAt: serverTimestamp()

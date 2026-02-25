@@ -127,6 +127,8 @@ export async function renderRanking(container) {
                             </div>
                             <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
                                 ${displayLabel}: <strong style="color: ${accentColor}; font-size: 1rem;">${displayValue}</strong>
+                                <span style="margin: 0 8px; opacity: 0.3;">|</span>
+                                작성글: <strong style="color: var(--text-main); font-size: 0.9rem;">${data.postCount || 0}</strong>
                             </div>
                         </div>
                     </div>
