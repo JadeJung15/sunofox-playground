@@ -48,13 +48,21 @@ let testLikesData = {};
 
 async function fetchAllLikes() {
     try {
+        console.log("Fetching test likes data...");
         const snap = await getDocs(collection(db, "testStats"));
         snap.forEach(doc => { testLikesData[doc.id] = doc.data().likes || 0; });
-    } catch (e) { console.error(e); }
+        console.log("Likes data loaded:", testLikesData);
+    } catch (e) { console.error("Fetch likes failed:", e); }
 }
+// 전역 객체에 노출
+window.fetchAllLikes = fetchAllLikes;
 
 async function handleLike(testId) {
-    if (!UserState.user) return alert("로그인이 필요합니다.");
+    console.log("handleLike called for:", testId);
+    if (!UserState.user) {
+        alert("로그인이 필요합니다. 우측 상단의 로그인 버튼을 이용해 주세요.");
+        return;
+    }
     
     // 하루 1회 제한 로직 (한국 시간 기준)
     const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
@@ -77,11 +85,19 @@ async function handleLike(testId) {
         const counter = document.getElementById(`like-count-${testId}`);
         const badge = document.getElementById(`like-badge-${testId}`);
         if (counter) counter.textContent = testLikesData[testId];
-        if (badge) badge.style.background = "#ef4444";
+        if (badge) {
+            badge.style.background = "#ef4444";
+            badge.style.borderColor = "#ef4444";
+        }
         
-        alert("감사합니다! 5P가 적립되었습니다. ❤️");
-    } catch (e) { console.error(e); }
+        alert("감사합니다! 하트 보상으로 5P가 적립되었습니다. ❤️");
+    } catch (e) { 
+        console.error("Like operation failed:", e);
+        alert("좋아요 처리 중 오류가 발생했습니다.");
+    }
 }
+// 전역 객체에 노출
+window.handleLike = handleLike;
 
 let isRouting = false;
 
@@ -96,9 +112,12 @@ async function router() {
     const currentScrollY = window.scrollY;
 
     try {
-        // 백그라운드 통계 (렌더링 차단 안함)
+        // 백그라운드 통계 및 좋아요 데이터 로드
         trackVisit().catch(() => {});
         renderVisitorStats().catch(() => {});
+        if (Object.keys(testLikesData).length === 0) {
+            await fetchAllLikes();
+        }
 
         // 네비게이션 상태 업데이트
         document.querySelectorAll('.nav-link').forEach(link => {
