@@ -43,6 +43,18 @@ body {
   word-break: keep-all;
 }
 
+/* Global Form Elements for Dark Mode */
+select, input, textarea {
+  color: var(--text-main);
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+}
+
+option {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+}
+
 /* Header Refinement */
 header {
   position: sticky;

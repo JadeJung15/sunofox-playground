@@ -153,14 +153,14 @@ export async function renderBoard(container) {
 
             <div id="post-form" class="post-form" style="background:var(--bg-color); border:1px solid var(--border-color); border-radius:15px; padding:1.2rem; margin-bottom:2rem;">
                 <div style="display:flex; gap:0.5rem; margin-bottom:0.8rem;">
-                    <select id="post-category-select" style="padding:0.4rem 0.8rem; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); font-size:0.8rem; font-weight:800;">
+                    <select id="post-category-select" style="padding:0.4rem 0.8rem; border-radius:8px; border:1px solid var(--border-color); background:var(--card-bg); font-size:0.8rem; font-weight:800; color:var(--text-main);">
                         <option value="FREE">💬 자유글</option>
                         <option value="INFO">💡 정보공유</option>
                         <option value="BRAG">💎 자랑하기</option>
                         <option value="EVENT">🎁 이벤트</option>
                     </select>
                 </div>
-                <textarea id="post-content" placeholder="함께 나누고 싶은 이야기를 적어보세요. (작성 시 10P 지급!)" maxlength="500" style="background:var(--card-bg); border-radius:10px;"></textarea>
+                <textarea id="post-content" placeholder="함께 나누고 싶은 이야기를 적어보세요. (작성 시 10P 지급!)" maxlength="500" style="background:var(--card-bg); border-radius:10px; color:var(--text-main);"></textarea>
                 <div id="post-image-preview" style="display:none; margin-top:0.5rem; max-height:200px; overflow:hidden; border-radius:8px;"></div>
                 <div class="post-options" style="display:flex; align-items:center; gap:0.8rem; margin-top:1rem; flex-wrap:wrap;">
                     <label style="cursor:pointer; display:flex; align-items:center; gap:4px; font-size:0.8rem; color:var(--text-sub); background:var(--card-bg); padding:0.5rem 0.8rem; border-radius:10px; border:1px solid var(--border-color); font-weight:700;">

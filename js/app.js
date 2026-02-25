@@ -417,13 +417,22 @@ function renderProfile() {
                         <div>
                             <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🎨 닉네임 색상 변경 (1,000P)</h4>
                             <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                                ${Object.entries(COLOR_SHOP).map(([name, code]) => `
-                                    <button class="color-btn ${UserState.data.nameColor === code ? 'active' : ''}" data-color="${code}" 
-                                            style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:2px solid ${UserState.data.nameColor === code ? code : 'var(--border-color)'}; 
-                                            background:${UserState.data.nameColor === code ? code : 'none'}; color:${UserState.data.nameColor === code ? '#fff' : code}; font-weight:800;">
-                                        ${name}
-                                    </button>
-                                `).join('')}
+                                ${Object.entries(COLOR_SHOP).map(([name, code]) => {
+                                    // 다크모드 대응: 색상이 너무 어두우면 라벨 색상을 조절하거나 테두리를 강조
+                                    const isDefault = name === '기본';
+                                    const displayColor = isDefault ? 'var(--text-main)' : code;
+                                    const isActive = UserState.data.nameColor === code;
+                                    return `
+                                        <button class="color-btn ${isActive ? 'active' : ''}" data-color="${code}" 
+                                                style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; 
+                                                border:2px solid ${isActive ? displayColor : 'var(--border-color)'}; 
+                                                background:${isActive ? displayColor : 'rgba(255,255,255,0.05)'}; 
+                                                color:${isActive ? (isDefault ? 'var(--card-bg)' : '#fff') : displayColor}; 
+                                                font-weight:800; transition:all 0.2s;">
+                                            ${name}
+                                        </button>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
                         <div>
@@ -752,8 +761,8 @@ function renderArcade() {
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem; margin-top: 0.5rem;">
                         <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--text-main); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">100P</span>
-                            <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">1회 뽑기</button>
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">100P</span>
+                            <button id="gacha-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">1회 뽑기</button>
                         </div>
                         <div style="position:relative;">
                             <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">950P 🔥</span>
@@ -1513,7 +1522,7 @@ function renderTestExecution(testId) {
                     <h2 style="font-size: 2rem; font-weight: 900; margin-top: 1rem; line-height: 1.3;">${test.title}</h2>
                 </div>
                 
-                <div class="card" style="padding: 2rem; margin-bottom: 2.5rem; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); border-radius: 24px; border: 1px solid rgba(255,255,255,0.3);">
+                <div class="card" style="padding: 2rem; margin-bottom: 2.5rem; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
                     <h4 style="font-size: 0.9rem; color: var(--accent-color); font-weight: 800; margin-bottom: 1rem; letter-spacing: 0.1em;">TEST PURPOSE</h4>
                     <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-main); font-weight: 600; word-break: keep-all;">${test.desc}</p>
                 </div>
