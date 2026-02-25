@@ -752,17 +752,16 @@ function renderArcade() {
         </div>
     `;
     initArcade(); 
-    app.addEventListener('click', (e) => {
-        if (e.target.matches('#buy-booster-btn')) {
-             (async () => {
-                if (await usePoints(100)) {
-                    await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(20) });
-                    UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
-                    updateUI(); alert("부스터 충전 완료! 🔥"); renderArcade();
-                }
-            })();
-        }
-    });
+    const buyBoosterBtn = document.getElementById('buy-booster-btn');
+    if (buyBoosterBtn) {
+        buyBoosterBtn.onclick = async () => {
+            if (await usePoints(100)) {
+                await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(20) });
+                UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
+                updateUI(); alert("부스터 충전 완료! 🔥"); renderArcade();
+            }
+        };
+    }
     updateUI();
 }
 
@@ -959,6 +958,35 @@ async function renderResult(testId, traitScores) {
         ctx.closePath();
         ctx.fill();
         ctx.stroke();
+    }
+
+    // 결과 페이지 공유 버튼 이벤트 (v2.1.0 추가)
+    const resultShareBtn = document.getElementById('result-share-btn');
+    if(resultShareBtn) {
+        resultShareBtn.onclick = async () => {
+            const siteUrl = window.location.href;
+            if (navigator.share) {
+                try {
+                    await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
+                    await addPoints(30, '테스트 공유 보상');
+                } catch (e) {}
+            } else {
+                await copyLink(siteUrl);
+            }
+        };
+    }
+
+    // 인스타용 저장 버튼 이벤트
+    const storyBtn = document.getElementById('save-story-btn');
+    if(storyBtn) {
+        storyBtn.onclick = async () => {
+            storyBtn.disabled = true;
+            storyBtn.textContent = "생성 중...";
+            const success = await saveAsStoryImage('story-capture-area', `7Check_${test.title.replace(/\s/g, '_')}.png`);
+            if(success) alert("인스타 스토리 최적화 이미지가 저장되었습니다! 📸\n30P가 적립되었습니다.");
+            storyBtn.disabled = false;
+            storyBtn.innerHTML = "<span>📸</span> 인스타용 저장";
+        };
     }
 }
 function renderAbout() {
@@ -1295,24 +1323,23 @@ function renderTestExecution(testId) {
             </div>
         `;
 
-        app.addEventListener('click', (e) => {
-            if (e.target.matches('#test-start-btn')) {
-                updateStep();
-            }
-            if (e.target.matches('#test-share-btn')) {
-                 (async () => {
-                    const siteUrl = window.location.href;
-                    if (navigator.share) {
-                        try {
-                            await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
-                            await addPoints(30, '테스트 공유 보상');
-                        } catch (e) {}
-                    } else {
-                        await copyLink(siteUrl);
-                    }
-                })();
-            }
-        });
+        const startBtn = document.getElementById('test-start-btn');
+        if (startBtn) startBtn.onclick = () => updateStep();
+
+        const shareBtn = document.getElementById('test-share-btn');
+        if (shareBtn) {
+            shareBtn.onclick = async () => {
+                const siteUrl = window.location.href;
+                if (navigator.share) {
+                    try {
+                        await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
+                        await addPoints(30, '테스트 공유 보상');
+                    } catch (e) {}
+                } else {
+                    await copyLink(siteUrl);
+                }
+            };
+        }
     };
 
     const updateStep = () => {
@@ -1464,32 +1491,3 @@ async function renderVisitorStats() {
     } catch (e) { console.error('Stats loading failed', e); }
 }
 authReady.then(() => { router(); });
-
-
-
-app.addEventListener('click', (e) => {
-  if (e.target.closest('#save-story-btn')) {
-    (async () => {
-      const storyBtn = e.target.closest('#save-story-btn');
-      storyBtn.disabled = true;
-      storyBtn.textContent = "생성 중...";
-      const success = await saveAsStoryImage('story-capture-area', `7Check_${test.title.replace(/\s/g, '_')}.png`);
-      if(success) alert("인스타 스토리 최적화 이미지가 저장되었습니다! 📸\n30P가 적립되었습니다.");
-      storyBtn.disabled = false;
-      storyBtn.innerHTML = "<span>📸</span> 인스타용 저장";
-    })();
-  }
-  if (e.target.closest('#result-share-btn')) {
-    (async () => {
-      const siteUrl = window.location.href;
-      if (navigator.share) {
-          try {
-              await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
-              await addPoints(30, '테스트 공유 보상');
-          } catch (e) {}
-      } else {
-          await copyLink(siteUrl);
-      }
-    })();
-  }
-});
