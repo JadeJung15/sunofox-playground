@@ -9,7 +9,26 @@ export function initArcade() {
     arcadeInitialized = true;
 
     document.addEventListener('click', async (e) => {
-        const target = e.target.closest('button') || e.target;
+        const target = e.target.closest('button') || e.target.closest('.alchemy-grade-box') || e.target;
+        
+        // 연금술 등급 선택 박스 처리
+        if (target.classList && target.classList.contains('alchemy-grade-box')) {
+            const boxes = document.querySelectorAll('.alchemy-grade-box');
+            boxes.forEach(box => box.classList.remove('active'));
+            target.classList.add('active');
+            
+            const selectedGrade = target.dataset.grade;
+            sessionStorage.setItem('last_alchemy_grade', selectedGrade);
+            
+            // 보유 수량 텍스트 업데이트
+            const inv = UserState.data?.inventory || [];
+            const targetItems = ITEM_GRADES[selectedGrade];
+            const availableCount = inv.filter(name => targetItems.includes(name)).length;
+            const materialEl = document.getElementById('count-material-available');
+            if (materialEl) materialEl.textContent = availableCount;
+            return;
+        }
+
         if (target.id === 'gacha-btn') await playGacha(1, 100);
         if (target.id === 'gacha-10-btn') await playGacha(10, 950);
         if (target.id === 'gacha-30-btn') await playGacha(30, 2700);
@@ -25,17 +44,45 @@ export function initArcade() {
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'slot-spin-btn') await playSlotMachine();
         if (target.id === 'bomb-start-btn') await startBombGame();
-        if (target.classList.contains('wire-btn')) await cutWire(parseInt(target.dataset.wire));
+        if (target.classList && target.classList.contains('wire-btn')) await cutWire(parseInt(target.dataset.wire));
         if (target.id === 'bomb-claim-btn') await claimBombPoints();
         if (target.id === 'daily-checkin-btn') await playDailyCheckin();
-        if (target.id === 'market-open-btn') await openMarket();
         
-        if (target.classList.contains('bet-btn')) {
+        if (target.classList && target.classList.contains('bet-btn')) {
             const gameType = target.dataset.game;
             const choice = target.dataset.choice;
             await playBettingGame(gameType, choice);
         }
     });
+
+    // 퀘스트 로드 호출
+    renderDailyQuests();
+    // 연금술 카운트 초기화 호출
+    updateAlchemyCounts();
+}
+
+// 연금술 재료 수량 업데이트 로직 (독립 함수로 분리)
+export function updateAlchemyCounts() {
+    const inv = UserState.data?.inventory || [];
+    const counts = { COMMON: 0, UNCOMMON: 0, RARE: 0 };
+    inv.forEach(item => {
+        const grade = getGrade(item);
+        if (counts[grade] !== undefined) counts[grade]++;
+    });
+    
+    // 3개 선택 박스 숫자 업데이트
+    Object.entries(counts).forEach(([grade, count]) => {
+        const el = document.getElementById(`count-${grade}`);
+        if (el) el.textContent = count;
+    });
+
+    // 현재 선택된 등급의 '보유 수량' 요약 텍스트 업데이트
+    const activeBox = document.querySelector('.alchemy-grade-box.active');
+    const materialEl = document.getElementById('count-material-available');
+    if (activeBox && materialEl) {
+        const selectedGrade = activeBox.dataset.grade;
+        materialEl.textContent = counts[selectedGrade];
+    }
 }
 
 async function updateArcadeStat(statKey) {
@@ -54,7 +101,6 @@ async function playGacha(count, cost) {
     const resultEl = document.getElementById('gacha-result');
     if (!resultEl) return;
 
-    // 포인트 부족 시 실패 노출 (팝업 X)
     if (UserState.data.points < cost) {
         resultEl.innerHTML = `
             <div style="color:#ef4444; animation: shake 0.5s;">
@@ -97,30 +143,24 @@ async function playGacha(count, cost) {
                 UserState.data.inventory = [...(UserState.data.inventory || []), ...drawnItems];
                 UserState.data.totalScore = (UserState.data.totalScore || 0) + totalAddedScore;
 
-                // UI 리렌더링 (스크롤 유지)
                 if (window.location.hash === '#arcade') {
                     window._preventScroll = true;
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
 
-                // 리렌더링 후 결과 표시
                 setTimeout(() => {
                     const newResultEl = document.getElementById('gacha-result');
                     if (!newResultEl) return;
 
                     const summary = drawnItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                    
-                    // 등급별 색상 매핑 및 태그 생성 (연금술과 동일한 스타일)
                     const resultTagsHTML = Object.entries(summary).map(([name, num]) => {
                         const grade = getGrade(name);
-                        let color = '#94a3b8'; // COMMON
+                        let color = '#94a3b8';
                         let bg = 'rgba(148, 163, 184, 0.1)';
-                        
                         if (grade === 'LEGENDARY') { color = '#f59e0b'; bg = 'rgba(245, 158, 11, 0.1)'; }
                         else if (grade === 'RARE') { color = '#3b82f6'; bg = 'rgba(59, 130, 246, 0.1)'; }
                         else if (grade === 'UNCOMMON') { color = '#10b981'; bg = 'rgba(16, 185, 129, 0.1)'; }
-
                         return `<span style="display:inline-block; background:${bg}; color:${color}; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid ${color}33;">${name} x${num}</span>`;
                     }).join('');
 
@@ -130,7 +170,6 @@ async function playGacha(count, cost) {
                                 <strong style="font-size:0.95rem; color:var(--accent-color);">📦 뽑기 완료 (${count}회 개봉)</strong>
                             </div>
                             <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; justify-content:center;">${resultTagsHTML}</div>
-                            
                             <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; font-size:0.75rem; text-align:left; border:1px solid var(--border-color);">
                                 <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
                                     <span style="font-weight:700; color:var(--text-sub);">사용 포인트:</span>
@@ -140,14 +179,10 @@ async function playGacha(count, cost) {
                                     <span style="font-weight:700; color:var(--text-sub);">총 획득 가치:</span>
                                     <strong style="color:#10b981; font-size:0.9rem;">+${totalAddedScore.toLocaleString()}점</strong>
                                 </div>
-                                <div style="text-align:right; margin-top:4px;">
-                                    <small style="font-weight:800; color:var(--accent-color);">아이템 점수가 내 랭킹에 즉시 반영되었습니다.</small>
-                                </div>
                             </div>
                         </div>
                     `;
                 }, 50);
-
             } catch (e) {
                 console.error(e);
                 resultEl.innerHTML = '<span style="color:#ef4444;">상자가 손상되었습니다!</span>';
@@ -182,7 +217,6 @@ const SLOT_EMOJIS = ['🎰', '💎', '🔥', '✨', '🍒', '7️⃣'];
 async function playSlotMachine() {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     const cost = 300;
-    
     const resultEl = document.getElementById('slot-machine-container');
     if (!resultEl) return;
 
@@ -192,8 +226,6 @@ async function playSlotMachine() {
         const btn = document.getElementById('slot-spin-btn');
         if(!reels[0] || !btn) return;
         btn.disabled = true;
-        
-        // 기존 결과 텍스트 제거 (있을 경우)
         const oldResult = document.getElementById('slot-result-display');
         if(oldResult) oldResult.remove();
 
@@ -205,53 +237,29 @@ async function playSlotMachine() {
                 clearInterval(spinInterval);
                 const final = reels.map(() => SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]);
                 reels.forEach((r, i) => r.textContent = final[i]);
-                
                 let winPoints = 0;
                 let winMsg = "";
                 let subMsg = "아쉽네요, 다음 기회를 노려보세요!";
                 let statusColor = "var(--text-sub)";
-                
                 const unique = new Set(final).size;
-                if (unique === 1) { 
-                    winPoints = 5000; 
-                    winMsg = "🎉 JACKPOT!!!"; 
-                    subMsg = "축하합니다! 5,000P 잭팟에 당첨되셨습니다!";
-                    statusColor = "#f59e0b";
-                }
-                else if (unique === 2) { 
-                    winPoints = 600; 
-                    winMsg = "✨ 2개 일치!"; 
-                    subMsg = "나이스! 600P를 획득하셨습니다.";
-                    statusColor = "#10b981";
-                } else {
-                    winMsg = "💀 꽝";
-                }
+                if (unique === 1) { winPoints = 5000; winMsg = "🎉 JACKPOT!!!"; subMsg = "축하합니다! 5,000P 잭팟에 당첨되셨습니다!"; statusColor = "#f59e0b"; }
+                else if (unique === 2) { winPoints = 600; winMsg = "✨ 2개 일치!"; subMsg = "나이스! 600P를 획득하셨습니다."; statusColor = "#10b981"; }
+                else { winMsg = "💀 꽝"; }
                 
                 setTimeout(async () => {
                     if (winPoints > 0) await addPoints(winPoints, "슬롯머신 당첨");
-                    
-                    // 연금술 스타일 결과창 생성
                     const resultDiv = document.createElement('div');
                     resultDiv.id = 'slot-result-display';
                     resultDiv.style.cssText = "margin-top:15px; animation:bounce 0.5s; text-align:center; width:100%;";
                     resultDiv.innerHTML = `
                         <div style="background:rgba(0,0,0,0.02); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid var(--border-color); max-width: 320px; margin: 0 auto;">
-                            <div style="text-align:center; margin-bottom:8px;">
-                                <strong style="font-size:1rem; color:${statusColor};">${winMsg}</strong>
-                            </div>
+                            <div style="text-align:center; margin-bottom:8px;"><strong style="font-size:1rem; color:${statusColor};">${winMsg}</strong></div>
                             <p style="text-align:center; font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">${subMsg}</p>
-                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                <span style="font-weight:700; color:var(--text-sub);">사용 포인트:</span>
-                                <span style="color:#ef4444; font-weight:900;">-300P</span>
-                            </div>
-                            <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
-                                <span style="font-weight:700; color:var(--text-sub);">최종 획득:</span>
-                                <strong style="color:#10b981; font-size:0.95rem;">+${winPoints.toLocaleString()}P</strong>
-                            </div>
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-weight:700; color:var(--text-sub);">사용 포인트:</span><span style="color:#ef4444; font-weight:900;">-300P</span></div>
+                            <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;"><span style="font-weight:700; color:var(--text-sub);">최종 획득:</span><strong style="color:#10b981; font-size:0.95rem;">+${winPoints.toLocaleString()}P</strong></div>
                         </div>
                     `;
                     resultEl.parentNode.insertBefore(resultDiv, resultEl.nextSibling);
-                    
                     updateUI();
                     btn.disabled = false;
                 }, 500);
@@ -264,8 +272,6 @@ let bombGameState = { active: false, bombIndex: -1, currentPool: 0, cutWires: []
 async function startBombGame() {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     if (bombGameState.active) return;
-    
-    // 기존 결과 제거
     const oldResult = document.getElementById('bomb-result-box');
     if(oldResult) oldResult.remove();
 
@@ -276,11 +282,7 @@ async function startBombGame() {
         const startBtn = document.getElementById('bomb-start-btn');
         if(msgEl) msgEl.textContent = "전선을 끊으세요! (현재: 0P)";
         if(startBtn) startBtn.disabled = true;
-        document.querySelectorAll('.wire-btn').forEach(btn => {
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.style.transform = 'scale(1)';
-        });
+        document.querySelectorAll('.wire-btn').forEach(btn => { btn.disabled = false; btn.style.opacity = '1'; btn.style.transform = 'scale(1)'; });
     }
 }
 
@@ -290,40 +292,24 @@ async function cutWire(index) {
     const msgEl = document.getElementById('bomb-msg');
     const claimBtn = document.getElementById('bomb-claim-btn');
     const startBtn = document.getElementById('bomb-start-btn');
-
     bombGameState.cutWires.push(index);
-    if(wireBtn) {
-        wireBtn.style.opacity = '0.3';
-        wireBtn.style.transform = 'scale(0.9)';
-        wireBtn.disabled = true;
-    }
+    if(wireBtn) { wireBtn.style.opacity = '0.3'; wireBtn.style.transform = 'scale(0.9)'; wireBtn.disabled = true; }
 
     if (index === bombGameState.bombIndex) {
         bombGameState.active = false;
         const finalPool = bombGameState.currentPool;
-        
-        // 폭발 결과 UI
         const resultBox = document.createElement('div');
         resultBox.id = 'bomb-result-box';
         resultBox.style.cssText = "margin-top:15px; animation:shake 0.5s; text-align:center; width:100%;";
         resultBox.innerHTML = `
             <div style="background:rgba(244,63,94,0.05); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid #f43f5e; max-width: 320px; margin: 0 auto;">
-                <div style="text-align:center; margin-bottom:8px;">
-                    <strong style="font-size:1.1rem; color:#f43f5e;">🧨 콰광!!! 폭발함</strong>
-                </div>
+                <div style="text-align:center; margin-bottom:8px;"><strong style="font-size:1.1rem; color:#f43f5e;">🧨 콰광!!! 폭발함</strong></div>
                 <p style="text-align:center; font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">운이 나빴네요. 누적된 포인트가 모두 사라졌습니다.</p>
-                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                    <span style="font-weight:700; color:var(--text-sub);">누적했던 포인트:</span>
-                    <span style="color:#ef4444; font-weight:900; text-decoration:line-through;">${finalPool.toLocaleString()}P</span>
-                </div>
-                <div style="display:flex; justify-content:space-between; border-top:1px dashed #f43f5e; padding-top:8px;">
-                    <span style="font-weight:700; color:var(--text-sub);">최종 획득:</span>
-                    <strong style="color:#ef4444; font-size:0.95rem;">0P</strong>
-                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-weight:700; color:var(--text-sub);">누적했던 포인트:</span><span style="color:#ef4444; font-weight:900; text-decoration:line-through;">${finalPool.toLocaleString()}P</span></div>
+                <div style="display:flex; justify-content:space-between; border-top:1px dashed #f43f5e; padding-top:8px;"><span style="font-weight:700; color:var(--text-sub);">최종 획득:</span><strong style="color:#ef4444; font-size:0.95rem;">0P</strong></div>
             </div>
         `;
         document.getElementById('bomb-wires').parentNode.appendChild(resultBox);
-
         if(msgEl) msgEl.textContent = "폭발했습니다! (0P)";
         if(startBtn) startBtn.disabled = false;
         if(claimBtn) claimBtn.disabled = true;
@@ -333,9 +319,7 @@ async function cutWire(index) {
         bombGameState.currentPool = reward;
         if(msgEl) msgEl.textContent = `성공! 현재 보상: ${reward}P (다음은 더 큽니다!)`;
         if(claimBtn) claimBtn.disabled = false;
-        if (bombGameState.cutWires.length === 4) {
-            await claimBombPoints();
-        }
+        if (bombGameState.cutWires.length === 4) { await claimBombPoints(); }
     }
 }
 
@@ -345,28 +329,19 @@ async function claimBombPoints() {
     const msgEl = document.getElementById('bomb-msg');
     const startBtn = document.getElementById('bomb-start-btn');
     const claimBtn = document.getElementById('bomb-claim-btn');
-
     bombGameState.active = false;
     await addPoints(points, "폭탄 돌리기 성공");
-    
-    // 성공 결과 UI
     const resultBox = document.createElement('div');
     resultBox.id = 'bomb-result-box';
     resultBox.style.cssText = "margin-top:15px; animation:bounce 0.5s; text-align:center; width:100%;";
     resultBox.innerHTML = `
         <div style="background:rgba(16,185,129,0.05); padding:12px; border-radius:12px; font-size:0.8rem; text-align:left; border:1px solid #10b981; max-width: 320px; margin: 0 auto;">
-            <div style="text-align:center; margin-bottom:8px;">
-                <strong style="font-size:1.1rem; color:#10b981;">🎉 안전하게 탈출 성공!</strong>
-            </div>
+            <div style="text-align:center; margin-bottom:8px;"><strong style="font-size:1.1rem; color:#10b981;">🎉 안전하게 탈출 성공!</strong></div>
             <p style="text-align:center; font-size:0.75rem; color:var(--text-sub); margin-bottom:10px;">현명한 판단입니다. 포인트를 챙겨 퇴근합니다.</p>
-            <div style="display:flex; justify-content:space-between; border-top:1px dashed #10b981; padding-top:8px;">
-                <span style="font-weight:700; color:var(--text-sub);">최종 획득:</span>
-                <strong style="color:#10b981; font-size:0.95rem;">+${points.toLocaleString()}P</strong>
-            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1px dashed #10b981; padding-top:8px;"><span style="font-weight:700; color:var(--text-sub);">최종 획득:</span><strong style="color:#10b981; font-size:0.95rem;">+${points.toLocaleString()}P</strong></div>
         </div>
     `;
     document.getElementById('bomb-wires').parentNode.appendChild(resultBox);
-
     if(msgEl) msgEl.textContent = "성공적으로 탈출!";
     if(startBtn) startBtn.disabled = false;
     if(claimBtn) claimBtn.disabled = true;
@@ -376,7 +351,6 @@ async function claimBombPoints() {
 
 async function playAlchemy(count) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
-    
     const resultEl = document.getElementById('alchemy-result');
     if (!resultEl) return;
 
@@ -384,15 +358,15 @@ async function playAlchemy(count) {
     if (count === 5) cost = 1350;
     else if (count === 10) cost = 2500;
 
-    const gradeSelect = document.getElementById('alchemy-grade-select');
-    if (!gradeSelect) return;
+    // [개선] 드롭다운 대신 active 박스에서 등급 가져오기
+    const activeBox = document.querySelector('.alchemy-grade-box.active');
+    if (!activeBox) return alert("연성할 등급을 선택해주세요!");
 
-    const selectedGrade = gradeSelect.value;
+    const selectedGrade = activeBox.dataset.grade;
     const itemsNeeded = count * 6;
     const targetItems = ITEM_GRADES[selectedGrade];
     const availableItems = UserState.data.inventory.filter(name => targetItems.includes(name));
 
-    // [개선] 수량 부족 시 실패 노출 (팝업 X)
     if (availableItems.length < itemsNeeded) {
         resultEl.innerHTML = `
             <div style="color:#ef4444; animation: shake 0.5s;">
@@ -403,7 +377,6 @@ async function playAlchemy(count) {
         return;
     }
 
-    // [개선] 포인트 부족 시 실패 노출 (팝업 X)
     if (UserState.data.points < cost) {
         resultEl.innerHTML = `
             <div style="color:#ef4444; animation: shake 0.5s;">
@@ -416,19 +389,14 @@ async function playAlchemy(count) {
 
     const buttons = [document.getElementById('alchemy-btn'), document.getElementById('alchemy-5-btn'), document.getElementById('alchemy-10-btn')];
     buttons.forEach(btn => { if(btn) btn.disabled = true; });
-
-    // 연성 시작 효과
     resultEl.innerHTML = '<span class="loading-dots" style="color:#8b5cf6;">금단의 비술을 시전 중...</span>';
 
     if (await usePoints(cost, `연금술 시행 (${count}회)`)) {
         await updateArcadeStat('alchemy');
-        
         setTimeout(async () => {
             try {
                 const userRef = doc(db, "users", UserState.user.uid);
                 let currentInv = [...UserState.data.inventory];
-                
-                // 1. 소모 아이템 처리 및 점수 계산 (-)
                 const sacrificed = [];
                 let scoreLost = 0;
                 for (let i = 0; i < itemsNeeded; i++) {
@@ -440,64 +408,42 @@ async function playAlchemy(count) {
                     }
                 }
 
-                // 2. 결과 아이템 생성 (확률형)
                 const gradeOrder = ['COMMON', 'UNCOMMON', 'RARE', 'LEGENDARY'];
                 const nextGrade = gradeOrder[Math.min(gradeOrder.indexOf(selectedGrade) + 1, gradeOrder.length - 1)];
-                
                 const results = [];
-                let bonusCount = 0;
                 let scoreGained = 0;
                 let upgradeSuccessCount = 0;
 
                 for (let i = 0; i < count; i++) {
-                    // [개선] 확률 로직: 70% 확률로 상위 등급, 30% 확률로 동급 아이템
                     const isUpgrade = Math.random() < 0.7;
                     const finalGrade = isUpgrade ? nextGrade : selectedGrade;
                     if(isUpgrade) upgradeSuccessCount++;
-
                     const pool = ITEM_GRADES[finalGrade];
                     const item = pool[Math.floor(Math.random() * pool.length)];
-                    
                     results.push(item);
                     scoreGained += (ITEM_VALUES[item] || 0);
-
-                    // 15% 보너스 (동일 아이템 1개 더)
-                    if (Math.random() < 0.15) {
-                        results.push(item);
-                        scoreGained += (ITEM_VALUES[item] || 0);
-                        bonusCount++;
-                    }
+                    if (Math.random() < 0.15) { results.push(item); scoreGained += (ITEM_VALUES[item] || 0); }
                 }
 
                 currentInv.push(...results);
                 const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-                
-                await updateDoc(userRef, { 
-                    inventory: currentInv, 
-                    totalScore: recalcScore, 
-                    discoveredItems: arrayUnion(...results) 
-                });
-
+                await updateDoc(userRef, { inventory: currentInv, totalScore: recalcScore, discoveredItems: arrayUnion(...results) });
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
-                // [중요] UI를 먼저 리렌더링하여 결과창이 지워지는 것 방지
                 if (window.location.hash === '#arcade') {
                     window._preventScroll = true; 
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
 
-                // 리렌더링 후 새 DOM 엘리먼트를 다시 찾아서 결과 출력
                 setTimeout(() => {
                     const newResultEl = document.getElementById('alchemy-result');
                     if (!newResultEl) return;
-
                     const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
                     const resultItemsHTML = Object.entries(resSummary).map(([name, num]) => 
                         `<span style="display:inline-block; background:rgba(139, 92, 246, 0.1); color:#8b5cf6; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(139, 92, 246, 0.2);">${name} x${num}</span>`
                     ).join('');
-
                     const matSummary = sacrificed.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
                     const materialsHTML = Object.entries(matSummary).map(([name, num]) => 
                         `<span style="display:inline-block; background:rgba(0,0,0,0.05); color:var(--text-sub); padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:600; margin:2px;">${name} x${num}</span>`
@@ -505,25 +451,12 @@ async function playAlchemy(count) {
 
                     newResultEl.innerHTML = `
                         <div style="animation: bounce 0.5s; text-align:center; width:100%;">
-                            <div style="margin-bottom:8px;">
-                                <strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 완료 (${upgradeSuccessCount}/${count} 진화 성공)</strong>
-                            </div>
+                            <div style="margin-bottom:8px;"><strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 완료 (${upgradeSuccessCount}/${count} 진화 성공)</strong></div>
                             <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; justify-content:center;">${resultItemsHTML}</div>
-                            
                             <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; font-size:0.75rem; text-align:left; border:1px solid var(--border-color);">
-                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                    <span style="font-weight:700;">사용한 제물:</span>
-                                    <span style="color:#ef4444; font-weight:900;">-${scoreLost.toLocaleString()}점</span>
-                                </div>
+                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;"><span style="font-weight:700;">사용한 제물:</span><span style="color:#ef4444; font-weight:900;">-${scoreLost.toLocaleString()}점</span></div>
                                 <div style="display:flex; flex-wrap:wrap; margin-bottom:10px; opacity:0.8;">${materialsHTML}</div>
-                                
-                                <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
-                                    <span style="font-weight:700;">획득한 보물:</span>
-                                    <strong style="color:#10b981; font-size:0.9rem;">+${scoreGained.toLocaleString()}점</strong>
-                                </div>
-                                <div style="text-align:right; margin-top:4px;">
-                                    <small style="font-weight:900; color:var(--accent-color);">최종 점수 변동: ${ (scoreGained - scoreLost) >= 0 ? '+' : ''}${(scoreGained - scoreLost).toLocaleString()}점</small>
-                                </div>
+                                <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;"><span style="font-weight:700;">획득한 보물:</span><strong style="color:#10b981; font-size:0.9rem;">+${scoreGained.toLocaleString()}점</strong></div>
                             </div>
                         </div>
                     `;
@@ -541,20 +474,51 @@ async function playAlchemy(count) {
     }
 }
 
-// =================================================================
-// 🏪 아이템 중고장터 (BULK SELL + CHECKBOX)
-// =================================================================
+// 퀘스트 렌더링 함수 정의
+async function renderDailyQuests() {
+    const listEl = document.getElementById('daily-quest-list');
+    const summaryEl = document.getElementById('quest-summary');
+    if (!listEl || !summaryEl || !UserState.user || !UserState.data) return;
+
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
+    const qData = UserState.data.quests || { date: today, list: { login: true, test: false, board: false } };
+    
+    if (qData.date !== today) {
+        summaryEl.textContent = "📜 일일 퀘스트 (갱신 필요)";
+        return;
+    }
+
+    const quests = [
+        { key: 'login', name: '오늘의 첫 발걸음', desc: '세븐체크 접속하기', reward: '50P' },
+        { key: 'test', name: '자아 탐구 생활', desc: '심리 테스트 1회 완료', reward: '50P' },
+        { key: 'board', name: '활발한 소통가', desc: '게시글 작성하기', reward: '50P' }
+    ];
+
+    let doneCount = 0;
+    listEl.innerHTML = quests.map(q => {
+        const isDone = qData.list[q.key];
+        if (isDone) doneCount++;
+        return `
+            <div class="quest-item">
+                <div class="quest-info">
+                    <h4>${q.name}</h4>
+                    <p>${q.desc}</p>
+                </div>
+                <div class="quest-status ${isDone ? 'done' : ''}">
+                    ${isDone ? '완료 ✓' : `보상: ${q.reward}`}
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    summaryEl.textContent = `📜 일일 퀘스트 (${doneCount}/3 완료)`;
+}
 
 function renderMarketUI() {
     const container = document.getElementById('market-ui-container');
     if (!container) return;
-    
     const inv = UserState.data.inventory || [];
-    if (inv.length === 0) {
-        container.innerHTML = '<p style="text-align:center; padding:1rem; color:var(--text-sub);">판매할 아이템이 없습니다.</p>';
-        return;
-    }
-
+    if (inv.length === 0) { container.innerHTML = '<p style="text-align:center; padding:1rem; color:var(--text-sub);">판매할 아이템이 없습니다.</p>'; return; }
     const itemCounts = inv.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
     const openBtn = document.getElementById('market-open-btn');
     if (openBtn) openBtn.style.display = 'none';
@@ -573,47 +537,22 @@ function renderMarketUI() {
                     </thead>
                     <tbody>
     `;
-
     Object.entries(itemCounts).forEach(([name, count]) => {
         const refundVal = Math.floor((ITEM_VALUES[name] || 0) * 0.7);
         html += `
             <tr style="border-bottom: 1px solid var(--border-color);">
-                <td style="padding: 0.5rem; text-align:center;">
-                    <input type="checkbox" class="market-item-check" data-name="${name}" checked>
-                </td>
-                <td style="padding: 0.75rem 0.5rem; font-weight: 700;">
-                    <span style="display:block;">${name}</span>
-                    <small style="color:var(--text-sub); font-size:0.65rem;">가치: ${ITEM_VALUES[name]}P</small>
-                </td>
-                <td style="padding: 0.5rem; text-align:center;">
-                    <input type="number" class="market-qty-input" data-name="${name}" data-max="${count}" data-price="${refundVal}" 
-                           value="${count}" min="1" max="${count}" 
-                           style="width:100%; background:var(--card-bg); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); text-align:center; padding:4px; font-size:0.75rem;">
-                </td>
-                <td style="padding: 0.75rem 0.5rem; text-align:right; font-weight:900; color:var(--accent-secondary);">
-                    <span class="row-refund-total">${(refundVal * count).toLocaleString()}P</span>
-                </td>
+                <td style="padding: 0.5rem; text-align:center;"><input type="checkbox" class="market-item-check" data-name="${name}" checked></td>
+                <td style="padding: 0.75rem 0.5rem; font-weight: 700;"><span style="display:block;">${name}</span><small style="color:var(--text-sub); font-size:0.65rem;">가치: ${ITEM_VALUES[name]}P</small></td>
+                <td style="padding: 0.5rem; text-align:center;"><input type="number" class="market-qty-input" data-name="${name}" data-max="${count}" data-price="${refundVal}" value="${count}" min="1" max="${count}" style="width:100%; background:var(--card-bg); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); text-align:center; padding:4px; font-size:0.75rem;"></td>
+                <td style="padding: 0.75rem 0.5rem; text-align:right; font-weight:900; color:var(--accent-secondary);"><span class="row-refund-total">${(refundVal * count).toLocaleString()}P</span></td>
             </tr>
         `;
     });
-
-    html += `
-                    </tbody>
-                </table>
-            </div>
+    html += `</tbody></table></div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:1rem; border-top:2px solid var(--border-color);">
-                <div>
-                    <small style="display:block; color:var(--text-sub); font-weight:800;">총 환급액</small>
-                    <strong id="market-total-refund" style="font-size:1.3rem; color:var(--accent-color);">0P</strong>
-                </div>
-                <div style="display:flex; gap:0.4rem;">
-                    <button id="market-cancel-btn" class="btn-secondary" style="padding:0.6rem 1rem; font-size:0.8rem;">취소</button>
-                    <button id="market-sell-btn" class="btn-primary" style="background:var(--accent-secondary); padding:0.6rem 1.2rem; font-size:0.8rem;">선택 판매</button>
-                </div>
-            </div>
-        </div>
-    `;
-
+                <div><small style="display:block; color:var(--text-sub); font-weight:800;">총 환급액</small><strong id="market-total-refund" style="font-size:1.3rem; color:var(--accent-color);">0P</strong></div>
+                <div style="display:flex; gap:0.4rem;"><button id="market-cancel-btn" class="btn-secondary" style="padding:0.6rem 1rem; font-size:0.8rem;">취소</button><button id="market-sell-btn" class="btn-primary" style="background:var(--accent-secondary); padding:0.6rem 1.2rem; font-size:0.8rem;">선택 판매</button></div>
+            </div></div>`;
     container.innerHTML = html;
 
     const updateTotals = () => {
@@ -636,10 +575,8 @@ function renderMarketUI() {
     };
 
     container.querySelectorAll('.market-qty-input, .market-item-check, #market-select-all').forEach(el => {
-        el.onchange = (e) => {
-            if (el.id === 'market-select-all') {
-                container.querySelectorAll('.market-item-check').forEach(c => c.checked = el.checked);
-            }
+        el.onchange = () => {
+            if (el.id === 'market-select-all') container.querySelectorAll('.market-item-check').forEach(c => c.checked = el.checked);
             updateTotals();
         };
         if (el.classList.contains('market-qty-input')) {
@@ -651,14 +588,9 @@ function renderMarketUI() {
             };
         }
     });
-
     updateTotals();
 
-    document.getElementById('market-cancel-btn').onclick = () => {
-        container.innerHTML = '';
-        if (openBtn) openBtn.style.display = 'block';
-    };
-
+    document.getElementById('market-cancel-btn').onclick = () => { container.innerHTML = ''; if (openBtn) openBtn.style.display = 'block'; };
     document.getElementById('market-sell-btn').onclick = async () => {
         const sellList = [];
         container.querySelectorAll('tr').forEach(row => {
@@ -669,12 +601,9 @@ function renderMarketUI() {
                 if (qty > 0) sellList.push({ name: input.dataset.name, qty, price: parseInt(input.dataset.price) });
             }
         });
-
         if (sellList.length === 0) return alert("판매할 아이템을 선택해주세요.");
-        
         const totalRefund = sellList.reduce((acc, cur) => acc + (cur.qty * cur.price), 0);
         if (!confirm(`${sellList.length}종의 아이템을 판매하여 총 ${totalRefund.toLocaleString()}P를 받으시겠습니까?`)) return;
-
         await playBulkSell(sellList, totalRefund);
     };
 }
@@ -683,36 +612,14 @@ async function playBulkSell(sellList, totalRefund) {
     if (!UserState.user) return;
     const userRef = doc(db, "users", UserState.user.uid);
     let currentInv = [...UserState.data.inventory];
-
-    sellList.forEach(sell => {
-        for (let i = 0; i < sell.qty; i++) {
-            const idx = currentInv.indexOf(sell.name);
-            if (idx > -1) currentInv.splice(idx, 1);
-        }
-    });
-
+    sellList.forEach(sell => { for (let i = 0; i < sell.qty; i++) { const idx = currentInv.indexOf(sell.name); if (idx > -1) currentInv.splice(idx, 1); } });
     const newScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-    
     try {
-        await updateDoc(userRef, { 
-            inventory: currentInv, 
-            points: increment(totalRefund), 
-            totalScore: newScore 
-        });
-
-        UserState.data.inventory = currentInv;
-        UserState.data.points += totalRefund;
-        UserState.data.totalScore = newScore;
-
+        await updateDoc(userRef, { inventory: currentInv, points: increment(totalRefund), totalScore: newScore });
+        UserState.data.inventory = currentInv; UserState.data.points += totalRefund; UserState.data.totalScore = newScore;
         alert(`💰 판매 완료! ${totalRefund.toLocaleString()}P가 지급되었습니다.`);
-        
-        window._preventScroll = true;
-        window.dispatchEvent(new HashChangeEvent('hashchange'));
-        updateUI();
-    } catch (e) {
-        console.error(e);
-        alert("판매 중 오류가 발생했습니다.");
-    }
+        window._preventScroll = true; window.dispatchEvent(new HashChangeEvent('hashchange')); updateUI();
+    } catch (e) { console.error(e); alert("판매 중 오류가 발생했습니다."); }
 }
 
 async function playDailyCheckin() {
@@ -728,92 +635,42 @@ async function playDailyCheckin() {
 
 async function playBettingGame(type, choice) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
-    
     const amountInput = document.getElementById('bet-amount');
     const statusEl = document.getElementById('dice-status-text');
-    const diceCubes = [
-        document.getElementById('dice-cube-1'),
-        document.getElementById('dice-cube-2'),
-        document.getElementById('dice-cube-3')
-    ];
-    
+    const diceCubes = [document.getElementById('dice-cube-1'), document.getElementById('dice-cube-2'), document.getElementById('dice-cube-3')];
     if (!amountInput || !statusEl || !diceCubes[0]) return;
-
     const betAmount = parseInt(amountInput.value);
-    
-    // 검증 로직
-    if (isNaN(betAmount) || betAmount < 10) {
-        statusEl.innerHTML = '<span style="color:#ef4444;">최소 10P 이상 베팅해야 합니다.</span>';
-        return;
-    }
-    if (betAmount > UserState.data.points) {
-        statusEl.innerHTML = `<span style="color:#ef4444;">포인트가 부족합니다! (보유: ${UserState.data.points}P)</span>`;
-        return;
-    }
-
+    if (isNaN(betAmount) || betAmount < 10) { statusEl.innerHTML = '<span style="color:#ef4444;">최소 10P 이상 베팅해야 합니다.</span>'; return; }
+    if (betAmount > UserState.data.points) { statusEl.innerHTML = `<span style="color:#ef4444;">포인트가 부족합니다! (보유: ${UserState.data.points}P)</span>`; return; }
     const buttons = document.querySelectorAll('.bet-btn');
     buttons.forEach(btn => btn.disabled = true);
-
-    // 굴리기 애니메이션 시작
     statusEl.innerHTML = '<span style="color:var(--accent-color); font-weight:800;">주사위를 흔드는 중...</span>';
-    diceCubes.forEach(dice => {
-        dice.classList.remove('show-1','show-2','show-3','show-4','show-5','show-6');
-        dice.classList.add('rolling');
-    });
+    diceCubes.forEach(dice => { dice.classList.remove('show-1','show-2','show-3','show-4','show-5','show-6'); dice.classList.add('rolling'); });
 
     if (await usePoints(betAmount, `주사위 베팅 (${choice})`)) {
         await updateArcadeStat('betting');
-        
         setTimeout(async () => {
-            const d1 = Math.floor(Math.random() * 6) + 1;
-            const d2 = Math.floor(Math.random() * 6) + 1;
-            const d3 = Math.floor(Math.random() * 6) + 1;
-            const results = [d1, d2, d3];
-            const sum = d1 + d2 + d3;
-            
+            const d1 = Math.floor(Math.random() * 6) + 1; const d2 = Math.floor(Math.random() * 6) + 1; const d3 = Math.floor(Math.random() * 6) + 1;
+            const results = [d1, d2, d3]; const sum = d1 + d2 + d3;
             const sumRange = choice === 'small' ? '소(3~8)' : (choice === 'middle' ? '중(9~12)' : '대(13~18)');
-            let win = false;
-            let multiplier = choice === 'middle' ? 2 : 3.5;
-            
+            let win = false; let multiplier = choice === 'middle' ? 2 : 3.5;
             if (choice === 'small' && sum <= 8) win = true;
             else if (choice === 'middle' && sum >= 9 && sum <= 12) win = true;
             else if (choice === 'big' && sum >= 13) win = true;
-
             const winAmount = Math.floor(betAmount * multiplier);
-            
-            // 최종 주사위 결과 표시
-            diceCubes.forEach((dice, idx) => {
-                dice.classList.remove('rolling');
-                // 약간의 시간차를 두고 멈춤 효과
-                setTimeout(() => {
-                    dice.classList.add(`show-${results[idx]}`);
-                }, idx * 100);
-            });
-
+            diceCubes.forEach((dice, idx) => { dice.classList.remove('rolling'); setTimeout(() => { dice.classList.add(`show-${results[idx]}`); }, idx * 100); });
             setTimeout(async () => {
                 if (win) {
                     await addPoints(winAmount, "주사위 베팅 승리");
-                    statusEl.innerHTML = `
-                        <div style="animation: bounce 0.5s; text-align:center;">
-                            <strong style="color:#10b981; font-size: 1rem;">🎉 승리! 합계 ${sum} (${sumRange})</strong><br>
-                            <span style="font-size:1.2rem; color:#10b981; font-weight:900;">+${winAmount.toLocaleString()}P 획득!</span>
-                        </div>
-                    `;
+                    statusEl.innerHTML = `<div style="animation: bounce 0.5s; text-align:center;"><strong style="color:#10b981; font-size: 1rem;">🎉 승리! 합계 ${sum} (${sumRange})</strong><br><span style="font-size:1.2rem; color:#10b981; font-weight:900;">+${winAmount.toLocaleString()}P 획득!</span></div>`;
                 } else {
-                    statusEl.innerHTML = `
-                        <div style="opacity:0.8; text-align:center;">
-                            <strong style="color:var(--text-sub);">패배... 합계 ${sum}</strong><br>
-                            <small>조건: ${sumRange} 미충족</small>
-                        </div>
-                    `;
+                    statusEl.innerHTML = `<div style="opacity:0.8; text-align:center;"><strong style="color:var(--text-sub);">패배... 합계 ${sum}</strong><br><small>조건: ${sumRange} 미충족</small></div>`;
                 }
-                updateUI();
-                buttons.forEach(btn => btn.disabled = false);
+                updateUI(); buttons.forEach(btn => btn.disabled = false);
             }, 600);
         }, 1500);
     } else {
-        diceCubes.forEach(dice => dice.classList.remove('rolling'));
-        buttons.forEach(btn => btn.disabled = false);
+        diceCubes.forEach(dice => dice.classList.remove('rolling')); buttons.forEach(btn => btn.disabled = false);
         statusEl.innerHTML = '<span style="color:#ef4444;">베팅이 취소되었습니다.</span>';
     }
 }

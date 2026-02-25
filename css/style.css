@@ -1297,6 +1297,62 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     overflow: hidden;
 }
 
+/* Alchemy Grade Selection Boxes */
+.alchemy-grade-boxes {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.alchemy-grade-box {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    padding: 0.75rem 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    position: relative;
+}
+
+.alchemy-grade-box:hover {
+    border-color: var(--accent-soft);
+    transform: translateY(-2px);
+}
+
+.alchemy-grade-box.active {
+    border-color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.05);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1);
+}
+
+.alchemy-grade-box.active::after {
+    content: '✓';
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #8b5cf6;
+    color: #fff;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.alchemy-grade-box .g-icon { font-size: 1.5rem; margin-bottom: 2px; }
+.alchemy-grade-box .g-name { font-size: 0.75rem; font-weight: 800; color: var(--text-sub); }
+.alchemy-grade-box .g-count { font-size: 0.9rem; font-weight: 900; color: #8b5cf6; }
+.alchemy-grade-box.active .g-name { color: #8b5cf6; }
+
 #alchemy-grade-select option {
     background: var(--card-bg);
     color: var(--text-main);

@@ -819,15 +819,27 @@ function renderArcade() {
                         <span style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">UPGRADE</span>
                     </div>
                     
-                    <div style="background:var(--bg-color); padding:1rem; border-radius:12px; margin-bottom:1.25rem; border:1px solid var(--border-color); text-align:center;">
-                        <div style="background:var(--card-bg); padding:0.8rem; border-radius:10px; margin-bottom:1rem; border:1px solid var(--border-color);">
-                            <label style="display:block; font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">연성할 등급 선택</label>
-                            <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-size:1rem; font-weight:800; color:#8b5cf6; outline:none; cursor:pointer; font-family:inherit; text-align:center;">
-                                <option value="COMMON">일반 (COMMON) ➔ 고급</option>
-                                <option value="UNCOMMON">고급 (UNCOMMON) ➔ 희귀</option>
-                                <option value="RARE">희귀 (RARE) ➔ 전설</option>
-                            </select>
+                    <div style="background:var(--bg-color); padding:1.25rem 1rem; border-radius:12px; margin-bottom:1.25rem; border: 1px solid var(--border-color); text-align:center;">
+                        <p style="font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:1rem;">연성할 재료 등급 선택</p>
+                        
+                        <div class="alchemy-grade-boxes" id="alchemy-grade-boxes">
+                            <div class="alchemy-grade-box active" data-grade="COMMON">
+                                <span class="g-icon">💩</span>
+                                <span class="g-name">일반</span>
+                                <span class="g-count" id="count-COMMON">0</span>
+                            </div>
+                            <div class="alchemy-grade-box" data-grade="UNCOMMON">
+                                <span class="g-icon">🥈</span>
+                                <span class="g-name">고급</span>
+                                <span class="g-count" id="count-UNCOMMON">0</span>
+                            </div>
+                            <div class="alchemy-grade-box" data-grade="RARE">
+                                <span class="g-icon">💎</span>
+                                <span class="g-name">희귀</span>
+                                <span class="g-count" id="count-RARE">0</span>
+                            </div>
                         </div>
+
                         <p style="font-size:0.8rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">필요한 제물 (6개 소모)</p>
                         <div style="display:flex; justify-content:center; gap:1rem; align-items:center;">
                             <div style="background:var(--card-bg); padding:0.5rem 1.5rem; border-radius:10px; border:1px solid #8b5cf6;">
@@ -897,32 +909,6 @@ function renderArcade() {
         </div>
     `;
     initArcade(); 
-
-    // 연금술 재료 수량 업데이트 로직
-    const updateAlchemyCounts = () => {
-        const inv = UserState.data?.inventory || [];
-        const counts = { COMMON: 0, UNCOMMON: 0, RARE: 0 };
-        inv.forEach(item => {
-            const grade = getGrade(item);
-            if (counts[grade] !== undefined) counts[grade]++;
-        });
-        
-        const gradeSelect = document.getElementById('alchemy-grade-select');
-        const materialEl = document.getElementById('count-material-available');
-        
-        if (gradeSelect && materialEl) {
-            // 이전 선택값 유지
-            const prevVal = sessionStorage.getItem('last_alchemy_grade') || 'COMMON';
-            if (counts[prevVal] !== undefined) gradeSelect.value = prevVal;
-            
-            materialEl.textContent = counts[gradeSelect.value];
-            gradeSelect.onchange = () => { 
-                materialEl.textContent = counts[gradeSelect.value]; 
-                sessionStorage.setItem('last_alchemy_grade', gradeSelect.value);
-            };
-        }
-    };
-    updateAlchemyCounts();
 
     const buyBoosterBtn = document.getElementById('buy-booster-btn');
     if (buyBoosterBtn) {
