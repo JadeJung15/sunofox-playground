@@ -92,17 +92,20 @@ let authInitialized = false;
 export function initAuth() {
     if (authInitialized) return;
     authInitialized = true;
+    console.log("Auth Initializing...");
 
-    // 리디렉션 결과 처리
+    // 리디렉션 결과 처리 (페이지 로드 시 자동 실행)
     getRedirectResult(auth).then((result) => {
         if (result?.user) {
-            console.log("Redirect login success");
+            console.log("Redirect Result: Login Success", result.user.email);
         }
     }).catch(error => {
+        console.error("Redirect Result Error:", error.code, error.message);
         handleAuthError(error);
     });
 
     onAuthStateChanged(auth, async (user) => {
+        console.log("Auth State Changed:", user ? "User Logged In" : "User Logged Out");
         if (user) {
             UserState.user = user;
             const token = await user.getIdTokenResult();
@@ -117,14 +120,19 @@ export function initAuth() {
         authResolve(); // 인증 상태 확인 완료 신호
     });
 
+    // 전역 클릭 이벤트 리스너
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
-            if (target.disabled) return;
+            console.log("Login Button Clicked!");
+            if (target.disabled) {
+                console.log("Button is disabled, skipping...");
+                return;
+            }
             
             const originalText = target.textContent;
             target.disabled = true;
-            target.textContent = "로그인 중...";
+            target.textContent = "연결 중...";
 
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
@@ -132,28 +140,42 @@ export function initAuth() {
             const ua = navigator.userAgent.toLowerCase();
             const isInApp = ua.indexOf('kakaotalk') > -1 || ua.indexOf('line') > -1 || ua.indexOf('naver') > -1;
 
+            console.log("Environment: ", { 
+                host: window.location.hostname,
+                isInApp: isInApp,
+                userAgent: ua
+            });
+
             if (isInApp) {
                 alert("구글 보안 정책으로 인해 인앱 브라우저에서는 로그인이 차단될 수 있습니다. 오른쪽 상단 메뉴를 눌러 '외부 브라우저로 열기'를 선택해 주세요.");
             }
 
             try {
-                // 모바일 환경이나 특정 제약 환경에서는 Redirect가 더 안정적임
-                await signInWithRedirect(auth, provider);
+                // 팝업 방식을 기본으로 시도 (반응성이 더 빠름)
+                console.log("Attempting signInWithPopup...");
+                const result = await signInWithPopup(auth, provider);
+                console.log("Popup login success:", result.user.email);
             } catch (error) {
-                console.error("Login Error (Redirect):", error);
-                // Redirect 실패 시 Popup 폴백
+                console.warn("Popup failed, attempting redirect...", error.code);
+                
+                // 팝업이 차단되거나 오류가 나면 리디렉션으로 폴백
                 try {
-                    await signInWithPopup(auth, provider);
-                } catch (popupError) {
-                    handleAuthError(popupError);
-                } finally {
-                    target.disabled = false;
-                    target.textContent = originalText;
+                    await signInWithRedirect(auth, provider);
+                } catch (redirectError) {
+                    console.error("Redirect also failed:", redirectError);
+                    handleAuthError(redirectError);
                 }
+            } finally {
+                // 리디렉션이 시작되면 페이지를 떠나므로 의미 없지만, 팝업 실패 시를 위해 복구
+                target.disabled = false;
+                target.textContent = originalText;
             }
         }
         if (target.id === 'logout-btn') {
-            signOut(auth).then(() => { location.hash = '#home'; });
+            signOut(auth).then(() => { 
+                console.log("Logout success");
+                location.hash = '#home'; 
+            });
         }
         if (target.id === 'nickname-save') await changeNickname();
         if (target.classList.contains('emoji-btn')) await handleEmojiExchange(target.dataset.emoji);
@@ -162,17 +184,24 @@ export function initAuth() {
 }
 
 function handleAuthError(error) {
-    console.error("Auth Error:", error.code, error.message);
-    let msg = "로그인 중 오류가 발생했습니다.";
+    console.error("Auth Error Detail:", {
+        code: error.code,
+        message: error.message,
+        hostname: window.location.hostname
+    });
+
+    let msg = "로그인 중 오류가 발생했습니다. (" + error.code + ")";
     
     if (error.code === 'auth/disallowed-useragent') {
         msg = "구글 정책으로 인해 현재 브라우저에서는 로그인이 불가능합니다. Chrome이나 Safari 같은 외부 브라우저를 사용해 주세요.";
     } else if (error.code === 'auth/unauthorized-domain') {
-        msg = "현재 도메인이 인증 허용 목록에 등록되지 않았습니다. 관리자 설정이 필요합니다.\n(도메인: " + window.location.hostname + ")";
+        msg = "현재 도메인이 인증 허용 목록에 등록되지 않았습니다.\n관리자 설정에 다음 주소를 추가해야 합니다:\n" + window.location.hostname;
     } else if (error.code === 'auth/popup-blocked') {
-        msg = "로그인 팝업이 차단되었습니다. 팝업 차단을 해제하거나 리디렉션 방식을 시도해 주세요.";
-    } else if (error.code === 'auth/cancelled-popup-request') {
-        return; // 사용자가 취소한 경우 무시
+        msg = "로그인 팝업이 차단되었습니다. 브라우저 주소창 오른쪽의 '팝업 차단 해제' 버튼을 눌러주세요.";
+    } else if (error.code === 'auth/cancelled-popup-request' || error.code === 'auth/popup-closed-by-user') {
+        return; // 사용자가 취소한 경우 알림 띄우지 않음
+    } else if (error.code === 'auth/internal-error') {
+        msg = "네트워크 오류 또는 파이어베이스 내부 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.";
     }
     
     alert(msg);
