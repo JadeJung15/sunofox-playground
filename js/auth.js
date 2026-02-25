@@ -327,6 +327,30 @@ export async function fetchUserProfile(uid) {
     return { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
 }
 
+let rankCache = { data: null, timestamp: 0 };
+export async function fetchUserRank(uid) {
+    if (!uid) return null;
+    const now = Date.now();
+    // 5분 캐시 (랭킹 조회가 너무 빈번하지 않도록)
+    if (rankCache.data && (now - rankCache.timestamp < 300000)) {
+        const idx = rankCache.data.findIndex(id => id === uid);
+        return idx !== -1 ? idx + 1 : ">100";
+    }
+
+    try {
+        const q = query(collection(db, "users"), orderBy("totalScore", "desc"), limit(100));
+        const snap = await getDocs(q);
+        const ADMIN_UID = '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
+        const rankList = snap.docs
+            .filter(d => d.id !== ADMIN_UID && !d.data().isMaster)
+            .map(d => d.id);
+        
+        rankCache = { data: rankList, timestamp: now };
+        const idx = rankList.findIndex(id => id === uid);
+        return idx !== -1 ? idx + 1 : ">100";
+    } catch (e) { return "-"; }
+}
+
 export function updateUI(isLoggedIn = !!UserState.user) {
     const loginBtn = document.getElementById('login-btn');
     const headerProfile = document.getElementById('header-profile');

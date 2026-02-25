@@ -1,5 +1,5 @@
 import { db, storage } from './firebase-init.js';
-import { UserState, usePoints, addPoints, getTier, fetchUserProfile, updateProfileCache } from './auth.js';
+import { UserState, usePoints, addPoints, getTier, fetchUserProfile, updateProfileCache, fetchUserRank } from './auth.js';
 import { 
     collection, 
     addDoc, 
@@ -196,6 +196,7 @@ export async function renderBoard(container) {
                     <p id="pm-bio" style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1.5rem;">작성된 자기소개가 없습니다.</p>
                     <button id="btn-edit-bio" class="btn-secondary" style="display:none; margin: -1rem auto 1.5rem; padding: 0.3rem 0.8rem; font-size: 0.75rem; border-radius: 50px;">자기소개 수정</button>
                     <div class="profile-card-stats">
+                        <div class="pc-stat-item"><span>랭킹</span><span id="pm-rank">-</span></div>
                         <div class="pc-stat-item"><span>포인트</span><span id="pm-points">0</span></div>
                         <div class="pc-stat-item"><span>전체점수</span><span id="pm-score">0</span></div>
                         <div class="pc-stat-item"><span>아이템</span><span id="pm-items">0</span></div>
@@ -536,6 +537,13 @@ window.showProfileModal = async (uid) => {
     document.getElementById('pm-points').textContent = (profile.points || 0).toLocaleString();
     document.getElementById('pm-score').textContent = (profile.totalScore || 0).toLocaleString();
     document.getElementById('pm-items').textContent = (profile.inventory || []).length;
+    
+    // 랭킹 표시 (비동기 로드)
+    const rankEl = document.getElementById('pm-rank');
+    rankEl.textContent = "Loading...";
+    fetchUserRank(uid).then(rank => {
+        rankEl.textContent = typeof rank === 'number' ? `${rank}위` : rank;
+    });
     
     // 자기소개 수정 버튼 처리 (본인인 경우만 표시)
     const editBioBtn = document.getElementById('btn-edit-bio');
