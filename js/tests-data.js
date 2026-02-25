@@ -54,7 +54,7 @@ export const TESTS = [
         }
     },
     {
-        id: 'p4', category: '성격', title: '스트레스 방어기제 테스트', desc: '힘든 상황에서 당신의 마음이 어떻게 스스로를 보호하는지 분석합니다.', thumb: 'https://images.unsplash.com/photo-1506126613408-eca57c42797c?auto=format&fit=crop&w=800&q=80',
+        id: 'p4', category: '성격', title: '스트레스 방어기제 테스트', desc: '힘든 상황에서 당신의 마음이 어떻게 스스로를 보호하는지 분석합니다.', thumb: 'https://images.unsplash.com/photo-1518241353330-0f7941c2d9b5?auto=format&fit=crop&w=800&q=80',
         questions: [
             { q: '예상치 못한 큰 실수를 저질렀다면?', options: [{ text: '즉시 원인을 파악하고 해결책을 찾는다', scores: {l:2, e:1} }, { text: '일단 기분 전환을 위해 다른 일을 한다', scores: {c:2, p:1} }] },
             { q: '누군가 나를 이유 없이 비난한다면?', options: [{ text: '당당하게 나의 입장을 논리적으로 설명한다', scores: {l:2, e:1} }, { text: '상대할 가치가 없다고 생각하며 무시한다', scores: {p:1, l:2} }] },
@@ -65,10 +65,10 @@ export const TESTS = [
             { q: '과거의 창피했던 기억이 떠오르면?', options: [{ text: '그때 왜 그랬을까 분석해본다', scores: {l:2, p:1} }, { text: '머리를 흔들며 강제로 생각을 지운다', scores: {e:1, c:2} }] }
         ],
         results: {
-            energy: { title: '강인한 철벽 방어형', desc: '스트레스 상황에서 정면 돌파하려는 강한 의지를 가졌습니다.', img: 'https://images.unsplash.com/photo-1510832198440-a52376950479?auto=format&fit=crop&w=800&q=80', color: '#475569', tags: ['#강철멘탈', '#정면돌파', '#단호함'] },
-            logic: { title: '침착한 전략적 분석가', desc: '문제를 논리적으로 해체하여 감정에 휘둘리지 않고 해결합니다.', img: 'https://images.unsplash.com/photo-1454165833767-027ffea9e77b?auto=format&fit=crop&w=800&q=80', color: '#334155', tags: ['#분석가', '#이성적', '#차분함'] },
-            empathy: { title: '유연한 감성 수용자', desc: '감정을 있는 그대로 받아들이고 스스로를 치유하는 능력이 뛰어납니다.', img: 'https://images.unsplash.com/photo-1499209974431-9dac3e5d9774?auto=format&fit=crop&w=800&q=80', color: '#94a3b8', tags: ['#회복탄력성', '#수용', '#힐러'] },
-            creativity: { title: '창의적 승화의 대가', desc: '스트레스를 예술이나 새로운 아이디어로 승화시키는 독특한 능력이 있습니다.', img: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=800&q=80', color: '#8b5cf6', tags: ['#승화', '#아이디어', '#특별함'] }
+            energy: { title: '강인한 철벽 방어형', desc: '스트레스 상황에서 정면 돌파하려는 강한 의지를 가졌습니다.', img: 'https://images.unsplash.com/photo-1522163182402-834f871fd851?auto=format&fit=crop&w=800&q=80', color: '#475569', tags: ['#강철멘탈', '#정면돌파', '#단호함'] },
+            logic: { title: '침착한 전략적 분석가', desc: '문제를 논리적으로 해체하여 감정에 휘둘리지 않고 해결합니다.', img: 'https://images.unsplash.com/photo-1529699211952-734e80c4d42b?auto=format&fit=crop&w=800&q=80', color: '#334155', tags: ['#분석가', '#이성적', '#차분함'] },
+            empathy: { title: '유연한 감성 수용자', desc: '감정을 있는 그대로 받아들이고 스스로를 치유하는 능력이 뛰어납니다.', img: 'https://images.unsplash.com/photo-1511895426328-dc8714191300?auto=format&fit=crop&w=800&q=80', color: '#94a3b8', tags: ['#회복탄력성', '#수용', '#힐러'] },
+            creativity: { title: '창의적 승화의 대가', desc: '스트레스를 예술이나 새로운 아이디어로 승화시키는 독특한 능력이 있습니다.', img: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?auto=format&fit=crop&w=800&q=80', color: '#8b5cf6', tags: ['#승화', '#아이디어', '#특별함'] }
         }
     },
     {
