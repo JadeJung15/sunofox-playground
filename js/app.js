@@ -983,8 +983,8 @@ async function renderResult(testId, traitScores) {
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
-                        <button id="result-share-btn" class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>🔗</span> 결과 공유하기</button>
-                        <button id="save-story-btn" class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>📸</span> 인스타용 저장</button>
+                        <button id="result-share-btn" class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>🔗</span> 테스트 공유하기</button>
+                        <button id="save-story-btn" class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>📸</span> 공유이미지 저장</button>
                     </div>
 
                     <!-- 메인으로 이동 버튼 (중요도 하향 조정) -->
@@ -1011,7 +1011,6 @@ async function renderResult(testId, traitScores) {
                             `).join('')}
                         </div>
                         <div style="text-align: center; margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
-                            <button id="result-share-btn" class="btn-primary" style="padding: 1rem 3rem; font-weight: 800; border-radius: 50px; width: auto; background: var(--accent-secondary);">🔗 이 테스트 다시 공유하기</button>
                             <button class="btn-secondary" style="padding: 1rem 3rem; font-weight: 800; border-radius: 50px; width: auto; border-color: var(--border-color); color: var(--text-sub);" onclick="location.hash='#7check'">📋 전체 리스트 보기</button>
                         </div>
                     </div>
