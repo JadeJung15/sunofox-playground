@@ -548,6 +548,7 @@ window.showProfileModal = async (uid) => {
                 try {
                     await updateDoc(doc(db, "users", uid), { bio: newBio });
                     profile.bio = newBio;
+                    if (UserState.user.uid === uid) UserState.data.bio = newBio; // 세션 데이터 업데이트
                     updateProfileCache(uid, { bio: newBio });
                     document.getElementById('pm-bio').textContent = newBio || "작성된 자기소개가 없습니다.";
                     alert("자기소개가 수정되었습니다.");

@@ -294,7 +294,7 @@ const profileCache = new Map();
 
 export function updateProfileCache(uid, partialData) {
     if (!uid) return;
-    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
+    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", bio: "", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
     profileCache.set(uid, { ...current, ...partialData });
 }
 
@@ -310,6 +310,7 @@ export async function fetchUserProfile(uid) {
                 nickname: data.nickname || "익명",
                 emoji: data.emoji || "👤",
                 nameColor: data.nameColor || "var(--text-main)",
+                bio: data.bio || "",
                 activeAura: data.activeAura || "NONE",
                 activeBorder: data.activeBorder || "NONE",
                 activeBackground: data.activeBackground || "NONE"
