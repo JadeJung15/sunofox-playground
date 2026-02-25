@@ -1,6 +1,7 @@
 import { addPoints, usePoints, UserState, updateUI, ITEM_VALUES, ITEM_GRADES, getGrade } from './auth.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { soundManager } from './sound.js';
 
 let arcadeInitialized = false;
 
@@ -102,12 +103,14 @@ async function playGacha(count, cost) {
     buttons.forEach(btn => { if(btn) btn.disabled = true; });
 
     resultEl.innerHTML = '<span class="loading-dots" style="color:var(--accent-color);">상자를 여는 중...</span>';
+    soundManager.playNoise(0.5, 'brown', 0.15); // 상자 여는 소리
 
     if (await usePoints(cost, `아이템 뽑기 (${count}회)`)) {
         await updateArcadeStat('gacha');
         
         setTimeout(async () => {
             try {
+                soundManager.playSuccess(); // 아이템 획득 성공 소리
                 const exclusiveItems = ['🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루'];
                 const itemNames = Object.keys(ITEM_VALUES).filter(name => !exclusiveItems.includes(name));
                 const weights = [40, 20, 15, 10, 5, 8, 2];
@@ -197,6 +200,7 @@ async function playClickGame() {
     await updateArcadeStat('mining');
     const earn = Math.floor(Math.random() * 10) + 5;
     btn.textContent = "채굴 중...";
+    soundManager.playThud(0.1); // 채굴 타격음
     setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "채굴기 가동 시작"; }, 1000);
 }
 
@@ -219,6 +223,7 @@ async function playSlotMachine() {
         let spinCount = 0;
         const spinInterval = setInterval(() => {
             reels.forEach(r => r.textContent = SLOT_EMOJIS[Math.floor(Math.random() * SLOT_EMOJIS.length)]);
+            soundManager.playSlotTick(); // 회전음
             spinCount++;
             if (spinCount > 15) {
                 clearInterval(spinInterval);
@@ -229,9 +234,18 @@ async function playSlotMachine() {
                 let subMsg = "아쉽네요, 다음 기회를 노려보세요!";
                 let statusColor = "var(--text-sub)";
                 const unique = new Set(final).size;
-                if (unique === 1) { winPoints = 5000; winMsg = "🎉 JACKPOT!!!"; subMsg = "축하합니다! 5,000P 잭팟에 당첨되셨습니다!"; statusColor = "#f59e0b"; }
-                else if (unique === 2) { winPoints = 600; winMsg = "✨ 2개 일치!"; subMsg = "나이스! 600P를 획득하셨습니다."; statusColor = "#10b981"; }
-                else { winMsg = "💀 꽝"; }
+                if (unique === 1) { 
+                    winPoints = 5000; winMsg = "🎉 JACKPOT!!!"; subMsg = "축하합니다! 5,000P 잭팟에 당첨되셨습니다!"; statusColor = "#f59e0b"; 
+                    soundManager.playSuccess();
+                }
+                else if (unique === 2) { 
+                    winPoints = 600; winMsg = "✨ 2개 일치!"; subMsg = "나이스! 600P를 획득하셨습니다."; statusColor = "#10b981"; 
+                    soundManager.playSuccess();
+                }
+                else { 
+                    winMsg = "💀 꽝"; 
+                    soundManager.playFailure();
+                }
                 
                 setTimeout(async () => {
                     if (winPoints > 0) await addPoints(winPoints, "슬롯머신 당첨");
@@ -270,6 +284,7 @@ async function startBombGame() {
         if(msgEl) msgEl.textContent = "전선을 끊으세요! (현재: 0P)";
         if(startBtn) startBtn.disabled = true;
         document.querySelectorAll('.wire-btn').forEach(btn => { btn.disabled = false; btn.style.opacity = '1'; btn.style.transform = 'scale(1)'; });
+        soundManager.playNoise(0.2, 'white', 0.05); // 전선 준비 소리
     }
 }
 
@@ -284,6 +299,8 @@ async function cutWire(index) {
 
     if (index === bombGameState.bombIndex) {
         bombGameState.active = false;
+        soundManager.playFailure(); // 폭발음 대체
+        soundManager.playNoise(0.8, 'white', 0.2); // 폭발 느낌
         const finalPool = bombGameState.currentPool;
         const resultBox = document.createElement('div');
         resultBox.id = 'bomb-result-box';
@@ -302,6 +319,7 @@ async function cutWire(index) {
         if(claimBtn) claimBtn.disabled = true;
         document.querySelectorAll('.wire-btn').forEach(btn => btn.disabled = true);
     } else {
+        soundManager.playSlotTick(); // 틱 소리
         const reward = [100, 300, 600, 1200][bombGameState.cutWires.length - 1];
         bombGameState.currentPool = reward;
         if(msgEl) msgEl.textContent = `성공! 현재 보상: ${reward}P (다음은 더 큽니다!)`;
@@ -317,6 +335,7 @@ async function claimBombPoints() {
     const startBtn = document.getElementById('bomb-start-btn');
     const claimBtn = document.getElementById('bomb-claim-btn');
     bombGameState.active = false;
+    soundManager.playSuccess(); // 탈출 성공음
     await addPoints(points, "폭탄 돌리기 성공");
     const resultBox = document.createElement('div');
     resultBox.id = 'bomb-result-box';
@@ -377,11 +396,13 @@ async function playAlchemy(count) {
     const buttons = [document.getElementById('alchemy-btn'), document.getElementById('alchemy-5-btn'), document.getElementById('alchemy-10-btn')];
     buttons.forEach(btn => { if(btn) btn.disabled = true; });
     resultEl.innerHTML = '<span class="loading-dots" style="color:#8b5cf6;">금단의 비술을 시전 중...</span>';
+    soundManager.playNoise(1.0, 'brown', 0.1); // 연성 배경 소음
 
     if (await usePoints(cost, `연금술 시행 (${count}회)`)) {
         await updateArcadeStat('alchemy');
         setTimeout(async () => {
             try {
+                soundManager.playSuccess(); // 연성 성공 소리
                 const userRef = doc(db, "users", UserState.user.uid);
                 let currentInv = [...UserState.data.inventory];
                 const sacrificed = [];
@@ -615,6 +636,7 @@ async function playDailyCheckin() {
     if (localStorage.getItem(`last_checkin_${UserState.user.uid}`) === today) return alert("이미 완료!");
     if (await addPoints(100)) {
         await updateArcadeStat('checkin');
+        soundManager.playSuccess(); // 출석 성공음
         localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
         alert("100P 지급! ✨"); updateUI();
     }
@@ -632,6 +654,7 @@ async function playBettingGame(type, choice) {
     const buttons = document.querySelectorAll('.bet-btn');
     buttons.forEach(btn => btn.disabled = true);
     statusEl.innerHTML = '<span style="color:var(--accent-color); font-weight:800;">주사위를 흔드는 중...</span>';
+    soundManager.playNoise(1.2, 'brown', 0.15); // 주사위 굴리는 소리
     diceCubes.forEach(dice => { dice.classList.remove('show-1','show-2','show-3','show-4','show-5','show-6'); dice.classList.add('rolling'); });
 
     if (await usePoints(betAmount, `주사위 베팅 (${choice})`)) {
@@ -645,12 +668,20 @@ async function playBettingGame(type, choice) {
             else if (choice === 'middle' && sum >= 9 && sum <= 12) win = true;
             else if (choice === 'big' && sum >= 13) win = true;
             const winAmount = Math.floor(betAmount * multiplier);
-            diceCubes.forEach((dice, idx) => { dice.classList.remove('rolling'); setTimeout(() => { dice.classList.add(`show-${results[idx]}`); }, idx * 100); });
+            diceCubes.forEach((dice, idx) => { 
+                dice.classList.remove('rolling'); 
+                setTimeout(() => { 
+                    dice.classList.add(`show-${results[idx]}`); 
+                    soundManager.playThud(0.15); // 주사위 착지 소리
+                }, idx * 100); 
+            });
             setTimeout(async () => {
                 if (win) {
+                    soundManager.playSuccess(); // 승리음
                     await addPoints(winAmount, "주사위 베팅 승리");
                     statusEl.innerHTML = `<div style="animation: bounce 0.5s; text-align:center;"><strong style="color:#10b981; font-size: 1rem;">🎉 승리! 합계 ${sum} (${sumRange})</strong><br><span style="font-size:1.2rem; color:#10b981; font-weight:900;">+${winAmount.toLocaleString()}P 획득!</span></div>`;
                 } else {
+                    soundManager.playFailure(); // 패배음
                     statusEl.innerHTML = `<div style="opacity:0.8; text-align:center;"><strong style="color:var(--text-sub);">패배... 합계 ${sum}</strong><br><small>조건: ${sumRange} 미충족</small></div>`;
                 }
                 updateUI(); buttons.forEach(btn => btn.disabled = false);
