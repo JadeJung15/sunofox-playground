@@ -77,6 +77,16 @@ header {
   text-transform: uppercase;
 }
 
+.creator-badge {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #f97316; /* 선명한 주황색 */
+  opacity: 0.9;
+  letter-spacing: 0.02em;
+  margin-top: 1px;
+  user-select: none;
+}
+
 .header-profile {
   display: flex; align-items: center; gap: 0.5rem;
   background: var(--card-bg); padding: 0.35rem 0.8rem;
