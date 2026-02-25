@@ -701,21 +701,42 @@ function renderArcade() {
                     </div>
                 </div>
 
-                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
-                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
-                    <div style="background:var(--bg-color); padding:0.8rem; border-radius:10px; margin-bottom:1rem; border:1px solid var(--border-color);">
-                        <label style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-sub); margin-bottom:0.4rem;">소모 등급 선택 (성공률 100%)</label>
-                        <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-weight:800; color:var(--accent-color); outline:none; cursor:pointer; font-family:inherit;">
+                <div class="card arcade-item-card alchemy-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid var(--accent-secondary); background: rgba(139, 92, 246, 0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
+                        <span style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">UPGRADE</span>
+                    </div>
+                    
+                    <div class="alchemy-inventory-preview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.25rem;">
+                        <div class="grade-stat" style="text-align:center; background:var(--bg-color); padding:0.5rem; border-radius:10px; border:1px solid var(--border-color);">
+                            <small style="display:block; font-size:0.6rem; color:var(--text-sub); font-weight:800; margin-bottom:2px;">COMMON</small>
+                            <span id="count-common" style="font-weight:900; color:#94a3b8;">0</span>
+                        </div>
+                        <div class="grade-stat" style="text-align:center; background:var(--bg-color); padding:0.5rem; border-radius:10px; border:1px solid var(--border-color);">
+                            <small style="display:block; font-size:0.6rem; color:var(--text-sub); font-weight:800; margin-bottom:2px;">UNCOMMON</small>
+                            <span id="count-uncommon" style="font-weight:900; color:#3b82f6;">0</span>
+                        </div>
+                        <div class="grade-stat" style="text-align:center; background:var(--bg-color); padding:0.5rem; border-radius:10px; border:1px solid var(--border-color);">
+                            <small style="display:block; font-size:0.6rem; color:var(--text-sub); font-weight:800; margin-bottom:2px;">RARE</small>
+                            <span id="count-rare" style="font-weight:900; color:#f59e0b;">0</span>
+                        </div>
+                    </div>
+
+                    <div style="background:var(--bg-color); padding:1rem; border-radius:12px; margin-bottom:1.25rem; border:1px solid var(--border-color);">
+                        <label style="display:block; font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">연성할 등급 선택 (재료 6개 소모)</label>
+                        <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-size:1rem; font-weight:800; color:var(--accent-secondary); outline:none; cursor:pointer; font-family:inherit;">
                             <option value="COMMON">일반 (COMMON) ➔ 고급</option>
                             <option value="UNCOMMON">고급 (UNCOMMON) ➔ 희귀</option>
                             <option value="RARE">희귀 (RARE) ➔ 전설</option>
                         </select>
                     </div>
-                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-color); margin-bottom:1rem; min-height:35px; font-size:0.85rem;"></div>
+
+                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-secondary); margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px;">신비로운 연성이 시작됩니다</div>
+                    
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:var(--accent-secondary); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">1회 (300P)</button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">5회 (1350P)</button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">10회 (2500P 🔥)</button>
+                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px; font-weight:800;">1회 연성</button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px; font-weight:800;">5회 연성</button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px; font-weight:800;">10회 (할인🔥)</button>
                     </div>
                 </div>
 
@@ -761,6 +782,24 @@ function renderArcade() {
         </div>
     `;
     initArcade(); 
+
+    // 연금술 재료 수량 업데이트 로직
+    const updateAlchemyCounts = () => {
+        const inv = UserState.data?.inventory || [];
+        const counts = { COMMON: 0, UNCOMMON: 0, RARE: 0 };
+        inv.forEach(item => {
+            const grade = getGrade(item);
+            if (counts[grade] !== undefined) counts[grade]++;
+        });
+        const commonEl = document.getElementById('count-common');
+        const uncommonEl = document.getElementById('count-uncommon');
+        const rareEl = document.getElementById('count-rare');
+        if (commonEl) commonEl.textContent = counts.COMMON;
+        if (uncommonEl) uncommonEl.textContent = counts.UNCOMMON;
+        if (rareEl) rareEl.textContent = counts.RARE;
+    };
+    updateAlchemyCounts();
+
     const buyBoosterBtn = document.getElementById('buy-booster-btn');
     if (buyBoosterBtn) {
         buyBoosterBtn.onclick = async () => {

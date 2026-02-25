@@ -203,41 +203,95 @@ async function claimBombPoints() {
 }
 
 async function playAlchemy(count) {
-    if (!UserState.user) return;
+    if (!UserState.user) return alert("로그인이 필요합니다!");
+    
     let cost = 300;
     if (count === 5) cost = 1350;
     else if (count === 10) cost = 2500;
+
     const gradeSelect = document.getElementById('alchemy-grade-select');
-    if (!gradeSelect) return;
+    const resultEl = document.getElementById('alchemy-result');
+    if (!gradeSelect || !resultEl) return;
+
     const selectedGrade = gradeSelect.value;
     const itemsNeeded = count * 6;
     const targetItems = ITEM_GRADES[selectedGrade];
     const availableItems = UserState.data.inventory.filter(name => targetItems.includes(name));
-    if (availableItems.length < itemsNeeded) { alert(`아이템이 ${itemsNeeded}개 필요합니다!`); return; }
-    if (!confirm(`연금술을 진행하시겠습니까?`)) return;
-    if (await usePoints(cost)) {
+
+    if (availableItems.length < itemsNeeded) {
+        alert(`재료가 부족합니다! (필요: ${selectedGrade} ${itemsNeeded}개 / 보유: ${availableItems.length}개)`);
+        return;
+    }
+
+    if (!confirm(`${selectedGrade} 아이템 ${itemsNeeded}개를 소모하여 연금술을 진행하시겠습니까? (비용: ${cost}P)`)) return;
+
+    const buttons = [document.getElementById('alchemy-btn'), document.getElementById('alchemy-5-btn'), document.getElementById('alchemy-10-btn')];
+    buttons.forEach(btn => { if(btn) btn.disabled = true; });
+
+    if (await usePoints(cost, `연금술 시행 (${count}회)`)) {
         await updateArcadeStat('alchemy');
-        try {
-            const userRef = doc(db, "users", UserState.user.uid);
-            let currentInv = [...UserState.data.inventory];
-            for (let i = 0; i < itemsNeeded; i++) {
-                const idx = currentInv.findIndex(name => targetItems.includes(name));
-                if (idx > -1) currentInv.splice(idx, 1);
+        resultEl.innerHTML = '<span class="loading-dots">신비로운 약물을 배합 중...</span>';
+        
+        setTimeout(async () => {
+            try {
+                const userRef = doc(db, "users", UserState.user.uid);
+                let currentInv = [...UserState.data.inventory];
+                
+                // 재료 제거
+                for (let i = 0; i < itemsNeeded; i++) {
+                    const idx = currentInv.findIndex(name => targetItems.includes(name));
+                    if (idx > -1) currentInv.splice(idx, 1);
+                }
+
+                const gradeOrder = ['COMMON', 'UNCOMMON', 'RARE', 'LEGENDARY'];
+                const nextGrade = gradeOrder[Math.min(gradeOrder.indexOf(selectedGrade) + 1, gradeOrder.length - 1)];
+                const nextGradeItems = ITEM_GRADES[nextGrade];
+                
+                const results = [];
+                let bonusCount = 0;
+                for (let i = 0; i < count; i++) {
+                    const item = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
+                    results.push(item);
+                    // 15% 보너스 확률
+                    if (Math.random() < 0.15) {
+                        const bonus = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
+                        results.push(bonus);
+                        bonusCount++;
+                    }
+                }
+
+                currentInv.push(...results);
+                const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
+                
+                await updateDoc(userRef, { 
+                    inventory: currentInv, 
+                    totalScore: recalcScore, 
+                    discoveredItems: arrayUnion(...results) 
+                });
+
+                UserState.data.inventory = currentInv;
+                UserState.data.totalScore = recalcScore;
+
+                const summary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const resultText = Object.entries(summary).map(([name, num]) => `[${name}] x${num}`).join(', ');
+                
+                resultEl.innerHTML = `<div style="animation: bounce 0.5s;"><strong>${nextGrade} 연성 성공!</strong><br><small>${resultText}${bonusCount > 0 ? ` (보너스 +${bonusCount})` : ''}</small></div>`;
+                
+                // UI 즉시 업데이트를 위해 다시 렌더링 또는 카운트 함수 호출
+                if (window.location.hash === '#arcade') {
+                    // 해시를 새로고침하여 renderArcade 다시 트리거 (간편한 방법)
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
+                }
+                updateUI();
+            } catch (e) {
+                console.error(e);
+                resultEl.textContent = "연성 중 사고가 발생했습니다!";
+            } finally {
+                buttons.forEach(btn => { if(btn) btn.disabled = false; });
             }
-            const gradeOrder = ['COMMON', 'UNCOMMON', 'RARE', 'LEGENDARY'];
-            const nextGrade = gradeOrder[Math.min(gradeOrder.indexOf(selectedGrade) + 1, gradeOrder.length - 1)];
-            const nextGradeItems = ITEM_GRADES[nextGrade];
-            const results = [];
-            for (let i = 0; i < count; i++) {
-                results.push(nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)]);
-                if (Math.random() < 0.15) results.push(nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)]);
-            }
-            currentInv.push(...results);
-            const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-            await updateDoc(userRef, { inventory: currentInv, totalScore: recalcScore, discoveredItems: arrayUnion(...results) });
-            UserState.data.inventory = currentInv; UserState.data.totalScore = recalcScore;
-            updateUI(); alert("연성 성공!");
-        } catch (e) { alert("연금술 실패"); }
+        }, 1500);
+    } else {
+        buttons.forEach(btn => { if(btn) btn.disabled = false; });
     }
 }
 
