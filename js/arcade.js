@@ -234,31 +234,40 @@ async function playAlchemy(count) {
 
     if (await usePoints(cost, `연금술 시행 (${count}회)`)) {
         await updateArcadeStat('alchemy');
-        resultEl.innerHTML = '<span class="loading-dots">신비로운 약물을 배합 중...</span>';
+        resultEl.innerHTML = '<span class="loading-dots">금단의 비술을 시전 중...</span>';
         
         setTimeout(async () => {
             try {
                 const userRef = doc(db, "users", UserState.user.uid);
                 let currentInv = [...UserState.data.inventory];
                 
-                // 소모된 재료 추적
+                // 1. 소모 아이템 처리 및 점수 계산 (-)
                 const sacrificed = [];
+                let scoreLost = 0;
                 for (let i = 0; i < itemsNeeded; i++) {
                     const idx = currentInv.findIndex(name => targetItems.includes(name));
-                    if (idx > -1) sacrificed.push(currentInv.splice(idx, 1)[0]);
+                    if (idx > -1) {
+                        const item = currentInv.splice(idx, 1)[0];
+                        sacrificed.push(item);
+                        scoreLost += (ITEM_VALUES[item] || 0);
+                    }
                 }
 
+                // 2. 결과 아이템 생성 및 점수 계산 (+)
                 const gradeOrder = ['COMMON', 'UNCOMMON', 'RARE', 'LEGENDARY'];
                 const nextGrade = gradeOrder[Math.min(gradeOrder.indexOf(selectedGrade) + 1, gradeOrder.length - 1)];
                 const nextGradeItems = ITEM_GRADES[nextGrade];
                 
                 const results = [];
                 let bonusCount = 0;
+                let scoreGained = 0;
                 for (let i = 0; i < count; i++) {
                     const item = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
                     results.push(item);
+                    scoreGained += (ITEM_VALUES[item] || 0);
                     if (Math.random() < 0.15) {
                         results.push(item);
+                        scoreGained += (ITEM_VALUES[item] || 0);
                         bonusCount++;
                     }
                 }
@@ -275,25 +284,30 @@ async function playAlchemy(count) {
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
+                // 3. 결과 텍스트 구성
                 const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
                 const resultItemsText = Object.entries(resSummary).map(([name, num]) => `[${name}] x${num}`).join(', ');
                 const materialSummary = sacrificed.length > 0 ? sacrificed[0] : selectedGrade;
 
                 resultEl.innerHTML = `
-                    <div style="animation: bounce 0.5s;">
-                        <strong style="color:#8b5cf6;">✨ [${resultItemsText}] 연성 완료!</strong><br>
-                        <small style="color:var(--text-sub);">${materialSummary} 등 재료 ${itemsNeeded}개 소모${bonusCount > 0 ? ` (+보너스 ${bonusCount})` : ''}</small>
+                    <div style="animation: bounce 0.5s; text-align:left; line-height:1.4;">
+                        <div style="margin-bottom:4px;"><strong style="color:#8b5cf6;">✨ 연성 완료: ${resultItemsText}</strong></div>
+                        <div style="font-size:0.75rem; color:var(--text-sub);">
+                            소모: ${materialSummary} 등 ${itemsNeeded}개 (<span style="color:#ef4444;">-${scoreLost.toLocaleString()}점</span>)<br>
+                            획득: ${results.length}개 획득 (<span style="color:#10b981;">+${scoreGained.toLocaleString()}점</span>)
+                            ${bonusCount > 0 ? `<br><strong style="color:#f59e0b;">🔥 보너스 아이템 ${bonusCount}개 포함!</strong>` : ''}
+                        </div>
                     </div>
                 `;
                 
                 if (window.location.hash === '#arcade') {
-                    window._preventScroll = true;
+                    window._preventScroll = true; // 스크롤 유지
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
             } catch (e) {
                 console.error(e);
-                resultEl.textContent = "연성 중 사고가 발생했습니다!";
+                resultEl.textContent = "연성 중 차원이 뒤틀렸습니다!";
             } finally {
                 buttons.forEach(btn => { if(btn) btn.disabled = false; });
             }
@@ -304,7 +318,7 @@ async function playAlchemy(count) {
 }
 
 // =================================================================
-// 🏪 아이템 중고장터 (BULK SELL)
+// 🏪 아이템 중고장터 (BULK SELL + CHECKBOX)
 // =================================================================
 
 function renderMarketUI() {
@@ -322,13 +336,14 @@ function renderMarketUI() {
     if (openBtn) openBtn.style.display = 'none';
 
     let html = `
-        <div class="market-bulk-sell fade-in" style="background:var(--bg-color); padding:1.25rem; border-radius:15px; border:1px solid var(--border-color); margin-bottom:1.5rem;">
-            <div style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 5px;" class="custom-scroll">
-                <table style="width:100%; border-collapse: collapse; font-size:0.85rem;">
+        <div class="market-bulk-sell fade-in" style="background:var(--bg-color); padding:1rem; border-radius:15px; border:1px solid var(--border-color); margin-bottom:1.5rem;">
+            <div style="max-height: 280px; overflow-y: auto; margin-bottom: 1.5rem;" class="custom-scroll">
+                <table style="width:100%; border-collapse: collapse; font-size:0.8rem;">
                     <thead style="position: sticky; top: 0; background: var(--bg-color); z-index: 1;">
                         <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-sub);">
+                            <th style="padding: 0.5rem; width:30px;"><input type="checkbox" id="market-select-all" checked></th>
                             <th style="text-align:left; padding: 0.5rem;">아이템</th>
-                            <th style="text-align:center; padding: 0.5rem; width: 80px;">판매수량</th>
+                            <th style="text-align:center; padding: 0.5rem; width: 60px;">수량</th>
                             <th style="text-align:right; padding: 0.5rem;">환급액</th>
                         </tr>
                     </thead>
@@ -339,14 +354,17 @@ function renderMarketUI() {
         const refundVal = Math.floor((ITEM_VALUES[name] || 0) * 0.7);
         html += `
             <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.5rem; text-align:center;">
+                    <input type="checkbox" class="market-item-check" data-name="${name}" checked>
+                </td>
                 <td style="padding: 0.75rem 0.5rem; font-weight: 700;">
                     <span style="display:block;">${name}</span>
-                    <small style="color:var(--text-sub);">보유: ${count}</small>
+                    <small style="color:var(--text-sub); font-size:0.65rem;">가치: ${ITEM_VALUES[name]}P</small>
                 </td>
-                <td style="padding: 0.75rem 0.5rem; text-align:center;">
+                <td style="padding: 0.5rem; text-align:center;">
                     <input type="number" class="market-qty-input" data-name="${name}" data-max="${count}" data-price="${refundVal}" 
-                           value="${count}" min="0" max="${count}" 
-                           style="width:100%; background:var(--card-bg); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); text-align:center; padding:4px;">
+                           value="${count}" min="1" max="${count}" 
+                           style="width:100%; background:var(--card-bg); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); text-align:center; padding:4px; font-size:0.75rem;">
                 </td>
                 <td style="padding: 0.75rem 0.5rem; text-align:right; font-weight:900; color:var(--accent-secondary);">
                     <span class="row-refund-total">${(refundVal * count).toLocaleString()}P</span>
@@ -361,12 +379,12 @@ function renderMarketUI() {
             </div>
             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:1rem; border-top:2px solid var(--border-color);">
                 <div>
-                    <small style="display:block; color:var(--text-sub); font-weight:800;">총 환급 예상액</small>
-                    <strong id="market-total-refund" style="font-size:1.4rem; color:var(--accent-color);">0P</strong>
+                    <small style="display:block; color:var(--text-sub); font-weight:800;">총 환급액</small>
+                    <strong id="market-total-refund" style="font-size:1.3rem; color:var(--accent-color);">0P</strong>
                 </div>
-                <div style="display:flex; gap:0.5rem;">
-                    <button id="market-cancel-btn" class="btn-secondary" style="padding:0.8rem 1.5rem;">취소</button>
-                    <button id="market-sell-btn" class="btn-primary" style="background:var(--accent-secondary); padding:0.8rem 2rem;">일괄 판매</button>
+                <div style="display:flex; gap:0.4rem;">
+                    <button id="market-cancel-btn" class="btn-secondary" style="padding:0.6rem 1rem; font-size:0.8rem;">취소</button>
+                    <button id="market-sell-btn" class="btn-primary" style="background:var(--accent-secondary); padding:0.6rem 1.2rem; font-size:0.8rem;">선택 판매</button>
                 </div>
             </div>
         </div>
@@ -374,25 +392,40 @@ function renderMarketUI() {
 
     container.innerHTML = html;
 
-    // 실시간 계산 로직
     const updateTotals = () => {
         let total = 0;
-        container.querySelectorAll('.market-qty-input').forEach(input => {
-            const qty = parseInt(input.value) || 0;
-            const price = parseInt(input.dataset.price);
-            const rowTotal = qty * price;
-            input.closest('tr').querySelector('.row-refund-total').textContent = rowTotal.toLocaleString() + 'P';
-            total += rowTotal;
+        container.querySelectorAll('tr').forEach(row => {
+            const check = row.querySelector('.market-item-check');
+            const input = row.querySelector('.market-qty-input');
+            const rowTotalEl = row.querySelector('.row-refund-total');
+            if (check && input && rowTotalEl) {
+                const qty = check.checked ? (parseInt(input.value) || 0) : 0;
+                const price = parseInt(input.dataset.price);
+                const rowTotal = qty * price;
+                rowTotalEl.textContent = rowTotal.toLocaleString() + 'P';
+                rowTotalEl.style.opacity = check.checked ? '1' : '0.3';
+                input.disabled = !check.checked;
+                total += rowTotal;
+            }
         });
         document.getElementById('market-total-refund').textContent = total.toLocaleString() + 'P';
     };
 
-    container.querySelectorAll('.market-qty-input').forEach(input => {
-        input.oninput = () => {
-            const max = parseInt(input.dataset.max);
-            if (parseInt(input.value) > max) input.value = max;
+    container.querySelectorAll('.market-qty-input, .market-item-check, #market-select-all').forEach(el => {
+        el.onchange = (e) => {
+            if (el.id === 'market-select-all') {
+                container.querySelectorAll('.market-item-check').forEach(c => c.checked = el.checked);
+            }
             updateTotals();
         };
+        if (el.classList.contains('market-qty-input')) {
+            el.oninput = () => {
+                const max = parseInt(el.dataset.max);
+                if (parseInt(el.value) > max) el.value = max;
+                if (parseInt(el.value) < 1) el.value = 1;
+                updateTotals();
+            };
+        }
     });
 
     updateTotals();
@@ -404,12 +437,16 @@ function renderMarketUI() {
 
     document.getElementById('market-sell-btn').onclick = async () => {
         const sellList = [];
-        container.querySelectorAll('.market-qty-input').forEach(input => {
-            const qty = parseInt(input.value) || 0;
-            if (qty > 0) sellList.push({ name: input.dataset.name, qty, price: parseInt(input.dataset.price) });
+        container.querySelectorAll('tr').forEach(row => {
+            const check = row.querySelector('.market-item-check');
+            const input = row.querySelector('.market-qty-input');
+            if (check && check.checked) {
+                const qty = parseInt(input.value) || 0;
+                if (qty > 0) sellList.push({ name: input.dataset.name, qty, price: parseInt(input.dataset.price) });
+            }
         });
 
-        if (sellList.length === 0) return alert("판매할 수량을 입력해주세요.");
+        if (sellList.length === 0) return alert("판매할 아이템을 선택해주세요.");
         
         const totalRefund = sellList.reduce((acc, cur) => acc + (cur.qty * cur.price), 0);
         if (!confirm(`${sellList.length}종의 아이템을 판매하여 총 ${totalRefund.toLocaleString()}P를 받으시겠습니까?`)) return;
@@ -462,78 +499,5 @@ async function playDailyCheckin() {
         await updateArcadeStat('checkin');
         localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
         alert("100P 지급! ✨"); updateUI();
-    }
-}
-
-async function playFusion() {
-    if (!UserState.user) return alert("로그인이 필요합니다!");
-    
-    const cost = 2500;
-    const resultEl = document.getElementById('fusion-result');
-    if (!resultEl) return;
-
-    const availableRares = UserState.data.inventory.filter(name => ITEM_GRADES['RARE'].includes(name));
-
-    if (availableRares.length < 1) {
-        alert("재료로 사용할 RARE 등급 아이템이 없습니다!");
-        return;
-    }
-
-    if (!confirm(`RARE 아이템 1개를 제물로 바쳐 전설 아이템을 연성하시겠습니까? (비용: ${cost}P)`)) return;
-
-    const fusionBtn = document.getElementById('fusion-btn');
-    if (fusionBtn) fusionBtn.disabled = true;
-
-    if (await usePoints(cost, "별빛 융합 시행")) {
-        await updateArcadeStat('alchemy'); // 통계는 연금술과 공유
-        resultEl.innerHTML = '<span class="loading-dots">우주의 기운을 모으는 중...</span>';
-        
-        setTimeout(async () => {
-            try {
-                const userRef = doc(db, "users", UserState.user.uid);
-                let currentInv = [...UserState.data.inventory];
-                
-                // RARE 제물 1개 제거
-                const idx = currentInv.findIndex(name => ITEM_GRADES['RARE'].includes(name));
-                const sacrificedItem = currentInv[idx];
-                if (idx > -1) currentInv.splice(idx, 1);
-
-                // LEGENDARY 등급 중 랜덤 선택 (연금술 전용 포함)
-                const legendaryItems = ITEM_GRADES['LEGENDARY'];
-                const resultItem = legendaryItems[Math.floor(Math.random() * legendaryItems.length)];
-
-                currentInv.push(resultItem);
-                const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-                
-                await updateDoc(userRef, { 
-                    inventory: currentInv, 
-                    totalScore: recalcScore, 
-                    discoveredItems: arrayUnion(resultItem) 
-                });
-
-                UserState.data.inventory = currentInv;
-                UserState.data.totalScore = recalcScore;
-
-                resultEl.innerHTML = `
-                    <div style="animation: float 2s infinite ease-in-out;">
-                        <strong style="color:#f59e0b;">✨ 전설 연성 성공: [${resultItem}]</strong><br>
-                        <small style="color:var(--text-sub);">${sacrificedItem}이(가) 우주의 별빛으로 승화되었습니다.</small>
-                    </div>
-                `;
-                
-                if (window.location.hash === '#arcade') {
-                    window._preventScroll = true; // 스크롤 방지 플래그 설정
-                    window.dispatchEvent(new HashChangeEvent('hashchange'));
-                }
-                updateUI();
-            } catch (e) {
-                console.error(e);
-                resultEl.textContent = "융합 중 폭주가 발생했습니다!";
-            } finally {
-                if (fusionBtn) fusionBtn.disabled = false;
-            }
-        }, 2000);
-    } else {
-        if (fusionBtn) fusionBtn.disabled = false;
     }
 }

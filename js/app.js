@@ -725,7 +725,7 @@ function renderArcade() {
                     </div>
                 </div>
 
-                <!-- 아이템 연금술 (UI 개선) -->
+                <!-- 아이템 연금술 (고도화) -->
                 <div class="card arcade-item-card alchemy-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #8b5cf6; background: rgba(139, 92, 246, 0.02);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
@@ -750,12 +750,12 @@ function renderArcade() {
                         </div>
                     </div>
 
-                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px;">금단의 연성법을 시전합니다</div>
+                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1.25rem; min-height:60px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px; padding: 0.5rem;">금단의 연성법을 시전합니다</div>
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.8rem; height:50px; font-weight:800;">1회 연성</button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.8rem; height:50px; font-weight:800;">5회 연성</button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.8rem; height:50px; font-weight:800;">10회 연성</button>
+                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; height:50px; font-weight:800;">1회<br><small>300P</small></button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.75rem; height:50px; font-weight:800;">5회 🔥<br><small>1,350P</small></button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.75rem; height:50px; font-weight:800;">10회 🔥<br><small>2,500P</small></button>
                     </div>
                 </div>
 
@@ -787,28 +787,6 @@ function renderArcade() {
                     <div id="market-ui-container"></div>
                     <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-secondary); color:var(--accent-secondary); font-weight: 800;">아이템 일괄 판매 열기</button>
                 </div>
-
-                <!-- 별빛 융합 -->
-                <div class="card arcade-item-card fusion-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">✨ 별빛 융합</h3>
-                        <span style="background: rgba(245, 158, 11, 0.1); color: #f59e0b; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">LEGENDARY</span>
-                    </div>
-                    
-                    <div style="background:var(--bg-color); padding:1rem; border-radius:12px; margin-bottom:1.25rem; border:1px solid var(--border-color); text-align:center;">
-                        <p style="font-size:0.8rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">필요한 제물</p>
-                        <div style="display:flex; justify-content:center; gap:1rem; align-items:center;">
-                            <div style="background:var(--card-bg); padding:0.5rem 1rem; border-radius:10px; border:1px solid #f59e0b;">
-                                <small style="display:block; font-size:0.6rem; color:var(--text-sub);">RARE 등급</small>
-                                <strong style="color:#f59e0b;">1개</strong> (보유: <span id="count-rare-fusion">0</span>)
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="fusion-result" style="text-align:center; font-weight:800; color:#f59e0b; margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(245, 158, 11, 0.05); border-radius:10px;">전설의 기운이 감돌고 있습니다</div>
-                    
-                    <button id="fusion-btn" class="btn-primary" style="background:linear-gradient(135deg, #f59e0b, #ef4444); width:100%; height:55px; font-weight:900; font-size:1.1rem; border:none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">융합 시작 (2,500P)</button>
-                </div>
             </div>
 
             <div class="card booster-section fade-in" style="margin-top:2.5rem; background:linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border: 2px solid var(--accent-soft); padding: 2rem; border-radius: var(--radius-lg);">
@@ -835,13 +813,18 @@ function renderArcade() {
         
         const gradeSelect = document.getElementById('alchemy-grade-select');
         const materialEl = document.getElementById('count-material-available');
+        
         if (gradeSelect && materialEl) {
+            // 이전 선택값 유지
+            const prevVal = sessionStorage.getItem('last_alchemy_grade') || 'COMMON';
+            if (counts[prevVal] !== undefined) gradeSelect.value = prevVal;
+            
             materialEl.textContent = counts[gradeSelect.value];
-            gradeSelect.onchange = () => { materialEl.textContent = counts[gradeSelect.value]; };
+            gradeSelect.onchange = () => { 
+                materialEl.textContent = counts[gradeSelect.value]; 
+                sessionStorage.setItem('last_alchemy_grade', gradeSelect.value);
+            };
         }
-
-        const rareFusionEl = document.getElementById('count-rare-fusion');
-        if (rareFusionEl) rareFusionEl.textContent = counts.RARE;
     };
     updateAlchemyCounts();
 
