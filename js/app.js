@@ -848,14 +848,6 @@ function renderArcade() {
                                 <span class="g-count" id="count-RARE">0</span>
                             </div>
                         </div>
-
-                        <p style="font-size:0.8rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">필요한 제물 (6개 소모)</p>
-                        <div style="display:flex; justify-content:center; gap:1rem; align-items:center;">
-                            <div style="background:var(--card-bg); padding:0.5rem 1.5rem; border-radius:10px; border:1px solid #8b5cf6;">
-                                <small style="display:block; font-size:0.6rem; color:var(--text-sub);">선택 등급 재료</small>
-                                <strong style="color:#8b5cf6;">6개</strong> (보유: <span id="count-material-available">0</span>)
-                            </div>
-                        </div>
                     </div>
 
                     <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1.25rem; min-height:60px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px; padding: 0.5rem;">금단의 연성법을 시전합니다</div>

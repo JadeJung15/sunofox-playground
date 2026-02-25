@@ -19,13 +19,6 @@ export function initArcade() {
             
             const selectedGrade = target.dataset.grade;
             sessionStorage.setItem('last_alchemy_grade', selectedGrade);
-            
-            // 보유 수량 텍스트 업데이트
-            const inv = UserState.data?.inventory || [];
-            const targetItems = ITEM_GRADES[selectedGrade];
-            const availableCount = inv.filter(name => targetItems.includes(name)).length;
-            const materialEl = document.getElementById('count-material-available');
-            if (materialEl) materialEl.textContent = availableCount;
             return;
         }
 
@@ -75,14 +68,6 @@ export function updateAlchemyCounts() {
         const el = document.getElementById(`count-${grade}`);
         if (el) el.textContent = count;
     });
-
-    // 현재 선택된 등급의 '보유 수량' 요약 텍스트 업데이트
-    const activeBox = document.querySelector('.alchemy-grade-box.active');
-    const materialEl = document.getElementById('count-material-available');
-    if (activeBox && materialEl) {
-        const selectedGrade = activeBox.dataset.grade;
-        materialEl.textContent = counts[selectedGrade];
-    }
 }
 
 async function updateArcadeStat(statKey) {
