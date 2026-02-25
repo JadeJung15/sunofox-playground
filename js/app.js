@@ -6,7 +6,7 @@ import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from './tests-data.js?v=2.2.0';
+import { TESTS } from './tests-data.js?v=2.2.1';
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
