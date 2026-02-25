@@ -726,12 +726,26 @@ function renderArcade() {
                 </div>
 
                 <div class="card arcade-item-card" style="margin-bottom:0;">
-                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">📦 아이템 뽑기</h3>
-                    <div id="gacha-result" class="gacha-box" style="min-height:75px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed var(--border-color); border-radius:15px; text-align:center; font-size:0.9rem; background:rgba(0,0,0,0.02); font-weight: 600;">희귀 아이템이 쏟아집니다</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">1회 (100P)</button>
-                        <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">10회 (950P)</button>
-                        <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px;">30회 (2700P 🔥)</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">📦 아이템 뽑기</h3>
+                        <span style="background: rgba(var(--accent-rgb), 0.1); color: var(--accent-color); padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">GACHA</span>
+                    </div>
+                    
+                    <div id="gacha-result" class="gacha-box" style="min-height:75px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed var(--border-color); border-radius:15px; text-align:center; font-size:0.9rem; background:rgba(0,0,0,0.02); font-weight: 600; padding: 10px;">희귀 아이템이 쏟아집니다</div>
+                    
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem; margin-top: 0.5rem;">
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--text-main); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">100P</span>
+                            <button id="gacha-btn" class="btn-primary" style="background:var(--text-main); font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">1회 뽑기</button>
+                        </div>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">950P 🔥</span>
+                            <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">10회 뽑기</button>
+                        </div>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f43f5e; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2,700P 🔥</span>
+                            <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">30회 뽑기</button>
+                        </div>
                     </div>
                 </div>
 

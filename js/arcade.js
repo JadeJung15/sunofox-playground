@@ -50,37 +50,93 @@ async function updateArcadeStat(statKey) {
 
 async function playGacha(count, cost) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
-    if (await usePoints(cost)) {
+    
+    const resultEl = document.getElementById('gacha-result');
+    if (!resultEl) return;
+
+    // 포인트 부족 시 실패 노출 (팝업 X)
+    if (UserState.data.points < cost) {
+        resultEl.innerHTML = `
+            <div style="color:#ef4444; animation: shake 0.5s;">
+                <strong>⚠️ 뽑기 불가: 포인트 부족</strong><br>
+                <small>필요: ${cost}P / 보유: ${UserState.data.points}P</small>
+            </div>
+        `;
+        return;
+    }
+
+    const buttons = [document.getElementById('gacha-btn'), document.getElementById('gacha-10-btn'), document.getElementById('gacha-30-btn')];
+    buttons.forEach(btn => { if(btn) btn.disabled = true; });
+
+    resultEl.innerHTML = '<span class="loading-dots" style="color:var(--accent-color);">상자를 여는 중...</span>';
+
+    if (await usePoints(cost, `아이템 뽑기 (${count}회)`)) {
         await updateArcadeStat('gacha');
-        const exclusiveItems = ['🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루'];
-        const itemNames = Object.keys(ITEM_VALUES).filter(name => !exclusiveItems.includes(name));
-        const weights = [40, 20, 15, 10, 5, 8, 2];
-        const drawnItems = [];
-        let totalAddedScore = 0;
-        for (let i = 0; i < count; i++) {
-            const item = getRandomItem(itemNames, weights);
-            drawnItems.push(item);
-            totalAddedScore += ITEM_VALUES[item];
-        }
-        try {
-            const userRef = doc(db, "users", UserState.user.uid);
-            await updateDoc(userRef, {
-                inventory: arrayUnion(...drawnItems),
-                totalScore: increment(totalAddedScore)
-            });
-            UserState.data.inventory = [...(UserState.data.inventory || []), ...drawnItems];
-            UserState.data.totalScore = (UserState.data.totalScore || 0) + totalAddedScore;
-            const resultEl = document.getElementById('gacha-result');
-            if (resultEl) {
-                if (count === 1) { resultEl.innerHTML = `<strong>[${drawnItems[0]}]</strong> 획득!<br><small>+${totalAddedScore}점</small>`; }
-                else {
-                    const summary = drawnItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                    const resultText = Object.entries(summary).map(([name, num]) => `${name} x${num}`).join('<br>');
-                    resultEl.innerHTML = `<div style="font-size:0.85rem; line-height:1.4;"><strong>${count}회 결과:</strong><br>${resultText}<br><span style="color:var(--accent-color); font-weight:800;">총 +${totalAddedScore}점</span></div>`;
+        
+        setTimeout(async () => {
+            try {
+                const exclusiveItems = ['🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루'];
+                const itemNames = Object.keys(ITEM_VALUES).filter(name => !exclusiveItems.includes(name));
+                const weights = [40, 20, 15, 10, 5, 8, 2];
+                const drawnItems = [];
+                let totalAddedScore = 0;
+
+                for (let i = 0; i < count; i++) {
+                    const item = getRandomItem(itemNames, weights);
+                    drawnItems.push(item);
+                    totalAddedScore += (ITEM_VALUES[item] || 0);
                 }
+
+                const userRef = doc(db, "users", UserState.user.uid);
+                await updateDoc(userRef, {
+                    inventory: arrayUnion(...drawnItems),
+                    totalScore: increment(totalAddedScore),
+                    discoveredItems: arrayUnion(...drawnItems)
+                });
+
+                UserState.data.inventory = [...(UserState.data.inventory || []), ...drawnItems];
+                UserState.data.totalScore = (UserState.data.totalScore || 0) + totalAddedScore;
+
+                // UI 리렌더링 (스크롤 유지)
+                if (window.location.hash === '#arcade') {
+                    window._preventScroll = true;
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
+                }
+                updateUI();
+
+                // 리렌더링 후 결과 표시
+                setTimeout(() => {
+                    const newResultEl = document.getElementById('gacha-result');
+                    if (!newResultEl) return;
+
+                    const summary = drawnItems.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                    const resultTagsHTML = Object.entries(summary).map(([name, num]) => {
+                        const grade = getGrade(name);
+                        const color = grade === 'RARE' ? '#f59e0b' : (grade === 'UNCOMMON' ? '#3b82f6' : '#94a3b8');
+                        return `<span style="display:inline-block; background:rgba(0,0,0,0.05); color:${color}; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(0,0,0,0.1);">${name} x${num}</span>`;
+                    }).join('');
+
+                    newResultEl.innerHTML = `
+                        <div style="animation: bounce 0.5s; text-align:center; width:100%;">
+                            <div style="margin-bottom:8px;"><strong style="font-size:0.95rem; color:var(--accent-color);">📦 획득 아이템 리스트</strong></div>
+                            <div style="margin-bottom:10px; display:flex; flex-wrap:wrap; justify-content:center;">${resultTagsHTML}</div>
+                            <div style="border-top:1px dashed var(--border-color); padding-top:8px;">
+                                <strong style="color:#10b981; font-size:0.9rem;">총 +${totalAddedScore.toLocaleString()}점 획득!</strong>
+                            </div>
+                        </div>
+                    `;
+                }, 50);
+
+            } catch (e) {
+                console.error(e);
+                resultEl.innerHTML = '<span style="color:#ef4444;">상자가 손상되었습니다!</span>';
+            } finally {
+                buttons.forEach(btn => { if(btn) btn.disabled = false; });
             }
-            updateUI();
-        } catch (e) { alert("저장 실패"); }
+        }, 1000);
+    } else {
+        buttons.forEach(btn => { if(btn) btn.disabled = false; });
+        resultEl.innerHTML = '<span style="color:#ef4444;">뽑기 계약이 취소되었습니다.</span>';
     }
 }
 
