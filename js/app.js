@@ -711,46 +711,70 @@ function renderArcade() {
                     </div>
                 </div>
 
-                <div class="card arcade-item-card alchemy-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid var(--accent-secondary); background: rgba(139, 92, 246, 0.02);">
+                <!-- 아이템 연금술 (UI 개선) -->
+                <div class="card arcade-item-card alchemy-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #8b5cf6; background: rgba(139, 92, 246, 0.02);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
                         <span style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">UPGRADE</span>
                     </div>
                     
-                    <div class="alchemy-inventory-preview" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 1.25rem;">
-                        <div class="grade-stat" style="text-align:center; background:var(--bg-color); padding:0.5rem; border-radius:10px; border:1px solid var(--border-color);">
-                            <small style="display:block; font-size:0.6rem; color:var(--text-sub); font-weight:800; margin-bottom:2px;">COMMON</small>
-                            <span id="count-common" style="font-weight:900; color:#94a3b8;">0</span>
+                    <div style="background:var(--bg-color); padding:1rem; border-radius:12px; margin-bottom:1.25rem; border:1px solid var(--border-color); text-align:center;">
+                        <div style="background:var(--card-bg); padding:0.8rem; border-radius:10px; margin-bottom:1rem; border:1px solid var(--border-color);">
+                            <label style="display:block; font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">연성할 등급 선택</label>
+                            <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-size:1rem; font-weight:800; color:#8b5cf6; outline:none; cursor:pointer; font-family:inherit; text-align:center;">
+                                <option value="COMMON">일반 (COMMON) ➔ 고급</option>
+                                <option value="UNCOMMON">고급 (UNCOMMON) ➔ 희귀</option>
+                                <option value="RARE">희귀 (RARE) ➔ 전설</option>
+                            </select>
                         </div>
-                        <div class="grade-stat" style="text-align:center; background:var(--bg-color); padding:0.5rem; border-radius:10px; border:1px solid var(--border-color);">
-                            <small style="display:block; font-size:0.6rem; color:var(--text-sub); font-weight:800; margin-bottom:2px;">UNCOMMON</small>
-                            <span id="count-uncommon" style="font-weight:900; color:#3b82f6;">0</span>
-                        </div>
-                        <div class="grade-stat" style="text-align:center; background:var(--bg-color); padding:0.5rem; border-radius:10px; border:1px solid var(--border-color);">
-                            <small style="display:block; font-size:0.6rem; color:var(--text-sub); font-weight:800; margin-bottom:2px;">RARE</small>
-                            <span id="count-rare" style="font-weight:900; color:#f59e0b;">0</span>
+                        <p style="font-size:0.8rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">필요한 제물 (6개 소모)</p>
+                        <div style="display:flex; justify-content:center; gap:1rem; align-items:center;">
+                            <div style="background:var(--card-bg); padding:0.5rem 1.5rem; border-radius:10px; border:1px solid #8b5cf6;">
+                                <small style="display:block; font-size:0.6rem; color:var(--text-sub);">선택 등급 재료</small>
+                                <strong style="color:#8b5cf6;">6개</strong> (보유: <span id="count-material-available">0</span>)
+                            </div>
                         </div>
                     </div>
 
-                    <div style="background:var(--bg-color); padding:1rem; border-radius:12px; margin-bottom:1.25rem; border:1px solid var(--border-color);">
-                        <label style="display:block; font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:0.5rem;">연성할 등급 선택 (재료 6개 소모)</label>
-                        <select id="alchemy-grade-select" style="width:100%; background:none; border:none; font-size:1rem; font-weight:800; color:var(--accent-secondary); outline:none; cursor:pointer; font-family:inherit;">
-                            <option value="COMMON">일반 (COMMON) ➔ 고급</option>
-                            <option value="UNCOMMON">고급 (UNCOMMON) ➔ 희귀</option>
-                            <option value="RARE">희귀 (RARE) ➔ 전설</option>
-                        </select>
-                    </div>
-
-                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-secondary); margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px;">신비로운 연성이 시작됩니다</div>
+                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px;">금단의 연성법을 시전합니다</div>
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.7rem; padding:0.8rem 0.2rem; height:50px; font-weight:800;">1회 (300P)</button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.7rem; padding:0.8rem 0.2rem; height:50px; font-weight:800;">5회 (1350P)</button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.7rem; padding:0.8rem 0.2rem; height:50px; font-weight:800;">10회 (2500P)</button>
+                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.8rem; height:50px; font-weight:800;">1회 연성</button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.8rem; height:50px; font-weight:800;">5회 연성</button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.8rem; height:50px; font-weight:800;">10회 연성</button>
                     </div>
                 </div>
 
-                <!-- 별빛 융합 (신규 기능) -->
+                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🧨 폭탄 돌리기</h3>
+                        <span style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">DANGER</span>
+                    </div>
+                    <p id="bomb-msg" class="text-sub" style="font-size:0.9rem; margin-bottom:1rem; text-align: center; min-height: 24px;">전선을 선택하세요! (현재 누적: 0P)</p>
+                    <div id="bomb-wires" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.5rem; margin-bottom:1.5rem;">
+                        <button class="wire-btn" data-wire="0" style="height:60px; background:#ef4444; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="1" style="height:60px; background:#3b82f6; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="2" style="height:60px; background:#10b981; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="3" style="height:60px; background:#f59e0b; border:none; border-radius:8px;"></button>
+                        <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:8px;"></button>
+                    </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
+                        <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; height:50px;">게임 시작 (200P)</button>
+                        <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.8rem; height:50px; border-color:#f43f5e; color:#f43f5e;" disabled>포인트 챙기기</button>
+                    </div>
+                </div>
+
+                <div class="card arcade-item-card market-card" style="margin-bottom:0; border: 2px solid var(--accent-secondary); background: rgba(16, 185, 129, 0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🏪 아이템 중고장터</h3>
+                        <span style="background: var(--accent-secondary); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">BULK SELL</span>
+                    </div>
+                    <p class="text-sub" style="font-size:0.85rem; margin-bottom:1.5rem; line-height:1.4;">보유한 아이템을 포인트로 대량 환전하세요.<br>(아이템 가치의 <strong>70%</strong> 환급)</p>
+                    <div id="market-ui-container"></div>
+                    <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-secondary); color:var(--accent-secondary); font-weight: 800;">아이템 일괄 판매 열기</button>
+                </div>
+
+                <!-- 별빛 융합 -->
                 <div class="card arcade-item-card fusion-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.02);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                         <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">✨ 별빛 융합</h3>
@@ -794,14 +818,15 @@ function renderArcade() {
             const grade = getGrade(item);
             if (counts[grade] !== undefined) counts[grade]++;
         });
-        const commonEl = document.getElementById('count-common');
-        const uncommonEl = document.getElementById('count-uncommon');
-        const rareEl = document.getElementById('count-rare');
-        const rareFusionEl = document.getElementById('count-rare-fusion');
         
-        if (commonEl) commonEl.textContent = counts.COMMON;
-        if (uncommonEl) uncommonEl.textContent = counts.UNCOMMON;
-        if (rareEl) rareEl.textContent = counts.RARE;
+        const gradeSelect = document.getElementById('alchemy-grade-select');
+        const materialEl = document.getElementById('count-material-available');
+        if (gradeSelect && materialEl) {
+            materialEl.textContent = counts[gradeSelect.value];
+            gradeSelect.onchange = () => { materialEl.textContent = counts[gradeSelect.value]; };
+        }
+
+        const rareFusionEl = document.getElementById('count-rare-fusion');
         if (rareFusionEl) rareFusionEl.textContent = counts.RARE;
     };
     updateAlchemyCounts();

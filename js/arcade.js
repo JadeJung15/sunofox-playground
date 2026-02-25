@@ -20,6 +20,8 @@ export function initArcade() {
         
         if (target.id === 'fusion-btn') await playFusion();
         
+        if (target.id === 'market-open-btn') renderMarketUI();
+        
         if (target.id === 'click-game-btn') await playClickGame();
         if (target.id === 'slot-spin-btn') await playSlotMachine();
         if (target.id === 'bomb-start-btn') await startBombGame();
@@ -239,10 +241,11 @@ async function playAlchemy(count) {
                 const userRef = doc(db, "users", UserState.user.uid);
                 let currentInv = [...UserState.data.inventory];
                 
-                // 재료 제거
+                // 소모된 재료 추적
+                const sacrificed = [];
                 for (let i = 0; i < itemsNeeded; i++) {
                     const idx = currentInv.findIndex(name => targetItems.includes(name));
-                    if (idx > -1) currentInv.splice(idx, 1);
+                    if (idx > -1) sacrificed.push(currentInv.splice(idx, 1)[0]);
                 }
 
                 const gradeOrder = ['COMMON', 'UNCOMMON', 'RARE', 'LEGENDARY'];
@@ -254,10 +257,8 @@ async function playAlchemy(count) {
                 for (let i = 0; i < count; i++) {
                     const item = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
                     results.push(item);
-                    // 15% 보너스 확률
                     if (Math.random() < 0.15) {
-                        const bonus = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
-                        results.push(bonus);
+                        results.push(item);
                         bonusCount++;
                     }
                 }
@@ -274,14 +275,19 @@ async function playAlchemy(count) {
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
-                const summary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                const resultText = Object.entries(summary).map(([name, num]) => `[${name}] x${num}`).join(', ');
+                const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const resultItemsText = Object.entries(resSummary).map(([name, num]) => `[${name}] x${num}`).join(', ');
+                const materialSummary = sacrificed.length > 0 ? sacrificed[0] : selectedGrade;
+
+                resultEl.innerHTML = `
+                    <div style="animation: bounce 0.5s;">
+                        <strong style="color:#8b5cf6;">✨ [${resultItemsText}] 연성 완료!</strong><br>
+                        <small style="color:var(--text-sub);">${materialSummary} 등 재료 ${itemsNeeded}개 소모${bonusCount > 0 ? ` (+보너스 ${bonusCount})` : ''}</small>
+                    </div>
+                `;
                 
-                resultEl.innerHTML = `<div style="animation: bounce 0.5s;"><strong>${nextGrade} 연성 성공!</strong><br><small>${resultText}${bonusCount > 0 ? ` (보너스 +${bonusCount})` : ''}</small></div>`;
-                
-                // UI 즉시 업데이트를 위해 다시 렌더링
                 if (window.location.hash === '#arcade') {
-                    window._preventScroll = true; // 스크롤 방지 플래그 설정
+                    window._preventScroll = true;
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
@@ -294,6 +300,168 @@ async function playAlchemy(count) {
         }, 1500);
     } else {
         buttons.forEach(btn => { if(btn) btn.disabled = false; });
+    }
+}
+
+// =================================================================
+// 🏪 아이템 중고장터 (BULK SELL)
+// =================================================================
+
+function renderMarketUI() {
+    const container = document.getElementById('market-ui-container');
+    if (!container) return;
+    
+    const inv = UserState.data.inventory || [];
+    if (inv.length === 0) {
+        container.innerHTML = '<p style="text-align:center; padding:1rem; color:var(--text-sub);">판매할 아이템이 없습니다.</p>';
+        return;
+    }
+
+    const itemCounts = inv.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+    const openBtn = document.getElementById('market-open-btn');
+    if (openBtn) openBtn.style.display = 'none';
+
+    let html = `
+        <div class="market-bulk-sell fade-in" style="background:var(--bg-color); padding:1.25rem; border-radius:15px; border:1px solid var(--border-color); margin-bottom:1.5rem;">
+            <div style="max-height: 250px; overflow-y: auto; margin-bottom: 1.5rem; padding-right: 5px;" class="custom-scroll">
+                <table style="width:100%; border-collapse: collapse; font-size:0.85rem;">
+                    <thead style="position: sticky; top: 0; background: var(--bg-color); z-index: 1;">
+                        <tr style="border-bottom: 2px solid var(--border-color); color: var(--text-sub);">
+                            <th style="text-align:left; padding: 0.5rem;">아이템</th>
+                            <th style="text-align:center; padding: 0.5rem; width: 80px;">판매수량</th>
+                            <th style="text-align:right; padding: 0.5rem;">환급액</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+    `;
+
+    Object.entries(itemCounts).forEach(([name, count]) => {
+        const refundVal = Math.floor((ITEM_VALUES[name] || 0) * 0.7);
+        html += `
+            <tr style="border-bottom: 1px solid var(--border-color);">
+                <td style="padding: 0.75rem 0.5rem; font-weight: 700;">
+                    <span style="display:block;">${name}</span>
+                    <small style="color:var(--text-sub);">보유: ${count}</small>
+                </td>
+                <td style="padding: 0.75rem 0.5rem; text-align:center;">
+                    <input type="number" class="market-qty-input" data-name="${name}" data-max="${count}" data-price="${refundVal}" 
+                           value="${count}" min="0" max="${count}" 
+                           style="width:100%; background:var(--card-bg); border:1px solid var(--border-color); border-radius:6px; color:var(--text-main); text-align:center; padding:4px;">
+                </td>
+                <td style="padding: 0.75rem 0.5rem; text-align:right; font-weight:900; color:var(--accent-secondary);">
+                    <span class="row-refund-total">${(refundVal * count).toLocaleString()}P</span>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `
+                    </tbody>
+                </table>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:1rem; padding-top:1rem; border-top:2px solid var(--border-color);">
+                <div>
+                    <small style="display:block; color:var(--text-sub); font-weight:800;">총 환급 예상액</small>
+                    <strong id="market-total-refund" style="font-size:1.4rem; color:var(--accent-color);">0P</strong>
+                </div>
+                <div style="display:flex; gap:0.5rem;">
+                    <button id="market-cancel-btn" class="btn-secondary" style="padding:0.8rem 1.5rem;">취소</button>
+                    <button id="market-sell-btn" class="btn-primary" style="background:var(--accent-secondary); padding:0.8rem 2rem;">일괄 판매</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.innerHTML = html;
+
+    // 실시간 계산 로직
+    const updateTotals = () => {
+        let total = 0;
+        container.querySelectorAll('.market-qty-input').forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            const price = parseInt(input.dataset.price);
+            const rowTotal = qty * price;
+            input.closest('tr').querySelector('.row-refund-total').textContent = rowTotal.toLocaleString() + 'P';
+            total += rowTotal;
+        });
+        document.getElementById('market-total-refund').textContent = total.toLocaleString() + 'P';
+    };
+
+    container.querySelectorAll('.market-qty-input').forEach(input => {
+        input.oninput = () => {
+            const max = parseInt(input.dataset.max);
+            if (parseInt(input.value) > max) input.value = max;
+            updateTotals();
+        };
+    });
+
+    updateTotals();
+
+    document.getElementById('market-cancel-btn').onclick = () => {
+        container.innerHTML = '';
+        if (openBtn) openBtn.style.display = 'block';
+    };
+
+    document.getElementById('market-sell-btn').onclick = async () => {
+        const sellList = [];
+        container.querySelectorAll('.market-qty-input').forEach(input => {
+            const qty = parseInt(input.value) || 0;
+            if (qty > 0) sellList.push({ name: input.dataset.name, qty, price: parseInt(input.dataset.price) });
+        });
+
+        if (sellList.length === 0) return alert("판매할 수량을 입력해주세요.");
+        
+        const totalRefund = sellList.reduce((acc, cur) => acc + (cur.qty * cur.price), 0);
+        if (!confirm(`${sellList.length}종의 아이템을 판매하여 총 ${totalRefund.toLocaleString()}P를 받으시겠습니까?`)) return;
+
+        await playBulkSell(sellList, totalRefund);
+    };
+}
+
+async function playBulkSell(sellList, totalRefund) {
+    if (!UserState.user) return;
+    const userRef = doc(db, "users", UserState.user.uid);
+    let currentInv = [...UserState.data.inventory];
+
+    sellList.forEach(sell => {
+        for (let i = 0; i < sell.qty; i++) {
+            const idx = currentInv.indexOf(sell.name);
+            if (idx > -1) currentInv.splice(idx, 1);
+        }
+    });
+
+    const newScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
+    
+    try {
+        await updateDoc(userRef, { 
+            inventory: currentInv, 
+            points: increment(totalRefund), 
+            totalScore: newScore 
+        });
+
+        UserState.data.inventory = currentInv;
+        UserState.data.points += totalRefund;
+        UserState.data.totalScore = newScore;
+
+        alert(`💰 판매 완료! ${totalRefund.toLocaleString()}P가 지급되었습니다.`);
+        
+        window._preventScroll = true;
+        window.dispatchEvent(new HashChangeEvent('hashchange'));
+        updateUI();
+    } catch (e) {
+        console.error(e);
+        alert("판매 중 오류가 발생했습니다.");
+    }
+}
+
+async function playDailyCheckin() {
+    if (!UserState.user) return;
+    const today = new Date().toISOString().split('T')[0];
+    if (localStorage.getItem(`last_checkin_${UserState.user.uid}`) === today) return alert("이미 완료!");
+    if (await addPoints(100)) {
+        await updateArcadeStat('checkin');
+        localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
+        alert("100P 지급! ✨"); updateUI();
     }
 }
 
@@ -346,7 +514,12 @@ async function playFusion() {
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
-                resultEl.innerHTML = `<div style="animation: float 2s infinite ease-in-out;"><strong>✨ [${resultItem}] 연성 성공!</strong><br><small>${sacrificedItem}이(가) 승화되었습니다.</small></div>`;
+                resultEl.innerHTML = `
+                    <div style="animation: float 2s infinite ease-in-out;">
+                        <strong style="color:#f59e0b;">✨ 전설 연성 성공: [${resultItem}]</strong><br>
+                        <small style="color:var(--text-sub);">${sacrificedItem}이(가) 우주의 별빛으로 승화되었습니다.</small>
+                    </div>
+                `;
                 
                 if (window.location.hash === '#arcade') {
                     window._preventScroll = true; // 스크롤 방지 플래그 설정
@@ -362,71 +535,5 @@ async function playFusion() {
         }, 2000);
     } else {
         if (fusionBtn) fusionBtn.disabled = false;
-    }
-}
-
-async function playBettingGame(type, choice) {
-    const amountInput = document.getElementById('bet-amount');
-    const msgEl = document.getElementById('bet-result-msg');
-    const betAmount = parseInt(amountInput.value);
-    if (isNaN(betAmount) || betAmount < 10) return alert("최소 10P");
-    if (await usePoints(betAmount)) {
-        await updateArcadeStat('betting');
-        msgEl.textContent = "흔드는 중...";
-        setTimeout(async () => {
-            const d1 = Math.floor(Math.random() * 6) + 1, d2 = Math.floor(Math.random() * 6) + 1, d3 = Math.floor(Math.random() * 6) + 1;
-            const sum = d1 + d2 + d3;
-            let win = (choice === 'small' && sum <= 8) || (choice === 'middle' && sum >= 9 && sum <= 12) || (choice === 'big' && sum >= 13);
-            let multi = choice === 'middle' ? 2 : 3.5;
-            if (win) { await addPoints(betAmount * multi); msgEl.innerHTML = `성공! ${betAmount * multi}P! (합계 ${sum})`; }
-            else { msgEl.innerHTML = `실패... (합계 ${sum})`; }
-        }, 1000);
-    }
-}
-
-export async function openMarket() {
-    if (!UserState.user) return;
-    const container = document.getElementById('market-ui-container');
-    if (!container) return;
-    const inv = UserState.data.inventory || [];
-    const itemCounts = inv.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-    container.innerHTML = `
-        <div style="background: var(--bg-color); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 1rem;">
-            ${Object.entries(itemCounts).map(([name, count]) => `
-                <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
-                    <span>${name} (${count})</span>
-                    <button class="sell-one-btn" data-name="${name}" style="background:var(--accent-color); color:#fff; border:none; padding:2px 8px; border-radius:4px; font-size:0.7rem;">1개 판매</button>
-                </div>`).join('')}
-        </div>
-        <button id="market-close-btn" class="btn-secondary" style="width:100%;">닫기</button>
-    `;
-    document.getElementById('market-open-btn').style.display = 'none';
-    container.querySelectorAll('.sell-one-btn').forEach(btn => {
-        btn.onclick = async () => {
-            const name = btn.dataset.name;
-            const val = Math.floor((ITEM_VALUES[name] || 0) * 0.7);
-            if(confirm(`${name}을 ${val}P에 판매하시겠습니까?`)) {
-                const userRef = doc(db, "users", UserState.user.uid);
-                let currentInv = [...UserState.data.inventory];
-                const idx = currentInv.indexOf(name);
-                if(idx > -1) currentInv.splice(idx, 1);
-                const newScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-                await updateDoc(userRef, { inventory: currentInv, points: increment(val), totalScore: newScore });
-                UserState.data.inventory = currentInv; UserState.data.points += val; UserState.data.totalScore = newScore;
-                updateUI(); openMarket();
-            }
-        };
-    });
-    document.getElementById('market-close-btn').onclick = () => { container.innerHTML = ''; document.getElementById('market-open-btn').style.display = 'block'; };
-}
-
-async function playDailyCheckin() {
-    if (!UserState.user) return;
-    const today = new Date().toISOString().split('T')[0];
-    if (localStorage.getItem(`last_checkin_${UserState.user.uid}`) === today) return alert("이미 완료!");
-    if (await addPoints(100)) {
-        await updateArcadeStat('checkin');
-        localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
-        alert("100P 지급! ✨"); updateUI();
     }
 }
