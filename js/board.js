@@ -1,5 +1,5 @@
 import { db } from './firebase-init.js';
-import { UserState, usePoints, getTier, fetchUserProfile, updateProfileCache } from './auth.js';
+import { UserState, usePoints, addPoints, getTier, fetchUserProfile, updateProfileCache } from './auth.js';
 import { 
     collection, 
     addDoc, 
@@ -12,7 +12,9 @@ import {
     doc,
     updateDoc,
     arrayUnion,
-    getCountFromServer
+    getCountFromServer,
+    increment,
+    getDoc
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export const AURA_SHOP = {
@@ -273,6 +275,11 @@ async function loadPosts(container) {
 
             const postEl = document.createElement('div');
             postEl.className = `post-item ${data.isPremium ? 'premium-post' : ''} ${auraClass} ${bgClass} fade-in`;
+            
+            const likedBy = data.likedBy || [];
+            const likeCount = likedBy.length;
+            const isLiked = UserState.user && likedBy.includes(UserState.user.uid);
+
             postEl.innerHTML = `
                 <div class="post-header">
                     <div class="post-author-info">
@@ -283,7 +290,14 @@ async function loadPosts(container) {
                 </div>
                 <div class="post-content">${data.content}</div>
                 <div class="post-footer">
-                    <button class="btn-toggle-comments" data-id="${postId}">💬 댓글 ${commentCount > 0 ? `<b>(${commentCount})</b>` : ''}</button>
+                    <div style="display:flex; gap:1rem; align-items:center;">
+                        <button class="btn-like-post ${isLiked ? 'liked' : ''}" data-id="${postId}" data-uid="${data.uid}" style="background:none; border:none; color:${isLiked ? '#ef4444' : 'var(--text-sub)'}; font-size:0.85rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                            ${isLiked ? '❤️' : '🤍'} 좋아요 <b>${likeCount > 0 ? likeCount : ''}</b>
+                        </button>
+                        <button class="btn-toggle-comments" data-id="${postId}" style="background:none; border:none; color:var(--text-sub); font-size:0.85rem; font-weight:700; cursor:pointer; display:flex; align-items:center; gap:4px;">
+                            💬 댓글 ${commentCount > 0 ? `<b>(${commentCount})</b>` : ''}
+                        </button>
+                    </div>
                     ${canDelete ? `<button class="btn-delete" data-id="${postId}">삭제</button>` : ''}
                 </div>
                 <div id="comment-section-${postId}" class="comment-section" style="display:none;">
@@ -297,6 +311,8 @@ async function loadPosts(container) {
             container.appendChild(postEl);
 
             // 이벤트 바인딩
+            postEl.querySelector('.btn-like-post').onclick = () => handlePostLike(postId, data.uid, postEl);
+            
             postEl.querySelector('.btn-delete')?.addEventListener('click', async () => {
                 if (confirm("삭제하시겠습니까?")) {
                     await deleteDoc(doc(db, "posts", postId));
@@ -333,7 +349,57 @@ async function loadPosts(container) {
                 finally { submitCommentBtn.disabled = false; }
             };
         }
-    } catch (e) { container.innerHTML = `<p class="error-msg">로드 오류</p>`; }
+    } catch (e) { console.error(e); container.innerHTML = `<p class="error-msg">로드 오류</p>`; }
+}
+
+async function handlePostLike(postId, authorUid, postEl) {
+    if (!UserState.user) return alert("로그인이 필요합니다.");
+    if (UserState.user.uid === authorUid) return alert("자신의 글에는 좋아요를 누를 수 없습니다.");
+
+    const likeBtn = postEl.querySelector('.btn-like-post');
+    if (likeBtn.classList.contains('liked')) return alert("이미 좋아요를 누르셨습니다.");
+
+    try {
+        likeBtn.disabled = true;
+        const postRef = doc(db, "posts", postId);
+        
+        // 1. 중복 체크 (트랜잭션 대신 멱등성 보장하는 arrayUnion 사용)
+        await updateDoc(postRef, {
+            likedBy: arrayUnion(UserState.user.uid)
+        });
+
+        // 2. 포인트 지급 (누른 사람 +1P)
+        await addPoints(1, "게시글 좋아요 보상 (Liker)");
+
+        // 3. 포인트 지급 (받은 사람 +1P)
+        const authorRef = doc(db, "users", authorUid);
+        await updateDoc(authorRef, {
+            points: increment(1)
+        });
+
+        // 4. 알림 전송
+        await addDoc(collection(db, "users", authorUid, "notifications"), {
+            type: "like",
+            message: `"${UserState.data.nickname}"님이 내 글을 좋아합니다. (+1P)`,
+            relatedId: postId,
+            isRead: false,
+            createdAt: serverTimestamp()
+        });
+
+        // 5. UI 업데이트
+        const countSpan = likeBtn.querySelector('b');
+        const currentCount = parseInt(countSpan.textContent || "0");
+        countSpan.textContent = currentCount + 1;
+        likeBtn.innerHTML = `❤️ 좋아요 <b>${currentCount + 1}</b>`;
+        likeBtn.style.color = '#ef4444';
+        likeBtn.classList.add('liked');
+
+    } catch (e) {
+        console.error("Like failed:", e);
+        alert("좋아요 처리 중 오류가 발생했습니다.");
+    } finally {
+        likeBtn.disabled = false;
+    }
 }
 
 async function loadComments(postId, postAuthorUid) {

@@ -5,52 +5,54 @@ import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/f
 let arcadeInitialized = false;
 
 export function initArcade() {
-    if (arcadeInitialized) return;
-    arcadeInitialized = true;
+    if (!arcadeInitialized) {
+        arcadeInitialized = true;
 
-    document.addEventListener('click', async (e) => {
-        const target = e.target.closest('button') || e.target.closest('.alchemy-grade-box') || e.target;
-        
-        // 연금술 등급 선택 박스 처리
-        if (target.classList && target.classList.contains('alchemy-grade-box')) {
-            const boxes = document.querySelectorAll('.alchemy-grade-box');
-            boxes.forEach(box => box.classList.remove('active'));
-            target.classList.add('active');
+        document.addEventListener('click', async (e) => {
+            const target = e.target.closest('button') || e.target.closest('.alchemy-grade-box') || e.target;
             
-            const selectedGrade = target.dataset.grade;
-            sessionStorage.setItem('last_alchemy_grade', selectedGrade);
-            return;
-        }
+            // 연금술 등급 선택 박스 처리
+            if (target.classList && target.classList.contains('alchemy-grade-box')) {
+                const boxes = document.querySelectorAll('.alchemy-grade-box');
+                boxes.forEach(box => box.classList.remove('active'));
+                target.classList.add('active');
+                
+                const selectedGrade = target.dataset.grade;
+                sessionStorage.setItem('last_alchemy_grade', selectedGrade);
+                return;
+            }
 
-        if (target.id === 'gacha-btn') await playGacha(1, 100);
-        if (target.id === 'gacha-10-btn') await playGacha(10, 950);
-        if (target.id === 'gacha-30-btn') await playGacha(30, 2700);
-        
-        if (target.id === 'alchemy-btn') await playAlchemy(1);
-        if (target.id === 'alchemy-5-btn') await playAlchemy(5);
-        if (target.id === 'alchemy-10-btn') await playAlchemy(10);
-        
-        if (target.id === 'fusion-btn') await playFusion();
-        
-        if (target.id === 'market-open-btn') renderMarketUI();
-        
-        if (target.id === 'click-game-btn') await playClickGame();
-        if (target.id === 'slot-spin-btn') await playSlotMachine();
-        if (target.id === 'bomb-start-btn') await startBombGame();
-        if (target.classList && target.classList.contains('wire-btn')) await cutWire(parseInt(target.dataset.wire));
-        if (target.id === 'bomb-claim-btn') await claimBombPoints();
-        if (target.id === 'daily-checkin-btn') await playDailyCheckin();
-        
-        if (target.classList && target.classList.contains('bet-btn')) {
-            const gameType = target.dataset.game;
-            const choice = target.dataset.choice;
-            await playBettingGame(gameType, choice);
-        }
-    });
+            if (target.id === 'gacha-btn') await playGacha(1, 100);
+            if (target.id === 'gacha-10-btn') await playGacha(10, 950);
+            if (target.id === 'gacha-30-btn') await playGacha(30, 2700);
+            
+            if (target.id === 'alchemy-btn') await playAlchemy(1);
+            if (target.id === 'alchemy-5-btn') await playAlchemy(5);
+            if (target.id === 'alchemy-10-btn') await playAlchemy(10);
+            
+            if (target.id === 'fusion-btn') await playFusion();
+            
+            if (target.id === 'market-open-btn') renderMarketUI();
+            
+            if (target.id === 'click-game-btn') await playClickGame();
+            if (target.id === 'slot-spin-btn') await playSlotMachine();
+            if (target.id === 'bomb-start-btn') await startBombGame();
+            if (target.classList && target.classList.contains('wire-btn')) await cutWire(parseInt(target.dataset.wire));
+            if (target.id === 'bomb-claim-btn') await claimBombPoints();
+            if (target.id === 'daily-checkin-btn') await playDailyCheckin();
+            
+            if (target.classList && target.classList.contains('bet-btn')) {
+                const gameType = target.dataset.game;
+                const choice = target.dataset.choice;
+                await playBettingGame(gameType, choice);
+            }
+        });
 
-    // 퀘스트 로드 호출
-    renderDailyQuests();
-    // 연금술 카운트 초기화 호출
+        // 퀘스트 로드 호출
+        renderDailyQuests();
+    }
+    
+    // 페이지가 다시 그려질 때마다 수량 동기화 (초기화 여부 무관)
     updateAlchemyCounts();
 }
 
