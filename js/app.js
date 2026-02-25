@@ -995,20 +995,8 @@ async function renderResult(testId, traitScores) {
                     <!-- 추천 테스트 및 전체보기 -->
                     <div class="recommended-section" style="margin-top: 4rem; padding-top: 3rem; border-top: 1px dashed var(--border-color);" data-html2canvas-ignore="true">
                         <h3 style="text-align:center; margin-bottom: 2.5rem; font-size: 1.4rem; font-weight: 900; color: var(--text-main);">✨ 이런 분석은 어때요?</h3>
-                        <div class="test-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
-                            ${recommendedTests.map(t => `
-                                <div class="test-card" onclick="location.hash='#test/${t.id}'" style="margin-bottom:0; cursor:pointer;">
-                                    <div class="test-thumb-wrapper" style="height: 120px; border-radius: 12px; overflow:hidden; position:relative;">
-                                        <img src="${t.thumb}" alt="${t.title}" 
-                                             style="width:100%; height:100%; object-fit:cover;" 
-                                             onerror="window.handleImgError(this)">
-                                    </div>
-                                    <div class="test-info" style="padding: 0.8rem; text-align: left;">
-                                        <span class="test-category-tag" style="font-size: 0.6rem; padding: 2px 6px;">${t.category}</span>
-                                        <h4 style="font-size: 0.85rem; margin-top: 0.4rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${t.title}</h4>
-                                    </div>
-                                </div>
-                            `).join('')}
+                        <div class="test-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                            ${recommendedTests.map(t => renderTestCard(t)).join('')}
                         </div>
                         <div style="text-align: center; margin-top: 3rem; display: flex; flex-direction: column; gap: 1rem; align-items: center;">
                             <button class="btn-secondary" style="padding: 1rem 3rem; font-weight: 800; border-radius: 50px; width: auto; border-color: var(--border-color); color: var(--text-sub);" onclick="location.hash='#7check'">📋 전체 리스트 보기</button>
