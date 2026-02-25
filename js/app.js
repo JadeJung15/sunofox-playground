@@ -13,6 +13,14 @@ const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
+const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80"; // 부드러운 그라데이션 이미지
+
+// 이미지 로드 실패 시 호출될 공통 핸들러
+window.handleImgError = function(img) {
+    img.onerror = null; // 무한 루프 방지
+    img.src = DEFAULT_IMAGE;
+    img.classList.add('img-fallback');
+};
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -280,11 +288,12 @@ function renderTestCard(t) {
     const likes = testLikesData[t.id] || 0;
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'">
-        <div class="thumb-wrapper" style="position: relative;">
-            <div class="test-thumb" style="background-image: url('${t.thumb}');">
-                <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);"></div>
-                <div class="like-badge" style="background: rgba(0,0,0,0.6); color: white; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">❤️ ${likes}</div>
-            </div>
+        <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 15px;">
+            <img src="${t.thumb}" alt="${t.title}" 
+                 style="width: 100%; height: 100%; object-fit: cover;" 
+                 onerror="window.handleImgError(this)">
+            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
+            <div class="like-badge" style="background: rgba(0,0,0,0.6); color: white; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">❤️ ${likes}</div>
         </div>
         <div class="test-info">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
@@ -825,7 +834,10 @@ async function renderResult(testId, traitScores) {
         <div class="result-page fade-in" style="min-height: 100vh; padding: 2rem 1rem;">
             <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 2px solid ${themeColor}44; backdrop-filter: blur(5px);">
                 <div style="padding: 1.5rem 1.5rem 0;">
-                    <div class="result-img" style="height: 300px; background: url('${result.img}') center/cover; position: relative; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 4px solid #fff;">
+                    <div class="result-img-wrapper" style="height: 300px; position: relative; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.15); border: 4px solid #fff;">
+                        <img src="${result.img}" alt="${result.title}" 
+                             style="width: 100%; height: 100%; object-fit: cover;" 
+                             onerror="window.handleImgError(this)">
                     </div>
                 </div>
                 <div style="padding: 1.5rem 1.5rem 2.5rem; text-align: center;">
@@ -867,7 +879,11 @@ async function renderResult(testId, traitScores) {
                         <div class="test-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
                             ${recommendedTests.map(t => `
                                 <div class="test-card" onclick="location.hash='#test/${t.id}'" style="margin-bottom:0; cursor:pointer;">
-                                    <div class="test-thumb" style="background-image: url('${t.thumb}'); height: 120px; border-radius: 12px;"></div>
+                                    <div class="test-thumb-wrapper" style="height: 120px; border-radius: 12px; overflow:hidden; position:relative;">
+                                        <img src="${t.thumb}" alt="${t.title}" 
+                                             style="width:100%; height:100%; object-fit:cover;" 
+                                             onerror="window.handleImgError(this)">
+                                    </div>
                                     <div class="test-info" style="padding: 0.8rem; text-align: left;">
                                         <span class="test-category-tag" style="font-size: 0.6rem; padding: 2px 6px;">${t.category}</span>
                                         <h4 style="font-size: 0.85rem; margin-top: 0.4rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${t.title}</h4>
@@ -891,7 +907,9 @@ async function renderResult(testId, traitScores) {
                         <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;">SEVEN CHECK REPORT</span>
                     </div>
                     
-                    <div style="width: 100%; aspect-ratio: 1; border-radius: 20px; background: url('${result.img}') center/cover; margin-bottom: 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3);"></div>
+                    <div class="story-img-wrapper" style="width: 100%; aspect-ratio: 1; border-radius: 20px; overflow:hidden; margin-bottom: 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">
+                        <img src="${result.img}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
+                    </div>
                     
                     <div style="text-align: center;">
                         <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 15px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3);">${result.title}</h2>
