@@ -209,32 +209,51 @@ async function claimBombPoints() {
 async function playAlchemy(count) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     
+    const resultEl = document.getElementById('alchemy-result');
+    if (!resultEl) return;
+
     let cost = 300;
     if (count === 5) cost = 1350;
     else if (count === 10) cost = 2500;
 
     const gradeSelect = document.getElementById('alchemy-grade-select');
-    const resultEl = document.getElementById('alchemy-result');
-    if (!gradeSelect || !resultEl) return;
+    if (!gradeSelect) return;
 
     const selectedGrade = gradeSelect.value;
     const itemsNeeded = count * 6;
     const targetItems = ITEM_GRADES[selectedGrade];
     const availableItems = UserState.data.inventory.filter(name => targetItems.includes(name));
 
+    // [개선] 수량 부족 시 실패 노출 (팝업 X)
     if (availableItems.length < itemsNeeded) {
-        alert(`재료가 부족합니다! (필요: ${selectedGrade} ${itemsNeeded}개 / 보유: ${availableItems.length}개)`);
+        resultEl.innerHTML = `
+            <div style="color:#ef4444; animation: shake 0.5s;">
+                <strong>⚠️ 연성 불가: 재료 부족</strong><br>
+                <small>필요: ${itemsNeeded}개 / 보유: ${availableItems.length}개</small>
+            </div>
+        `;
         return;
     }
 
-    if (!confirm(`${selectedGrade} 아이템 ${itemsNeeded}개를 소모하여 연금술을 진행하시겠습니까? (비용: ${cost}P)`)) return;
+    // [개선] 포인트 부족 시 실패 노출 (팝업 X)
+    if (UserState.data.points < cost) {
+        resultEl.innerHTML = `
+            <div style="color:#ef4444; animation: shake 0.5s;">
+                <strong>⚠️ 연성 불가: 포인트 부족</strong><br>
+                <small>필요: ${cost}P / 보유: ${UserState.data.points}P</small>
+            </div>
+        `;
+        return;
+    }
 
     const buttons = [document.getElementById('alchemy-btn'), document.getElementById('alchemy-5-btn'), document.getElementById('alchemy-10-btn')];
     buttons.forEach(btn => { if(btn) btn.disabled = true; });
 
+    // 연성 시작 효과
+    resultEl.innerHTML = '<span class="loading-dots" style="color:#8b5cf6;">금단의 비술을 시전 중...</span>';
+
     if (await usePoints(cost, `연금술 시행 (${count}회)`)) {
         await updateArcadeStat('alchemy');
-        resultEl.innerHTML = '<span class="loading-dots">금단의 비술을 시전 중...</span>';
         
         setTimeout(async () => {
             try {
@@ -253,18 +272,28 @@ async function playAlchemy(count) {
                     }
                 }
 
-                // 2. 결과 아이템 생성 및 점수 계산 (+)
+                // 2. 결과 아이템 생성 (확률형)
                 const gradeOrder = ['COMMON', 'UNCOMMON', 'RARE', 'LEGENDARY'];
                 const nextGrade = gradeOrder[Math.min(gradeOrder.indexOf(selectedGrade) + 1, gradeOrder.length - 1)];
-                const nextGradeItems = ITEM_GRADES[nextGrade];
                 
                 const results = [];
                 let bonusCount = 0;
                 let scoreGained = 0;
+                let upgradeSuccessCount = 0;
+
                 for (let i = 0; i < count; i++) {
-                    const item = nextGradeItems[Math.floor(Math.random() * nextGradeItems.length)];
+                    // [개선] 확률 로직: 70% 확률로 상위 등급, 30% 확률로 동급 아이템
+                    const isUpgrade = Math.random() < 0.7;
+                    const finalGrade = isUpgrade ? nextGrade : selectedGrade;
+                    if(isUpgrade) upgradeSuccessCount++;
+
+                    const pool = ITEM_GRADES[finalGrade];
+                    const item = pool[Math.floor(Math.random() * pool.length)];
+                    
                     results.push(item);
                     scoreGained += (ITEM_VALUES[item] || 0);
+
+                    // 15% 보너스 (동일 아이템 1개 더)
                     if (Math.random() < 0.15) {
                         results.push(item);
                         scoreGained += (ITEM_VALUES[item] || 0);
@@ -284,7 +313,7 @@ async function playAlchemy(count) {
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
-                // 3. 결과 텍스트 구성 (목록형 UI 개선)
+                // 3. 결과 UI 구성
                 const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
                 const resultItemsHTML = Object.entries(resSummary).map(([name, num]) => 
                     `<span style="display:inline-block; background:rgba(139, 92, 246, 0.1); color:#8b5cf6; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(139, 92, 246, 0.2);">${name} x${num}</span>`
@@ -297,7 +326,9 @@ async function playAlchemy(count) {
 
                 resultEl.innerHTML = `
                     <div style="animation: bounce 0.5s; text-align:center; width:100%;">
-                        <div style="margin-bottom:8px;"><strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 결과 목록</strong></div>
+                        <div style="margin-bottom:8px;">
+                            <strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 완료 (${upgradeSuccessCount}/${count} 진화 성공)</strong>
+                        </div>
                         <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; justify-content:center;">${resultItemsHTML}</div>
                         
                         <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; font-size:0.75rem; text-align:left; border:1px solid var(--border-color);">
@@ -311,7 +342,9 @@ async function playAlchemy(count) {
                                 <span style="font-weight:700;">총 획득 점수:</span>
                                 <strong style="color:#10b981; font-size:0.9rem;">+${scoreGained.toLocaleString()}점</strong>
                             </div>
-                            ${bonusCount > 0 ? `<div style="text-align:right; color:#f59e0b; font-weight:900; font-size:0.65rem; margin-top:2px;">🔥 보너스 아이템 ${bonusCount}개 연성 성공!</div>` : ''}
+                            <div style="text-align:right; margin-top:4px;">
+                                <small style="font-weight:800; color:var(--accent-color);">최종 점수 변동: ${ (scoreGained - scoreLost) >= 0 ? '+' : ''}${(scoreGained - scoreLost).toLocaleString()}점</small>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -323,13 +356,14 @@ async function playAlchemy(count) {
                 updateUI();
             } catch (e) {
                 console.error(e);
-                resultEl.textContent = "연성 중 차원이 뒤틀렸습니다!";
+                resultEl.innerHTML = '<span style="color:#ef4444;">연성 중 사고가 발생했습니다!</span>';
             } finally {
                 buttons.forEach(btn => { if(btn) btn.disabled = false; });
             }
         }, 1500);
     } else {
         buttons.forEach(btn => { if(btn) btn.disabled = false; });
+        resultEl.innerHTML = '<span style="color:#ef4444;">연성 계약이 취소되었습니다.</span>';
     }
 }
 
