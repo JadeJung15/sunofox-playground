@@ -1382,3 +1382,5 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .dice.rolling {
     animation: rolling 0.4s linear infinite;
 }
+
+.hidden { display: none !important; }
