@@ -63,11 +63,17 @@ async function handleLike(testId) {
         testLikesData[testId] = (testLikesData[testId] || 0) + 1;
         await addPoints(5);
         
-        // UI 즉시 업데이트 (아이콘 및 카운트)
-        const icon = document.getElementById(`like-icon-${testId}`);
-        const counter = document.getElementById(`like-count-${testId}`);
-        if (icon) icon.textContent = '❤️';
-        if (counter) counter.textContent = testLikesData[testId];
+        // 1. 플로팅 아이콘 업데이트
+        const floatingIcon = document.getElementById(`like-icon-floating-${testId}`);
+        if (floatingIcon) floatingIcon.textContent = '❤️';
+        
+        // 2. 하단 카운트 뱃지 업데이트
+        const countEl = document.getElementById(`like-count-${testId}`);
+        if (countEl) countEl.textContent = testLikesData[testId];
+        
+        // 3. 버튼 활성화 상태 클래스 추가
+        const btn = document.getElementById(`like-btn-${testId}`);
+        if (btn) btn.classList.add('active');
         
         alert("감사합니다! 5P가 적립되었습니다. ❤️");
     } catch (e) { console.error(e); }
@@ -310,22 +316,26 @@ function renderTestCard(t) {
                  onerror="window.handleImgError(this)">
             <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
             
-            <!-- 플로팅 하트 버튼 -->
-            <button class="like-btn-floating ${isLiked ? 'active' : ''}" 
+            <!-- 플로팅 하트 버튼 (개선됨) -->
+            <button id="like-btn-${t.id}" 
+                    class="like-btn-floating ${isLiked ? 'active' : ''}" 
                     onclick="event.stopPropagation(); handleLike('${t.id}')"
-                    style="position:absolute; top:12px; right:12px; z-index:10; width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.95); border:none; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); cursor:pointer; transition:all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
-                <span id="like-icon-${t.id}" style="font-size:1.1rem; line-height:1;">${isLiked ? '❤️' : '🤍'}</span>
+                    style="position:absolute; top:12px; right:12px; z-index:20; width:40px; height:40px; border-radius:50%; background:#fff; border:none; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 15px rgba(0,0,0,0.2); cursor:pointer;">
+                <span id="like-icon-floating-${t.id}" style="font-size:1.2rem; line-height:1;">${isLiked ? '❤️' : '🤍'}</span>
             </button>
 
-            <div class="like-badge" style="background: rgba(0,0,0,0.6); color: white; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2); bottom: 10px; left: 10px; position: absolute; font-size: 0.7rem; padding: 2px 8px; border-radius: 50px; font-weight: 800;">❤️ <span id="like-count-${t.id}">${likes}</span></div>
+            <!-- 좋아요 카운트 뱃지 (썸네일 내부 좌측 하단) -->
+            <div style="position:absolute; bottom:12px; left:12px; z-index:10; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px); padding: 4px 10px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:4px; border: 1px solid rgba(255,255,255,0.2);">
+                <span>❤️</span> <span id="like-count-${t.id}">${likes}</span>
+            </div>
         </div>
         <div class="test-info">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                 <span class="test-category-tag">${t.category}</span>
                 <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-sub); display: flex; align-items: center; gap: 4px;"><span>⏱️</span> 3분</span>
             </div>
-            <h3 style="margin-top: 0.5rem;">${t.title}</h3>
-            <p>${t.desc}</p>
+            <h3 style="margin-top: 0.5rem; font-size: 1.1rem; line-height: 1.4;">${t.title}</h3>
+            <p style="font-size: 0.85rem; margin-top: 0.4rem;">${t.desc}</p>
             <div style="margin-top: auto; padding-top: 1rem; border-top: 1px dashed var(--border-color); display: flex; justify-content: flex-end;">
                 <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-color);">테스트 시작 ➔</span>
             </div>
