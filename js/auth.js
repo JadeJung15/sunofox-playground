@@ -294,7 +294,7 @@ const profileCache = new Map();
 
 export function updateProfileCache(uid, partialData) {
     if (!uid) return;
-    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", bio: "", activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
+    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", bio: "", points: 0, totalScore: 0, inventory: [], activeAura: "NONE", activeBorder: "NONE", activeBackground: "NONE" };
     profileCache.set(uid, { ...current, ...partialData });
 }
 
@@ -311,6 +311,9 @@ export async function fetchUserProfile(uid) {
                 emoji: data.emoji || "👤",
                 nameColor: data.nameColor || "var(--text-main)",
                 bio: data.bio || "",
+                points: data.points || 0,
+                totalScore: data.totalScore || 0,
+                inventory: data.inventory || [],
                 activeAura: data.activeAura || "NONE",
                 activeBorder: data.activeBorder || "NONE",
                 activeBackground: data.activeBackground || "NONE"
@@ -496,6 +499,7 @@ export async function chargeUserPoints(targetUid, amount, reason = "관리자 �
         
         await updateDoc(userRef, { points: newPoints });
         addLog(finalUid, 'points', amount, reason);
+        updateProfileCache(finalUid, { points: newPoints });
         if (finalUid === UserState.user.uid) { UserState.data.points = newPoints; updateUI(); }
         return true;
     } catch (e) { return false; }
@@ -514,6 +518,7 @@ export async function chargeUserScore(targetUid, amount, reason = "관리자 권
 
         await updateDoc(userRef, { totalScore: newScore });
         addLog(finalUid, 'score', amount, reason);
+        updateProfileCache(finalUid, { totalScore: newScore });
         if (finalUid === UserState.user.uid) { UserState.data.totalScore = newScore; updateUI(); }
         return true;
     } catch (e) { return false; }
@@ -526,7 +531,9 @@ export async function addPoints(amount, reason = "테스트 완료 보상") {
         const newPoints = Math.max(0, (UserState.data.points || 0) + amount); // 0 미만 방지
         await updateDoc(userRef, { points: newPoints });
         addLog(UserState.user.uid, 'points', amount, reason);
-        UserState.data.points = newPoints; updateUI(); return true;
+        UserState.data.points = newPoints; 
+        updateProfileCache(UserState.user.uid, { points: newPoints });
+        updateUI(); return true;
     } catch (e) { return false; }
 }
 
@@ -537,6 +544,8 @@ export async function usePoints(amount, reason = "서비스 이용") {
         const newPoints = Math.max(0, (UserState.data.points || 0) - amount); // 0 미만 방지
         await updateDoc(userRef, { points: newPoints });
         addLog(UserState.user.uid, 'points', -amount, reason);
-        UserState.data.points = newPoints; updateUI(); return true;
+        UserState.data.points = newPoints; 
+        updateProfileCache(UserState.user.uid, { points: newPoints });
+        updateUI(); return true;
     } catch (e) { return false; }
 }
