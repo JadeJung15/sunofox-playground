@@ -830,7 +830,7 @@ function renderArcade() {
                     </div>
                     
                     <div style="background:var(--bg-color); padding:1.25rem 1rem; border-radius:12px; margin-bottom:1.25rem; border: 1px solid var(--border-color); text-align:center;">
-                        <p style="font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:1rem;">연성할 재료 등급 선택</p>
+                        <p style="font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:1rem;">연성할 재료 등급 선택<br><span style="color:var(--accent-color); font-size:0.65rem;">(동일 등급 재료 6개 소모)</span></p>
                         
                         <div class="alchemy-grade-boxes" id="alchemy-grade-boxes">
                             <div class="alchemy-grade-box ${lastGrade === 'COMMON' ? 'active' : ''}" data-grade="COMMON">
