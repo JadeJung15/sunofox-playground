@@ -94,12 +94,12 @@ export function initAuth() {
     authInitialized = true;
 
     // 리디렉션 결과 처리
-    getRedirectResult(auth).catch(error => {
-        if (error.code === 'auth/disallowed-useragent') {
-            alert("구글 정책으로 인해 현재 브라우저에서는 로그인이 불가능합니다. 외부 브라우저(Chrome, Safari 등)를 사용해 주세요.");
-        } else {
-            console.error("Auth redirect error:", error);
+    getRedirectResult(auth).then((result) => {
+        if (result?.user) {
+            console.log("Redirect login success");
         }
+    }).catch(error => {
+        handleAuthError(error);
     });
 
     onAuthStateChanged(auth, async (user) => {
@@ -120,28 +120,35 @@ export function initAuth() {
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
+            if (target.disabled) return;
+            
+            const originalText = target.textContent;
+            target.disabled = true;
+            target.textContent = "로그인 중...";
+
             const provider = new GoogleAuthProvider();
-            // Google Login Custom Parameters (Optional but recommended)
             provider.setCustomParameters({ prompt: 'select_account' });
             
-            // 인앱 브라우저 감지 로직 (카카오톡, 라인 등)
             const ua = navigator.userAgent.toLowerCase();
             const isInApp = ua.indexOf('kakaotalk') > -1 || ua.indexOf('line') > -1 || ua.indexOf('naver') > -1;
 
             if (isInApp) {
-                alert("구글 보안 정책으로 인해 인앱 브라우저에서는 로그인이 차단될 수 있습니다. 오른쪽 상단 점 3개 버튼을 눌러 '외부 브라우저로 열기'를 선택해 주세요.");
+                alert("구글 보안 정책으로 인해 인앱 브라우저에서는 로그인이 차단될 수 있습니다. 오른쪽 상단 메뉴를 눌러 '외부 브라우저로 열기'를 선택해 주세요.");
             }
 
-            // IDX 및 모바일 환경 호환성을 위해 Redirect 방식 우선 사용
             try {
+                // 모바일 환경이나 특정 제약 환경에서는 Redirect가 더 안정적임
                 await signInWithRedirect(auth, provider);
             } catch (error) {
-                console.error("Login Error:", error);
-                // Redirect 실패 시 Popup 시도 (폴백)
+                console.error("Login Error (Redirect):", error);
+                // Redirect 실패 시 Popup 폴백
                 try {
                     await signInWithPopup(auth, provider);
                 } catch (popupError) {
-                    alert("로그인 중 오류가 발생했습니다. 브라우저 설정을 확인해 주세요.");
+                    handleAuthError(popupError);
+                } finally {
+                    target.disabled = false;
+                    target.textContent = originalText;
                 }
             }
         }
@@ -152,6 +159,23 @@ export function initAuth() {
         if (target.classList.contains('emoji-btn')) await handleEmojiExchange(target.dataset.emoji);
         if (target.classList.contains('color-btn')) await changeNameColor(target.dataset.color);
     });
+}
+
+function handleAuthError(error) {
+    console.error("Auth Error:", error.code, error.message);
+    let msg = "로그인 중 오류가 발생했습니다.";
+    
+    if (error.code === 'auth/disallowed-useragent') {
+        msg = "구글 정책으로 인해 현재 브라우저에서는 로그인이 불가능합니다. Chrome이나 Safari 같은 외부 브라우저를 사용해 주세요.";
+    } else if (error.code === 'auth/unauthorized-domain') {
+        msg = "현재 도메인이 인증 허용 목록에 등록되지 않았습니다. 관리자 설정이 필요합니다.\n(도메인: " + window.location.hostname + ")";
+    } else if (error.code === 'auth/popup-blocked') {
+        msg = "로그인 팝업이 차단되었습니다. 팝업 차단을 해제하거나 리디렉션 방식을 시도해 주세요.";
+    } else if (error.code === 'auth/cancelled-popup-request') {
+        return; // 사용자가 취소한 경우 무시
+    }
+    
+    alert(msg);
 }
 
 async function loadUserData(user) {
@@ -301,7 +325,11 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         const siteVersion = document.getElementById('site-version');
         if (siteVersion) siteVersion.classList.remove('hidden');
     } else {
-        if (loginBtn) loginBtn.classList.remove('hidden');
+        if (loginBtn) {
+            loginBtn.classList.remove('hidden');
+            loginBtn.disabled = false;
+            loginBtn.textContent = "로그인";
+        }
         if (headerProfile) headerProfile.classList.add('hidden');
         const footerAdmin = document.getElementById('footer-admin-link');
         if (footerAdmin) footerAdmin.classList.add('hidden');
