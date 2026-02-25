@@ -377,77 +377,57 @@ async function addLog(uid, type, amount, reason) {
     } catch (e) { console.error("Log failed", e); }
 }
 
+export const COLOR_SHOP = {
+    '기본': '#333333',
+    '네이비': '#1e293b',
+    '로얄 블루': '#3b82f6',
+    '바이올렛': '#8b5cf6',
+    '에메랄드': '#10b981',
+    '골드': '#f59e0b',
+    '선셋': '#f97316',
+    '로즈': '#f43f5e',
+    '핑크': '#ec4899',
+    '스카이': '#0ea5e9'
+};
+
 async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji) return;
-    const unlocked = UserState.data.unlockedEmojis || ['👤'];
-    if (unlocked.includes(emoji)) {
-        await updateDoc(doc(db, "users", UserState.user.uid), { emoji: emoji });
-        UserState.data.emoji = emoji;
-        updateUI(); return;
+    
+    let price = 500; // 이모지 변경 기본가
+    if (UserState.data.emoji === emoji) return alert("이미 장착 중인 아이콘입니다.");
+    
+    if (!confirm(`아이콘을 [${emoji}](으)로 변경하시겠습니까?\n변경 시 ${price.toLocaleString()}P가 소모됩니다.`)) return;
+
+    if (await usePoints(price, `아이콘 변경: ${emoji}`)) {
+        try {
+            await updateDoc(doc(db, "users", UserState.user.uid), { emoji: emoji });
+            UserState.data.emoji = emoji;
+            
+            updateProfileCache(UserState.user.uid, { emoji: emoji });
+            updateUI();
+            alert("변경 완료!");
+            if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
+        } catch (e) { alert("오류 발생"); }
     }
-    let price = 0;
-    for (const cat in EMOJI_SHOP) { if (EMOJI_SHOP[cat][emoji]) { price = EMOJI_SHOP[cat][emoji]; break; } }
-    if (UserState.data.totalScore < price) return alert("아이템 점수가 부족합니다.");
-    if (!confirm(`[${emoji}] 교환 시 아이템 가치 ${price}점이 소모됩니다.`)) return;
-
-    try {
-        const userRef = doc(db, "users", UserState.user.uid);
-        let currentInv = [...UserState.data.inventory];
-        let scoreToDeduct = price;
-        currentInv.sort((a, b) => ITEM_VALUES[a] - ITEM_VALUES[b]);
-        while (scoreToDeduct > 0 && currentInv.length > 0) {
-            const item = currentInv.shift();
-            scoreToDeduct -= ITEM_VALUES[item];
-        }
-        const newScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-        await updateDoc(userRef, {
-            unlockedEmojis: arrayUnion(emoji),
-            inventory: currentInv,
-            totalScore: newScore,
-            emoji: emoji
-        });
-        addLog(UserState.user.uid, 'score', -(UserState.data.totalScore - newScore), `이모지 교환: ${emoji}`);
-        UserState.data.unlockedEmojis.push(emoji); UserState.data.inventory = currentInv; UserState.data.totalScore = newScore; UserState.data.emoji = emoji;
-        
-        // 캐시 업데이트
-        if (profileCache.has(UserState.user.uid)) {
-            const cached = profileCache.get(UserState.user.uid);
-            cached.emoji = emoji;
-            profileCache.set(UserState.user.uid, cached);
-        }
-
-        updateUI(); alert("교환 완료!");
-        if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
-    } catch (e) { alert("오류 발생"); }
 }
 
 async function changeNameColor(color) {
-    const unlocked = UserState.data.unlockedColors || ['#333333'];
-    if (unlocked.includes(color)) {
-        await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
-        UserState.data.nameColor = color; 
-        
-        // 캐시 업데이트
-        if (profileCache.has(UserState.user.uid)) {
-            const cached = profileCache.get(UserState.user.uid);
-            cached.nameColor = color;
-            profileCache.set(UserState.user.uid, cached);
-        }
+    if (!UserState.user || !color) return;
+    if (UserState.data.nameColor === color) return alert("이미 적용 중인 색상입니다.");
 
-        updateUI(); return;
-    }
-    if (await usePoints(2000, `닉네임 색상 변경: ${color}`)) {
-        await updateDoc(doc(db, "users", UserState.user.uid), { unlockedColors: arrayUnion(color), nameColor: color });
-        UserState.data.unlockedColors.push(color); UserState.data.nameColor = color; 
-        
-        // 캐시 업데이트
-        if (profileCache.has(UserState.user.uid)) {
-            const cached = profileCache.get(UserState.user.uid);
-            cached.nameColor = color;
-            profileCache.set(UserState.user.uid, cached);
-        }
+    let price = 1000; // 색상 변경 기본가
+    if (!confirm(`닉네임 색상을 변경하시겠습니까?\n변경 시 ${price.toLocaleString()}P가 소모됩니다.`)) return;
 
-        updateUI();
+    if (await usePoints(price, `닉네임 색상 변경`)) {
+        try {
+            await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
+            UserState.data.nameColor = color; 
+            
+            updateProfileCache(UserState.user.uid, { nameColor: color });
+            updateUI();
+            alert("색상이 변경되었습니다!");
+            if (window.location.hash === '#profile') window.dispatchEvent(new HashChangeEvent('hashchange'));
+        } catch (e) { alert("오류 발생"); }
     }
 }
 

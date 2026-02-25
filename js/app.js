@@ -1,5 +1,5 @@
 
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade, updateProfileCache } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade, updateProfileCache, COLOR_SHOP } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, saveAsStoryImage } from './share.js';
 import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
@@ -415,7 +415,19 @@ function renderProfile() {
                 <div class="content-area">
                     <div style="display: grid; gap: 1.5rem;">
                         <div>
-                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🖼️ 보유한 테두리</h4>
+                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🎨 닉네임 색상 변경 (1,000P)</h4>
+                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                ${Object.entries(COLOR_SHOP).map(([name, code]) => `
+                                    <button class="color-btn ${UserState.data.nameColor === code ? 'active' : ''}" data-color="${code}" 
+                                            style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:2px solid ${UserState.data.nameColor === code ? code : 'var(--border-color)'}; 
+                                            background:${UserState.data.nameColor === code ? code : 'none'}; color:${UserState.data.nameColor === code ? '#fff' : code}; font-weight:800;">
+                                        ${name}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <div>
+                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🖼️ 보유한 테두리</h4>
                             <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
                                 <button class="btn-equip-profile ${UserState.data.activeBorder === 'NONE' ? 'active' : ''}" data-type="Border" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
                                 ${(UserState.data.unlockedBorders || []).filter(id => id !== 'NONE').map(id => `
@@ -456,15 +468,15 @@ function renderProfile() {
             </details>
             
             <details class="profile-details" open>
-                <summary>🏪 이모지 교환소</summary>
+                <summary>🏪 아이콘 상점 (변경 시 500P)</summary>
                 <div class="content-area shop-wrapper">
                     ${Object.entries(EMOJI_SHOP).map(([cat, emojis]) => `
                         <h4 style="margin-top:1rem; font-size:0.9rem; color:var(--accent-color);">${cat}</h4>
                         <div class="emoji-grid" style="margin-top:0.8rem;">
-                            ${Object.entries(emojis).map(([e, price]) => `
-                                <button class="emoji-btn ${UserState.data.unlockedEmojis.includes(e) ? 'owned' : 'locked'} ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
+                            ${Object.keys(emojis).map(e => `
+                                <button class="emoji-btn ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
                                     <span class="e-icon">${e}</span>
-                                    <span class="e-price">${price}</span>
+                                    <span class="e-price">500P</span>
                                 </button>`).join('')}
                         </div>
                     `).join('')}
