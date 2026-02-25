@@ -17,6 +17,7 @@
       "google.gemini-cli-vscode-ide-companion"
     ];
     # Enable previews and customize configuration
+    
     previews = {
       enable = true;
       previews = {
