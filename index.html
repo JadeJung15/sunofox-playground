@@ -18,6 +18,29 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="css/style.css?v=2.0.4">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        // 인앱 브라우저 탈출 및 구글 로그인 이슈 해결 스크립트
+        (function() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isInApp = /kakaotalk|line|naver|daum|instagram|facebook|twitter/i.test(ua);
+            
+            if (isInApp) {
+                // 카카오톡인 경우 외부 브라우저로 강제 오픈 시도
+                if (ua.indexOf('kakaotalk') > -1) {
+                    location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(window.location.href);
+                }
+                
+                // 안내 메시지 표시 (로그인 시도 전 미리 알림)
+                window.addEventListener('DOMContentLoaded', function() {
+                    var app = document.getElementById('app');
+                    var warningDiv = document.createElement('div');
+                    warningDiv.style.cssText = 'background:#fee500; color:#3c1e1e; padding:15px; text-align:center; font-weight:800; font-size:0.9rem; position:sticky; top:0; z-index:9999; border-bottom:2px solid rgba(0,0,0,0.1);';
+                    warningDiv.innerHTML = '⚠️ 현재 브라우저에서는 구글 로그인이 제한됩니다.<br>오른쪽 상단 메뉴( ⋮ 또는 ··· )를 눌러 <br>"외부 브라우저로 열기"를 선택해 주세요.';
+                    document.body.prepend(warningDiv);
+                });
+            }
+        })();
+    </script>
 </head>
 <body>
     <amp-auto-ads type="adsense"
