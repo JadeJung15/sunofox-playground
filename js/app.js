@@ -83,12 +83,7 @@ async function handleLike(testId) {
         
         // UI 즉시 업데이트
         const counter = document.getElementById(`like-count-${testId}`);
-        const badge = document.getElementById(`like-badge-${testId}`);
         if (counter) counter.textContent = testLikesData[testId];
-        if (badge) {
-            badge.style.background = "#ef4444";
-            badge.style.borderColor = "#ef4444";
-        }
         
         alert("감사합니다! 하트 보상으로 5P가 적립되었습니다. ❤️");
     } catch (e) { 
@@ -330,8 +325,6 @@ async function renderHome(hash) {
 
 function renderTestCard(t) {
     const likes = testLikesData[t.id] || 0;
-    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
-    const isLikedToday = localStorage.getItem(`liked_${t.id}_${today}`);
     
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative;">
@@ -341,10 +334,10 @@ function renderTestCard(t) {
                  onerror="window.handleImgError(this)">
             <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%); pointer-events: none;"></div>
             
-            <!-- 단일화된 하트 버튼 (좌측 하단) -->
+            <!-- 하트 버튼 (검은색 반투명 고정 배경) -->
             <div id="like-badge-${t.id}" 
                  onclick="event.stopPropagation(); handleLike('${t.id}')"
-                 style="position:absolute; bottom:12px; left:12px; z-index:20; background: ${isLikedToday ? '#ef4444' : 'rgba(0,0,0,0.6)'}; color: #fff; backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; display: flex; align-items:center; gap:6px; border: 1px solid rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s ease;">
+                 style="position:absolute; bottom:12px; left:12px; z-index:20; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; display: flex; align-items:center; gap:6px; border: 1px solid rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s ease;">
                 <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${likes}</span>
             </div>
         </div>
