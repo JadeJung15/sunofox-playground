@@ -711,17 +711,31 @@ function renderArcade() {
                     <button id="slot-spin-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3); height:55px; font-weight: 800;">슬롯 돌리기 (300P)</button>
                 </div>
 
-                <div class="card arcade-item-card" style="margin-bottom:0;">
-                    <h3 style="font-size:1.2rem; font-weight: 800; margin-bottom: 1rem; display:flex; align-items:center; gap:10px;">🎲 주사위 3개 베팅</h3>
-                    <div style="background: var(--bg-color); padding: 1rem; border-radius: var(--radius-md); margin-bottom: 1rem; border: 1px solid var(--border-color);">
-                        <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-bottom: 0.5rem;">베팅 금액 설정</label>
-                        <input type="number" id="bet-amount" value="100" min="10" style="width:100%; background: transparent; border: none; text-align:center; font-size:1.5rem; font-weight:900; color: var(--accent-color); outline: none;">
+                <div class="card arcade-item-card dice-card" style="margin-bottom:0; border: 2px solid #10b981; background: rgba(16, 185, 129, 0.02);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🎲 주사위 3개 베팅</h3>
+                        <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">BIG/SMALL</span>
                     </div>
-                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1rem; min-height:35px; font-size:0.9rem; color: var(--text-sub);">주사위 3개를 던집니다!</div>
+
+                    <div style="background: var(--bg-color); padding: 1rem; border-radius: 15px; margin-bottom: 1.25rem; border: 1px solid var(--border-color); text-align:center;">
+                        <label style="display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-sub); margin-bottom: 0.5rem; letter-spacing: 0.05em;">베팅 금액 (10P ~ 10,000P)</label>
+                        <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                            <span style="font-size:1.2rem; font-weight:900; color:#10b981;">₩</span>
+                            <input type="number" id="bet-amount" value="100" min="10" max="10000" step="10" 
+                                   style="width:120px; background: transparent; border: none; text-align:center; font-size:1.8rem; font-weight:900; color: var(--text-main); outline: none; border-bottom: 2px solid #10b981; padding: 0;">
+                            <span style="font-size:1.2rem; font-weight:900; color:var(--text-sub);">P</span>
+                        </div>
+                    </div>
+
+                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1.25rem; min-height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(16, 185, 129, 0.05); border-radius:12px; padding: 10px;">
+                        <div style="font-size: 2.5rem; opacity: 0.3;">🎲🎲🎲</div>
+                        <small style="color:var(--text-sub); margin-top:5px;">행운의 숫자를 기대하세요!</small>
+                    </div>
+
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
-                        <button class="bet-btn btn-secondary" style="font-weight: 800; padding: 0.8rem 0;" data-game="dice3" data-choice="small">소(3~8)<br><small>3.5배</small></button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 800; padding: 0.8rem 0;" data-game="dice3" data-choice="middle">중(9~12)<br><small>2배</small></button>
-                        <button class="bet-btn btn-secondary" style="font-weight: 800; padding: 0.8rem 0;" data-game="dice3" data-choice="big">대(13~18)<br><small>3.5배</small></button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 900; height:65px; border-radius:12px; background:var(--card-bg); border:2px solid var(--border-color);" data-game="dice3" data-choice="small">소(3~8)<br><small style="color:#10b981;">3.5배</small></button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 900; height:65px; border-radius:12px; background:var(--card-bg); border:2px solid var(--border-color);" data-game="dice3" data-choice="middle">중(9~12)<br><small style="color:#10b981;">2배</small></button>
+                        <button class="bet-btn btn-secondary" style="font-weight: 900; height:65px; border-radius:12px; background:var(--card-bg); border:2px solid var(--border-color);" data-game="dice3" data-choice="big">대(13~18)<br><small style="color:#10b981;">3.5배</small></button>
                     </div>
                 </div>
 
