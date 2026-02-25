@@ -618,25 +618,36 @@ async function playBettingGame(type, choice) {
     if (!UserState.user) return alert("로그인이 필요합니다!");
     
     const amountInput = document.getElementById('bet-amount');
-    const resultEl = document.getElementById('bet-result-msg');
-    if (!amountInput || !resultEl) return;
+    const statusEl = document.getElementById('dice-status-text');
+    const diceCubes = [
+        document.getElementById('dice-cube-1'),
+        document.getElementById('dice-cube-2'),
+        document.getElementById('dice-cube-3')
+    ];
+    
+    if (!amountInput || !statusEl || !diceCubes[0]) return;
 
     const betAmount = parseInt(amountInput.value);
     
-    // 검증 로직 (팝업 없이 결과창에 표시)
+    // 검증 로직
     if (isNaN(betAmount) || betAmount < 10) {
-        resultEl.innerHTML = '<span style="color:#ef4444;">최소 10P 이상 베팅해야 합니다.</span>';
+        statusEl.innerHTML = '<span style="color:#ef4444;">최소 10P 이상 베팅해야 합니다.</span>';
         return;
     }
     if (betAmount > UserState.data.points) {
-        resultEl.innerHTML = `<span style="color:#ef4444;">포인트가 부족합니다! (보유: ${UserState.data.points}P)</span>`;
+        statusEl.innerHTML = `<span style="color:#ef4444;">포인트가 부족합니다! (보유: ${UserState.data.points}P)</span>`;
         return;
     }
 
     const buttons = document.querySelectorAll('.bet-btn');
     buttons.forEach(btn => btn.disabled = true);
 
-    resultEl.innerHTML = '<div class="dice-rolling">🎲 🎲 🎲</div><small style="color:var(--accent-color);">주사위를 흔드는 중...</small>';
+    // 굴리기 애니메이션 시작
+    statusEl.innerHTML = '<span style="color:var(--accent-color); font-weight:800;">주사위를 흔드는 중...</span>';
+    diceCubes.forEach(dice => {
+        dice.classList.remove('show-1','show-2','show-3','show-4','show-5','show-6');
+        dice.classList.add('rolling');
+    });
 
     if (await usePoints(betAmount, `주사위 베팅 (${choice})`)) {
         await updateArcadeStat('betting');
@@ -645,11 +656,10 @@ async function playBettingGame(type, choice) {
             const d1 = Math.floor(Math.random() * 6) + 1;
             const d2 = Math.floor(Math.random() * 6) + 1;
             const d3 = Math.floor(Math.random() * 6) + 1;
+            const results = [d1, d2, d3];
             const sum = d1 + d2 + d3;
             
-            const diceEmojis = ['?', '⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
             const sumRange = choice === 'small' ? '소(3~8)' : (choice === 'middle' ? '중(9~12)' : '대(13~18)');
-            
             let win = false;
             let multiplier = choice === 'middle' ? 2 : 3.5;
             
@@ -659,34 +669,39 @@ async function playBettingGame(type, choice) {
 
             const winAmount = Math.floor(betAmount * multiplier);
             
-            if (win) {
-                await addPoints(winAmount, "주사위 베팅 승리");
-                resultEl.innerHTML = `
-                    <div style="animation: bounce 0.5s;">
-                        <div style="font-size:1.8rem; margin-bottom:5px;">${diceEmojis[d1]} ${diceEmojis[d2]} ${diceEmojis[d3]}</div>
-                        <strong style="color:#10b981;">승리! 합계 ${sum} (${sumRange})</strong><br>
-                        <span style="font-size:1.1rem; color:#10b981; font-weight:900;">+${winAmount.toLocaleString()}P 획득!</span>
-                    </div>
-                `;
-            } else {
-                resultEl.innerHTML = `
-                    <div style="opacity:0.8;">
-                        <div style="font-size:1.8rem; margin-bottom:5px;">${diceEmojis[d1]} ${diceEmojis[d2]} ${diceEmojis[d3]}</div>
-                        <strong style="color:var(--text-sub);">패배... 합계 ${sum}</strong><br>
-                        <small>선택한 조건: ${sumRange}</small>
-                    </div>
-                `;
-            }
+            // 최종 주사위 결과 표시
+            diceCubes.forEach((dice, idx) => {
+                dice.classList.remove('rolling');
+                // 약간의 시간차를 두고 멈춤 효과
+                setTimeout(() => {
+                    dice.classList.add(`show-${results[idx]}`);
+                }, idx * 100);
+            });
 
-            if (window.location.hash === '#arcade') {
-                window._preventScroll = true;
-                window.dispatchEvent(new HashChangeEvent('hashchange'));
-            }
-            updateUI();
-            buttons.forEach(btn => btn.disabled = false);
-        }, 1200);
+            setTimeout(async () => {
+                if (win) {
+                    await addPoints(winAmount, "주사위 베팅 승리");
+                    statusEl.innerHTML = `
+                        <div style="animation: bounce 0.5s; text-align:center;">
+                            <strong style="color:#10b981; font-size: 1rem;">🎉 승리! 합계 ${sum} (${sumRange})</strong><br>
+                            <span style="font-size:1.2rem; color:#10b981; font-weight:900;">+${winAmount.toLocaleString()}P 획득!</span>
+                        </div>
+                    `;
+                } else {
+                    statusEl.innerHTML = `
+                        <div style="opacity:0.8; text-align:center;">
+                            <strong style="color:var(--text-sub);">패배... 합계 ${sum}</strong><br>
+                            <small>조건: ${sumRange} 미충족</small>
+                        </div>
+                    `;
+                }
+                updateUI();
+                buttons.forEach(btn => btn.disabled = false);
+            }, 600);
+        }, 1500);
     } else {
+        diceCubes.forEach(dice => dice.classList.remove('rolling'));
         buttons.forEach(btn => btn.disabled = false);
-        resultEl.innerHTML = '<span style="color:#ef4444;">베팅이 취소되었습니다.</span>';
+        statusEl.innerHTML = '<span style="color:#ef4444;">베팅이 취소되었습니다.</span>';
     }
 }

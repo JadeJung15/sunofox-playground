@@ -1278,3 +1278,107 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     background: var(--card-bg);
     color: var(--text-main);
 }
+
+/* =================================================================
+   Dice 3D & Animation Styles
+   ================================================================= */
+.dice-container {
+    perspective: 1000px;
+    width: 60px;
+    height: 60px;
+}
+
+.dice {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.dice-face {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 8px;
+    box-sizing: border-box;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+}
+
+[data-theme='dark'] .dice-face {
+    background: #1e293b;
+    border-color: #334155;
+    box-shadow: inset 0 0 10px rgba(255,255,255,0.05);
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    background: #1e293b;
+    border-radius: 50%;
+    align-self: center;
+    justify-self: center;
+}
+
+[data-theme='dark'] .dot {
+    background: #f8fafc;
+}
+
+/* Face positioning for 3D Cube */
+.face-1 { transform: rotateY(0deg) translateZ(30px); }
+.face-2 { transform: rotateY(90deg) translateZ(30px); }
+.face-3 { transform: rotateY(180deg) translateZ(30px); }
+.face-4 { transform: rotateY(-90deg) translateZ(30px); }
+.face-5 { transform: rotateX(90deg) translateZ(30px); }
+.face-6 { transform: rotateX(-90deg) translateZ(30px); }
+
+/* Dot patterns for each face */
+.face-1 .dot:nth-child(1) { grid-area: 2 / 2; background: #ef4444; width: 14px; height: 14px; } /* Red center for 1 */
+
+.face-2 .dot:nth-child(1) { grid-area: 1 / 1; }
+.face-2 .dot:nth-child(2) { grid-area: 3 / 3; }
+
+.face-3 .dot:nth-child(1) { grid-area: 1 / 1; }
+.face-3 .dot:nth-child(2) { grid-area: 2 / 2; }
+.face-3 .dot:nth-child(3) { grid-area: 3 / 3; }
+
+.face-4 .dot:nth-child(1) { grid-area: 1 / 1; }
+.face-4 .dot:nth-child(2) { grid-area: 1 / 3; }
+.face-4 .dot:nth-child(3) { grid-area: 3 / 1; }
+.face-4 .dot:nth-child(4) { grid-area: 3 / 3; }
+
+.face-5 .dot:nth-child(1) { grid-area: 1 / 1; }
+.face-5 .dot:nth-child(2) { grid-area: 1 / 3; }
+.face-5 .dot:nth-child(3) { grid-area: 2 / 2; }
+.face-5 .dot:nth-child(4) { grid-area: 3 / 1; }
+.face-5 .dot:nth-child(5) { grid-area: 3 / 3; }
+
+.face-6 .dot:nth-child(1) { grid-area: 1 / 1; }
+.face-6 .dot:nth-child(2) { grid-area: 1 / 3; }
+.face-6 .dot:nth-child(3) { grid-area: 2 / 1; }
+.face-6 .dot:nth-child(4) { grid-area: 2 / 3; }
+.face-6 .dot:nth-child(5) { grid-area: 3 / 1; }
+.face-6 .dot:nth-child(6) { grid-area: 3 / 3; }
+
+/* Rotation helper classes */
+.show-1 { transform: rotateX(0deg) rotateY(0deg); }
+.show-2 { transform: rotateX(0deg) rotateY(-90deg); }
+.show-3 { transform: rotateX(0deg) rotateY(-180deg); }
+.show-4 { transform: rotateX(0deg) rotateY(90deg); }
+.show-5 { transform: rotateX(-90deg) rotateY(0deg); }
+.show-6 { transform: rotateX(90deg) rotateY(0deg); }
+
+@keyframes rolling {
+    0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+    100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+.dice.rolling {
+    animation: rolling 0.4s linear infinite;
+}

@@ -6,7 +6,7 @@ import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from './tests-data.js?v=2.2.3';
+import { TESTS } from './tests-data.js?v=2.4.0';
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -727,9 +727,40 @@ function renderArcade() {
                         </div>
                     </div>
 
-                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1.25rem; min-height:70px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(16, 185, 129, 0.05); border-radius:12px; padding: 10px;">
-                        <div style="font-size: 2.5rem; opacity: 0.3;">🎲🎲🎲</div>
-                        <small style="color:var(--text-sub); margin-top:5px;">행운의 숫자를 기대하세요!</small>
+                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1.25rem; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(16, 185, 129, 0.05); border-radius:12px; padding: 15px; border: 1px dashed #10b981;">
+                        <div id="dice-display" style="display:flex; gap:20px; margin-bottom: 12px; transition: all 0.3s ease; height: 70px; align-items: center;">
+                            <div class="dice-container">
+                                <div class="dice show-1" id="dice-cube-1">
+                                    <div class="dice-face face-1"><div class="dot"></div></div>
+                                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                </div>
+                            </div>
+                            <div class="dice-container">
+                                <div class="dice show-1" id="dice-cube-2">
+                                    <div class="dice-face face-1"><div class="dot"></div></div>
+                                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                </div>
+                            </div>
+                            <div class="dice-container">
+                                <div class="dice show-1" id="dice-cube-3">
+                                    <div class="dice-face face-1"><div class="dot"></div></div>
+                                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="dice-status-text" style="color:var(--text-sub); font-size: 0.85rem;">행운의 숫자를 기대하세요!</div>
                     </div>
 
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
