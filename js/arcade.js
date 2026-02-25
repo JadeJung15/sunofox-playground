@@ -284,18 +284,34 @@ async function playAlchemy(count) {
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
-                // 3. 결과 텍스트 구성
+                // 3. 결과 텍스트 구성 (목록형 UI 개선)
                 const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                const resultItemsText = Object.entries(resSummary).map(([name, num]) => `[${name}] x${num}`).join(', ');
-                const materialSummary = sacrificed.length > 0 ? sacrificed[0] : selectedGrade;
+                const resultItemsHTML = Object.entries(resSummary).map(([name, num]) => 
+                    `<span style="display:inline-block; background:rgba(139, 92, 246, 0.1); color:#8b5cf6; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(139, 92, 246, 0.2);">${name} x${num}</span>`
+                ).join('');
+
+                const matSummary = sacrificed.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                const materialsHTML = Object.entries(matSummary).map(([name, num]) => 
+                    `<span style="display:inline-block; background:rgba(0,0,0,0.05); color:var(--text-sub); padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:600; margin:2px;">${name} x${num}</span>`
+                ).join('');
 
                 resultEl.innerHTML = `
-                    <div style="animation: bounce 0.5s; text-align:left; line-height:1.4;">
-                        <div style="margin-bottom:4px;"><strong style="color:#8b5cf6;">✨ 연성 완료: ${resultItemsText}</strong></div>
-                        <div style="font-size:0.75rem; color:var(--text-sub);">
-                            소모: ${materialSummary} 등 ${itemsNeeded}개 (<span style="color:#ef4444;">-${scoreLost.toLocaleString()}점</span>)<br>
-                            획득: ${results.length}개 획득 (<span style="color:#10b981;">+${scoreGained.toLocaleString()}점</span>)
-                            ${bonusCount > 0 ? `<br><strong style="color:#f59e0b;">🔥 보너스 아이템 ${bonusCount}개 포함!</strong>` : ''}
+                    <div style="animation: bounce 0.5s; text-align:center; width:100%;">
+                        <div style="margin-bottom:8px;"><strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 결과 목록</strong></div>
+                        <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; justify-content:center;">${resultItemsHTML}</div>
+                        
+                        <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; font-size:0.75rem; text-align:left; border:1px solid var(--border-color);">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                <span style="font-weight:700;">사용한 제물:</span>
+                                <span style="color:#ef4444; font-weight:900;">-${scoreLost.toLocaleString()}점</span>
+                            </div>
+                            <div style="display:flex; flex-wrap:wrap; margin-bottom:10px; opacity:0.8;">${materialsHTML}</div>
+                            
+                            <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
+                                <span style="font-weight:700;">총 획득 점수:</span>
+                                <strong style="color:#10b981; font-size:0.9rem;">+${scoreGained.toLocaleString()}점</strong>
+                            </div>
+                            ${bonusCount > 0 ? `<div style="text-align:right; color:#f59e0b; font-weight:900; font-size:0.65rem; margin-top:2px;">🔥 보너스 아이템 ${bonusCount}개 연성 성공!</div>` : ''}
                         </div>
                     </div>
                 `;

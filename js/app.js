@@ -762,10 +762,19 @@ function renderArcade() {
 
                     <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1.25rem; min-height:60px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px; padding: 0.5rem;">금단의 연성법을 시전합니다</div>
                     
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; height:50px; font-weight:800;">1회<br><small>300P</small></button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.75rem; height:50px; font-weight:800;">5회 🔥<br><small>1,350P</small></button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.75rem; height:50px; font-weight:800;">10회 🔥<br><small>2,500P</small></button>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem; margin-top: 0.5rem;">
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#8b5cf6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">300P</span>
+                            <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">1회 연성</button>
+                        </div>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#7c3aed; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">1,350P 🔥</span>
+                            <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">5회 연성</button>
+                        </div>
+                        <div style="position:relative;">
+                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#6d28d9; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2,500P 🔥</span>
+                            <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">10회 연성</button>
+                        </div>
                     </div>
                 </div>
 
