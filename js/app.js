@@ -77,6 +77,9 @@ async function router() {
     isRouting = true;
     const hash = window.location.hash || '#home';
 
+    // 특정 상황(아케이드 갱신 등)에서 스크롤 위치 저장
+    const currentScrollY = window.scrollY;
+
     try {
         // 백그라운드 통계 (렌더링 차단 안함)
         trackVisit().catch(() => {});
@@ -123,13 +126,20 @@ async function router() {
             }
         });
 
+        // 아케이드 내부 갱신일 경우 스크롤 복구
+        if (window._preventScroll) {
+            window.scrollTo(0, currentScrollY);
+            window._preventScroll = false;
+        } else {
+            window.scrollTo(0, 0);
+        }
+
     } catch (error) {
         console.error("Routing error:", error);
         container.innerHTML = `<div style="text-align:center; padding:3rem;"><h3>⚠️ 서비스를 불러올 수 없습니다</h3><button onclick="location.reload()" class="btn-primary" style="margin-top:1rem;">새로고침</button></div>`;
     } finally {
         isRouting = false;
     }
-    window.scrollTo(0, 0);
 }
 
 // 일일 퀘스트 처리 함수 복구 및 전역 정의
@@ -734,40 +744,12 @@ function renderArcade() {
                     <div id="alchemy-result" style="text-align:center; font-weight:800; color:var(--accent-secondary); margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px;">신비로운 연성이 시작됩니다</div>
                     
                     <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
-                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px; font-weight:800;">1회 연성</button>
-                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px; font-weight:800;">5회 연성</button>
-                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.75rem; padding:0.8rem 0.5rem; height:50px; font-weight:800;">10회 (할인🔥)</button>
+                        <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.7rem; padding:0.8rem 0.2rem; height:50px; font-weight:800;">1회 (300P)</button>
+                        <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.7rem; padding:0.8rem 0.2rem; height:50px; font-weight:800;">5회 (1350P)</button>
+                        <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.7rem; padding:0.8rem 0.2rem; height:50px; font-weight:800;">10회 (2500P)</button>
                     </div>
                 </div>
 
-                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🧨 폭탄 돌리기</h3>
-                        <span style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">DANGER</span>
-                    </div>
-                    <p id="bomb-msg" class="text-sub" style="font-size:0.9rem; margin-bottom:1rem; text-align: center; min-height: 24px;">전선을 선택하세요! (현재 누적: 0P)</p>
-                    <div id="bomb-wires" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.5rem; margin-bottom:1.5rem;">
-                        <button class="wire-btn" data-wire="0" style="height:60px; background:#ef4444; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="1" style="height:60px; background:#3b82f6; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="2" style="height:60px; background:#10b981; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="3" style="height:60px; background:#f59e0b; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:8px;"></button>
-                    </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
-                        <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; height:50px;">게임 시작 (200P)</button>
-                        <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.8rem; height:50px; border-color:#f43f5e; color:#f43f5e;" disabled>포인트 챙기기</button>
-                    </div>
-                </div>
-
-                <div class="card arcade-item-card" style="margin-bottom:0; border: 2px solid var(--accent-soft); background: rgba(99, 102, 241, 0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🏪 아이템 중고장터</h3>
-                        <span style="background: var(--accent-color); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">HOT</span>
-                    </div>
-                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem;">보유한 아이템을 포인트로 즉시 환전하세요. (가치의 70% 환급)</p>
-                    <div id="market-ui-container"></div>
-                    <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-color); color:var(--accent-color); font-weight: 800;">판매 목록 열기</button>
-                </div>
                 <!-- 별빛 융합 (신규 기능) -->
                 <div class="card arcade-item-card fusion-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #f59e0b; background: rgba(245, 158, 11, 0.02);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
@@ -782,17 +764,12 @@ function renderArcade() {
                                 <small style="display:block; font-size:0.6rem; color:var(--text-sub);">RARE 등급</small>
                                 <strong style="color:#f59e0b;">1개</strong> (보유: <span id="count-rare-fusion">0</span>)
                             </div>
-                            <span style="font-size:1.5rem;">+</span>
-                            <div style="background:var(--card-bg); padding:0.5rem 1rem; border-radius:10px; border:1px solid var(--accent-color);">
-                                <small style="display:block; font-size:0.6rem; color:var(--text-sub);">융합 비용</small>
-                                <strong style="color:var(--accent-color);">2,500P</strong>
-                            </div>
                         </div>
                     </div>
 
                     <div id="fusion-result" style="text-align:center; font-weight:800; color:#f59e0b; margin-bottom:1.25rem; min-height:40px; font-size:0.9rem; display:flex; align-items:center; justify-content:center; background:rgba(245, 158, 11, 0.05); border-radius:10px;">전설의 기운이 감돌고 있습니다</div>
                     
-                    <button id="fusion-btn" class="btn-primary" style="background:linear-gradient(135deg, #f59e0b, #ef4444); width:100%; height:55px; font-weight:900; font-size:1.1rem; border:none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">융합 시작 (100% 전설 획득)</button>
+                    <button id="fusion-btn" class="btn-primary" style="background:linear-gradient(135deg, #f59e0b, #ef4444); width:100%; height:55px; font-weight:900; font-size:1.1rem; border:none; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);">융합 시작 (2,500P)</button>
                 </div>
             </div>
 

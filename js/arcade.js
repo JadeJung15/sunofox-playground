@@ -279,9 +279,9 @@ async function playAlchemy(count) {
                 
                 resultEl.innerHTML = `<div style="animation: bounce 0.5s;"><strong>${nextGrade} 연성 성공!</strong><br><small>${resultText}${bonusCount > 0 ? ` (보너스 +${bonusCount})` : ''}</small></div>`;
                 
-                // UI 즉시 업데이트를 위해 다시 렌더링 또는 카운트 함수 호출
+                // UI 즉시 업데이트를 위해 다시 렌더링
                 if (window.location.hash === '#arcade') {
-                    // 해시를 새로고침하여 renderArcade 다시 트리거 (간편한 방법)
+                    window._preventScroll = true; // 스크롤 방지 플래그 설정
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
@@ -349,6 +349,7 @@ async function playFusion() {
                 resultEl.innerHTML = `<div style="animation: float 2s infinite ease-in-out;"><strong>✨ [${resultItem}] 연성 성공!</strong><br><small>${sacrificedItem}이(가) 승화되었습니다.</small></div>`;
                 
                 if (window.location.hash === '#arcade') {
+                    window._preventScroll = true; // 스크롤 방지 플래그 설정
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
