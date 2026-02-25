@@ -1635,11 +1635,26 @@ const headerShareBtn = document.getElementById('share-site-btn');
     headerShareBtn.onclick = window.globalShareSite;
 }
 
+// --- Theme Management ---
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
+    
+    document.documentElement.setAttribute('data-theme', initialTheme);
+    themeToggle.textContent = initialTheme === 'dark' ? '☀️' : '✨';
+}
+
 themeToggle.onclick = () => {
-    const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    
     document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
     themeToggle.textContent = next === 'dark' ? '☀️' : '✨';
 };
+
+initTheme();
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
