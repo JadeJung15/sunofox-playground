@@ -62,9 +62,14 @@ async function handleLike(testId) {
         sessionStorage.setItem(`liked_${testId}`, "true");
         testLikesData[testId] = (testLikesData[testId] || 0) + 1;
         await addPoints(5);
-        alert("감사합니다! 5P가 적립되었습니다.");
+        
+        // UI 즉시 업데이트 (아이콘 및 카운트)
+        const icon = document.getElementById(`like-icon-${testId}`);
         const counter = document.getElementById(`like-count-${testId}`);
+        if (icon) icon.textContent = '❤️';
         if (counter) counter.textContent = testLikesData[testId];
+        
+        alert("감사합니다! 5P가 적립되었습니다. ❤️");
     } catch (e) { console.error(e); }
 }
 
@@ -296,14 +301,23 @@ async function renderHome(hash) {
 
 function renderTestCard(t) {
     const likes = testLikesData[t.id] || 0;
+    const isLiked = sessionStorage.getItem(`liked_${t.id}`);
     return `
-    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'">
+    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative;">
         <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 15px;">
             <img src="${t.thumb}" alt="${t.title}" 
                  style="width: 100%; height: 100%; object-fit: cover;" 
                  onerror="window.handleImgError(this)">
             <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
-            <div class="like-badge" style="background: rgba(0,0,0,0.6); color: white; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">❤️ ${likes}</div>
+            
+            <!-- 플로팅 하트 버튼 -->
+            <button class="like-btn-floating ${isLiked ? 'active' : ''}" 
+                    onclick="event.stopPropagation(); handleLike('${t.id}')"
+                    style="position:absolute; top:12px; right:12px; z-index:10; width:38px; height:38px; border-radius:50%; background:rgba(255,255,255,0.95); border:none; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 12px rgba(0,0,0,0.15); cursor:pointer; transition:all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+                <span id="like-icon-${t.id}" style="font-size:1.1rem; line-height:1;">${isLiked ? '❤️' : '🤍'}</span>
+            </button>
+
+            <div class="like-badge" style="background: rgba(0,0,0,0.6); color: white; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2); bottom: 10px; left: 10px; position: absolute; font-size: 0.7rem; padding: 2px 8px; border-radius: 50px; font-weight: 800;">❤️ <span id="like-count-${t.id}">${likes}</span></div>
         </div>
         <div class="test-info">
             <div style="display: flex; justify-content: space-between; align-items: flex-start;">
