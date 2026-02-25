@@ -313,47 +313,53 @@ async function playAlchemy(count) {
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
 
-                // 3. 결과 UI 구성
-                const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                const resultItemsHTML = Object.entries(resSummary).map(([name, num]) => 
-                    `<span style="display:inline-block; background:rgba(139, 92, 246, 0.1); color:#8b5cf6; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(139, 92, 246, 0.2);">${name} x${num}</span>`
-                ).join('');
-
-                const matSummary = sacrificed.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
-                const materialsHTML = Object.entries(matSummary).map(([name, num]) => 
-                    `<span style="display:inline-block; background:rgba(0,0,0,0.05); color:var(--text-sub); padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:600; margin:2px;">${name} x${num}</span>`
-                ).join('');
-
-                resultEl.innerHTML = `
-                    <div style="animation: bounce 0.5s; text-align:center; width:100%;">
-                        <div style="margin-bottom:8px;">
-                            <strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 완료 (${upgradeSuccessCount}/${count} 진화 성공)</strong>
-                        </div>
-                        <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; justify-content:center;">${resultItemsHTML}</div>
-                        
-                        <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; font-size:0.75rem; text-align:left; border:1px solid var(--border-color);">
-                            <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
-                                <span style="font-weight:700;">사용한 제물:</span>
-                                <span style="color:#ef4444; font-weight:900;">-${scoreLost.toLocaleString()}점</span>
-                            </div>
-                            <div style="display:flex; flex-wrap:wrap; margin-bottom:10px; opacity:0.8;">${materialsHTML}</div>
-                            
-                            <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
-                                <span style="font-weight:700;">총 획득 점수:</span>
-                                <strong style="color:#10b981; font-size:0.9rem;">+${scoreGained.toLocaleString()}점</strong>
-                            </div>
-                            <div style="text-align:right; margin-top:4px;">
-                                <small style="font-weight:800; color:var(--accent-color);">최종 점수 변동: ${ (scoreGained - scoreLost) >= 0 ? '+' : ''}${(scoreGained - scoreLost).toLocaleString()}점</small>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
+                // [중요] UI를 먼저 리렌더링하여 결과창이 지워지는 것 방지
                 if (window.location.hash === '#arcade') {
-                    window._preventScroll = true; // 스크롤 유지
+                    window._preventScroll = true; 
                     window.dispatchEvent(new HashChangeEvent('hashchange'));
                 }
                 updateUI();
+
+                // 리렌더링 후 새 DOM 엘리먼트를 다시 찾아서 결과 출력
+                setTimeout(() => {
+                    const newResultEl = document.getElementById('alchemy-result');
+                    if (!newResultEl) return;
+
+                    const resSummary = results.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                    const resultItemsHTML = Object.entries(resSummary).map(([name, num]) => 
+                        `<span style="display:inline-block; background:rgba(139, 92, 246, 0.1); color:#8b5cf6; padding:2px 8px; border-radius:4px; font-size:0.75rem; font-weight:800; margin:2px; border:1px solid rgba(139, 92, 246, 0.2);">${name} x${num}</span>`
+                    ).join('');
+
+                    const matSummary = sacrificed.reduce((acc, cur) => { acc[cur] = (acc[cur] || 0) + 1; return acc; }, {});
+                    const materialsHTML = Object.entries(matSummary).map(([name, num]) => 
+                        `<span style="display:inline-block; background:rgba(0,0,0,0.05); color:var(--text-sub); padding:2px 6px; border-radius:4px; font-size:0.7rem; font-weight:600; margin:2px;">${name} x${num}</span>`
+                    ).join('');
+
+                    newResultEl.innerHTML = `
+                        <div style="animation: bounce 0.5s; text-align:center; width:100%;">
+                            <div style="margin-bottom:8px;">
+                                <strong style="font-size:0.95rem; color:#8b5cf6;">✨ 연성 완료 (${upgradeSuccessCount}/${count} 진화 성공)</strong>
+                            </div>
+                            <div style="margin-bottom:12px; display:flex; flex-wrap:wrap; justify-content:center;">${resultItemsHTML}</div>
+                            
+                            <div style="background:rgba(0,0,0,0.02); padding:10px; border-radius:10px; font-size:0.75rem; text-align:left; border:1px solid var(--border-color);">
+                                <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                                    <span style="font-weight:700;">사용한 제물:</span>
+                                    <span style="color:#ef4444; font-weight:900;">-${scoreLost.toLocaleString()}점</span>
+                                </div>
+                                <div style="display:flex; flex-wrap:wrap; margin-bottom:10px; opacity:0.8;">${materialsHTML}</div>
+                                
+                                <div style="display:flex; justify-content:space-between; border-top:1px dashed var(--border-color); padding-top:8px;">
+                                    <span style="font-weight:700;">획득한 보물:</span>
+                                    <strong style="color:#10b981; font-size:0.9rem;">+${scoreGained.toLocaleString()}점</strong>
+                                </div>
+                                <div style="text-align:right; margin-top:4px;">
+                                    <small style="font-weight:900; color:var(--accent-color);">최종 점수 변동: ${ (scoreGained - scoreLost) >= 0 ? '+' : ''}${(scoreGained - scoreLost).toLocaleString()}점</small>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }, 50);
             } catch (e) {
                 console.error(e);
                 resultEl.innerHTML = '<span style="color:#ef4444;">연성 중 사고가 발생했습니다!</span>';
