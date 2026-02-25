@@ -955,11 +955,16 @@ async function renderResult(testId, traitScores) {
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
-                        <button class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px;" onclick="location.hash='#home'">메인으로</button>
+                        <button id="result-share-btn" class="btn-primary" style="background: ${themeColor}; border: none; height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>🔗</span> 결과 공유하기</button>
                         <button id="save-story-btn" class="btn-secondary" style="height: 60px; font-weight: 800; font-size: 1.1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px;"><span>📸</span> 인스타용 저장</button>
                     </div>
 
-                    <!-- 추천 테스트 및 전체보기 (v2.1.0 추가) -->
+                    <!-- 메인으로 이동 버튼 (중요도 하향 조정) -->
+                    <div style="margin-top: 1.5rem;" data-html2canvas-ignore="true">
+                        <button class="btn-secondary" style="width:100%; border:none; color:var(--text-sub); font-size:0.9rem; font-weight:700;" onclick="location.hash='#home'">← 홈으로 돌아가기</button>
+                    </div>
+
+                    <!-- 추천 테스트 및 전체보기 -->
                     <div class="recommended-section" style="margin-top: 4rem; padding-top: 3rem; border-top: 1px dashed var(--border-color);" data-html2canvas-ignore="true">
                         <h3 style="text-align:center; margin-bottom: 2.5rem; font-size: 1.4rem; font-weight: 900; color: var(--text-main);">✨ 이런 분석은 어때요?</h3>
                         <div class="test-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem;">
@@ -1004,10 +1009,10 @@ async function renderResult(testId, traitScores) {
                         </div>
                     </div>
 
-                    <div style="margin-top: auto; text-align: center; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 15px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2);">
-                        <div style="font-size: 1.6rem; font-weight: 900; margin-bottom: 4px; letter-spacing: -0.02em;">SevenCheck</div>
-                        <div style="font-size: 0.85rem; opacity: 0.9; font-weight: 800; color: #fbbf24;">https://sunofox-test.web.app</div>
-                        <div style="font-size: 0.65rem; opacity: 0.7; margin-top: 6px;">나를 찾는 가장 정교한 7단계 분석</div>
+                    <div style="margin-top: auto; text-align: center; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
+                        <div style="font-size: 2.2rem; margin-bottom: 5px;">🦊</div>
+                        <div style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">SevenCheck</div>
+                        <div style="font-size: 0.7rem; opacity: 0.8; margin-top: 8px; letter-spacing: 0.1em; font-weight: 700;">PREMIUM ANALYSIS REPORT</div>
                     </div>
                 </div>
             </div>
