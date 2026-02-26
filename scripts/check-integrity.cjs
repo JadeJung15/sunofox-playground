@@ -7,10 +7,15 @@ const path = require('path');
 const REQUIRED_FILES = [
     'index.html',
     'js/app.js',
-    'js/test-handler.js',
-    'js/profile-handler.js',
-    'js/info-handler.js',
-    'js/ui-utils.js',
+    'js/auth.js',
+    'js/board.js',
+    'js/games.js',
+    'js/arcade.js',
+    'js/ranking.js',
+    'js/share.js',
+    'js/sound.js',
+    'js/store.js',
+    'js/firebase-init.js',
     'js/tests-data.js'
 ];
 

@@ -5,13 +5,11 @@ import { copyLink, saveAsStoryImage } from './share.js';
 import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
-import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { TESTS } from './tests-data.js?v=3.1.4';
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
-const themeToggle = document.getElementById('theme-toggle');
-
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80"; // 부드러운 그라데이션 이미지
 
@@ -1660,13 +1658,6 @@ const headerShareBtn = document.getElementById('share-site-btn');
     if (headerShareBtn) {
     headerShareBtn.onclick = window.globalShareSite;
 }
-
-// --- Theme Management (Disabled Dark Mode) ---
-function disableDarkMode() {
-    document.documentElement.setAttribute('data-theme', 'light');
-    localStorage.setItem('theme', 'light');
-}
-disableDarkMode();
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
