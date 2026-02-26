@@ -81,14 +81,34 @@ export async function renderResult(testId, traitScores) {
                         <p id="typing-desc" style="font-size: 1rem; line-height: 1.7; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
                     </div>
 
-                    <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 0.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative;">
-                        <h4 style="margin-bottom: 1.25rem; font-size: 0.85rem; color: var(--text-sub); font-weight: 800; letter-spacing: 0.05em;">7단계 심층 아우라 지표</h4>
-                        <canvas id="radarChart" width="200" height="200" style="margin: 0 auto; max-width: 100%;"></canvas>
-                        <div class="radar-stats-grid" style="display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1.25rem; padding: 0 1rem;">
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">에너지 ${Math.round(stats.energy)}%</div>
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">논리 ${Math.round(stats.logic)}%</div>
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">공감 ${Math.round(stats.empathy)}%</div>
-                            <div style="font-size: 0.7rem; color: ${themeColor}; font-weight: 800; background:rgba(0,0,0,0.03); padding:6px; border-radius:4px;">독창성 ${Math.round(stats.creativity)}%</div>
+                    <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
+                            <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
+                            7단계 심층 아우라 지표
+                            <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
+                        </h4>
+                        
+                        <div style="position:relative; margin-bottom: 2rem;">
+                            <canvas id="radarChart" width="220" height="220" style="margin: 0 auto; max-width: 100%; display:block; filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.08));"></canvas>
+                        </div>
+
+                        <div class="aura-stats-bars" style="display:flex; flex-direction:column; gap: 1rem; margin-top: 1.5rem;">
+                            ${[
+                                { label: '에너지 (Energy)', val: Math.round(stats.energy), color: '#f59e0b' },
+                                { label: '논리력 (Logic)', val: Math.round(stats.logic), color: '#3b82f6' },
+                                { label: '공감력 (Empathy)', val: Math.round(stats.empathy), color: '#ec4899' },
+                                { label: '독창성 (Creativity)', val: Math.round(stats.creativity), color: '#8b5cf6' }
+                            ].map(s => `
+                                <div class="stat-bar-row" style="display:flex; flex-direction:column; gap:6px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                                        <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-main);">${s.label}</span>
+                                        <span style="font-size: 0.75rem; font-weight: 900; color: ${s.color};">${s.val}%</span>
+                                    </div>
+                                    <div style="width:100%; height:8px; background:rgba(0,0,0,0.05); border-radius:10px; overflow:hidden;">
+                                        <div style="width:${s.val}%; height:100%; background:${s.color}; border-radius:10px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);"></div>
+                                    </div>
+                                </div>
+                            `).join('')}
                         </div>
                     </div>
 
