@@ -1,17 +1,17 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=5.1.0';
-import { copyLink } from './share.js?v=5.1.0';
-import { renderBoard } from './board.js?v=5.1.0';
-import { renderRanking } from './ranking.js?v=5.1.0';
-import { db } from './firebase-init.js?v=5.1.0';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=5.2.0';
+import { copyLink } from './share.js?v=5.2.0';
+import { renderBoard } from './board.js?v=5.2.0';
+import { renderRanking } from './ranking.js?v=5.2.0';
+import { db } from './firebase-init.js?v=5.2.0';
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=5.1.0';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=5.1.0';
-import { renderProfile } from './pages/profile.js?v=5.1.0';
-import { renderAdmin } from './pages/admin.js?v=5.1.0';
-import { renderArcade } from './pages/arcade-page.js?v=5.1.0';
-import { renderTestExecution, renderResult } from './pages/tests.js?v=5.1.0';
-import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=5.1.0';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=5.2.0';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=5.2.0';
+import { renderProfile } from './pages/profile.js?v=5.2.0';
+import { renderAdmin } from './pages/admin.js?v=5.2.0';
+import { renderArcade } from './pages/arcade-page.js?v=5.2.0';
+import { renderTestExecution, renderResult } from './pages/tests.js?v=5.2.0';
+import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=5.2.0';
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80";
 
