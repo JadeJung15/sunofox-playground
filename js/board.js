@@ -409,16 +409,16 @@ async function loadPosts(container, isLoadMore = false) {
     try {
         let postsRef = collection(db, "posts");
         let qConstraints = [];
-        if (currentCategory !== 'ALL') qConstraints.push(where("category", "==", currentCategory));
         
-        // 정렬 로직 수정: 복합 인덱스 오류 방지를 위해 분기 처리
+        // [버그 수정]: 복합 인덱스 오류 방지 - 오직 정렬 조건만 서버에 요청
         if (currentSort === 'popular') {
             qConstraints.push(orderBy("likeCount", "desc"));
         } else {
             qConstraints.push(orderBy("createdAt", "desc"));
         }
         
-        qConstraints.push(limit(15));
+        // 클라이언트 필터링을 고려해 충분한 양을 가져옵니다.
+        qConstraints.push(limit(40)); 
         if (isLoadMore && lastVisiblePost) qConstraints.push(startAfter(lastVisiblePost));
 
         const q = query(postsRef, ...qConstraints);
@@ -432,12 +432,23 @@ async function loadPosts(container, isLoadMore = false) {
         if (!isLoadMore) container.innerHTML = '';
         lastVisiblePost = snap.docs[snap.docs.length - 1];
         
+        let displayCount = 0;
         for (const docSnap of snap.docs) {
             const data = docSnap.data();
+            
+            // 클라이언트 사이드 필터링 적용
             if (currentSearch && !data.searchContent?.includes(currentSearch)) continue;
+            if (currentCategory !== 'ALL' && data.category !== currentCategory) continue;
+            
             renderSinglePost(container, docSnap.id, data);
+            displayCount++;
         }
-    } catch (e) { console.error(e); }
+        
+        // 필터링 후 표시할 게시글이 없는 경우
+        if (!isLoadMore && displayCount === 0) {
+            container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">조건에 맞는 게시글이 없습니다.</p>`;
+        }
+    } catch (e) { console.error("게시물 로드 에러:", e); }
     finally { isLoadingMore = false; }
 }
 
