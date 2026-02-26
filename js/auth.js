@@ -25,7 +25,11 @@ import {
     serverTimestamp,
     arrayUnion,
     collection,
-    addDoc
+    addDoc,
+    query,
+    orderBy,
+    limit,
+    getDocs
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export const UserState = {
@@ -58,11 +62,24 @@ export function initAuth() {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             UserState.user = user;
+            
+            // [개선] 데이터 로딩 전이라도 일단 UI를 로그인 상태로 먼저 전환 (깜빡임 방지)
+            updateUI(true);
+            
             const token = await user.getIdTokenResult();
             UserState.isMaster = user.uid === '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
             UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
-            await loadUserData(user);
-            updateUI(true);
+            
+            try {
+                await loadUserData(user);
+                // 데이터 로드 완료 후 UI 상세 정보(포인트, 티어 등) 갱신
+                updateUI(true);
+            } catch (e) {
+                console.error("Data load failed:", e);
+                // 데이터 로드 실패 시에도 기본 정보로 UI 유지
+                updateUI(true);
+            }
+            
             if (typeof setupNotificationListener === 'function') setupNotificationListener(user.uid);
         } else {
             UserState.user = null; UserState.data = null; UserState.isAdmin = false; UserState.isMaster = false;
@@ -283,22 +300,29 @@ export function updateUI(isLoggedIn = !!UserState.user) {
     const loginBtn = document.getElementById('login-btn');
     const headerProfile = document.getElementById('header-profile');
     
-    if (isLoggedIn && UserState.data) {
-        if (loginBtn) loginBtn.classList.add('hidden');
-        if (headerProfile) headerProfile.classList.remove('hidden');
+    if (isLoggedIn) {
+        if (loginBtn) {
+            loginBtn.style.display = 'none'; // 강제 숨김
+            loginBtn.classList.add('hidden');
+        }
+        if (headerProfile) {
+            headerProfile.style.display = 'flex'; // 강제 표시
+            headerProfile.classList.remove('hidden');
+        }
         
-        const tier = getTier(UserState.data.totalScore || 0);
+        const data = UserState.data || {};
+        const tier = getTier(data.totalScore || 0);
         
         document.querySelectorAll('#user-name').forEach(el => {
             let prefix = '';
             if (UserState.isMaster) prefix = '💎 ';
             else if (UserState.isAdmin) prefix = '👑 ';
-            el.textContent = prefix + (UserState.data.nickname || '익명');
-            el.style.color = UserState.data.nameColor || 'var(--text-main)';
+            el.textContent = prefix + (data.nickname || UserState.user?.displayName || '사용자');
+            el.style.color = data.nameColor || 'var(--text-main)';
         });
-        document.querySelectorAll('#user-points').forEach(el => el.textContent = (UserState.data.points || 0).toLocaleString());
-        document.querySelectorAll('#user-total-score').forEach(el => el.textContent = `${(UserState.data.totalScore || 0).toLocaleString()} 점`);
-        document.querySelectorAll('#user-emoji').forEach(el => el.textContent = UserState.data.emoji || '👤');
+        document.querySelectorAll('#user-points').forEach(el => el.textContent = (data.points || 0).toLocaleString());
+        document.querySelectorAll('#user-total-score').forEach(el => el.textContent = `${(data.totalScore || 0).toLocaleString()} 점`);
+        document.querySelectorAll('#user-emoji').forEach(el => el.textContent = data.emoji || '👤');
         
         document.querySelectorAll('.tier-display').forEach(el => {
             el.innerHTML = `<span class="tier-badge ${tier.class}">${tier.name}</span>`;
@@ -306,20 +330,30 @@ export function updateUI(isLoggedIn = !!UserState.user) {
 
         // 푸터 관리자 링크 제어
         const footerAdmin = document.getElementById('footer-admin-link');
-        if (footerAdmin) footerAdmin.classList.toggle('hidden', !UserState.isMaster);
+        if (footerAdmin) {
+            footerAdmin.classList.toggle('hidden', !UserState.isMaster);
+            footerAdmin.style.display = UserState.isMaster ? 'inline' : 'none';
+        }
         
         // 버전 정보는 모두에게 공개
         const siteVersion = document.getElementById('site-version');
         if (siteVersion) siteVersion.classList.remove('hidden');
     } else {
         if (loginBtn) {
+            loginBtn.style.display = 'flex';
             loginBtn.classList.remove('hidden');
             loginBtn.disabled = false;
             loginBtn.textContent = "로그인";
         }
-        if (headerProfile) headerProfile.classList.add('hidden');
+        if (headerProfile) {
+            headerProfile.style.display = 'none';
+            headerProfile.classList.add('hidden');
+        }
         const footerAdmin = document.getElementById('footer-admin-link');
-        if (footerAdmin) footerAdmin.classList.add('hidden');
+        if (footerAdmin) {
+            footerAdmin.style.display = 'none';
+            footerAdmin.classList.add('hidden');
+        }
         // 비로그인 상태에서도 버전과 통계는 보이도록 유지
         document.getElementById('site-version')?.classList.remove('hidden');
     }
