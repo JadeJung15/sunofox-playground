@@ -48,6 +48,12 @@ let isLoadingMore = false;
 let boardObserver = null; // 메모리 누수 방지용
 
 export async function renderBoard(container) {
+    // [상태 초기화] 홈에서 진입하거나 페이지 이동 시 항상 최신순/전체 카테고리로 시작
+    currentSort = 'desc';
+    currentCategory = 'ALL';
+    currentSearch = '';
+    lastVisiblePost = null;
+
     container.innerHTML = `
         <div class="card board-container fade-in">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
