@@ -3,7 +3,7 @@ import { ITEM_VALUES } from '../constants/shops.js';
 import { db } from '../firebase-init.js';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=4.2.3';
+import { TESTS } from '../tests-data.js?v=4.2.4';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {
