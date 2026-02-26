@@ -12,9 +12,10 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signInWithRedirect,
-    getRedirectResult,
     GoogleAuthProvider,
-    signOut
+    signOut,
+    setPersistence,
+    browserLocalPersistence
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { 
     doc, 
@@ -42,6 +43,9 @@ export const UserState = {
 let authResolve;
 export const authReady = new Promise(resolve => authResolve = resolve);
 
+// [추가] 세션 보호를 위한 플래그
+let isManualLogout = false;
+
 const ADJECTIVES = ['용감한', '신비로운', '행복한', '빛나는', '똑똑한', '우아한', '재빠른', '포근한', '화려한', '은은한', '날렵한', '든든한'];
 const NOUNS = ['여우', '사자', '호랑이', '고양이', '팬더', '독수리', '돌고래', '토끼', '유니콘', '피닉스', '강아지', '늑대'];
 
@@ -54,32 +58,43 @@ function generateRandomNickname() {
 
 let authInitialized = false;
 
-export function initAuth() {
+export async function initAuth() {
     if (authInitialized) return;
     authInitialized = true;
 
-    // 초기 상태 체크 (이미 로그인되어 있을 수 있음)
+    try {
+        // [강력 조치] 세션 지속성을 로컬 브라우저에 고정
+        await setPersistence(auth, browserLocalPersistence);
+    } catch (e) { console.error("Persistence error", e); }
+
     onAuthStateChanged(auth, async (user) => {
+        console.log("Auth State Changed:", user ? "User Logged In" : "User Logged Out");
+        
+        // [세션 가드] 예기치 않은 튕김 방지
+        if (!user && UserState.user && !isManualLogout) {
+            console.warn("Session dropped unexpectedly. Protecting state...");
+            return; 
+        }
+
         if (user) {
             UserState.user = user;
-            // 중요: 데이터 로드 전이라도 UI를 즉시 '로그인됨' 상태로 고정 (깜빡임 방지)
             updateUI(true);
 
-                    const token = await user.getIdTokenResult();
-                    UserState.isMaster = user.uid === '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
-                    UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
-                    
-                    try {
-                        await loadUserData(user);
-                        updateUI(true); 
-                        // 마스터 권한인 경우 한 번 더 확실하게 UI 갱신 (지연 방지)
-                        if (UserState.isMaster) {
-                            setTimeout(() => updateUI(true), 500);
-                        }
-                    } catch (e) {
-                        console.error("Load user data error:", e);
-                        updateUI(true);
-                    }            if (typeof setupNotificationListener === 'function') setupNotificationListener(user.uid);
+            const token = await user.getIdTokenResult();
+            UserState.isMaster = user.uid === '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
+            UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
+            
+            try {
+                await loadUserData(user);
+                updateUI(true); 
+                if (UserState.isMaster) {
+                    setTimeout(() => updateUI(true), 500);
+                }
+            } catch (e) {
+                console.error("Load user data error:", e);
+                updateUI(true);
+            }
+            if (typeof setupNotificationListener === 'function') setupNotificationListener(user.uid);
         } else {
             UserState.user = null; UserState.data = null; UserState.isAdmin = false; UserState.isMaster = false;
             if (window.unsubNotifications) window.unsubNotifications();
@@ -92,6 +107,7 @@ export function initAuth() {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
             if (target.disabled) return;
+            isManualLogout = false;
             const originalText = target.textContent;
             target.disabled = true;
             target.textContent = "연결 중...";
@@ -100,8 +116,7 @@ export function initAuth() {
             provider.setCustomParameters({ prompt: 'select_account' });
 
             try {
-                const result = await signInWithPopup(auth, provider);
-                // 로그인 성공 시 상태 전파를 위해 약간의 대기 후 새로고침 (선택 사항이나 안정성 위해 유지)
+                await signInWithPopup(auth, provider);
                 setTimeout(() => { location.reload(); }, 500);
             } catch (error) {
                 if (error.code === 'auth/popup-blocked') {
@@ -115,6 +130,7 @@ export function initAuth() {
             }
         }
         if (target.id === 'logout-btn') {
+            isManualLogout = true;
             signOut(auth).then(() => { location.reload(); });
         }
         if (target.id === 'nickname-save') await changeNickname();
@@ -125,22 +141,18 @@ export function initAuth() {
 
 function handleAuthError(error) {
     let msg = "로그인 오류: " + error.code;
-    if (error.code === 'auth/unauthorized-domain') msg = "승인되지 않은 도메인입니다. 관리자 설정을 확인해 주세요.";
+    if (error.code === 'auth/unauthorized-domain') msg = "승인되지 않은 도메인입니다.";
     alert(msg);
 }
 
 export function updateUI(isLoggedIn = !!UserState.user) {
     const loginBtn = document.getElementById('login-btn');
     const headerProfile = document.getElementById('header-profile');
-    
-    // 이 함수가 호출될 때마다 요소가 있는지 확인
     if (!loginBtn || !headerProfile) return;
 
     if (isLoggedIn) {
-        // [강력 제어] 스타일 직접 주입으로 클래스 캐시 무시
         loginBtn.style.display = 'none';
         loginBtn.classList.add('hidden');
-        
         headerProfile.style.display = 'flex';
         headerProfile.classList.remove('hidden');
         
@@ -161,48 +173,32 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         });
 
         const footerAdmin = document.getElementById('footer-admin-link');
-        if (footerAdmin) {
-            if (UserState.isMaster) {
-                footerAdmin.classList.remove('hidden');
-                footerAdmin.style.display = 'inline';
-            } else {
-                footerAdmin.classList.add('hidden');
-                footerAdmin.style.display = 'none';
-            }
+        if (footerAdmin && UserState.isMaster) {
+            footerAdmin.classList.remove('hidden');
+            footerAdmin.style.display = 'inline';
         }
     } else {
-        if (loginBtn) {
-            loginBtn.style.display = 'flex';
-            loginBtn.classList.remove('hidden');
-            loginBtn.disabled = false;
-            loginBtn.textContent = "로그인";
-        }
-        if (headerProfile) {
-            headerProfile.style.display = 'none';
-            headerProfile.classList.add('hidden');
-        }
+        loginBtn.style.display = 'flex';
+        loginBtn.classList.remove('hidden');
+        headerProfile.style.display = 'none';
+        headerProfile.classList.add('hidden');
         const footerAdmin = document.getElementById('footer-admin-link');
-        if (footerAdmin) {
-            footerAdmin.classList.add('hidden');
-            footerAdmin.style.display = 'none';
-        }
+        if (footerAdmin) footerAdmin.style.display = 'none';
     }
 }
 
 async function loadUserData(user) {
     const userRef = doc(db, "users", user.uid);
     let snap = await getDoc(userRef);
-
     if (!snap.exists()) {
         const newData = {
-            uid: user.uid, 
-            nickname: generateRandomNickname(), 
+            uid: user.uid, nickname: generateRandomNickname(), 
             originalName: user.displayName || '알 수 없음',
             originalEmail: user.email || '이메일 없음',
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, discoveredItems: [],
-            nicknameChanged: false, lastNicknameChange: null, 
-            nameColor: '#333333', arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
+            nicknameChanged: false, lastNicknameChange: null, nameColor: '#333333',
+            arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
             quests: { date: null, list: {} }, createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);
@@ -211,11 +207,10 @@ async function loadUserData(user) {
     UserState.data = snap.data();
 }
 
-// 나머지 헬퍼 함수들 (상태 유지)
 const profileCache = new Map();
 export function updateProfileCache(uid, partialData) {
     if (!uid) return;
-    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", nameColor: "var(--text-main)", points: 0, totalScore: 0 };
+    const current = profileCache.get(uid) || { nickname: "익명", emoji: "👤", points: 0, totalScore: 0 };
     profileCache.set(uid, { ...current, ...partialData });
 }
 
@@ -226,9 +221,8 @@ export async function fetchUserProfile(uid) {
         const userSnap = await getDoc(doc(db, "users", uid));
         if (userSnap.exists()) {
             const data = userSnap.data();
-            const profile = { ...data, nickname: data.nickname || "익명", emoji: data.emoji || "👤" };
-            profileCache.set(uid, profile);
-            return profile;
+            profileCache.set(uid, data);
+            return data;
         }
     } catch (e) {}
     return { nickname: "익명", emoji: "👤" };
@@ -244,27 +238,19 @@ export async function fetchUserRank(uid) {
     } catch (e) { return "-"; }
 }
 
-async function addLog(uid, type, amount, reason) {
-    try { await addDoc(collection(db, "pointLogs"), { uid, type, amount, reason, timestamp: serverTimestamp() }); } catch (e) {}
-}
-
 async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji || UserState.data.emoji === emoji) return;
-    if (!confirm(`아이콘을 [${emoji}](으)로 변경하시겠습니까? (500P)`)) return;
-    if (await usePoints(500, `아이콘 변경: ${emoji}`)) {
+    if (await usePoints(500, `아이콘 변경`)) {
         await updateDoc(doc(db, "users", UserState.user.uid), { emoji: emoji });
-        UserState.data.emoji = emoji;
-        updateUI();
+        UserState.data.emoji = emoji; updateUI();
     }
 }
 
 async function changeNameColor(color) {
     if (!UserState.user || !color || UserState.data.nameColor === color) return;
-    if (!confirm(`닉네임 색상을 변경하시겠습니까? (1,000P)`)) return;
     if (await usePoints(1000, `닉네임 색상 변경`)) {
         await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
-        UserState.data.nameColor = color; 
-        updateUI();
+        UserState.data.nameColor = color; updateUI();
     }
 }
 
@@ -273,15 +259,10 @@ async function changeNickname() {
     if (!UserState.user || !input?.value.trim()) return;
     const newName = input.value.trim();
     const cost = UserState.data.nicknameChanged ? 5000 : 0;
-    if (!confirm(`닉네임을 [${newName}](으)로 변경하시겠습니까? (${cost}P)`)) return;
-    try {
-        if (cost === 0 || await usePoints(cost, `닉네임 변경`)) {
-            await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, nicknameChanged: true });
-            UserState.data.nickname = newName; UserState.data.nicknameChanged = true;
-            updateUI();
-            alert("변경 완료!");
-        }
-    } catch (e) { alert("오류 발생"); }
+    if (cost === 0 || await usePoints(cost, `닉네임 변경`)) {
+        await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, nicknameChanged: true });
+        UserState.data.nickname = newName; UserState.data.nicknameChanged = true; updateUI();
+    }
 }
 
 export async function addPoints(amount, reason = "보상") {
@@ -296,7 +277,7 @@ export async function addPoints(amount, reason = "보상") {
 }
 
 export async function usePoints(amount, reason = "소모") {
-    if (!UserState.user || UserState.data.points < amount) return false;
+    if (!UserState.user || (UserState.data.points || 0) < amount) return false;
     try {
         const userRef = doc(db, "users", UserState.user.uid);
         const newPoints = UserState.data.points - amount;
