@@ -1,0 +1,224 @@
+import { updateUI, UserState, addPoints } from '../auth.js';
+import { db } from '../firebase-init.js';
+import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { TESTS } from '../tests-data.js?v=3.1.4';
+
+const FOX_ADVICE = [
+    "오늘 하루도 당신은 충분히 빛나요! ✨",
+    "오른쪽으로 걸어가면 뜻밖의 행운이 있을지도? 🍀",
+    "지금 테스트를 하면 마음이 한결 가벼워질 거예요. 🧠",
+    "지칠 땐 오락실에서 한 판 쉬어가는 건 어때요? 🎰",
+    "당신의 아우라는 오늘 '열정의 레드'만큼 뜨겁네요! 🔥",
+    "맛있는 걸 먹으면 운세가 2배로 좋아질 거예요! 🍰",
+    "누군가 당신을 생각하고 있는 따뜻한 날이네요. 💌",
+    "오늘은 새로운 도전을 시작하기에 완벽한 날입니다! 🚀",
+    "가끔은 아무것도 하지 않는 게 최고의 휴식이에요. 💤",
+    "당신이 몰랐던 매력을 곧 발견하게 될 거예요! 💎"
+];
+
+export const testLikesData = {};
+
+export async function fetchAllLikes() {
+    try {
+        console.log("Fetching test likes data...");
+        const snap = await getDocs(collection(db, "testStats"));
+        snap.forEach(doc => { testLikesData[doc.id] = doc.data().likes || 0; });
+        console.log("Likes data loaded:", testLikesData);
+    } catch (e) { console.error("Fetch likes failed:", e); }
+}
+window.fetchAllLikes = fetchAllLikes;
+
+async function handleLike(testId) {
+    console.log("handleLike called for:", testId);
+    if (!UserState.user) {
+        alert("로그인이 필요합니다. 우측 상단의 로그인 버튼을 이용해 주세요.");
+        return;
+    }
+
+    const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
+    const likeKey = `liked_${testId}_${today}`;
+
+    if (localStorage.getItem(likeKey)) {
+        alert("오늘 이미 이 테스트에 하트를 누르셨습니다! ❤️");
+        return;
+    }
+
+    try {
+        const statsRef = doc(db, "testStats", testId);
+        await setDoc(statsRef, { likes: increment(1) }, { merge: true });
+
+        localStorage.setItem(likeKey, "true");
+        testLikesData[testId] = (testLikesData[testId] || 0) + 1;
+        await addPoints(5, '테스트 추천 보상');
+
+        const counter = document.getElementById(`like-count-${testId}`);
+        if (counter) counter.textContent = testLikesData[testId];
+
+        alert("감사합니다! 하트 보상으로 5P가 적립되었습니다. ❤️");
+    } catch (e) {
+        console.error("Like operation failed:", e);
+        alert("좋아요 처리 중 오류가 발생했습니다.");
+    }
+}
+window.handleLike = handleLike;
+
+export function renderCategorySelection() {
+    const app = document.getElementById('app');
+    app.innerHTML = `
+        <div class="category-selection-page fade-in">
+            <div class="section-header" style="text-align:center; flex-direction:column; gap:1rem; margin-bottom:3.5rem; margin-top: 2rem;">
+                <h2 class="section-title" style="font-size:2.2rem; width:100%; text-align:center;">✨ 어떤 분석을 원하시나요?</h2>
+                <p class="text-sub" style="font-weight:600; font-size: 1.1rem;">당신의 본모습을 찾아줄 7가지 질문이 기다리고 있습니다.</p>
+            </div>
+            <div class="category-large-grid">
+                <div class="cat-large-card" onclick="location.hash='#personality'" style="--cat-color: var(--color-personality);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🧠</span>
+                        <h3>성격 분석</h3>
+                        <p>내면의 심리와 숨겨진 성향을<br>심층 분석합니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#face'" style="--cat-color: var(--color-face);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">✨</span>
+                        <h3>비주얼/얼굴</h3>
+                        <p>이목구비와 첫인상이 주는<br>고유한 매력을 진단합니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#fortune'" style="--cat-color: var(--color-fortune);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🔮</span>
+                        <h3>오늘의 운세</h3>
+                        <p>영적 타로와 사주 관법으로<br>오늘의 운을 점쳐봅니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+                <div class="cat-large-card" onclick="location.hash='#fun'" style="--cat-color: var(--color-fun);">
+                    <div class="cat-card-inner">
+                        <span class="cat-icon">🎨</span>
+                        <h3>재미/심리</h3>
+                        <p>일상의 소소한 취향과<br>재미있는 심리 테스트입니다.</p>
+                        <span class="cat-go">시작하기 →</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+export async function renderHome(hash) {
+    const app = document.getElementById('app');
+    await fetchAllLikes();
+
+    if (hash === '#home' || !hash) {
+        const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
+
+        app.innerHTML = `
+            <div class="dashboard fade-in">
+                <div class="hero-section">
+                    <div class="hero-content">
+                        <div class="fox-advice-container fade-in" style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div class="fox-avatar" style="font-size: 3rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));">🦊</div>
+                            <div class="advice-bubble" style="background: rgba(255,255,255,0.9); padding: 0.8rem 1.5rem; border-radius: 20px 20px 20px 4px; box-shadow: var(--shadow-md); position: relative; font-weight: 800; color: #334155; font-size: 1rem; border: 2px solid var(--accent-soft); backdrop-filter: blur(5px);">
+                                ${randomAdvice}
+                            </div>
+                        </div>
+                        <span class="hero-tag">✨ 7번의 질문으로 찾는 나</span>
+                        <h1>당신이 몰랐던<br>진짜 모습을 확인하세요</h1>
+                        <p>심리학적 기반의 정교한 분석 리포트와<br>즐거운 미니게임이 기다리고 있습니다.</p>
+                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
+                            <button class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#7check'">테스트 시작하기</button>
+                            <button class="btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 50px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: #fff;" onclick="window.globalShareSite()">🔗 공유하기</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="banner-grid" style="margin-top: 2rem;">
+                    <div class="arcade-preview-card" onclick="location.hash='#arcade'">
+                        <div style="position:relative; z-index:1;">
+                            <span style="font-size: 0.8rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 50px; margin-bottom: 1rem; display: inline-block;">DAILY MISSION</span>
+                            <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 0.5rem;">세븐 오락실 오픈!</h3>
+                            <p style="font-weight: 600; opacity: 0.9;">매일 출석하고 포인트 채굴해서<br>희귀 이모지를 수집하세요.</p>
+                        </div>
+                        <span style="position:absolute; bottom: -20px; right: -10px; font-size: 8rem; opacity: 0.2;">🎰</span>
+                    </div>
+                    <div class="ranking-preview-card">
+                        <h4 style="font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">🏆 명예의 전당</h4>
+                        <div id="mini-ranking-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <p class="text-sub" style="font-size: 0.8rem;">실시간 랭킹 확인하기</p>
+                            <button class="btn-secondary" style="width:100%; padding: 0.5rem; font-size: 0.8rem;" onclick="location.hash='#ranking'">랭킹 보기</button>
+                        </div>
+                    </div>
+                    <div class="guide-preview-card" onclick="location.hash='#guide'">
+                        <div style="position:relative; z-index:1;">
+                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">📖 이용 가이드</h4>
+                            <p style="font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">포인트 획득 방법부터<br>등급 시스템까지 한눈에!</p>
+                        </div>
+                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.1;">📒</span>
+                    </div>
+                    <div class="board-preview-card" onclick="location.hash='#board'">
+                        <div style="position:relative; z-index:1;">
+                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">💬 커뮤니티</h4>
+                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">다른 이용자들과 소통하고<br>나만의 분석 결과를 공유하세요.</p>
+                        </div>
+                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.05;">✨</span>
+                    </div>
+                    <div class="profile-preview-card" onclick="location.hash='#profile'">
+                        <div style="position:relative; z-index:1;">
+                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">👤 내 정보</h4>
+                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">보유 포인트와 아이템,<br>현재 등급을 확인하세요.</p>
+                        </div>
+                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.05;">🆔</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        const filtered = TESTS.filter(t => t.category === window._currentFilter);
+        app.innerHTML = `
+            <div class="category-page fade-in">
+                <div class="section-header" style="margin-bottom: 2rem;">
+                    <h2 class="section-title">${window._currentFilter} 테스트</h2>
+                    <span class="text-sub" style="font-weight: 700;">총 ${filtered.length}개</span>
+                </div>
+                <div class="test-grid">
+                    ${filtered.map(t => renderTestCard(t)).join('')}
+                </div>
+            </div>
+        `;
+    }
+    updateUI();
+}
+
+export function renderTestCard(t) {
+    const likes = testLikesData[t.id] || 0;
+
+    return `
+    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative;">
+        <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 15px;">
+            <img src="${t.thumb}" alt="${t.title}"
+                 style="width: 100%; height: 100%; object-fit: cover;"
+                 onerror="window.handleImgError(this)">
+            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%); pointer-events: none;"></div>
+
+            <div id="like-badge-${t.id}"
+                 onclick="event.stopPropagation(); handleLike('${t.id}')"
+                 style="position:absolute; bottom:12px; left:12px; z-index:20; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; display: flex; align-items:center; gap:6px; border: 1px solid rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s ease;">
+                <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${likes}</span>
+            </div>
+        </div>
+        <div class="test-info">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                <span class="test-category-tag">${t.category}</span>
+                <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-sub); display: flex; align-items: center; gap: 4px;"><span>⏱️</span> 3분</span>
+            </div>
+            <h3 style="margin-top: 0.5rem; font-size: 1.1rem; line-height: 1.4;">${t.title}</h3>
+            <p style="font-size: 0.85rem; margin-top: 0.4rem;">${t.desc}</p>
+            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px dashed var(--border-color); display: flex; justify-content: flex-end;">
+                <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-color);">테스트 시작 ➔</span>
+            </div>
+        </div>
+    </div>`;
+}
