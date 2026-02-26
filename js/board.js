@@ -479,8 +479,14 @@ async function loadPosts(container, isLoadMore = false) {
         });
 
         let displayCount = 0;
-        for (const docData of docs) {
-            renderSinglePost(container, docData.id, docData);
+        
+        // 프로필을 비동기로 가져올 때 순서가 뒤섞이는 것을 방지하기 위해 모두 병렬로 미리 가져옵니다.
+        const profiles = await Promise.all(docs.map(d => fetchUserProfile(d.uid)));
+        
+        for (let i = 0; i < docs.length; i++) {
+            const docData = docs[i];
+            const profile = profiles[i];
+            renderSinglePostSync(container, docData.id, docData, profile);
             displayCount++;
         }
         
@@ -494,8 +500,7 @@ async function loadPosts(container, isLoadMore = false) {
     finally { isLoadingMore = false; }
 }
 
-async function renderSinglePost(container, postId, data) {
-    const profile = await fetchUserProfile(data.uid);
+function renderSinglePostSync(container, postId, data, profile) {
     const getMillis = (t) => t ? (typeof t.toMillis === 'function' ? t.toMillis() : (t.seconds ? t.seconds * 1000 : (t instanceof Date ? t.getTime() : (typeof t === 'number' ? t : Date.now())))) : null;
     const ms = getMillis(data.createdAt);
     const date = ms ? new Date(ms).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
