@@ -496,7 +496,14 @@ async function renderSinglePost(container, postId, data) {
 
         <div class="post-footer">
             <button class="btn-toggle-comments" onclick="toggleComments('${postId}', '${data.uid}')">💬 댓글</button>
-            ${(UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin)) ? `<button class="btn-delete" onclick="deletePost('${postId}')">삭제</button>` : ''}
+            <div style="display:flex; gap:0.5rem; margin-left:auto; align-items:center;">
+                ${UserState.isAdmin ? `
+                <select onchange="changePostCategory('${postId}', this.value)" style="padding:0.2rem 0.5rem; font-size:0.7rem; border-radius:6px; border:1px solid var(--border-color); background:var(--bg-color); color:var(--text-main); cursor:pointer;">
+                    ${Object.keys(CATEGORIES).filter(k => k !== 'ALL').map(k => `<option value="${k}" ${data.category === k ? 'selected' : ''}>${CATEGORIES[k].name}로 이동</option>`).join('')}
+                </select>
+                ` : ''}
+                ${(UserState.user && (data.uid === UserState.user.uid || UserState.isAdmin)) ? `<button class="btn-delete" onclick="deletePost('${postId}')">삭제</button>` : ''}
+            </div>
         </div>
         <div id="comment-section-${postId}" class="comment-section" style="display:none;">
             <div id="comments-list-${postId}" class="comments-list"></div>
@@ -508,6 +515,24 @@ async function renderSinglePost(container, postId, data) {
     `;
     container.appendChild(postEl);
 }
+
+window.changePostCategory = async (postId, newCategory) => {
+    if (!UserState.isAdmin) return alert("권한이 없습니다.");
+    if (!confirm(`게시글을 [${CATEGORIES[newCategory].name}] 카테고리로 이동하시겠습니까?`)) return;
+    try {
+        await updateDoc(doc(db, "posts", postId), { category: newCategory });
+        
+        // 화면 리프레시 없이 UI 즉각 반영 (DOM 국소 조작)
+        const badge = document.querySelector(`.btn-report-post[data-id="${postId}"]`).previousElementSibling;
+        if(badge) {
+            badge.className = `post-category-badge ${CATEGORIES[newCategory]?.class || 'cat-free'}`;
+            badge.textContent = CATEGORIES[newCategory]?.name || '자유';
+        }
+    } catch(e) { 
+        console.error(e);
+        alert("이동 중 오류가 발생했습니다."); 
+    }
+};
 
 window.showProfileModal = async (uid) => {
     const overlay = document.getElementById('profile-modal-overlay');
