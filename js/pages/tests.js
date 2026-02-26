@@ -140,23 +140,25 @@ export async function renderResult(testId, traitScores) {
                 </div>
             </div>
 
-            <div id="story-capture-area" style="position: absolute; left: -9999px; width: 360px; height: 640px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', sans-serif; display: block;">
+            <div id="story-capture-area" style="position: absolute; top: 0; left: 0; z-index: -100; opacity: 0; pointer-events: none; width: 400px; height: 711px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;">
                 <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
-                <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 40px 30px; box-sizing: border-box;">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <span style="background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 50px; font-size: 0.7rem; font-weight: 800; letter-spacing: 0.1em;">SEVEN CHECK REPORT</span>
+                <div style="position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 40px 30px; box-sizing: border-box; align-items: center;">
+                    <div style="text-align: center; margin-bottom: 25px; width: 100%;">
+                        <span style="background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.1em; display: inline-block;">SEVEN CHECK REPORT</span>
                     </div>
-                    <div class="story-img-wrapper" style="width: 300px; height: 300px; border-radius: 20px; overflow:hidden; margin: 0 auto 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3); background-image: url('${result.img}'); background-size: cover; background-position: center; flex-shrink: 0;"></div>
+                    <div class="story-img-wrapper" style="width: 320px; height: 320px; border-radius: 20px; overflow:hidden; margin: 0 auto 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3); flex-shrink: 0; position: relative;">
+                        <img src="${result.img}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                    </div>
                     <div style="text-align: center; width: 100%;">
-                        <h2 style="font-size: 2rem; font-weight: 900; margin-bottom: 15px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3); word-break: keep-all;">${result.title}</h2>
+                        <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 20px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3); word-break: keep-all;">${result.title}</h2>
                         <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;">
-                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); padding:5px 12px; border-radius:50px; font-size:0.7rem; font-weight:700; backdrop-filter:blur(5px);">${tag}</span>`).join('')}
+                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); padding:6px 14px; border-radius:50px; font-size:0.8rem; font-weight:700; backdrop-filter:blur(5px); display: inline-block;">${tag}</span>`).join('')}
                         </div>
                     </div>
-                    <div style="margin-top: auto; text-align: center; background: rgba(255,255,255,0.15); padding: 20px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3);">
-                        <div style="font-size: 2rem; margin-bottom: 5px;">🦊</div>
-                        <div style="font-size: 1.6rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">SevenCheck</div>
-                        <div style="font-size: 0.65rem; opacity: 0.8; margin-top: 8px; letter-spacing: 0.1em; font-weight: 700;">PREMIUM ANALYSIS REPORT</div>
+                    <div style="margin-top: auto; text-align: center; width: 100%; background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); box-sizing: border-box;">
+                        <div style="font-size: 2.2rem; margin-bottom: 5px;">🦊</div>
+                        <div style="font-size: 1.8rem; font-weight: 900; letter-spacing: -0.02em; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">SevenCheck</div>
+                        <div style="font-size: 0.75rem; opacity: 0.9; margin-top: 8px; letter-spacing: 0.1em; font-weight: 800;">PREMIUM ANALYSIS REPORT</div>
                     </div>
                 </div>
             </div>
