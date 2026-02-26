@@ -1,5 +1,150 @@
 export const TESTS = [
     {
+        id: 'energy-test',
+        category: '재미',
+        title: '2030 반말보룸 🎧 I’m Your Energy 테스트',
+        desc: '요즘 네 에너지 어디서 나오냐. 정상인 척 살고 있지만 다 티 난다. 7개만 고르면 결과 나옴.',
+        thumb: 'https://scontent-tpe1-1.cdninstagram.com/v/t51.82787-15/604501965_18054430871675919_5579280743079771280_n.jpg?stp=dst-jpg_s640x640_tt6&efg=eyJ2ZW5jb2RlX3RhZyI6InByb2ZpbGVfcGljLmRqYW5nby4xMDgwLmMyIn0&_nc_ht=scontent-tpe1-1.cdninstagram.com&_nc_cat=103&_nc_oc=Q6cZ2QE122TREEldXq4egOINBLrwNkAykM7M7R2pKZDbevNGvcD87Hb2TA1nGRBAeuWY3iQ&_nc_ohc=h9MBnx0Qx1kQ7kNvwFgYCrV&_nc_gid=hWM30O7F90bH779Cmd3THQ&edm=APs17CUBAAAA&ccb=7-5&oh=00_Aftr-rLtWmHHVWeKafEy_C0QH8iUUzz5bVL0KFQQDXHyiQ&oe=69A5B3FA&_nc_sid=10d13b',
+        customTraits: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'],
+        questions: [
+            { 
+                q: '아침에 눈 뜨자마자 하는 행동', 
+                options: [
+                    { text: '폰부터 확인', type: 'T1' },
+                    { text: '알람 끄고 다시 잠', type: 'T3' },
+                    { text: '음악 틀기', type: 'T5' },
+                    { text: '멍 때리기', type: 'T9' }
+                ] 
+            },
+            { 
+                q: '약속 없는 주말', 
+                options: [
+                    { text: '집에서 콘텐츠 몰아봄', type: 'T2' },
+                    { text: '카페 가서 시간 보냄', type: 'T6' },
+                    { text: '게임이나 취미', type: 'T7' },
+                    { text: '그냥 누워있음', type: 'T4' }
+                ] 
+            },
+            { 
+                q: '스트레스 받았을 때', 
+                options: [
+                    { text: '혼자 잠수', type: 'T7' },
+                    { text: '친구 만나서 털기', type: 'T8' },
+                    { text: '음악 들으면서 정리', type: 'T5' },
+                    { text: '일단 잠', type: 'T1' }
+                ] 
+            },
+            { 
+                q: '단톡방에서 나는', 
+                options: [
+                    { text: '말 많은 편', type: 'T10' },
+                    { text: '가끔 등장', type: 'T8' },
+                    { text: '읽기만 함', type: 'T9' },
+                    { text: '알림 꺼둠', type: 'T6' }
+                ] 
+            },
+            { 
+                q: '여행 스타일', 
+                options: [
+                    { text: '즉흥 출발', type: 'T10' },
+                    { text: '계획 세움', type: 'T3' },
+                    { text: '남 따라감', type: 'T4' },
+                    { text: '집이 최고', type: 'T7' }
+                ] 
+            },
+            { 
+                q: '노래 들을 때 중요 포인트', 
+                options: [
+                    { text: '비트', type: 'T10' },
+                    { text: '가사', type: 'T4' },
+                    { text: '분위기', type: 'T6' },
+                    { text: '멜로디', type: 'T5' }
+                ] 
+            },
+            { 
+                q: '지금 내 상태', 
+                options: [
+                    { text: '에너지 넘침', type: 'T10' },
+                    { text: '살짝 지침', type: 'T1' },
+                    { text: '생각 많음', type: 'T9' },
+                    { text: '그냥 귀찮음', type: 'T2' }
+                ] 
+            }
+        ],
+        results: {
+            T1: { 
+                title: '인간 배터리 5%형', 
+                desc: '맨날 피곤하다면서 늦게 잠. 충전 방식이 이상함.',
+                img: 'https://images.unsplash.com/photo-1541580621-077eb672b144?auto=format&fit=crop&w=800&q=80',
+                tags: ['#방전직전', '#늦게잠', '#만성피로'],
+                color: '#ef4444'
+            },
+            T2: { 
+                title: '도파민 중독자형', 
+                desc: '릴스 하나만 본다 해놓고 시간 증발 전문.',
+                img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=800&q=80',
+                tags: ['#도파민', '#알고리즘', '#시간순삭'],
+                color: '#8b5cf6'
+            },
+            T3: { 
+                title: '계획은 완벽 실행은 내일부터형', 
+                desc: '할 일 정리하는 건 세계 1위. 시작은 아직 안 함.',
+                img: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80',
+                tags: ['#J호소인', '#계획만', '#미루기'],
+                color: '#f59e0b'
+            },
+            T4: { 
+                title: '새벽 감성 과몰입형', 
+                desc: '밤 되면 인생 정리함. 아침 되면 리셋.',
+                img: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80',
+                tags: ['#새벽감성', '#과몰입', '#감수성'],
+                color: '#3b82f6'
+            },
+            T5: { 
+                title: '인간 플레이리스트형', 
+                desc: '기분 조절 = 음악. 노래 없으면 하루 이상함.',
+                img: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80',
+                tags: ['#음악필수', '#노동요', '#뮤직이즈마이라이프'],
+                color: '#10b981'
+            },
+            T6: { 
+                title: '조용한 또라이형', 
+                desc: '겉보기엔 정상. 근데 생각이 묘하게 웃김.',
+                img: 'https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&w=800&q=80',
+                tags: ['#반전매력', '#은은한광기', '#마이웨이'],
+                color: '#a855f7'
+            },
+            T7: { 
+                title: '집순이 집돌이 에너지형', 
+                desc: '밖에 나가면 체력 급감. 집 오면 회복.',
+                img: 'https://images.unsplash.com/photo-1499916078039-922301b0eb9b?auto=format&fit=crop&w=800&q=80',
+                tags: ['#집최고', '#이불밖은위험해', '#홈바디'],
+                color: '#f97316'
+            },
+            T8: { 
+                title: '사회생활 ON 인간 OFF형', 
+                desc: '밖에서는 멀쩡. 집 오면 말수 0.',
+                img: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80',
+                tags: ['#온오프', '#자본주의미소', '#에너지절약'],
+                color: '#6366f1'
+            },
+            T9: { 
+                title: '관찰자 모드 인간형', 
+                desc: '다 보고 있음. 근데 참여는 안 함.',
+                img: 'https://images.unsplash.com/photo-1494059980473-813e73ee784b?auto=format&fit=crop&w=800&q=80',
+                tags: ['#지켜보기', '#방관자', '#내적참여'],
+                color: '#64748b'
+            },
+            T10: { 
+                title: '숨겨진 광기 보유자형', 
+                desc: '평소엔 조용. 친해지면 사람들이 놀람.',
+                img: 'https://images.unsplash.com/photo-1518133910546-b6c2fb7d79e3?auto=format&fit=crop&w=800&q=80',
+                tags: ['#친해지면돌변', '#도른자', '#핵인싸'],
+                color: '#ec4899'
+            }
+        }
+    },
+    {
         id: 'ending-test',
         category: '재미',
         title: '나의 인생 엔딩 보고서',

@@ -3,14 +3,14 @@ import { ITEM_VALUES } from '../constants/shops.js';
 import { db } from '../firebase-init.js';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=4.0.0';
+import { TESTS } from '../tests-data.js?v=4.2.3';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {
     const app = document.getElementById('app');
     const test = TESTS.find(t => t.id === testId);
-    const traits = ['energy', 'logic', 'empathy', 'creativity'];
-    const dominantTrait = traits.reduce((a, b) => (traitScores[a] >= traitScores[b] ? a : b));
+    const traits = test.customTraits || ['energy', 'logic', 'empathy', 'creativity'];
+    const dominantTrait = traits.reduce((a, b) => ((traitScores[a] || 0) >= (traitScores[b] || 0) ? a : b));
 
     const result = (test.results[dominantTrait]) ? test.results[dominantTrait] : (traitScores.energy >= 4 ? test.results.A : test.results.B);
     const themeColor = result.color || '#6366f1';
@@ -22,6 +22,47 @@ export async function renderResult(testId, traitScores) {
         empathy:    Math.min(Math.round((traitScores.empathy    / maxScore) * 100), 100),
         creativity: Math.min(Math.round((traitScores.creativity / maxScore) * 100), 100),
     };
+
+    let soulIngredients, rpgStats;
+    if (!test.customTraits) {
+        const ingredientPool = {
+            energy: [
+                { title: "지치지 않는 에너자이저", desc: "주변까지 밝히는 긍정의 불꽃 세 스푼" },
+                { title: "추진력 갑 불도저", desc: "생각나면 바로 실행하는 행동력 한 트럭" },
+                { title: "인간 비타민", desc: "피로를 날려버리는 상큼함 한 방울" }
+            ],
+            logic: [
+                { title: "냉철한 얼음 송곳", desc: "감정에 흔들리지 않는 팩트 폭력기 두 줌" },
+                { title: "알파고 마인드", desc: "오차율 0%를 향한 완벽주의 세 스푼" },
+                { title: "명탐정 코난", desc: "작은 단서도 놓치지 않는 관찰력 두 꼬집" }
+            ],
+            empathy: [
+                { title: "걸어다니는 손난로", desc: "누구든 녹여버리는 따뜻한 공감 능력 두 스푼" },
+                { title: "프로 리액셔너", desc: "상대방을 춤추게 하는 물개박수 세 줌" },
+                { title: "포근한 솜이불", desc: "지친 마음을 덮어주는 포용력 한 웅큼" }
+            ],
+            creativity: [
+                { title: "탱탱볼 마인드", desc: "예측 불가능한 엉뚱함 네 스푼" },
+                { title: "아이디어 뱅크", desc: "남들과는 다른 시선으로 세상을 보는 안경 알" },
+                { title: "마이웨이 개척자", desc: "남의 시선은 신경 쓰지 않는 뻔뻔함 두 꼬집" }
+            ]
+        };
+
+        const weaponPool = {
+            energy: { weaponIcon: "🔥", weapon: "무한 동력 모터", weaknessIcon: "🔋", weakness: "방전되면 말수 급감함" },
+            logic: { weaponIcon: "🗡️", weapon: "팩트 체크 레이저", weaknessIcon: "🤖", weakness: "감성팔이에 취약함" },
+            empathy: { weaponIcon: "🛡️", weapon: "천사표 방패", weaknessIcon: "🥺", weakness: "거절을 잘 못해서 손해 봄" },
+            creativity: { weaponIcon: "✨", weapon: "기발한 발상 지팡이", weaknessIcon: "⏳", weakness: "반복적인 루틴에 쉽게 질림" }
+        };
+
+        const mainIngredient = ingredientPool[dominantTrait][Math.floor(Math.random() * ingredientPool[dominantTrait].length)];
+        const otherTraits = traits.filter(t => t !== dominantTrait).sort(() => 0.5 - Math.random());
+        const sub1Ingredient = ingredientPool[otherTraits[0]][Math.floor(Math.random() * ingredientPool[otherTraits[0]].length)];
+        const sub2Ingredient = ingredientPool[otherTraits[1]][Math.floor(Math.random() * ingredientPool[otherTraits[1]].length)];
+        
+        soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
+        rpgStats = weaponPool[dominantTrait];
+    }
 
     let basePointReward = 10;
     if (UserState.user && UserState.data.boosterCount > 0) {
@@ -38,7 +79,8 @@ export async function renderResult(testId, traitScores) {
             empathy: '🌱 묘목',
             creativity: '🌌 은하수 가루'
         };
-        rewardedItem = traitItems[dominantTrait] || '💩 돌멩이';
+        const commonItems = ['⚡ 번개 병', '🧪 현자의 돌', '🌱 묘목', '🌌 은하수 가루', '🦊 여우 꼬리'];
+        rewardedItem = traitItems[dominantTrait] || commonItems[Math.floor(Math.random() * commonItems.length)];
         const itemVal = ITEM_VALUES[rewardedItem] || 500;
 
         await updateDoc(doc(db, "users", UserState.user.uid), {
@@ -81,6 +123,61 @@ export async function renderResult(testId, traitScores) {
                         <p id="typing-desc" style="font-size: 1rem; line-height: 1.7; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
                     </div>
 
+                    ${test.customTraits ? '' : `
+                    <div class="soul-analysis-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <h4 style="margin-bottom: 1.5rem; font-size: 1.05rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
+                            <span style="font-size:1.3rem;">🔮</span> 나의 영혼 분석서
+                        </h4>
+
+                        <div style="background:rgba(0,0,0,0.02); padding:1.2rem; border-radius:16px; margin-bottom:1.5rem; border: 1px solid rgba(0,0,0,0.05);">
+                            <h5 style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1.2rem; display:flex; align-items:center; gap:6px; font-weight:800;"><span style="font-size:1.1rem;">🧪</span> 나를 만든 연금술 레시피</h5>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="width:45px; height:45px; border-radius:12px; background:${themeColor}22; color:${themeColor}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:900;">70%</div>
+                                    <div style="flex:1; text-align:left;">
+                                        <div style="font-weight:800; font-size:0.9rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients?.main.title}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients?.main.desc}</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="width:45px; height:45px; border-radius:12px; background:rgba(0,0,0,0.05); color:var(--text-main); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:800;">20%</div>
+                                    <div style="flex:1; text-align:left;">
+                                        <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients?.sub1.title}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients?.sub1.desc}</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="width:45px; height:45px; border-radius:12px; background:rgba(0,0,0,0.03); color:var(--text-sub); display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700;">10%</div>
+                                    <div style="flex:1; text-align:left;">
+                                        <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients?.sub2.title}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients?.sub2.desc}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background:var(--card-bg); padding:1.2rem; border-radius:16px; border:1px solid ${themeColor}33; position:relative; overflow:hidden;">
+                            <div style="position:absolute; top:-10px; right:-10px; font-size:3rem; opacity:0.05;">⚔️</div>
+                            <h5 style="font-size:0.85rem; color:${themeColor}; margin-bottom:1.2rem; display:flex; align-items:center; gap:6px; font-weight:800; position:relative;"><span style="font-size:1.1rem;">🕹️</span> 현실 생존 가이드</h5>
+                            
+                            <div style="margin-bottom:12px; position:relative;">
+                                <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:6px; font-weight:800; text-align:left;">가장 치명적인 무기 (장점)</div>
+                                <div style="background:rgba(0,0,0,0.02); padding:12px 14px; border-radius:12px; font-size:0.9rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:10px; border:1px solid rgba(0,0,0,0.05);">
+                                    <span style="font-size:1.2rem;">${rpgStats?.weaponIcon}</span> <span>${rpgStats?.weapon}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="position:relative;">
+                                <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:6px; font-weight:800; text-align:left;">조심해야 할 아킬레스건 (약점)</div>
+                                <div style="background:rgba(0,0,0,0.02); padding:12px 14px; border-radius:12px; font-size:0.9rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:10px; border-left:4px solid #ef4444; border-top:1px solid rgba(0,0,0,0.05); border-right:1px solid rgba(0,0,0,0.05); border-bottom:1px solid rgba(0,0,0,0.05);">
+                                    <span style="font-size:1.2rem;">${rpgStats?.weaknessIcon}</span> <span style="opacity:0.9;">${rpgStats?.weakness}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    `}
+
+                    ${test.customTraits ? '' : `
                     <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
                         <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
                             <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
@@ -111,6 +208,7 @@ export async function renderResult(testId, traitScores) {
                             `).join('')}
                         </div>
                     </div>
+                    `}
 
                     <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
                         <div style="position: absolute; top: -5px; right: -5px; font-size: 3rem; opacity: 0.1;">✨</div>
@@ -179,7 +277,7 @@ export async function renderResult(testId, traitScores) {
     setTimeout(type, 600);
 
     const canvas = document.getElementById('radarChart');
-    if (canvas) {
+    if (canvas && !test.customTraits) {
         const ctx = canvas.getContext('2d');
         const cx = 110, cy = 110, r = 85;
         const labels = ['energy', 'logic', 'empathy', 'creativity'];
@@ -249,7 +347,12 @@ export function renderTestExecution(testId) {
     const test = TESTS.find(t => t.id === testId);
     if (!test) return;
     let step = 0;
-    const traitScores = { energy: 0, logic: 0, empathy: 0, creativity: 0 };
+    
+    // Initialize traitScores dynamically based on test configuration or default to standard traits
+    const traits = test.customTraits || ['energy', 'logic', 'empathy', 'creativity'];
+    const traitScores = {};
+    traits.forEach(t => traitScores[t] = 0);
+
     let history = [];
 
     const renderIntro = () => {
@@ -335,8 +438,12 @@ export function renderTestExecution(testId) {
             if (opt.scores) {
                 for (const k in opt.scores) traitScores[k] += opt.scores[k];
             } else if (opt.type) {
-                if (opt.type === 'A') traitScores.energy += 2;
-                else traitScores.empathy += 2;
+                if (test.customTraits && test.customTraits.includes(opt.type)) {
+                     traitScores[opt.type] = (traitScores[opt.type] || 0) + 1;
+                } else {
+                    if (opt.type === 'A') traitScores.energy = (traitScores.energy || 0) + 2;
+                    else traitScores.empathy = (traitScores.empathy || 0) + 2;
+                }
             }
 
             step++;
