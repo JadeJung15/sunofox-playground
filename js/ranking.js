@@ -1,4 +1,4 @@
-import { db } from './firebase-init.js';
+import { db } from './firebase-init.js?v=5.6.0';
 import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function renderRanking(container) {

@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-init.js';
+import { auth, db } from './firebase-init.js?v=5.6.0';
 import { 
     EMOJI_SHOP, 
     ITEM_VALUES, 
@@ -283,6 +283,46 @@ export async function usePoints(amount, reason = "소모") {
         const newPoints = UserState.data.points - amount;
         await updateDoc(userRef, { points: newPoints });
         UserState.data.points = newPoints; updateUI();
+        return true;
+    } catch (e) { return false; }
+}
+
+export async function chargeUserPoints(uid, amount) {
+    if (!UserState.isMaster || !uid || !Number.isFinite(amount)) return false;
+    try {
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, { points: increment(amount) });
+        await addDoc(collection(db, "pointLogs"), {
+            uid,
+            type: "points",
+            amount,
+            reason: "관리자 집행",
+            timestamp: serverTimestamp()
+        });
+        if (UserState.user?.uid === uid) {
+            UserState.data.points = (UserState.data.points || 0) + amount;
+            updateUI();
+        }
+        return true;
+    } catch (e) { return false; }
+}
+
+export async function chargeUserScore(uid, amount) {
+    if (!UserState.isMaster || !uid || !Number.isFinite(amount)) return false;
+    try {
+        const userRef = doc(db, "users", uid);
+        await updateDoc(userRef, { totalScore: increment(amount) });
+        await addDoc(collection(db, "pointLogs"), {
+            uid,
+            type: "score",
+            amount,
+            reason: "관리자 집행",
+            timestamp: serverTimestamp()
+        });
+        if (UserState.user?.uid === uid) {
+            UserState.data.totalScore = (UserState.data.totalScore || 0) + amount;
+            updateUI();
+        }
         return true;
     } catch (e) { return false; }
 }

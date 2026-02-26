@@ -42,7 +42,9 @@ REQUIRED_FILES.forEach(file => {
 REQUIRED_FILES.filter(f => f.endsWith('.js') || f.endsWith('.html')).forEach(file => {
     try {
         const content = fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
-        if (content.includes('<<<<<<<') || content.includes('=======') || content.includes('>>>>>>>')) {
+        // 단순히 포함 여부가 아니라, 줄 시작 부분에 있는 실제 Git 충돌 표식 패턴을 확인
+        const conflictRegex = /^(<<<<<<<|=======|>>>>>>>)($| )/m;
+        if (conflictRegex.test(content)) {
             console.error(`❌ Git 충돌 표식 발견: ${file}`);
             hasError = true;
         }

@@ -1,5 +1,5 @@
-import { updateUI, UserState, addPoints } from '../auth.js';
-import { db } from '../firebase-init.js';
+import { updateUI, UserState, addPoints } from '../auth.js?v=5.6.0';
+import { db } from '../firebase-init.js?v=5.6.0';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { TESTS } from '../tests-data.js?v=4.0.0';
 
