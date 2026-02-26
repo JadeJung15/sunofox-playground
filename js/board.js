@@ -45,6 +45,7 @@ let currentCategory = 'ALL';
 let currentSearch = '';
 let postUnsubscribe = null;
 let isLoadingMore = false;
+let boardObserver = null; // 메모리 누수 방지용
 
 export async function renderBoard(container) {
     container.innerHTML = `
@@ -199,12 +200,13 @@ export async function renderBoard(container) {
     loadBestPosts();
 
     // Infinite Scroll via IntersectionObserver
-    const observer = new IntersectionObserver((entries) => {
+    if (boardObserver) boardObserver.disconnect();
+    boardObserver = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && !isLoadingMore && lastVisiblePost) {
             loadPosts(listContainer, true);
         }
     }, { threshold: 1.0 });
-    observer.observe(document.getElementById('scroll-trigger'));
+    boardObserver.observe(document.getElementById('scroll-trigger'));
 
     // Category Tab Events
     container.querySelectorAll('.board-tab').forEach(tab => {
@@ -264,8 +266,9 @@ export async function renderBoard(container) {
         }
     };
 
-    // Shop Item Actions
-    container.addEventListener('click', async (e) => {
+    // Shop Item Actions (중복 등록 방지)
+    const boardContainer = container.querySelector('.board-container');
+    boardContainer.addEventListener('click', async (e) => {
         const buyBtn = e.target.closest('.btn-buy-item');
         const equipBtn = e.target.closest('.btn-equip-item');
         if (buyBtn) {
@@ -320,15 +323,22 @@ export async function renderBoard(container) {
         const content = contentInput.value.trim();
         if (!content && !selectedImageFile) return alert("내용을 입력해주세요.");
         let isPremium = premiumCheck.checked;
-        if (isPremium && !(await usePoints(300, "게시글 강조"))) return;
 
         try {
             submitBtn.disabled = true;
             let imageUrl = null;
+            
+            // 이미지 업로드 대기
             if (selectedImageFile) {
                 const storageRef = ref(storage, `posts/${UserState.user.uid}_${now}_${selectedImageFile.name}`);
                 await uploadBytes(storageRef, selectedImageFile);
                 imageUrl = await getDownloadURL(storageRef);
+            }
+
+            // [버그수정] 결제는 이미지 업로드 성공 후 마지막에 수행하여 포인트 증발 방지
+            if (isPremium && !(await usePoints(300, "게시글 강조"))) {
+                submitBtn.disabled = false;
+                return;
             }
 
             await addDoc(collection(db, "posts"), {
@@ -467,7 +477,7 @@ async function renderSinglePost(container, postId, data) {
             ${REACTION_TYPES.map(r => {
                 const count = (reactions[r.emoji] || []).length;
                 const isReacted = UserState.user && (reactions[r.emoji] || []).includes(UserState.user.uid);
-                return `<button class="reaction-btn ${isReacted ? 'reacted' : ''}" onclick="handlePostReaction('${postId}', '${r.emoji}')">
+                return `<button class="reaction-btn ${isReacted ? 'reacted' : ''}" data-post="${postId}" data-emoji="${r.emoji}" onclick="handlePostReaction('${postId}', '${r.emoji}')">
                     <span>${r.emoji}</span> <span class="reaction-count">${count || ''}</span>
                 </button>`;
             }).join('')}
@@ -558,19 +568,38 @@ window.handlePostReaction = async (postId, emoji) => {
     if (!UserState.user) return alert("로그인이 필요합니다.");
     const postRef = doc(db, "posts", postId);
     const postSnap = await getDoc(postRef);
-    const reactions = postSnap.data().reactions || {};
+    if (!postSnap.exists()) return alert("존재하지 않는 게시글입니다.");
+    
+    const data = postSnap.data();
+    const reactions = data.reactions || {};
     const userList = reactions[emoji] || [];
+    const isReacted = userList.includes(UserState.user.uid);
 
-    if (userList.includes(UserState.user.uid)) {
+    if (isReacted) {
         await updateDoc(postRef, { [`reactions.${emoji}`]: arrayRemove(UserState.user.uid) });
     } else {
         if (!(await usePoints(5, "반응 남기기"))) return;
         await updateDoc(postRef, { [`reactions.${emoji}`]: arrayUnion(UserState.user.uid) });
-        // Award 1P to author
-        await updateDoc(doc(db, "users", postSnap.data().uid), { points: increment(1) });
+        // Award 1P to author (자기 자신에게는 보상하지 않음)
+        if (data.uid !== UserState.user.uid) {
+            await updateDoc(doc(db, "users", data.uid), { points: increment(1) });
+        }
     }
-    // Simple way to refresh: just reload posts or ideally update the specific post element
-    renderBoard(document.querySelector('.board-container').parentElement);
+    
+    // [버그수정] 전체 보드 리렌더링으로 인한 스크롤 초기화 방지
+    // 해당 게시물의 반응 버튼 UI만 부분적으로 업데이트
+    const reactionBtn = document.querySelector(`.reaction-btn[data-post="${postId}"][data-emoji="${emoji}"]`);
+    if (reactionBtn) {
+        const countEl = reactionBtn.querySelector('.reaction-count');
+        let currentCount = parseInt(countEl.textContent || '0');
+        if (isReacted) {
+            reactionBtn.classList.remove('reacted');
+            countEl.textContent = Math.max(0, currentCount - 1) || '';
+        } else {
+            reactionBtn.classList.add('reacted');
+            countEl.textContent = currentCount + 1;
+        }
+    }
 };
 
 window.toggleComments = async (postId, authorUid) => {
@@ -597,7 +626,13 @@ window.submitComment = async (postId, authorUid) => {
 window.deletePost = async (postId) => {
     if(confirm("정말 삭제하시겠습니까?")) {
         await deleteDoc(doc(db, "posts", postId));
-        renderBoard(document.querySelector('.board-container').parentElement);
+        // [버그수정] 전체 리렌더링 대신 해당 요소만 삭제
+        const btn = document.querySelector(`.btn-delete[onclick="deletePost('${postId}')"]`);
+        if (btn) {
+            btn.closest('.post-item').remove();
+        } else {
+            renderBoard(document.querySelector('.board-container').parentElement);
+        }
     }
 };
 
