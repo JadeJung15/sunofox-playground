@@ -1,12 +1,12 @@
 
-import { initAuth, updateUI, UserState, addPoints, usePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade, updateProfileCache, COLOR_SHOP } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, usePoints as authUsePoints, EMOJI_SHOP, getTier, TIERS, chargeUserPoints, chargeUserScore, authReady, ITEM_GRADES, ITEM_VALUES, getGrade, updateProfileCache, COLOR_SHOP } from './auth.js';
 import { initArcade } from './arcade.js';
 import { copyLink, saveAsStoryImage } from './share.js';
 import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from './tests-data.js?v=3.0.0';
+import { TESTS } from './tests-data.js?v=3.1.0';
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -14,6 +14,54 @@ const themeToggle = document.getElementById('theme-toggle');
 
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80"; // 부드러운 그라데이션 이미지
+
+// [보안] 데이터 연타 방지 변수
+let isDataProcessing = false;
+
+// [보안] 안전한 포인트 처리 래퍼
+async function addPoints(amount, reason) {
+    if (isDataProcessing) return false;
+    isDataProcessing = true;
+    try {
+        const res = await authAddPoints(amount, reason);
+        isDataProcessing = false;
+        return res;
+    } catch (e) {
+        isDataProcessing = false;
+        return false;
+    }
+}
+
+async function usePoints(amount) {
+    if (isDataProcessing) return false;
+    isDataProcessing = true;
+    try {
+        const res = await authUsePoints(amount);
+        isDataProcessing = false;
+        return res;
+    } catch (e) {
+        isDataProcessing = false;
+        return false;
+    }
+}
+
+// [보안] 에러 방화벽 렌더러
+async function safeRender(renderFunc, ...args) {
+    try {
+        await renderFunc(...args);
+    } catch (error) {
+        console.error("Render Error:", error);
+        if (app) {
+            app.innerHTML = `
+                <div class="card fade-in" style="text-align:center; padding:4rem 2rem;">
+                    <div style="font-size:3rem; margin-bottom:1rem;">⚠️</div>
+                    <h3>화면을 불러오는 중 오류가 발생했습니다</h3>
+                    <p class="text-sub" style="margin-top:0.5rem;">일시적인 오류입니다. 아래 버튼을 눌러 홈으로 이동해 주세요.</p>
+                    <button onclick="location.hash='#home'; location.reload();" class="btn-primary" style="margin-top:1.5rem;">홈으로 돌아가기</button>
+                </div>`;
+        }
+    }
+}
 
 // 이미지 로드 실패 시 호출될 공통 핸들러
 window.handleImgError = function(img) {
@@ -135,17 +183,17 @@ async function router() {
         else if (hash === '#terms') renderTerms();
         else if (hash === '#contact') renderContact();
         else if (hash === '#arcade') renderArcade();
-        else if (hash === '#board') await renderBoard(container);
-        else if (hash === '#ranking') await renderRanking(container);
+        else if (hash === '#board') await safeRender(renderBoard, container);
+        else if (hash === '#ranking') await safeRender(renderRanking, container);
         else if (hash === '#guide') renderGuide();
-        else if (hash === '#book') await renderEncyclopedia();
+        else if (hash === '#book') await safeRender(renderEncyclopedia);
         else if (hash === '#profile') renderProfile();
         else if (hash === '#admin') renderAdmin();
         else if (hash === '#7check') renderCategorySelection();
-        else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
+        else if (hash.startsWith('#test/')) await safeRender(renderTestExecution, hash.split('/')[1]);
         else {
             currentFilter = categoryMap[hash] || '전체';
-            await renderHome(hash);
+            await safeRender(renderHome, hash);
         }
 
         // 인증이 뒤늦게 완료된 경우 퀘스트 체크
