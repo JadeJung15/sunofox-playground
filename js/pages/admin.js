@@ -2,9 +2,19 @@ import { UserState, chargeUserPoints, chargeUserScore } from '../auth.js';
 import { db } from '../firebase-init.js';
 import { collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-export function renderAdmin() {
+export async function renderAdmin() {
     const app = document.getElementById('app');
-    if (!UserState.isMaster) { location.hash = '#home'; return; }
+    
+    // [개선] 마스터 권한 확인 대기 로직 (튕김 방지)
+    if (!UserState.isMaster) {
+        // 혹시라도 로딩 중일 수 있으니 아주 잠깐 대기 후 재확인
+        await new Promise(resolve => setTimeout(resolve, 300));
+        if (!UserState.isMaster) {
+            console.warn("Access denied: Not a master user.");
+            location.hash = '#home'; 
+            return; 
+        }
+    }
 
     app.innerHTML = `
         <div class="admin-page fade-in">
