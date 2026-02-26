@@ -65,18 +65,21 @@ export function initAuth() {
             // 중요: 데이터 로드 전이라도 UI를 즉시 '로그인됨' 상태로 고정 (깜빡임 방지)
             updateUI(true);
 
-            const token = await user.getIdTokenResult();
-            UserState.isMaster = user.uid === '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
-            UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
-            
-            try {
-                await loadUserData(user);
-                updateUI(true); // 데이터 로드 후 상세 정보 갱신
-            } catch (e) {
-                console.error("Load user data error:", e);
-                updateUI(true);
-            }
-            if (typeof setupNotificationListener === 'function') setupNotificationListener(user.uid);
+                    const token = await user.getIdTokenResult();
+                    UserState.isMaster = user.uid === '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
+                    UserState.isAdmin = !!token.claims.admin || UserState.isMaster;
+                    
+                    try {
+                        await loadUserData(user);
+                        updateUI(true); 
+                        // 마스터 권한인 경우 한 번 더 확실하게 UI 갱신 (지연 방지)
+                        if (UserState.isMaster) {
+                            setTimeout(() => updateUI(true), 500);
+                        }
+                    } catch (e) {
+                        console.error("Load user data error:", e);
+                        updateUI(true);
+                    }            if (typeof setupNotificationListener === 'function') setupNotificationListener(user.uid);
         } else {
             UserState.user = null; UserState.data = null; UserState.isAdmin = false; UserState.isMaster = false;
             if (window.unsubNotifications) window.unsubNotifications();
@@ -159,17 +162,30 @@ export function updateUI(isLoggedIn = !!UserState.user) {
 
         const footerAdmin = document.getElementById('footer-admin-link');
         if (footerAdmin) {
-            footerAdmin.style.display = UserState.isMaster ? 'inline' : 'none';
+            if (UserState.isMaster) {
+                footerAdmin.classList.remove('hidden');
+                footerAdmin.style.display = 'inline';
+            } else {
+                footerAdmin.classList.add('hidden');
+                footerAdmin.style.display = 'none';
+            }
         }
     } else {
-        loginBtn.style.display = 'flex';
-        loginBtn.classList.remove('hidden');
-        
-        headerProfile.style.display = 'none';
-        headerProfile.classList.add('hidden');
-        
+        if (loginBtn) {
+            loginBtn.style.display = 'flex';
+            loginBtn.classList.remove('hidden');
+            loginBtn.disabled = false;
+            loginBtn.textContent = "로그인";
+        }
+        if (headerProfile) {
+            headerProfile.style.display = 'none';
+            headerProfile.classList.add('hidden');
+        }
         const footerAdmin = document.getElementById('footer-admin-link');
-        if (footerAdmin) footerAdmin.style.display = 'none';
+        if (footerAdmin) {
+            footerAdmin.classList.add('hidden');
+            footerAdmin.style.display = 'none';
+        }
     }
 }
 
