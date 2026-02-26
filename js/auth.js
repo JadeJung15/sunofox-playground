@@ -54,20 +54,8 @@ let authInitialized = false;
 export function initAuth() {
     if (authInitialized) return;
     authInitialized = true;
-    console.log("Auth Initializing...");
-
-    // 리디렉션 결과 처리 (페이지 로드 시 자동 실행)
-    getRedirectResult(auth).then((result) => {
-        if (result?.user) {
-            console.log("Redirect Result: Login Success", result.user.email);
-        }
-    }).catch(error => {
-        console.error("Redirect Result Error:", error.code, error.message);
-        handleAuthError(error);
-    });
 
     onAuthStateChanged(auth, async (user) => {
-        console.log("Auth State Changed:", user ? "User Logged In" : "User Logged Out");
         if (user) {
             UserState.user = user;
             const token = await user.getIdTokenResult();
@@ -88,11 +76,7 @@ export function initAuth() {
     document.addEventListener('click', async (e) => {
         const target = e.target.closest('button') || e.target;
         if (target.id === 'login-btn') {
-            console.log("Login Button Clicked!");
-            if (target.disabled) {
-                console.log("Button is disabled, skipping...");
-                return;
-            }
+            if (target.disabled) return;
             
             const originalText = target.textContent;
             target.disabled = true;
@@ -100,45 +84,26 @@ export function initAuth() {
 
             const provider = new GoogleAuthProvider();
             provider.setCustomParameters({ prompt: 'select_account' });
-            
-            const ua = navigator.userAgent.toLowerCase();
-            const isInApp = ua.indexOf('kakaotalk') > -1 || ua.indexOf('line') > -1 || ua.indexOf('naver') > -1;
-
-            console.log("Environment: ", { 
-                host: window.location.hostname,
-                isInApp: isInApp,
-                userAgent: ua
-            });
-
-            if (isInApp) {
-                alert("구글 보안 정책으로 인해 인앱 브라우저에서는 로그인이 차단될 수 있습니다. 오른쪽 상단 메뉴를 눌러 '외부 브라우저로 열기'를 선택해 주세요.");
-            }
 
             try {
-                // 팝업 방식을 기본으로 시도 (반응성이 더 빠름)
-                console.log("Attempting signInWithPopup...");
-                const result = await signInWithPopup(auth, provider);
-                console.log("Popup login success:", result.user.email);
+                // 가장 안정적인 팝업 방식 사용
+                await signInWithPopup(auth, provider);
             } catch (error) {
-                console.warn("Popup failed, attempting redirect...", error.code);
-                
-                // 팝업이 차단되거나 오류가 나면 리디렉션으로 폴백
-                try {
+                console.error("Login Error:", error.code);
+                if (error.code === 'auth/popup-blocked') {
+                    // 팝업 차단된 경우에만 리디렉션 시도
                     await signInWithRedirect(auth, provider);
-                } catch (redirectError) {
-                    console.error("Redirect also failed:", redirectError);
-                    handleAuthError(redirectError);
+                } else if (error.code !== 'auth/cancelled-popup-request' && error.code !== 'auth/popup-closed-by-user') {
+                    handleAuthError(error);
                 }
             } finally {
-                // 리디렉션이 시작되면 페이지를 떠나므로 의미 없지만, 팝업 실패 시를 위해 복구
                 target.disabled = false;
                 target.textContent = originalText;
             }
         }
         if (target.id === 'logout-btn') {
             signOut(auth).then(() => { 
-                console.log("Logout success");
-                location.hash = '#home'; 
+                location.reload(); 
             });
         }
         if (target.id === 'nickname-save') await changeNickname();
