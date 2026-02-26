@@ -38,7 +38,7 @@ async function addPoints(amount, reason) {
 }
 
 // =================================================================
-// Router
+// Router & URL Handler
 // =================================================================
 
 const categoryMap = {
@@ -48,7 +48,19 @@ const categoryMap = {
 let currentFilter = '전체';
 let isRouting = false;
 
+// Cloudflare Workers 호환성을 위한 쿼리 파라미터 처리
+function handleQueryParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const testId = urlParams.get('test');
+    if (testId) {
+        // ?test=id 형식을 #test/id 형식으로 변환 후 URL 정리
+        window.history.replaceState(null, '', window.location.origin + window.location.pathname);
+        window.location.hash = `#test/${testId}`;
+    }
+}
+
 async function router() {
+    handleQueryParams();
     const container = document.getElementById('app');
     if (!container || isRouting) return;
 

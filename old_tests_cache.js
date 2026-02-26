@@ -3,26 +3,20 @@ import { ITEM_VALUES } from '../constants/shops.js';
 import { db } from '../firebase-init.js';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=4.2.8';
+import { TESTS } from '../tests-data.js?v=4.0.0';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {
     const app = document.getElementById('app');
     const test = TESTS.find(t => t.id === testId);
-    const traits = test.customTraits || ['energy', 'logic', 'empathy', 'creativity'];
-    const dominantTrait = traits.reduce((a, b) => ((traitScores[a] || 0) >= (traitScores[b] || 0) ? a : b));
+    const traits = ['energy', 'logic', 'empathy', 'creativity'];
+    const dominantTrait = traits.reduce((a, b) => (traitScores[a] >= traitScores[b] ? a : b));
 
     const result = (test.results[dominantTrait]) ? test.results[dominantTrait] : (traitScores.energy >= 4 ? test.results.A : test.results.B);
     const themeColor = result.color || '#6366f1';
     const tags = result.tags || [];
-    const maxScore = 14;
-    const stats = {
-        energy:     Math.min(Math.round(((traitScores.energy || 0)     / maxScore) * 100), 100),
-        logic:      Math.min(Math.round(((traitScores.logic || 0)      / maxScore) * 100), 100),
-        empathy:    Math.min(Math.round(((traitScores.empathy || 0)    / maxScore) * 100), 100),
-        creativity: Math.min(Math.round(((traitScores.creativity || 0) / maxScore) * 100), 100),
-    };
 
+    // --- 영혼 분석 데이터 풀 생성 ---
     const ingredientPool = {
         energy: [
             { title: "지치지 않는 에너자이저", desc: "주변까지 밝히는 긍정의 불꽃 세 스푼" },
@@ -53,16 +47,13 @@ export async function renderResult(testId, traitScores) {
         creativity: { weaponIcon: "✨", weapon: "기발한 발상 지팡이", weaknessIcon: "⏳", weakness: "반복적인 루틴에 쉽게 질림" }
     };
 
-    // Determine the trait to use for the analysis (fallback to 'energy' if the dominant trait isn't in the pool)
-    const poolTrait = ingredientPool[dominantTrait] ? dominantTrait : (['energy', 'logic', 'empathy', 'creativity'][Math.floor(Math.random() * 4)]);
-    
-    const mainIngredient = ingredientPool[poolTrait][Math.floor(Math.random() * ingredientPool[poolTrait].length)];
-    const otherTraits = ['energy', 'logic', 'empathy', 'creativity'].filter(t => t !== poolTrait).sort(() => 0.5 - Math.random());
+    const mainIngredient = ingredientPool[dominantTrait][Math.floor(Math.random() * ingredientPool[dominantTrait].length)];
+    const otherTraits = traits.filter(t => t !== dominantTrait).sort(() => 0.5 - Math.random());
     const sub1Ingredient = ingredientPool[otherTraits[0]][Math.floor(Math.random() * ingredientPool[otherTraits[0]].length)];
     const sub2Ingredient = ingredientPool[otherTraits[1]][Math.floor(Math.random() * ingredientPool[otherTraits[1]].length)];
     
     const soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
-    const rpgStats = weaponPool[poolTrait];
+    const rpgStats = weaponPool[dominantTrait];
 
     let basePointReward = 10;
     if (UserState.user && UserState.data.boosterCount > 0) {
@@ -79,8 +70,7 @@ export async function renderResult(testId, traitScores) {
             empathy: '🌱 묘목',
             creativity: '🌌 은하수 가루'
         };
-        const commonItems = ['⚡ 번개 병', '🧪 현자의 돌', '🌱 묘목', '🌌 은하수 가루', '🦊 여우 꼬리'];
-        rewardedItem = traitItems[dominantTrait] || commonItems[Math.floor(Math.random() * commonItems.length)];
+        rewardedItem = traitItems[dominantTrait] || '💩 돌멩이';
         const itemVal = ITEM_VALUES[rewardedItem] || 500;
 
         await updateDoc(doc(db, "users", UserState.user.uid), {
@@ -123,92 +113,64 @@ export async function renderResult(testId, traitScores) {
                         <p id="typing-desc" style="font-size: 1rem; line-height: 1.7; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
                     </div>
 
-                                        <div class="soul-analysis-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                            <h4 style="margin-bottom: 1.5rem; font-size: 1.05rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
-                                                <span style="font-size:1.3rem;">🔮</span> 나의 영혼 분석서
-                                            </h4>
-                    
-                                            <div style="background:rgba(0,0,0,0.02); padding:1.2rem; border-radius:16px; margin-bottom:1.5rem; border: 1px solid rgba(0,0,0,0.05);">
-                                                <h5 style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1.2rem; display:flex; align-items:center; gap:6px; font-weight:800;"><span style="font-size:1.1rem;">🧪</span> 나를 만든 연금술 레시피</h5>
-                                                <div style="display:flex; flex-direction:column; gap:12px;">
-                                                    <div style="display:flex; align-items:center; gap:12px;">
-                                                        <div style="width:45px; height:45px; border-radius:12px; background:${themeColor}22; color:${themeColor}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:900;">70%</div>
-                                                        <div style="flex:1; text-align:left;">
-                                                            <div style="font-weight:800; font-size:0.9rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients?.main.title}</div>
-                                                            <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients?.main.desc}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div style="display:flex; align-items:center; gap:12px;">
-                                                        <div style="width:45px; height:45px; border-radius:12px; background:rgba(0,0,0,0.05); color:var(--text-main); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:800;">20%</div>
-                                                        <div style="flex:1; text-align:left;">
-                                                            <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients?.sub1.title}</div>
-                                                            <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients?.sub1.desc}</div>
-                                                        </div>
-                                                    </div>
-                                                    <div style="display:flex; align-items:center; gap:12px;">
-                                                        <div style="width:45px; height:45px; border-radius:12px; background:rgba(0,0,0,0.03); color:var(--text-sub); display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700;">10%</div>
-                                                        <div style="flex:1; text-align:left;">
-                                                            <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients?.sub2.title}</div>
-                                                            <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients?.sub2.desc}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                    
-                                            <div style="background:var(--card-bg); padding:1.2rem; border-radius:16px; border:1px solid ${themeColor}33; position:relative; overflow:hidden;">
-                                                <div style="position:absolute; top:-10px; right:-10px; font-size:3rem; opacity:0.05;">⚔️</div>
-                                                <h5 style="font-size:0.85rem; color:${themeColor}; margin-bottom:1.2rem; display:flex; align-items:center; gap:6px; font-weight:800; position:relative;"><span style="font-size:1.1rem;">🕹️</span> 현실 생존 가이드</h5>
-                                                
-                                                <div style="margin-bottom:12px; position:relative;">
-                                                    <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:6px; font-weight:800; text-align:left;">가장 치명적인 무기 (장점)</div>
-                                                    <div style="background:rgba(0,0,0,0.02); padding:12px 14px; border-radius:12px; font-size:0.9rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:10px; border:1px solid rgba(0,0,0,0.05);">
-                                                        <span style="font-size:1.2rem;">${rpgStats?.weaponIcon}</span> <span>${rpgStats?.weapon}</span>
-                                                    </div>
-                                                </div>
-                                                
-                                                <div style="position:relative;">
-                                                    <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:6px; font-weight:800; text-align:left;">조심해야 할 아킬레스건 (약점)</div>
-                                                    <div style="background:rgba(0,0,0,0.02); padding:12px 14px; border-radius:12px; font-size:0.9rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:10px; border-left:4px solid #ef4444; border-top:1px solid rgba(0,0,0,0.05); border-right:1px solid rgba(0,0,0,0.05); border-bottom:1px solid rgba(0,0,0,0.05);">
-                                                        <span style="font-size:1.2rem;">${rpgStats?.weaknessIcon}</span> <span style="opacity:0.9;">${rpgStats?.weakness}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                    
-                                        <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                            <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
-                                                <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
-                                                7단계 심층 아우라 지표
-                                                <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
-                                            </h4>
-                                            
-                                            <div style="position:relative; margin-bottom: 2rem;">
-                                                <canvas id="radarChart" width="220" height="220" style="margin: 0 auto; max-width: 100%; display:block; filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.08));"></canvas>
-                                            </div>
-                    
-                                            <div class="aura-stats-bars" style="display:flex; flex-direction:column; gap: 1rem; margin-top: 1.5rem;">
-                                                ${[
-                                                    { id: 'bar-energy', label: '에너지 (Energy)', val: Math.round(stats.energy || 0), color: '#f59e0b' },
-                                                    { id: 'bar-logic', label: '논리력 (Logic)', val: Math.round(stats.logic || 0), color: '#3b82f6' },
-                                                    { id: 'bar-empathy', label: '공감력 (Empathy)', val: Math.round(stats.empathy || 0), color: '#ec4899' },
-                                                    { id: 'bar-creativity', label: '독창성 (Creativity)', val: Math.round(stats.creativity || 0), color: '#8b5cf6' }
-                                                ].map(s => `
-                                                    <div class="stat-bar-row" style="display:flex; flex-direction:column; gap:6px;">
-                                                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                                                            <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-main);">${s.label}</span>
-                                                            <span style="font-size: 0.75rem; font-weight: 900; color: ${s.color};">${s.val}%</span>
-                                                        </div>
-                                                        <div style="width:100%; height:8px; background:rgba(0,0,0,0.05); border-radius:10px; overflow:hidden;">
-                                                            <div id="${s.id}" data-width="${s.val}%" style="width:0%; height:100%; background:${s.color}; border-radius:10px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);"></div>
-                                                        </div>
-                                                    </div>
-                                                `).join('')}
-                                            </div>
-                                        </div>
-                    
-                                        <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
-                                            <div style="position: absolute; top: -5px; right: -5px; font-size: 3rem; opacity: 0.1;">✨</div>
-                                            <span style="font-size: 0.7rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
+                    <!-- 새로운 영혼 분석서 섹션 -->
+                    <div class="soul-analysis-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                        <h4 style="margin-bottom: 1.5rem; font-size: 1.05rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
+                            <span style="font-size:1.3rem;">🔮</span> 나의 영혼 분석서
+                        </h4>
+
+                        <!-- Part 1: 연금술 레시피 -->
+                        <div style="background:rgba(0,0,0,0.02); padding:1.2rem; border-radius:16px; margin-bottom:1.5rem; border: 1px solid rgba(0,0,0,0.05);">
+                            <h5 style="font-size:0.85rem; color:var(--text-sub); margin-bottom:1.2rem; display:flex; align-items:center; gap:6px; font-weight:800;"><span style="font-size:1.1rem;">🧪</span> 나를 만든 연금술 레시피</h5>
+                            <div style="display:flex; flex-direction:column; gap:12px;">
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="width:45px; height:45px; border-radius:12px; background:${themeColor}22; color:${themeColor}; display:flex; align-items:center; justify-content:center; font-size:1.1rem; font-weight:900;">70%</div>
+                                    <div style="flex:1; text-align:left;">
+                                        <div style="font-weight:800; font-size:0.9rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients.main.title}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients.main.desc}</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="width:45px; height:45px; border-radius:12px; background:rgba(0,0,0,0.05); color:var(--text-main); display:flex; align-items:center; justify-content:center; font-size:1rem; font-weight:800;">20%</div>
+                                    <div style="flex:1; text-align:left;">
+                                        <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients.sub1.title}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients.sub1.desc}</div>
+                                    </div>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:12px;">
+                                    <div style="width:45px; height:45px; border-radius:12px; background:rgba(0,0,0,0.03); color:var(--text-sub); display:flex; align-items:center; justify-content:center; font-size:0.9rem; font-weight:700;">10%</div>
+                                    <div style="flex:1; text-align:left;">
+                                        <div style="font-weight:800; font-size:0.85rem; color:var(--text-main); margin-bottom:2px;">${soulIngredients.sub2.title}</div>
+                                        <div style="font-size:0.75rem; color:var(--text-sub); line-height:1.4;">${soulIngredients.sub2.desc}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Part 2: RPG 생존 무기 -->
+                        <div style="background:var(--card-bg); padding:1.2rem; border-radius:16px; border:1px solid ${themeColor}33; position:relative; overflow:hidden;">
+                            <div style="position:absolute; top:-10px; right:-10px; font-size:3rem; opacity:0.05;">⚔️</div>
+                            <h5 style="font-size:0.85rem; color:${themeColor}; margin-bottom:1.2rem; display:flex; align-items:center; gap:6px; font-weight:800; position:relative;"><span style="font-size:1.1rem;">🕹️</span> 현실 생존 가이드</h5>
+                            
+                            <div style="margin-bottom:12px; position:relative;">
+                                <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:6px; font-weight:800; text-align:left;">가장 치명적인 무기 (장점)</div>
+                                <div style="background:rgba(0,0,0,0.02); padding:12px 14px; border-radius:12px; font-size:0.9rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:10px; border:1px solid rgba(0,0,0,0.05);">
+                                    <span style="font-size:1.2rem;">${rpgStats.weaponIcon}</span> <span>${rpgStats.weapon}</span>
+                                </div>
+                            </div>
+                            
+                            <div style="position:relative;">
+                                <div style="font-size:0.75rem; color:var(--text-sub); margin-bottom:6px; font-weight:800; text-align:left;">조심해야 할 아킬레스건 (약점)</div>
+                                <div style="background:rgba(0,0,0,0.02); padding:12px 14px; border-radius:12px; font-size:0.9rem; font-weight:800; color:var(--text-main); display:flex; align-items:center; gap:10px; border-left:4px solid #ef4444; border-top:1px solid rgba(0,0,0,0.05); border-right:1px solid rgba(0,0,0,0.05); border-bottom:1px solid rgba(0,0,0,0.05);">
+                                    <span style="font-size:1.2rem;">${rpgStats.weaknessIcon}</span> <span style="opacity:0.9;">${rpgStats.weakness}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -5px; right: -5px; font-size: 3rem; opacity: 0.1;">✨</div>
+                        <span style="font-size: 0.7rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
                         <div style="font-size: 1.5rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.3rem; text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
                         <p style="opacity: 0.7; font-size: 0.75rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
                     </div>
@@ -272,46 +234,10 @@ export async function renderResult(testId, traitScores) {
     };
     setTimeout(type, 600);
 
-    const canvas = document.getElementById('radarChart');
-    if (canvas && !test.customTraits) {
-        const ctx = canvas.getContext('2d');
-        const cx = 110, cy = 110, r = 85;
-        const labels = ['energy', 'logic', 'empathy', 'creativity'];
-
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 1;
-        [0.3, 0.6, 1].forEach(scale => {
-            ctx.beginPath();
-            labels.forEach((_, idx) => {
-                const angle = (idx * 90 - 90) * Math.PI / 180;
-                const x = cx + Math.cos(angle) * r * scale;
-                const y = cy + Math.sin(angle) * r * scale;
-                idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            });
-            ctx.closePath();
-            ctx.stroke();
-        });
-
-        ctx.fillStyle = themeColor + '44';
-        ctx.strokeStyle = themeColor;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        labels.forEach((label, idx) => {
-            const angle = (idx * 90 - 90) * Math.PI / 180;
-            const val = stats[label] / 100;
-            const x = cx + Math.cos(angle) * r * val;
-            const y = cy + Math.sin(angle) * r * val;
-            idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        });
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-    }
-
     const resultShareBtn = document.getElementById('result-share-btn');
     if (resultShareBtn) {
         resultShareBtn.onclick = async () => {
-            const testUrl = `${window.location.origin}/?test=${testId}`;
+            const testUrl = `${window.location.origin}/#test/${testId}`;
             const shareText = `[${test.title}] 당신도 한번 도전해보세요! 딱 7번의 질문으로 찾는 나의 본모습 ✨`;
 
             if (navigator.share) {
@@ -343,12 +269,7 @@ export function renderTestExecution(testId) {
     const test = TESTS.find(t => t.id === testId);
     if (!test) return;
     let step = 0;
-    
-    // Initialize traitScores dynamically based on test configuration or default to standard traits
-    const traits = test.customTraits || ['energy', 'logic', 'empathy', 'creativity'];
-    const traitScores = {};
-    traits.forEach(t => traitScores[t] = 0);
-
+    const traitScores = { energy: 0, logic: 0, empathy: 0, creativity: 0 };
     let history = [];
 
     const renderIntro = () => {
@@ -381,7 +302,7 @@ export function renderTestExecution(testId) {
         const shareBtn = document.getElementById('test-share-btn');
         if (shareBtn) {
             shareBtn.onclick = async () => {
-                const siteUrl = `${window.location.origin}/?test=${testId}`;
+                const siteUrl = window.location.href;
                 if (navigator.share) {
                     try {
                         await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
@@ -434,12 +355,8 @@ export function renderTestExecution(testId) {
             if (opt.scores) {
                 for (const k in opt.scores) traitScores[k] += opt.scores[k];
             } else if (opt.type) {
-                if (test.customTraits && test.customTraits.includes(opt.type)) {
-                     traitScores[opt.type] = (traitScores[opt.type] || 0) + 1;
-                } else {
-                    if (opt.type === 'A') traitScores.energy = (traitScores.energy || 0) + 2;
-                    else traitScores.empathy = (traitScores.empathy || 0) + 2;
-                }
+                if (opt.type === 'A') traitScores.energy += 2;
+                else traitScores.empathy += 2;
             }
 
             step++;
@@ -465,13 +382,3 @@ export function renderTestExecution(testId) {
 
     renderIntro();
 }
-
-// 프로그레스 바 애니메이션 실행
-setTimeout(() => {
-    ['energy', 'logic', 'empathy', 'creativity'].forEach(label => {
-        const bar = document.getElementById(`bar-${label}`);
-        if (bar) {
-            bar.style.width = bar.dataset.width || '0%';
-        }
-    });
-}, 100);
