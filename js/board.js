@@ -460,11 +460,21 @@ async function loadPosts(container, isLoadMore = false) {
             
             // 최신순일 경우 또는 인기순 내에서 같은 좋아요 수일 때
             // 프리미엄 게시글(강조)을 최상단에 고정
-            if (a.isPremium !== b.isPremium) return b.isPremium ? -1 : 1;
+            const aPremium = !!a.isPremium;
+            const bPremium = !!b.isPremium;
+            if (aPremium !== bPremium) return aPremium ? -1 : 1;
 
             // 시간순 정렬 (createdAt이 null이면 '방금 전'이므로 가장 최신으로 취급)
-            const timeA = a.createdAt?.toMillis() || Date.now();
-            const timeB = b.createdAt?.toMillis() || Date.now();
+            const getTime = (t) => {
+                if (!t) return Date.now();
+                if (typeof t.toMillis === 'function') return t.toMillis();
+                if (t.seconds) return t.seconds * 1000;
+                if (t instanceof Date) return t.getTime();
+                if (typeof t === 'number') return t;
+                return Date.now();
+            };
+            const timeA = getTime(a.createdAt);
+            const timeB = getTime(b.createdAt);
             return timeB - timeA;
         });
 
@@ -486,7 +496,9 @@ async function loadPosts(container, isLoadMore = false) {
 
 async function renderSinglePost(container, postId, data) {
     const profile = await fetchUserProfile(data.uid);
-    const date = data.createdAt ? new Date(data.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
+    const getMillis = (t) => t ? (typeof t.toMillis === 'function' ? t.toMillis() : (t.seconds ? t.seconds * 1000 : (t instanceof Date ? t.getTime() : (typeof t === 'number' ? t : Date.now())))) : null;
+    const ms = getMillis(data.createdAt);
+    const date = ms ? new Date(ms).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
     
     let auraClass = (profile.activeAura && profile.activeAura !== 'NONE') ? AURA_SHOP[profile.activeAura]?.class || '' : '';
     let borderClass = (profile.activeBorder && profile.activeBorder !== 'NONE') ? BORDER_SHOP[profile.activeBorder]?.class || '' : '';
@@ -713,7 +725,9 @@ async function loadComments(postId) {
         const profile = await fetchUserProfile(c.uid);
         const div = document.createElement('div');
         div.className = 'comment-item';
-        const cDate = c.createdAt ? new Date(c.createdAt.toMillis()).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
+        const getMillis = (t) => t ? (typeof t.toMillis === 'function' ? t.toMillis() : (t.seconds ? t.seconds * 1000 : (t instanceof Date ? t.getTime() : (typeof t === 'number' ? t : Date.now())))) : null;
+        const ms = getMillis(c.createdAt);
+        const cDate = ms ? new Date(ms).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
                 <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
