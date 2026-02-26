@@ -1,26 +1,7 @@
-// Web Audio API 기반 효과음 생성 및 전역 음소거 제어
+// Web Audio API 기반 효과음 생성
 class SoundManager {
     constructor() {
-        this.isMuted = localStorage.getItem('sound_muted') === 'true';
         this.audioCtx = null;
-        this.init();
-    }
-
-    init() {
-        const toggleBtn = document.getElementById('sound-toggle');
-        if (toggleBtn) {
-            this.updateToggleButton(toggleBtn);
-            toggleBtn.addEventListener('click', () => {
-                this.isMuted = !this.isMuted;
-                localStorage.setItem('sound_muted', this.isMuted);
-                this.updateToggleButton(toggleBtn);
-            });
-        }
-    }
-
-    updateToggleButton(btn) {
-        btn.textContent = this.isMuted ? '❌' : '🔊';
-        btn.style.opacity = this.isMuted ? '0.5' : '1';
     }
 
     getAudioContext() {
@@ -35,7 +16,6 @@ class SoundManager {
 
     // 기본 노이즈 생성 (주사위 굴리는 소리 등)
     playNoise(duration, type = 'brown', volume = 0.1) {
-        if (this.isMuted) return;
         const ctx = this.getAudioContext();
         const bufferSize = ctx.sampleRate * duration;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
@@ -66,7 +46,6 @@ class SoundManager {
 
     // 둔탁한 소리 (주사위가 바닥에 닿는 소리)
     playThud(volume = 0.2) {
-        if (this.isMuted) return;
         const ctx = this.getAudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -86,7 +65,6 @@ class SoundManager {
 
     // 성공/획득 효과음
     playSuccess() {
-        if (this.isMuted) return;
         const ctx = this.getAudioContext();
         const notes = [523.25, 659.25, 783.99]; // C5, E5, G5
         notes.forEach((freq, i) => {
@@ -104,7 +82,6 @@ class SoundManager {
 
     // 실패 효과음
     playFailure() {
-        if (this.isMuted) return;
         const ctx = this.getAudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
@@ -120,7 +97,6 @@ class SoundManager {
 
     // 슬롯머신 회전 소리
     playSlotTick() {
-        if (this.isMuted) return;
         const ctx = this.getAudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
