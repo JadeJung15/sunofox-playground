@@ -3,7 +3,7 @@ export const TESTS = [
         id: 'energy-test',
         category: '재미',
         title: '2030 반말보룸 🎧 I’m Your Energy 테스트',
-        desc: '요즘 네 에너지 어디서 나오냐. 정상인 척 살고 있지만 다 티 난다. 7개만 고르면 결과 나옴.',
+        desc: '요즘 니 에너지 어디서 나오냐. 정상인 척 살고 있지만 다 티 난다. 7개만 고르면 결과 나옴.',
         thumb: 'https://scontent-icn2-1.cdninstagram.com/v/t51.2885-15/491508562_17899630527177267_864338183336279557_n.webp?efg=eyJ2ZW5jb2RlX3RhZyI6InRocmVhZHMuRkVFRC5pbWFnZV91cmxnZW4uMzQweDM0MC5zZHIuZjc1NzYxLmRlZmF1bHRfaW1hZ2UuYzIifQ&_nc_ht=scontent-icn2-1.cdninstagram.com&_nc_cat=103&_nc_oc=Q6cZ2QHbzQmKbOGml7RiY8X2CSBkBJ3GjBYzJOIzC8sJlIMyBIqPKvawh93-3JzOkQ3bbbU&_nc_ohc=fFITkIfMz-IQ7kNvwFH-dBQ&_nc_gid=ooHjmv3sNFgEvi8Ltao-Xg&edm=AKr904kBAAAA&ccb=7-5&ig_cache_key=MzYxOTA3MDI2NzQ2ODY2ODA4Mg%3D%3D.3-ccb7-5&oh=00_AftHxKNa4yr1pD9UNQCcIW9su6AADRPT4ppfvsIndaeevw&oe=69A5E5D8&_nc_sid=23467f',
         customTraits: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10'],
         questions: [
