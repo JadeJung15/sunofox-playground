@@ -94,10 +94,10 @@ export async function renderResult(testId, traitScores) {
 
                         <div class="aura-stats-bars" style="display:flex; flex-direction:column; gap: 1rem; margin-top: 1.5rem;">
                             ${[
-                                { label: '에너지 (Energy)', val: Math.round(stats.energy), color: '#f59e0b' },
-                                { label: '논리력 (Logic)', val: Math.round(stats.logic), color: '#3b82f6' },
-                                { label: '공감력 (Empathy)', val: Math.round(stats.empathy), color: '#ec4899' },
-                                { label: '독창성 (Creativity)', val: Math.round(stats.creativity), color: '#8b5cf6' }
+                                { id: 'bar-energy', label: '에너지 (Energy)', val: Math.round(stats.energy || 0), color: '#f59e0b' },
+                                { id: 'bar-logic', label: '논리력 (Logic)', val: Math.round(stats.logic || 0), color: '#3b82f6' },
+                                { id: 'bar-empathy', label: '공감력 (Empathy)', val: Math.round(stats.empathy || 0), color: '#ec4899' },
+                                { id: 'bar-creativity', label: '독창성 (Creativity)', val: Math.round(stats.creativity || 0), color: '#8b5cf6' }
                             ].map(s => `
                                 <div class="stat-bar-row" style="display:flex; flex-direction:column; gap:6px;">
                                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -105,7 +105,7 @@ export async function renderResult(testId, traitScores) {
                                         <span style="font-size: 0.75rem; font-weight: 900; color: ${s.color};">${s.val}%</span>
                                     </div>
                                     <div style="width:100%; height:8px; background:rgba(0,0,0,0.05); border-radius:10px; overflow:hidden;">
-                                        <div style="width:${s.val}%; height:100%; background:${s.color}; border-radius:10px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);"></div>
+                                        <div id="${s.id}" data-width="${s.val}%" style="width:0%; height:100%; background:${s.color}; border-radius:10px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);"></div>
                                     </div>
                                 </div>
                             `).join('')}
@@ -362,3 +362,13 @@ export function renderTestExecution(testId) {
 
     renderIntro();
 }
+
+// 프로그레스 바 애니메이션 실행
+setTimeout(() => {
+    ['energy', 'logic', 'empathy', 'creativity'].forEach(label => {
+        const bar = document.getElementById(`bar-${label}`);
+        if (bar) {
+            bar.style.width = bar.dataset.width || '0%';
+        }
+    });
+}, 100);
