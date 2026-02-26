@@ -2,7 +2,7 @@ import { UserState, addPoints, ITEM_VALUES } from '../auth.js';
 import { db } from '../firebase-init.js';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=3.1.4';
+import { TESTS } from '../tests-data.js?v=4.0.0';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {

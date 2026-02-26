@@ -1,7 +1,7 @@
 import { updateUI, UserState, addPoints } from '../auth.js';
 import { db } from '../firebase-init.js';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=3.1.4';
+import { TESTS } from '../tests-data.js?v=4.0.0';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
