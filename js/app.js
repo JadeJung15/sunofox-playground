@@ -12,35 +12,6 @@ const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
 const themeToggle = document.getElementById('theme-toggle');
 
-// [보안] 데이터 중복 처리 방지 잠금 장치
-let isDataProcessing = false;
-
-async function addPoints(amount, reason) {
-    if (isDataProcessing) return false;
-    isDataProcessing = true;
-    try {
-        const res = await authAddPoints(amount, reason);
-        isDataProcessing = false;
-        return res;
-    } catch (e) {
-        isDataProcessing = false;
-        return false;
-    }
-}
-
-async function usePoints(amount) {
-    if (isDataProcessing) return false;
-    isDataProcessing = true;
-    try {
-        const res = await authUsePoints(amount);
-        isDataProcessing = false;
-        return res;
-    } catch (e) {
-        isDataProcessing = false;
-        return false;
-    }
-}
-
 const unsplash = (id) => `https://images.unsplash.com/photo-${id}?auto=format&fit=crop&w=500&q=60`;
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80"; // 부드러운 그라데이션 이미지
 
