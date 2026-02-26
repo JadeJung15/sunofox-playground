@@ -1,5 +1,5 @@
-import { UserState, getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, updateUI, updateProfileCache } from '../auth.js';
-import { AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from '../board.js';
+import { UserState, updateUI, updateProfileCache } from '../auth.js';
+import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from '../constants/shops.js';
 import { db } from '../firebase-init.js';
 import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 

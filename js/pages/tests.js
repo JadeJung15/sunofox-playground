@@ -1,4 +1,5 @@
-import { UserState, addPoints, ITEM_VALUES } from '../auth.js';
+import { UserState, addPoints } from '../auth.js';
+import { ITEM_VALUES } from '../constants/shops.js';
 import { db } from '../firebase-init.js';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';

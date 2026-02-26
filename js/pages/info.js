@@ -1,4 +1,5 @@
-import { UserState, ITEM_GRADES, ITEM_VALUES } from '../auth.js';
+import { UserState } from '../auth.js';
+import { ITEM_GRADES, ITEM_VALUES } from '../constants/shops.js';
 
 export function renderAbout() {
     const app = document.getElementById('app');

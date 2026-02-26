@@ -1,12 +1,12 @@
-
-import { initAuth, updateUI, UserState, addPoints, authReady } from './auth.js';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js';
 import { copyLink } from './share.js';
 import { renderBoard } from './board.js';
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
-import { doc, setDoc, getDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js';
 import { renderProfile } from './pages/profile.js';
 import { renderAdmin } from './pages/admin.js';
 import { renderArcade } from './pages/arcade-page.js';
@@ -20,6 +20,22 @@ window.handleImgError = function(img) {
     img.src = DEFAULT_IMAGE;
     img.classList.add('img-fallback');
 };
+
+// [보안] 데이터 중복 처리 방지 잠금 장치
+let isDataProcessing = false;
+
+async function addPoints(amount, reason) {
+    if (isDataProcessing) return false;
+    isDataProcessing = true;
+    try {
+        const res = await authAddPoints(amount, reason);
+        isDataProcessing = false;
+        return res;
+    } catch (e) {
+        isDataProcessing = false;
+        return false;
+    }
+}
 
 // =================================================================
 // Router
@@ -41,12 +57,17 @@ async function router() {
     const currentScrollY = window.scrollY;
 
     try {
-        trackVisit().catch(() => {});
-        renderVisitorStats().catch(() => {});
+        // 통계 및 좋아요 데이터 로드 (비동기 병렬 처리)
+        Promise.all([
+            trackVisit().catch(() => {}),
+            renderVisitorStats().catch(() => {})
+        ]);
+
         if (Object.keys(testLikesData).length === 0) {
             await fetchAllLikes();
         }
 
+        // 네비게이션 활성화 상태 업데이트
         document.querySelectorAll('.nav-link').forEach(link => {
             const filter = link.dataset.filter;
             const href = link.getAttribute('href') || '';
@@ -55,6 +76,7 @@ async function router() {
             link.classList.toggle('active', isActive);
         });
 
+        // 즉시 렌더링 가능한 페이지가 아니면 인증 상태 대기
         const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact'];
         if (!instantPages.includes(hash) && !hash.startsWith('#test/')) {
             await authReady;
@@ -80,12 +102,14 @@ async function router() {
             await renderHome(hash);
         }
 
+        // 일일 퀘스트 체크
         authReady.then(() => {
             if (UserState.user && typeof window.checkDailyQuests === 'function') {
                 window.checkDailyQuests('login').catch(() => {});
             }
         });
 
+        // 스크롤 복구 로직
         if (window._preventScroll) {
             window.scrollTo(0, currentScrollY);
             window._preventScroll = false;
@@ -95,7 +119,12 @@ async function router() {
 
     } catch (error) {
         console.error("Routing error:", error);
-        container.innerHTML = `<div style="text-align:center; padding:3rem;"><h3>⚠️ 서비스를 불러올 수 없습니다</h3><button onclick="location.reload()" class="btn-primary" style="margin-top:1rem;">새로고침</button></div>`;
+        container.innerHTML = `
+            <div style="text-align:center; padding:3rem;">
+                <h3>⚠️ 서비스를 불러올 수 없습니다</h3>
+                <p style="color:var(--text-muted); margin:1rem 0;">인증 서버 또는 네트워크 상태를 확인해 주세요.</p>
+                <button onclick="location.reload()" class="btn-primary" style="margin-top:1rem;">새로고침</button>
+            </div>`;
     } finally {
         isRouting = false;
     }
@@ -119,47 +148,6 @@ window.checkDailyQuests = async function(type) {
         }
     } catch (e) { console.error("Quest error:", e); }
 };
-
-// =================================================================
-// Visitor Stats
-// =================================================================
-
-async function trackVisit() {
-    try {
-        if (sessionStorage.getItem('sc_visit')) return;
-        const kstDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
-        await setDoc(doc(db, 'siteStats', 'global'), { total: increment(1) }, { merge: true });
-        await setDoc(doc(db, 'siteStats', kstDate), { count: increment(1) }, { merge: true });
-        sessionStorage.setItem('sc_visit', '1');
-    } catch (e) { console.error('Visit tracking failed', e); }
-}
-
-async function renderVisitorStats() {
-    try {
-        const el = document.getElementById('visitor-stats');
-        if (!el) return;
-
-        const kstDate = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
-        const [gSnap, dSnap] = await Promise.all([
-            getDoc(doc(db, 'siteStats', 'global')),
-            getDoc(doc(db, 'siteStats', kstDate))
-        ]);
-
-        const baseTotal = 48290;
-        const baseToday = 1540;
-
-        let total = baseTotal;
-        let today = baseToday;
-
-        if (gSnap.exists()) total += gSnap.data().total;
-        if (dSnap.exists()) today += dSnap.data().count;
-
-        const totalEl = document.getElementById('total-visitors');
-        const todayEl = document.getElementById('today-visitors');
-        if (totalEl) totalEl.textContent = total.toLocaleString();
-        if (todayEl) todayEl.textContent = today.toLocaleString();
-    } catch (e) { console.error('Stats loading failed', e); }
-}
 
 // =================================================================
 // Global Share
@@ -202,8 +190,13 @@ if (headerShareBtn) {
 
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
+
+// 초기화 시작
 initAuth();
-router();
+// router()를 직접 호출하지 않고 authReady 이후에 한 번만 실행하도록 유도 (중복 실행 방지)
+authReady.then(() => { 
+    if (!isRouting) router(); 
+});
 
 // 모바일 드롭다운 메뉴 자동 닫기 및 토글 로직
 document.addEventListener('DOMContentLoaded', () => {
@@ -235,5 +228,3 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-
-authReady.then(() => { router(); });

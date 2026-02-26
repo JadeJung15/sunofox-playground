@@ -1,5 +1,6 @@
 import { db, storage } from './firebase-init.js';
-import { UserState, usePoints, addPoints, getTier, fetchUserProfile, updateProfileCache, fetchUserRank } from './auth.js';
+import { UserState, usePoints, addPoints, fetchUserProfile, updateProfileCache, fetchUserRank } from './auth.js';
+import { getTier, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './constants/shops.js';
 import { 
     collection, 
     addDoc, 
@@ -37,43 +38,6 @@ export const REACTION_TYPES = [
     { emoji: '💎', label: '최고예요', color: '#ec4899' },
     { emoji: '🤣', label: '웃겨요', color: '#10b981' }
 ];
-
-export const AURA_SHOP = {
-    'PLATINUM': { name: '플래티넘 오라', price: 5000, minScore: 5000000, class: 'aura-platinum' },
-    'DIAMOND': { name: '다이아몬드 오라', price: 15000, minScore: 10000000, class: 'aura-diamond' }
-};
-
-export const BORDER_SHOP = {
-    'B_RED': { name: '레드 보더', price: 1000, minScore: 0, class: 'border-red' },
-    'B_BLUE': { name: '블루 보더', price: 1000, minScore: 0, class: 'border-blue' },
-    'B_GREEN': { name: '그린 보더', price: 1000, minScore: 0, class: 'border-green' },
-    'B_YELLOW': { name: '옐로우 보더', price: 1000, minScore: 0, class: 'border-yellow' },
-    'B_PURPLE': { name: '퍼플 보더', price: 1000, minScore: 0, class: 'border-purple' },
-    'B_PINK': { name: '핑크 보더', price: 1000, minScore: 0, class: 'border-pink' },
-    'B_ORANGE': { name: '오렌지 보더', price: 1000, minScore: 0, class: 'border-orange' },
-    'B_CYAN': { name: '시안 보더', price: 1000, minScore: 0, class: 'border-cyan' },
-    'B_GRAY': { name: '그레이 보더', price: 1000, minScore: 0, class: 'border-gray' },
-    'B_BLACK': { name: '블랙 보더', price: 1000, minScore: 0, class: 'border-black' },
-    'S_LEGEND': { name: '🔱 전설의 증표', price: 30000, minScore: 5000000, class: 'border-s-legend' },
-    'S_GALAXY': { name: '🌌 은하의 파동', price: 50000, minScore: 8000000, class: 'border-s-galaxy' },
-    'S_GOD': { name: '💎 신의 광채', price: 100000, minScore: 15000000, class: 'border-s-god' }
-};
-
-export const BACKGROUND_SHOP = {
-    'BG_SOFT_RED': { name: '소프트 레드', price: 1500, minScore: 0, class: 'bg-soft-red' },
-    'BG_SOFT_BLUE': { name: '소프트 블루', price: 1500, minScore: 0, class: 'bg-soft-blue' },
-    'BG_SOFT_GREEN': { name: '소프트 그린', price: 1500, minScore: 0, class: 'bg-soft-green' },
-    'BG_SOFT_YELLOW': { name: '소프트 옐로우', price: 1500, minScore: 0, class: 'bg-soft-yellow' },
-    'BG_SOFT_PURPLE': { name: '소프트 퍼플', price: 1500, minScore: 0, class: 'bg-soft-purple' },
-    'BG_SOFT_PINK': { name: '소프트 핑크', price: 1500, minScore: 0, class: 'bg-soft-pink' },
-    'BG_DARK_GRAY': { name: '다크 그레이', price: 1500, minScore: 0, class: 'bg-dark-gray' },
-    'BG_MINT': { name: '민트 프레쉬', price: 1500, minScore: 0, class: 'bg-mint' },
-    'BG_SKY': { name: '스카이 블루', price: 1500, minScore: 0, class: 'bg-sky' },
-    'BG_SAND': { name: '샌드 베이지', price: 1500, minScore: 0, class: 'bg-sand' },
-    'SBG_NEON': { name: '🎮 사이버 네온', price: 25000, minScore: 4000000, class: 'bg-s-neon' },
-    'SBG_SPACE': { name: '🚀 심우주 탐사', price: 45000, minScore: 7000000, class: 'bg-s-space' },
-    'SBG_PARADISE': { name: '🏝️ 무릉도원', price: 80000, minScore: 12000000, class: 'bg-s-paradise' }
-};
 
 let lastVisiblePost = null;
 let currentSort = 'desc'; 

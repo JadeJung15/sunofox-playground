@@ -1,11 +1,20 @@
 import { auth, db } from './firebase-init.js';
 import { 
-    onAuthStateChanged, 
-    signInWithPopup, 
+    EMOJI_SHOP, 
+    ITEM_VALUES, 
+    ITEM_GRADES, 
+    getGrade, 
+    TIERS, 
+    getTier, 
+    COLOR_SHOP 
+} from './constants/shops.js';
+import {
+    onAuthStateChanged,
+    signInWithPopup,
     signInWithRedirect,
     getRedirectResult,
-    GoogleAuthProvider, 
-    signOut 
+    GoogleAuthProvider,
+    signOut
 } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
 import { 
     doc, 
@@ -38,53 +47,6 @@ function generateRandomNickname() {
     const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
     const num = Math.floor(1000 + Math.random() * 8999);
     return `${adj}${noun}_${num}`;
-}
-
-// 상점 데이터 정규화
-export const EMOJI_SHOP = {
-    '귀여운 동물': { '🐱': 200, '🐶': 200, '🦊': 300, '🐰': 300, '🐼': 500, '🐨': 500, '🐹': 400, '🐣': 400, '🐧': 500 },
-    '강력한 야수': { '🐯': 800, '🦁': 800, '🐺': 1000, '🐲': 2500, '🦖': 2000, '🦈': 1500 },
-    '자연 & 날씨': { '🌸': 300, '🌻': 300, '🍀': 400, '☀️': 500, '🌙': 500, '🌈': 1000, '🔥': 1000, '🌌': 2000 },
-    '스페셜 프리미엄': { '✨': 3000, '👑': 5000, '💎': 10000, '⚡': 4000, '🧿': 5000 }
-};
-
-export const ITEM_VALUES = {
-    // COMMON
-    '💩 돌멩이': 1, '💊 물약': 30, '🌱 묘목': 50, '🦴 뼛조각': 10, '🪵 나뭇가지': 15, '🐚 조개껍데기': 20,
-    // UNCOMMON (Min 300 > 5*50=250)
-    '🥉 동메달': 300, '🥈 은메달': 500, '🌳 일반 나무': 400, '⚔️ 녹슨 칼': 350, '🛡️ 낡은 방패': 450, '🏹 연습용 활': 380,
-    // RARE (Min 3000 > 5*500=2500)
-    '🥇 금메달': 3000, '🍀 행운의 클로버': 5000, '🌲 전나무': 4000, '🍎 사과나무': 4500, '🔮 신비한 수정': 5500, '🗝️ 황금 열쇠': 6000, '📖 마법 서적': 7000, '🏺 고대 유물': 8000,
-    // LEGENDARY (Min 30000 > 5*5000=25000)
-    '💎 다이아몬드': 30000, '🧪 현자의 돌': 60000, '🧬 인공 생명체': 100000, '⚡ 번개 병': 45000, '🌌 은하수 가루': 200000, '✨ 생명의 나무': 80000, '👑 제왕의 왕관': 150000, '🗡️ 엑스칼리버': 250000, '🐉 용의 심장': 500000, '🪐 성운의 조각': 1000000
-};
-
-export const ITEM_GRADES = {
-    'COMMON': ['💩 돌멩이', '💊 물약', '🌱 묘목', '🦴 뼛조각', '🪵 나뭇가지', '🐚 조개껍데기'],
-    'UNCOMMON': ['🥉 동메달', '🥈 은메달', '🌳 일반 나무', '⚔️ 녹슨 칼', '🛡️ 낡은 방패', '🏹 연습용 활'],
-    'RARE': ['🥇 금메달', '🍀 행운의 클로버', '🌲 전나무', '🍎 사과나무', '🔮 신비한 수정', '🗝️ 황금 열쇠', '📖 마법 서적', '🏺 고대 유물'],
-    'LEGENDARY': ['💎 다이아몬드', '🧪 현자의 돌', '🧬 인공 생명체', '⚡ 번개 병', '🌌 은하수 가루', '✨ 생명의 나무', '👑 제왕의 왕관', '🗡️ 엑스칼리버', '🐉 용의 심장', '🪐 성운의 조각']
-};
-
-export function getGrade(itemName) {
-    for (const [grade, items] of Object.entries(ITEM_GRADES)) {
-        if (items.includes(itemName)) return grade;
-    }
-    return 'COMMON';
-}
-
-export const TIERS = [
-    { name: 'ROOKIE', min: 0, class: 'tier-rookie' },
-    { name: 'BRONZE', min: 100000, class: 'tier-bronze' },
-    { name: 'SILVER', min: 500000, class: 'tier-silver' },
-    { name: 'GOLD', min: 1500000, class: 'tier-gold' },
-    { name: 'PLATINUM', min: 5000000, class: 'tier-platinum' },
-    { name: 'DIAMOND', min: 10000000, class: 'tier-diamond' }
-];
-
-export function getTier(score) {
-    for (let i = TIERS.length - 1; i >= 0; i--) { if (score >= TIERS[i].min) return TIERS[i]; }
-    return TIERS[0];
 }
 
 let authInitialized = false;
@@ -405,19 +367,6 @@ async function addLog(uid, type, amount, reason) {
         });
     } catch (e) { console.error("Log failed", e); }
 }
-
-export const COLOR_SHOP = {
-    '기본': '#333333',
-    '네이비': '#1e293b',
-    '로얄 블루': '#3b82f6',
-    '바이올렛': '#8b5cf6',
-    '에메랄드': '#10b981',
-    '골드': '#f59e0b',
-    '선셋': '#f97316',
-    '로즈': '#f43f5e',
-    '핑크': '#ec4899',
-    '스카이': '#0ea5e9'
-};
 
 async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji) return;
