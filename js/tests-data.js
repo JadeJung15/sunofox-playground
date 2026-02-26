@@ -1,6 +1,79 @@
 export const TESTS = [
     {
-        id: 'p1', category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '7단계 심층 질문으로 당신만의 고유한 성향과 아우라를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80',
+        id: 'ending-test',
+        category: '재미',
+        title: '나의 인생 엔딩 보고서',
+        desc: '당신의 삶이 한 권의 책이라면, 그 마지막 페이지는 어떤 모습일까요?',
+        thumb: 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?auto=format&fit=crop&w=800&q=80',
+        questions: [
+            { 
+                q: '긴 여행의 끝, 마지막 기차역에 도착했습니다. 당신의 손에 들린 가방은 어떤 상태인가요?', 
+                options: [
+                    { text: '추억이 담긴 기념품으로 가득 차 무거운 가방', type: 'A' },
+                    { text: '꼭 필요한 것만 남겨 가벼워진 배낭', type: 'B' }
+                ] 
+            },
+            { 
+                q: '역 대합실 벽에 커다란 거울이 있습니다. 거울 속 당신은 어떤 표정을 짓고 있나요?', 
+                options: [
+                    { text: '지나온 길을 회상하며 짓는 옅은 미소', type: 'A' },
+                    { text: '새로운 시작을 앞둔 듯한 맑은 눈빛', type: 'B' }
+                ] 
+            },
+            { 
+                q: '갑자기 낯선 이가 다가와 당신의 인생을 한 단어로 정의해달라고 합니다.', 
+                options: [
+                    { text: '끊임없이 뜨거웠던 "열정"', type: 'A' },
+                    { text: '잔잔하고 포근했던 "평온"', type: 'B' }
+                ] 
+            },
+            { 
+                q: '창밖으로 노을이 지기 시작합니다. 당신은 이 풍경을 누구와 함께 보고 싶나요?', 
+                options: [
+                    { text: '나를 사랑해준 수많은 사람들', type: 'A' },
+                    { text: '나의 진심을 아는 단 한 사람', type: 'B' }
+                ] 
+            },
+            { 
+                q: '책장에 당신의 이름이 적힌 마지막 권이 꽂힙니다. 책의 표지 색깔은?', 
+                options: [
+                    { text: '강렬하고 화려한 금빛', type: 'A' },
+                    { text: '차분하고 깊은 감색', type: 'B' }
+                ] 
+            },
+            { 
+                q: '마지막 페이지의 문장은 어떻게 끝맺음하고 싶나요?', 
+                options: [
+                    { text: '"그는 참으로 멋진 삶을 살았다."', type: 'A' },
+                    { text: '"그가 머문 자리는 여전히 따뜻했다."', type: 'B' }
+                ] 
+            },
+            { 
+                q: '이제 눈을 감습니다. 당신의 귓가에 들리는 마지막 소리는?', 
+                options: [
+                    { text: '환호성과 박수 소리', type: 'A' },
+                    { text: '사랑한다는 나지막한 속삭임', type: 'B' }
+                ] 
+            }
+        ],
+        results: {
+            A: { 
+                title: '화려한 불꽃의 피날레', 
+                desc: '당신의 삶은 마치 한 편의 블록버스터 영화 같았습니다. 끊임없이 도전하고 쟁취하며 많은 이들에게 영감을 주었네요. 당신의 엔딩은 수많은 박수 갈채 속에서 가장 찬란하게 빛날 것입니다.',
+                img: 'https://images.unsplash.com/photo-1498931299472-f7a63a5a1cfa?auto=format&fit=crop&w=800&q=80',
+                tags: ['#열정', '#주인공', '#성공']
+            },
+            B: { 
+                title: '깊은 숲속의 고요한 새벽', 
+                desc: '당신의 삶은 맑은 호수처럼 투명하고 깊었습니다. 화려함보다는 내면의 가치를 소중히 여겼으며, 당신이 머문 자리에는 늘 은은한 향기가 남았습니다. 당신의 엔딩은 평화로운 안식 그 자체일 것입니다.',
+                img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?auto=format&fit=crop&w=800&q=80',
+                tags: ['#평온', '#내면', '#휴식']
+            }
+        }
+    },
+    {
+        id: 'p1',
+ category: '성격', title: '나의 숨겨진 아우라 컬러', desc: '7단계 심층 질문으로 당신만의 고유한 성향과 아우라를 분석합니다.', thumb: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?auto=format&fit=crop&w=800&q=80',
         questions: [
             { q: '낯선 파티에 초대받았다면 당신의 선택은?', options: [{ text: '화려한 옷으로 존재감을 뽐낸다', scores: {e:2, c:1} }, { text: '깔끔하고 단정한 옷으로 자연스럽게 섞인다', scores: {l:1, p:1} }] },
             { q: '길을 걷다 예쁜 꽃을 발견했을 때 행동은?', options: [{ text: '바로 사진을 찍어 SNS에 공유한다', scores: {e:1, c:2} }, { text: '잠시 멈춰 향기를 맡으며 감상에 젖는다', scores: {p:2, l:1} }] },

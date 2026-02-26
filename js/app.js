@@ -6,7 +6,7 @@ import { renderBoard, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './board.js
 import { renderRanking } from './ranking.js';
 import { db } from './firebase-init.js';
 import { doc, updateDoc, increment, getDoc, setDoc, collection, getDocs, query, where, orderBy, limit, onSnapshot, deleteDoc, serverTimestamp, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from './tests-data.js?v=2.5.0';
+import { TESTS } from './tests-data.js?v=3.0.0';
 
 const app = document.getElementById('app');
 const navLinks = document.querySelectorAll('.nav-link');
@@ -1515,24 +1515,23 @@ function renderTestExecution(testId) {
         app.innerHTML = `
             <div class="test-intro-container fade-in" style="padding: 2rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
                 <div class="test-visual-header" style="margin-top: 2rem; margin-bottom: 2.5rem;">
-                    <div class="test-thumb-wrapper" style="width: 120px; height: 120px; margin: 0 auto; border-radius: 30px; overflow: hidden; box-shadow: var(--shadow-lg); border: 4px solid var(--card-bg);">
+                    <div class="test-thumb-wrapper" style="width: 140px; height: 140px; margin: 0 auto; border-radius: 35px; overflow: hidden; box-shadow: var(--shadow-lg); border: 4px solid var(--card-bg);">
                         <img src="${test.thumb}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
                     </div>
-                    <span class="test-category-tag" style="margin-top: 1.5rem; display: inline-block;">${test.category} 분석</span>
-                    <h2 style="font-size: 2rem; font-weight: 900; margin-top: 1rem; line-height: 1.3;">${test.title}</h2>
+                    <span class="test-category-tag" style="margin-top: 1.5rem; display: inline-block;">${test.category} 분석 리포트</span>
+                    <h2 style="font-size: 2.2rem; font-weight: 900; margin-top: 1rem; line-height: 1.2;">${test.title}</h2>
                 </div>
                 
-                <div class="card" style="padding: 2rem; margin-bottom: 2.5rem; background: var(--card-bg); border-radius: 24px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
-                    <h4 style="font-size: 0.9rem; color: var(--accent-color); font-weight: 800; margin-bottom: 1rem; letter-spacing: 0.1em;">TEST PURPOSE</h4>
-                    <p style="font-size: 1.1rem; line-height: 1.7; color: var(--text-main); font-weight: 600; word-break: keep-all;">${test.desc}</p>
+                <div class="card" style="padding: 2.5rem 1.5rem; margin-bottom: 2.5rem; background: var(--card-bg); border-radius: 30px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
+                    <p style="font-size: 1.15rem; line-height: 1.8; color: var(--text-main); font-weight: 600; word-break: keep-all;">${test.desc}</p>
                 </div>
 
                 <div style="display: grid; gap: 1rem;">
-                    <button id="test-start-btn" class="btn-primary" style="height: 65px; font-size: 1.2rem; font-weight: 900; border-radius: 20px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">테스트 시작하기</button>
-                    <button id="test-share-btn" class="btn-secondary" style="height: 60px; font-size: 1rem; font-weight: 800; border-radius: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">🔗 이 테스트 공유하기</button>
+                    <button id="test-start-btn" class="btn-primary" style="height: 70px; font-size: 1.25rem; font-weight: 900; border-radius: 24px; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);">분석 시작하기</button>
+                    <button id="test-share-btn" class="btn-secondary" style="height: 60px; font-size: 1rem; font-weight: 800; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">🔗 친구에게 공유하기</button>
                 </div>
                 
-                <button onclick="location.hash='#7check'" style="margin-top: 2rem; background: none; border: none; color: var(--text-sub); font-weight: 700; font-size: 0.9rem; text-decoration: underline; cursor: pointer;">다른 테스트 둘러보기</button>
+                <button onclick="location.hash='#7check'" style="margin-top: 2.5rem; background: none; border: none; color: var(--text-sub); font-weight: 700; font-size: 0.95rem; text-decoration: underline; cursor: pointer; opacity: 0.7;">다른 테스트 둘러보기</button>
             </div>
         `;
 
@@ -1556,70 +1555,76 @@ function renderTestExecution(testId) {
     };
 
     const updateStep = () => {
-        if (step >= 7) { renderResult(testId, traitScores); return; }
-        const qData = test.questions[step];
-        app.innerHTML = `
-            <div class="test-container slide-up" data-cat="${test.category}" style="padding: 2rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center; position: relative;">
-                <button id="test-back-btn" class="btn-secondary" style="position: absolute; top: 1rem; left: 1rem; padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; border: none; background: rgba(0,0,0,0.05); display: ${step > 0 ? 'inline-block' : 'none'};">← 이전</button>
-                
-                <div class="test-visual-header" style="margin-top: 3rem; margin-bottom: 2rem;">
-                    <div class="test-thumb-mini-wrapper" style="width: 80px; height: 80px; margin: 0 auto; border-radius: 50%; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); border: 3px solid var(--card-bg);">
-                        <img src="${test.thumb}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
-                    </div>
-                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-sub); margin-top: 0.8rem; letter-spacing: 0.05em;">${test.title}</div>
-                </div>
-
-                <div style="margin-bottom: 3rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="step-counter">QUESTION ${String(step + 1).padStart(2, '0')} / 07</span>
-                        <span style="font-weight: 800; color: var(--text-sub); font-size: 0.85rem;">${Math.round(((step + 1) / 7) * 100)}%</span>
-                    </div>
-                    <div class="progress-mini">
-                        <div class="progress-mini-fill" style="width: ${((step + 1) / 7) * 100}%;"></div>
-                    </div>
-                </div>
-                
-                <h2 class="test-question">${qData.q}</h2>
-                
-                <div class="options-grid">
-                    ${qData.options.map((opt, idx) => `
-                        <button class="option-btn slide-up" style="animation-delay: ${idx * 0.1}s;" 
-                            data-scores='${JSON.stringify(opt.scores || {e: (opt.type==='A'?2:0), p: (opt.type==='B'?2:0)})}'>
-                            <span class="opt-label">${String.fromCharCode(65 + idx)}</span>
-                            <span class="opt-text">${opt.text}</span>
-                        </button>`).join('')}
-                </div>
-            </div>`;
-        
-        const backBtn = document.getElementById('test-back-btn');
-        if(backBtn) {
-            backBtn.onclick = () => {
-                if(step > 0) {
-                    step--;
-                    const prevScores = history.pop();
-                    traitScores.energy = prevScores.energy;
-                    traitScores.logic = prevScores.logic;
-                    traitScores.empathy = prevScores.empathy;
-                    traitScores.creativity = prevScores.creativity;
-                    updateStep();
-                }
-            };
+        if (step >= test.questions.length) {
+            renderLoading();
+            return;
         }
 
-        app.querySelectorAll('.option-btn').forEach(btn => {
-            btn.onclick = () => {
-                history.push({...traitScores}); // 현재 상태 저장
-                const scores = JSON.parse(btn.dataset.scores);
-                if(scores.e) traitScores.energy += scores.e;
-                if(scores.l) traitScores.logic += scores.l;
-                if(scores.p) traitScores.empathy += scores.p;
-                if(scores.c) traitScores.creativity += scores.c;
-                step++;
-                updateStep();
-            };
-        });
+        const q = test.questions[step];
+        const progress = (step / test.questions.length) * 100;
+
+        app.innerHTML = `
+            <div class="test-progress-container" style="position:fixed; top:0; left:0; width:100%; border-radius:0; height:8px; margin-bottom:0; z-index:2000;">
+                <div class="test-progress-bar" style="width: ${progress}%;"></div>
+            </div>
+            <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 90vh; display: flex; flex-direction: column; justify-content: center;">
+                <div style="margin-bottom: 3rem;">
+                    <span style="font-size: 1rem; font-weight: 900; color: var(--accent-color); letter-spacing: 0.1em; opacity: 0.8;">QUESTION ${step + 1}</span>
+                    <h2 style="font-size: 1.7rem; margin-top: 1.5rem; line-height: 1.5; color: var(--text-main); font-weight: 800; word-break: keep-all;">${q.q}</h2>
+                </div>
+                <div class="test-options" style="display: grid; gap: 1rem;">
+                    ${q.options.map((opt, i) => `
+                        <button class="test-option-btn slide-up" 
+                                style="animation-delay: ${i * 0.1}s; padding: 1.5rem; border-radius: 20px; text-align: center; justify-content: center;"
+                                onclick="window.handleAnswer(${i})">
+                            ${opt.text}
+                        </button>
+                    `).join('')}
+                </div>
+                <div style="margin-top: 3rem; font-size: 0.9rem; font-weight: 700; color: var(--text-sub); opacity: 0.5;">
+                    ${step + 1} / ${test.questions.length}
+                </div>
+            </div>
+        `;
+
+        window.handleAnswer = (idx) => {
+            const opt = q.options[idx];
+            // 히스토리 저장 (이전 가기 기능을 위해)
+            history.push({ 
+                traitScores: { ...traitScores },
+                step: step
+            });
+
+            if (opt.scores) {
+                for (const k in opt.scores) traitScores[k] += opt.scores[k];
+            } else if (opt.type) {
+                // 특정 유형 가중치 (푸망 엔딩 테스트 등)
+                if (opt.type === 'A') traitScores.energy += 2;
+                else traitScores.empathy += 2;
+            }
+            
+            step++;
+            updateStep();
+        };
     };
-    renderIntro(); // 인트로 화면부터 시작
+
+    const renderLoading = () => {
+        app.innerHTML = `
+            <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 500px; margin: 0 auto; text-align: center; height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <div class="alchemy-animation" style="margin-bottom: 2rem;">
+                    <span style="font-size: 4rem; display: block; animation: bounce 1s infinite;">🧪</span>
+                </div>
+                <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem;">분석 리포트를 작성 중입니다...</h2>
+                <p style="color: var(--text-sub); font-weight: 600;">당신의 답변을 바탕으로 인생 보고서를 생성하고 있습니다.</p>
+                <div class="test-progress-container" style="width: 200px; margin-top: 2rem;">
+                    <div class="test-progress-bar" style="width: 100%; animation: pulse 1.5s infinite;"></div>
+                </div>
+            </div>
+        `;
+        setTimeout(() => renderResult(testId, traitScores), 2000);
+    };
+
+    renderIntro();
 }
 
 let lastGlobalShareTime = 0;
