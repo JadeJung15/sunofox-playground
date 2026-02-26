@@ -410,15 +410,17 @@ async function loadPosts(container, isLoadMore = false) {
         let postsRef = collection(db, "posts");
         let qConstraints = [];
         
-        // [버그 수정]: 복합 인덱스 오류 방지 - 오직 정렬 조건만 서버에 요청
+        // Firestore에서는 기본적인 정렬만 수행 (복합 인덱스 오류 방지)
         if (currentSort === 'popular') {
             qConstraints.push(orderBy("likeCount", "desc"));
         } else {
+            // 'createdAt'으로 정렬하면 필드가 없는(null) 문서는 제외되므로 주의가 필요하지만, 
+            // 최신순 정렬을 위해 서버에서 1차적으로 수행합니다.
             qConstraints.push(orderBy("createdAt", "desc"));
         }
         
-        // 클라이언트 필터링을 고려해 충분한 양을 가져옵니다.
-        qConstraints.push(limit(40)); 
+        // 클라이언트 필터링(검색, 카테고리)을 고려해 서버에서 넉넉하게 가져옵니다.
+        qConstraints.push(limit(isLoadMore ? 40 : 80)); 
         if (isLoadMore && lastVisiblePost) qConstraints.push(startAfter(lastVisiblePost));
 
         const q = query(postsRef, ...qConstraints);
@@ -432,23 +434,47 @@ async function loadPosts(container, isLoadMore = false) {
         if (!isLoadMore) container.innerHTML = '';
         lastVisiblePost = snap.docs[snap.docs.length - 1];
         
+        // --- 클라이언트 사이드 정밀 정렬 및 필터링 ---
+        let docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // 1. 필터링 (검색어 & 카테고리)
+        if (currentSearch) {
+            docs = docs.filter(d => d.searchContent?.includes(currentSearch));
+        }
+        if (currentCategory !== 'ALL') {
+            docs = docs.filter(d => d.category === currentCategory);
+        }
+
+        // 2. 최종 정렬 로직
+        docs.sort((a, b) => {
+            // 인기순일 경우
+            if (currentSort === 'popular') {
+                if (a.likeCount !== b.likeCount) return b.likeCount - a.likeCount;
+            } 
+            
+            // 최신순일 경우 또는 인기순 내에서 같은 좋아요 수일 때
+            // 프리미엄 게시글(강조)을 최상단에 고정
+            if (a.isPremium !== b.isPremium) return b.isPremium ? -1 : 1;
+
+            // 시간순 정렬 (createdAt이 null이면 '방금 전'이므로 가장 최신으로 취급)
+            const timeA = a.createdAt?.toMillis() || Date.now();
+            const timeB = b.createdAt?.toMillis() || Date.now();
+            return timeB - timeA;
+        });
+
         let displayCount = 0;
-        for (const docSnap of snap.docs) {
-            const data = docSnap.data();
-            
-            // 클라이언트 사이드 필터링 적용
-            if (currentSearch && !data.searchContent?.includes(currentSearch)) continue;
-            if (currentCategory !== 'ALL' && data.category !== currentCategory) continue;
-            
-            renderSinglePost(container, docSnap.id, data);
+        for (const docData of docs) {
+            renderSinglePost(container, docData.id, docData);
             displayCount++;
         }
         
-        // 필터링 후 표시할 게시글이 없는 경우
         if (!isLoadMore && displayCount === 0) {
             container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">조건에 맞는 게시글이 없습니다.</p>`;
         }
-    } catch (e) { console.error("게시물 로드 에러:", e); }
+    } catch (e) { 
+        console.error("게시물 로드 에러:", e);
+        if (!isLoadMore) container.innerHTML = `<p style="text-align:center; padding:2rem; color:#ef4444;">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
+    }
     finally { isLoadingMore = false; }
 }
 
