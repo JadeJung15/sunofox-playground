@@ -1,7 +1,7 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=7.0.0';
-import { db } from '../firebase-init.js?v=7.0.0';
+import { updateUI, UserState, addPoints } from '../auth.js?v=7.1.0';
+import { db } from '../firebase-init.js?v=7.1.0';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=7.0.0';
+import { TESTS } from '../tests-data.js?v=7.1.0';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -194,14 +194,22 @@ export async function renderHome(hash) {
 
 export function renderTestCard(t) {
     const likes = testLikesData[t.id] || 0;
+    // 테스트 ID를 기반으로 고정된 대형 참여자 수 생성 (시각적 마케팅 효과)
+    const seed = t.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const playCount = (seed * 123) % 15000 + 5000; 
 
     return `
-    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative;">
-        <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden; border-radius: 15px;">
+    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative; background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, border-color 0.2s;">
+        <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden;">
             <img src="${t.thumb}" alt="${t.title}"
-                 style="width: 100%; height: 100%; object-fit: cover;"
+                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
                  onerror="window.handleImgError(this)">
-            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.4) 0%, transparent 60%); pointer-events: none;"></div>
+            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
+
+            <!-- 참여자 수 뱃지 (Social Proof) -->
+            <div style="position:absolute; top:12px; right:12px; background: rgba(3, 199, 90, 0.9); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; display: flex; align-items:center; gap:4px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index:10;">
+                <span style="font-size:0.8rem;">🎮</span> ${playCount.toLocaleString()}명 이용 중
+            </div>
 
             <div id="like-badge-${t.id}"
                  onclick="event.stopPropagation(); handleLike('${t.id}')"
@@ -209,15 +217,15 @@ export function renderTestCard(t) {
                 <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${likes}</span>
             </div>
         </div>
-        <div class="test-info">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-                <span class="test-category-tag">${t.category}</span>
-                <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-sub); display: flex; align-items: center; gap: 4px;"><span>⏱️</span> 3분</span>
+        <div class="test-info" style="padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
+                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase;">${t.category}</span>
+                <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-sub); background: var(--bg-color); padding: 2px 8px; border-radius: 4px;">분석시간 3분</span>
             </div>
-            <h3 style="margin-top: 0.5rem; font-size: 1.1rem; line-height: 1.4;">${t.title}</h3>
-            <p style="font-size: 0.85rem; margin-top: 0.4rem;">${t.desc}</p>
-            <div style="margin-top: auto; padding-top: 1rem; border-top: 1px dashed var(--border-color); display: flex; justify-content: flex-end;">
-                <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-color);">테스트 시작 ➔</span>
+            <h3 style="font-size: 1.15rem; font-weight: 800; line-height: 1.4; color: var(--text-main); margin-bottom: 0.5rem;">${t.title}</h3>
+            <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${t.desc}</p>
+            <div style="margin-top: auto; display: flex; justify-content: flex-end;">
+                <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-color); display: flex; align-items: center; gap: 4px;">시작하기 <span style="font-size: 1rem;">➔</span></span>
             </div>
         </div>
     </div>`;
