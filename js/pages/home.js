@@ -267,6 +267,4 @@ export function renderTestCard(t) {
             </div>
         </div>
     </div>`;
-        </div>
-    </div>`;
 }
