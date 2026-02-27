@@ -137,31 +137,31 @@ export async function renderHome(hash) {
         const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
 
         app.innerHTML = `
-            <div class="dashboard fade-in" style="display: flex; flex-direction: column; align-items: center;">
-                <div class="hero-section" style="width: 100%; max-width: 600px; aspect-ratio: 1 / 1; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 40px; margin-bottom: 3rem; position: relative; overflow: hidden; text-align: center; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.5);">
+            <div class="dashboard fade-in" style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 1000px; margin: 0 auto;">
+                <div class="hero-section" style="width: 92%; max-width: 550px; aspect-ratio: 1 / 1; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 40px; margin-bottom: 3rem; position: relative; overflow: hidden; text-align: center; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.5); box-sizing: border-box;">
                     <!-- 배경 아우라 효과 -->
                     <div style="position: absolute; top: -10%; left: -10%; width: 50%; height: 50%; background: var(--accent-color); filter: blur(80px); opacity: 0.4;"></div>
                     <div style="position: absolute; bottom: -10%; right: -10%; width: 50%; height: 50%; background: var(--accent-secondary); filter: blur(80px); opacity: 0.3;"></div>
                     
-                    <div class="hero-content" style="position: relative; z-index: 5; width: 100%;">
-                        <div class="fox-advice-container fade-in" style="margin-bottom: 2.5rem; display: flex; flex-direction: column; align-items: center; gap: 12px;">
-                            <div class="fox-avatar" style="font-size: 4.5rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); animation: float 3s ease-in-out infinite;">🦊</div>
-                            <div class="advice-bubble" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 0.8rem 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-weight: 700; color: #fff; font-size: 1rem; line-height: 1.4; max-width: 80%;">
-                                <span style="display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; opacity: 0.7; color: var(--accent-soft);">Fox Wisdom</span>
+                    <div class="hero-content" style="position: relative; z-index: 5; width: 100%; display: flex; flex-direction: column; align-items: center;">
+                        <div class="fox-advice-container fade-in" style="margin-bottom: 2rem; display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;">
+                            <div class="fox-avatar" style="font-size: clamp(3rem, 12vw, 4.5rem); filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); animation: float 3s ease-in-out infinite;">🦊</div>
+                            <div class="advice-bubble" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 0.7rem 1.2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-weight: 700; color: #fff; font-size: clamp(0.85rem, 3.5vw, 1rem); line-height: 1.4; max-width: 85%; box-sizing: border-box;">
+                                <span style="display: block; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; opacity: 0.7; color: var(--accent-soft);">Fox Wisdom</span>
                                 "${randomAdvice}"
                             </div>
                         </div>
 
-                        <div style="margin-bottom: 1rem;">
-                            <span class="hero-tag" style="background: rgba(255,255,255,0.1); color: var(--accent-soft); padding: 5px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.05em;">✨ 프리미엄 심리 분석</span>
+                        <div style="margin-bottom: 0.8rem;">
+                            <span class="hero-tag" style="background: rgba(255,255,255,0.1); color: var(--accent-soft); padding: 4px 12px; border-radius: 50px; font-size: clamp(0.7rem, 2.8vw, 0.8rem); font-weight: 800; border: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.05em; display: inline-block;">✨ 프리미엄 심리 분석</span>
                         </div>
                         
-                        <h1 style="font-size: 2.8rem; font-weight: 900; line-height: 1.2; margin-bottom: 1.2rem; letter-spacing: -0.04em; color: #fff;">진짜 당신을<br>마주할 시간</h1>
+                        <h1 style="font-size: clamp(1.8rem, 8vw, 2.8rem); font-weight: 900; line-height: 1.2; margin-bottom: 1rem; letter-spacing: -0.04em; color: #fff; text-shadow: 0 4px 12px rgba(0,0,0,0.2);">진짜 당신을<br>마주할 시간</h1>
                         
-                        <p style="font-size: 1.1rem; opacity: 0.85; margin-bottom: 2.5rem; font-weight: 500; line-height: 1.5; max-width: 90%; margin-left: auto; margin-right: auto;">7번의 질문으로 완성되는<br>정교한 아우라 리포트를 확인하세요.</p>
+                        <p style="font-size: clamp(0.9rem, 3.5vw, 1.1rem); opacity: 0.85; margin-bottom: 2rem; font-weight: 500; line-height: 1.5; max-width: 90%; margin-left: auto; margin-right: auto; word-break: keep-all;">7번의 질문으로 완성되는<br>정교한 아우라 리포트를 확인하세요.</p>
                         
-                        <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-                            <button class="btn-primary" style="padding: 1.1rem 2.5rem; font-size: 1.1rem; border-radius: 20px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 15px 30px rgba(255,255,255,0.2);" onclick="location.hash='#7check'">시작하기 ➔</button>
+                        <div style="display: flex; gap: 1rem; justify-content: center; width: 100%;">
+                            <button class="btn-primary" style="padding: 0.9rem 2.2rem; font-size: clamp(0.95rem, 3.8vw, 1.1rem); border-radius: 20px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 15px 30px rgba(255,255,255,0.2);" onclick="location.hash='#7check'">시작하기 ➔</button>
                         </div>
                     </div>
                 </div>
