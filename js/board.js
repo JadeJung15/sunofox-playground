@@ -39,6 +39,17 @@ export const REACTION_TYPES = [
     { emoji: '🤣', label: '웃겨요', color: '#10b981' }
 ];
 
+function escapeHTML(str) {
+    if (!str) return '';
+    return String(str).replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag] || tag));
+}
+
 let lastVisiblePost = null;
 let currentSort = 'desc'; 
 let currentCategory = 'ALL';
@@ -530,7 +541,7 @@ function renderSinglePostSync(container, postId, data, profile) {
                 <button class="btn-report-post" data-id="${postId}" style="background:none; border:none; opacity:0.3; cursor:pointer;">🚨</button>
             </div>
         </div>
-        <div class="post-content">${data.content || ''}</div>
+        <div class="post-content">${escapeHTML(data.content || '')}</div>
         ${data.imageUrl ? `<div style="margin-top:10px;"><img src="${data.imageUrl}" style="max-width:100%; border-radius:12px; cursor:pointer;" onclick="window.open('${data.imageUrl}', '_blank')"></div>` : ''}
         
         <div class="reaction-bar">
@@ -738,7 +749,7 @@ async function loadComments(postId) {
                 <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
                 <span style="font-size:0.6rem; color:var(--text-sub);">${cDate}</span>
             </div>
-            <p style="font-size:0.8rem; margin-top:2px;">${c.content}</p>
+            <p style="font-size:0.8rem; margin-top:2px;">${escapeHTML(c.content)}</p>
         `;
         list.appendChild(div);
     }

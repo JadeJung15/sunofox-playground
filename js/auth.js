@@ -304,9 +304,9 @@ export async function addPoints(amount, reason = "보상") {
     if (!UserState.user) return false;
     try {
         const userRef = doc(db, "users", UserState.user.uid);
-        const newPoints = (UserState.data.points || 0) + amount;
-        await updateDoc(userRef, { points: newPoints });
-        UserState.data.points = newPoints; updateUI();
+        await updateDoc(userRef, { points: increment(amount) });
+        UserState.data.points = (UserState.data.points || 0) + amount;
+        updateUI();
         return true;
     } catch (e) { return false; }
 }
@@ -315,9 +315,9 @@ export async function usePoints(amount, reason = "소모") {
     if (!UserState.user || (UserState.data.points || 0) < amount) return false;
     try {
         const userRef = doc(db, "users", UserState.user.uid);
-        const newPoints = UserState.data.points - amount;
-        await updateDoc(userRef, { points: newPoints });
-        UserState.data.points = newPoints; updateUI();
+        await updateDoc(userRef, { points: increment(-amount) });
+        UserState.data.points -= amount;
+        updateUI();
         return true;
     } catch (e) { return false; }
 }

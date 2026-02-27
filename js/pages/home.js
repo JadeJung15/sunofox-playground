@@ -52,7 +52,18 @@ async function handleLike(testId) {
         await addPoints(5, '테스트 추천 보상');
 
         const counter = document.getElementById(`like-count-${testId}`);
-        if (counter) counter.textContent = testLikesData[testId];
+        if (counter) {
+            const formatEngUnit = (num) => {
+                if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+                if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+                return num.toString();
+            };
+            const seed = testId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            const playCount = (seed * 123) % 15000 + 5000; 
+            const baseLikes = Math.floor(playCount * (0.2 + ((seed % 20) / 100)));
+            const displayLikes = testLikesData[testId] + baseLikes;
+            counter.textContent = formatEngUnit(displayLikes);
+        }
 
         alert("감사합니다! 하트 보상으로 5P가 적립되었습니다. ❤️");
     } catch (e) {
@@ -193,10 +204,20 @@ export async function renderHome(hash) {
 }
 
 export function renderTestCard(t) {
-    const likes = testLikesData[t.id] || 0;
+    const formatEngUnit = (num) => {
+        if (num >= 1000000) return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1).replace(/\.0$/, '') + 'K';
+        return num.toString();
+    };
+
+    const actualLikes = testLikesData[t.id] || 0;
     // 테스트 ID를 기반으로 고정된 대형 참여자 수 생성 (시각적 마케팅 효과)
     const seed = t.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const playCount = (seed * 123) % 15000 + 5000; 
+    
+    // 이용자 수에 비례하게 하트(좋아요) 숫자도 뻥튀기 (대략 20~40% 수준)
+    const baseLikes = Math.floor(playCount * (0.2 + ((seed % 20) / 100)));
+    const displayLikes = actualLikes + baseLikes;
 
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative; background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, border-color 0.2s;">
@@ -208,13 +229,13 @@ export function renderTestCard(t) {
 
             <!-- 참여자 수 뱃지 (Social Proof) -->
             <div style="position:absolute; top:12px; right:12px; background: rgba(3, 199, 90, 0.9); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; display: flex; align-items:center; gap:4px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index:10;">
-                <span style="font-size:0.8rem;">🎮</span> ${playCount.toLocaleString()}명 이용 중
+                <span style="font-size:0.8rem;">🎮</span> ${formatEngUnit(playCount)} Play
             </div>
 
             <div id="like-badge-${t.id}"
                  onclick="event.stopPropagation(); handleLike('${t.id}')"
                  style="position:absolute; bottom:12px; left:12px; z-index:20; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; display: flex; align-items:center; gap:6px; border: 1px solid rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s ease;">
-                <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${likes}</span>
+                <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
             </div>
         </div>
         <div class="test-info" style="padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column;">
