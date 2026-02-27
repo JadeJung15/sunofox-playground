@@ -10,8 +10,6 @@ import {
     PET_SHOP 
 } from './constants/shops.js';
 
-// ... (existing code) ...
-
 export async function changePet(petId) {
     if (!UserState.user || !UserState.data.unlockedPets?.includes(petId)) return false;
     try {
