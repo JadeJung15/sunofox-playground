@@ -201,38 +201,59 @@ export async function renderResult(testId, traitScores) {
                 </div>
             </div>
 
-            <div id="story-capture-area" style="position: absolute; top: 0; left: 0; z-index: -100; opacity: 0; pointer-events: none; width: 450px; height: 800px; background: #fff; color: #1e293b; overflow: hidden; font-family: 'Pretendard', -apple-system, sans-serif; box-sizing: border-box; padding: 20px;">
+            <div id="story-capture-area" style="position: absolute; top: 0; left: 0; z-index: -100; opacity: 0; pointer-events: none; width: 450px; height: 900px; background: #fff; color: #1e293b; overflow: hidden; font-family: 'Pretendard', -apple-system, sans-serif; box-sizing: border-box; padding: 20px;">
                 <div style="width: 100%; height: 100%; background: ${themeColor}; border-radius: 30px; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 100px rgba(0,0,0,0.2);">
                     <!-- Decorative patterns -->
                     <div style="position: absolute; top: -50px; right: -50px; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
                     <div style="position: absolute; bottom: 10%; left: -30px; width: 120px; height: 120px; background: rgba(255,255,255,0.05); border-radius: 20px; transform: rotate(30deg);"></div>
                     
-                    <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 40px 35px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
-                            <div style="background: #fff; color: ${themeColor}; padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.05em;">SEVEN CHECK</div>
+                    <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; padding: 40px 30px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                            <div style="background: #fff; color: ${themeColor}; padding: 6px 14px; border-radius: 10px; font-size: 0.75rem; font-weight: 900; letter-spacing: 0.05em;">SEVEN CHECK REPORT</div>
                             <div style="color: rgba(255,255,255,0.8); font-size: 0.7rem; font-weight: 700;">No. ${testId.toUpperCase()}</div>
                         </div>
 
-                        <div style="flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
-                            <div style="width: 180px; height: 180px; margin-bottom: 35px; border-radius: 45px; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; font-size: 7rem; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 6px solid #fff; transform: rotate(-2deg);">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="width: 120px; height: 120px; margin: 0 auto 20px; border-radius: 35px; background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center; font-size: 5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.15); border: 4px solid #fff; transform: rotate(-2deg);">
                                 ${tags[0]?.replace(/[^a-zA-Z0-9가-힣]/g, '') === '신뢰' ? '🤝' : (tags[0]?.replace(/[^a-zA-Z0-9가-힣]/g, '') === '유니크' ? '🎨' : '✨')}
                             </div>
-                            
-                            <span style="color: rgba(255,255,255,0.9); font-size: 1rem; font-weight: 800; margin-bottom: 12px; letter-spacing: 0.1em; text-transform: uppercase;">Analysis Report</span>
-                            <h2 style="font-size: 2.8rem; font-weight: 900; color: #fff; margin-bottom: 25px; line-height: 1.2; text-shadow: 0 4px 15px rgba(0,0,0,0.2); word-break: keep-all;">${result.title}</h2>
-                            
-                            <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 40px;">
-                                ${tags.map(tag => `<span style="background:rgba(0,0,0,0.2); color:#fff; padding:8px 18px; border-radius:50px; font-size:0.95rem; font-weight:800; border: 1px solid rgba(255,255,255,0.2);">${tag}</span>`).join('')}
+                            <h2 style="font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 10px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.2); word-break: keep-all;">${result.title}</h2>
+                            <p style="color: rgba(255,255,255,0.9); font-size: 0.9rem; font-weight: 600; line-height: 1.5; margin: 0 auto 20px; max-width: 320px; word-break: keep-all;">${result.desc}</p>
+                        </div>
+
+                        <!-- 영혼 분석서 섹션 -->
+                        <div style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2);">
+                            <div style="font-size: 0.85rem; font-weight: 900; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                🔮 나의 영혼 분석서
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="background: rgba(255,255,255,0.1); padding: 10px 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+                                    <div style="font-size: 0.8rem; font-weight: 800; color: #fff; margin-bottom: 2px;">${soulIngredients?.main.title}</div>
+                                    <div style="font-size: 0.7rem; color: rgba(255,255,255,0.8);">${soulIngredients?.main.desc}</div>
+                                </div>
                             </div>
                         </div>
 
-                        <div style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); padding: 25px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.3); display: flex; align-items: center; gap: 20px;">
-                            <div style="width: 60px; height: 60px; background: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; box-shadow: 0 8px 16px rgba(0,0,0,0.1);">🦊</div>
-                            <div style="text-align: left;">
-                                <div style="color: #fff; font-size: 1.4rem; font-weight: 900; letter-spacing: -0.02em;">SevenCheck</div>
-                                <div style="color: rgba(255,255,255,0.8); font-size: 0.75rem; font-weight: 700; margin-top: 2px;">Premium Psychological Lab</div>
+                        <!-- 현실 생존 가이드 섹션 -->
+                        <div style="background: rgba(255,255,255,0.15); border-radius: 20px; padding: 20px; margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.2);">
+                            <div style="font-size: 0.85rem; font-weight: 900; color: #fff; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                                🕹️ 현실 생존 가이드
                             </div>
-                            <div style="margin-left: auto; width: 40px; height: 40px; border: 2px solid rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #fff; font-weight: 900; transform: rotate(-15deg);">7CH</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; text-align: center;">
+                                    <div style="font-size: 0.65rem; font-weight: 800; color: rgba(255,255,255,0.7); margin-bottom: 4px;">강점</div>
+                                    <div style="font-size: 0.85rem; font-weight: 900; color: #fff;">${rpgStats?.weaponIcon} ${rpgStats?.weapon}</div>
+                                </div>
+                                <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 12px; text-align: center;">
+                                    <div style="font-size: 0.65rem; font-weight: 800; color: rgba(255,255,255,0.7); margin-bottom: 4px;">약점</div>
+                                    <div style="font-size: 0.85rem; font-weight: 900; color: #fff;">${rpgStats?.weaknessIcon} ${rpgStats?.weakness}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: auto; text-align: center; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                            <div style="color: #fff; font-size: 1.2rem; font-weight: 900; letter-spacing: -0.02em;">SevenCheck</div>
+                            <div style="color: rgba(255,255,255,0.6); font-size: 0.65rem; font-weight: 700; margin-top: 4px; letter-spacing: 0.1em; text-transform: uppercase;">Premium Psychological Lab Report</div>
                         </div>
                     </div>
                 </div>
