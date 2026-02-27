@@ -285,27 +285,40 @@ export function renderTestExecution(testId) {
     let history = [];
 
     const renderIntro = () => {
+        const seed = testId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const gradients = [
+            'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)', // Indigo light
+            'linear-gradient(135deg, #dcfce7 0%, #ffffff 100%)', // Green light
+            'linear-gradient(135deg, #ffe4e6 0%, #ffffff 100%)', // Rose light
+            'linear-gradient(135deg, #fef3c7 0%, #ffffff 100%)', // Amber light
+            'linear-gradient(135deg, #ede9fe 0%, #ffffff 100%)', // Violet light
+            'linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%)'  // Sky light
+        ];
+        const pageBg = gradients[seed % gradients.length];
+
         app.innerHTML = `
-            <div class="test-intro-container fade-in" style="padding: 3rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
-                <div class="test-visual-header" style="margin-top: 1rem; margin-bottom: 2.5rem; position: relative;">
-                    <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.9;">✨</div>
-                    <span class="test-category-tag" style="display: inline-block; font-size: 0.85rem; font-weight: 800; color: var(--accent-color); background: rgba(var(--accent-rgb), 0.1); padding: 6px 16px; border-radius: 50px; letter-spacing: 0.05em; margin-bottom: 1rem;">
-                        ${test.category} 분석 리포트
-                    </span>
-                    <h2 style="font-size: 2.2rem; font-weight: 900; line-height: 1.3; color: var(--text-main); word-break: keep-all; margin: 0;">${test.title}</h2>
-                </div>
+            <div class="test-page-wrapper" style="min-height: 100vh; background: ${pageBg};">
+                <div class="test-intro-container fade-in" style="padding: 4rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
+                    <div class="test-visual-header" style="margin-top: 1rem; margin-bottom: 2.5rem; position: relative;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.9;">✨</div>
+                        <span class="test-category-tag" style="display: inline-block; font-size: 0.85rem; font-weight: 800; color: var(--accent-color); background: rgba(255, 255, 255, 0.7); padding: 6px 16px; border-radius: 50px; letter-spacing: 0.05em; margin-bottom: 1rem; border: 1px solid rgba(0,0,0,0.05);">
+                            ${test.category} 분석 리포트
+                        </span>
+                        <h2 style="font-size: 2.2rem; font-weight: 900; line-height: 1.3; color: #1e293b; word-break: keep-all; margin: 0; letter-spacing: -0.02em;">${test.title}</h2>
+                    </div>
 
-                <div class="card" style="padding: 2.5rem 2rem; margin-bottom: 3rem; background: var(--card-bg); border-radius: 30px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: -10px; left: -10px; font-size: 5rem; opacity: 0.03; pointer-events: none;">💬</div>
-                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-main); font-weight: 600; word-break: keep-all; position: relative; z-index: 1;">${test.desc}</p>
-                </div>
+                    <div class="card" style="padding: 2.5rem 2rem; margin-bottom: 3rem; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 30px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 10px 30px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: -10px; left: -10px; font-size: 5rem; opacity: 0.03; pointer-events: none;">💬</div>
+                        <p style="font-size: 1.1rem; line-height: 1.8; color: #334155; font-weight: 600; word-break: keep-all; position: relative; z-index: 1;">${test.desc}</p>
+                    </div>
 
-                <div style="display: grid; gap: 1rem;">
-                    <button id="test-start-btn" class="btn-primary" style="height: 70px; font-size: 1.25rem; font-weight: 900; border-radius: 24px; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);">분석 시작하기</button>
-                    <button id="test-share-btn" class="btn-secondary" style="height: 60px; font-size: 1rem; font-weight: 800; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px;">🔗 친구에게 공유하기</button>
-                </div>
+                    <div style="display: grid; gap: 1rem;">
+                        <button id="test-start-btn" class="btn-primary" style="height: 70px; font-size: 1.25rem; font-weight: 900; border-radius: 24px; box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);">분석 시작하기</button>
+                        <button id="test-share-btn" class="btn-secondary" style="height: 60px; font-size: 1rem; font-weight: 800; border-radius: 24px; display: flex; align-items: center; justify-content: center; gap: 8px; background: rgba(255, 255, 255, 0.5); border: 1px solid rgba(0,0,0,0.05);">🔗 친구에게 공유하기</button>
+                    </div>
 
-                <button onclick="location.hash='#7check'" style="margin-top: 2.5rem; background: none; border: none; color: var(--text-sub); font-weight: 700; font-size: 0.95rem; text-decoration: underline; cursor: pointer; opacity: 0.7;">다른 테스트 둘러보기</button>
+                    <button onclick="location.hash='#7check'" style="margin-top: 2.5rem; background: none; border: none; color: #64748b; font-weight: 700; font-size: 0.95rem; text-decoration: underline; cursor: pointer; opacity: 0.8;">다른 테스트 둘러보기</button>
+                </div>
             </div>
         `;
 
@@ -329,8 +342,19 @@ export function renderTestExecution(testId) {
     };
 
     const updateStep = () => {
+        const seed = testId.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        const gradients = [
+            'linear-gradient(135deg, #e0e7ff 0%, #ffffff 100%)',
+            'linear-gradient(135deg, #dcfce7 0%, #ffffff 100%)',
+            'linear-gradient(135deg, #ffe4e6 0%, #ffffff 100%)',
+            'linear-gradient(135deg, #fef3c7 0%, #ffffff 100%)',
+            'linear-gradient(135deg, #ede9fe 0%, #ffffff 100%)',
+            'linear-gradient(135deg, #e0f2fe 0%, #ffffff 100%)'
+        ];
+        const pageBg = gradients[seed % gradients.length];
+
         if (step >= test.questions.length) {
-            renderLoading();
+            renderLoading(pageBg);
             return;
         }
 
@@ -338,25 +362,27 @@ export function renderTestExecution(testId) {
         const progress = (step / test.questions.length) * 100;
 
         app.innerHTML = `
-            <div class="test-progress-container" style="position:fixed; top:0; left:0; width:100%; border-radius:0; height:8px; margin-bottom:0; z-index:2000;">
-                <div class="test-progress-bar" style="width: ${progress}%;"></div>
-            </div>
-            <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 90vh; display: flex; flex-direction: column; justify-content: center;">
-                <div style="margin-bottom: 3rem;">
-                    <span style="font-size: 1rem; font-weight: 900; color: var(--accent-color); letter-spacing: 0.1em; opacity: 0.8;">QUESTION ${step + 1}</span>
-                    <h2 style="font-size: 1.7rem; margin-top: 1.5rem; line-height: 1.5; color: var(--text-main); font-weight: 800; word-break: keep-all;">${q.q}</h2>
+            <div class="test-page-wrapper" style="min-height: 100vh; background: ${pageBg};">
+                <div class="test-progress-container" style="position:fixed; top:0; left:0; width:100%; border-radius:0; height:8px; margin-bottom:0; z-index:2000;">
+                    <div class="test-progress-bar" style="width: ${progress}%;"></div>
                 </div>
-                <div class="test-options" style="display: grid; gap: 1rem;">
-                    ${q.options.map((opt, i) => `
-                        <button class="test-option-btn slide-up"
-                                style="animation-delay: ${i * 0.1}s; padding: 1.5rem; border-radius: 20px; text-align: center; justify-content: center;"
-                                onclick="window.handleAnswer(${i})">
-                            ${opt.text}
-                        </button>
-                    `).join('')}
-                </div>
-                <div style="margin-top: 3rem; font-size: 0.9rem; font-weight: 700; color: var(--text-sub); opacity: 0.5;">
-                    ${step + 1} / ${test.questions.length}
+                <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 600px; margin: 0 auto; text-align: center; min-height: 90vh; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="margin-bottom: 3rem;">
+                        <span style="font-size: 1rem; font-weight: 900; color: var(--accent-color); letter-spacing: 0.1em; opacity: 0.8;">QUESTION ${step + 1}</span>
+                        <h2 style="font-size: 1.7rem; margin-top: 1.5rem; line-height: 1.5; color: #1e293b; font-weight: 800; word-break: keep-all;">${q.q}</h2>
+                    </div>
+                    <div class="test-options" style="display: grid; gap: 1rem;">
+                        ${q.options.map((opt, i) => `
+                            <button class="test-option-btn slide-up"
+                                    style="animation-delay: ${i * 0.1}s; padding: 1.5rem; border-radius: 20px; text-align: center; justify-content: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(5px); border: 1px solid rgba(255, 255, 255, 0.8); font-weight: 700; color: #334155; box-shadow: 0 4px 15px rgba(0,0,0,0.03);"
+                                    onclick="window.handleAnswer(${i})">
+                                ${opt.text}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div style="margin-top: 3rem; font-size: 0.9rem; font-weight: 700; color: #64748b; opacity: 0.6;">
+                        ${step + 1} / ${test.questions.length}
+                    </div>
                 </div>
             </div>
         `;
@@ -381,16 +407,18 @@ export function renderTestExecution(testId) {
         };
     };
 
-    const renderLoading = () => {
+    const renderLoading = (pageBg) => {
         app.innerHTML = `
-            <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 500px; margin: 0 auto; text-align: center; height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                <div class="alchemy-animation" style="margin-bottom: 2rem;">
-                    <span style="font-size: 4rem; display: block; animation: bounce 1s infinite;">🧪</span>
-                </div>
-                <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem;">분석 리포트를 작성 중입니다...</h2>
-                <p style="color: var(--text-sub); font-weight: 600;">당신의 답변을 바탕으로 인생 보고서를 생성하고 있습니다.</p>
-                <div class="test-progress-container" style="width: 200px; margin-top: 2rem;">
-                    <div class="test-progress-bar" style="width: 100%; animation: pulse 1.5s infinite;"></div>
+            <div class="test-page-wrapper" style="min-height: 100vh; background: ${pageBg}; display: flex; align-items: center; justify-content: center;">
+                <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 500px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div class="alchemy-animation" style="margin-bottom: 2rem;">
+                        <span style="font-size: 4rem; display: block; animation: bounce 1s infinite;">🧪</span>
+                    </div>
+                    <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: #1e293b;">분석 리포트를 작성 중입니다...</h2>
+                    <p style="color: #64748b; font-weight: 600;">당신의 답변을 바탕으로 인생 보고서를 생성하고 있습니다.</p>
+                    <div class="test-progress-container" style="width: 200px; margin-top: 2rem; background: rgba(0,0,0,0.05);">
+                        <div class="test-progress-bar" style="width: 100%; animation: pulse 1.5s infinite;"></div>
+                    </div>
                 </div>
             </div>
         `;
