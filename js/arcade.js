@@ -199,7 +199,13 @@ async function playClickGame() {
     if (!btn || btn.disabled) return;
     btn.disabled = true;
     await updateArcadeStat('mining');
-    const earn = Math.floor(Math.random() * 10) + 5;
+    
+    // 펫 보너스 적용
+    const { getPetBuff } = await import('./auth.js?v=7.1.0');
+    const petBuff = getPetBuff();
+    const baseEarn = Math.floor(Math.random() * 10) + 5;
+    const earn = Math.floor(baseEarn * petBuff.multiplier) + petBuff.mineBonus;
+
     btn.textContent = "채굴 중...";
     soundManager.playThud(0.1); // 채굴 타격음
     setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "채굴기 가동 시작"; }, 1000);

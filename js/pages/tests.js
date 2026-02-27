@@ -64,12 +64,18 @@ export async function renderResult(testId, traitScores) {
     const soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
     const rpgStats = weaponPool[poolTrait];
 
-    let basePointReward = 10;
+    const { getPetBuff } = await import('../auth.js?v=7.1.0');
+    const petBuff = getPetBuff();
+
+    let basePointReward = 10 + petBuff.testBonus;
     if (UserState.user && UserState.data.boosterCount > 0) {
-        basePointReward = 20;
+        basePointReward = (10 * 2) + petBuff.testBonus; // 부스터는 기본 보상에만 적용
         await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(-1) });
         UserState.data.boosterCount -= 1;
     }
+    
+    // 최종 배수 적용 (Legendary 펫 등)
+    basePointReward = Math.floor(basePointReward * petBuff.multiplier);
 
     let rewardedItem = null;
     if (UserState.user) {

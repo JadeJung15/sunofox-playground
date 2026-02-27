@@ -106,3 +106,13 @@ export const BACKGROUND_SHOP = {
     'SBG_SPACE':      { name: '🚀 심우주 탐사', price: 45000, minScore: 7000000,  class: 'bg-s-space' },
     'SBG_PARADISE':   { name: '🏝️ 무릉도원',   price: 80000, minScore: 12000000, class: 'bg-s-paradise' }
 };
+
+// ── 펫 상점 ──────────────────────────────────────────────────────
+export const PET_SHOP = {
+    'F_NORMAL':   { name: '꼬마 여우',   emoji: '🦊', grade: 'NORMAL',    price: 1000,  effect: '기본 파트너' },
+    'F_WHITE':    { name: '눈꽃 여우',   emoji: '❄️', grade: 'RARE',      price: 5000,  effect: '채굴 시 +2P 추가' },
+    'F_FIRE':     { name: '불꽃 여우',   emoji: '🔥', grade: 'RARE',      price: 5000,  effect: '채굴 시 +2P 추가' },
+    'F_SHADOW':   { name: '그림자 여우', emoji: '🌑', grade: 'EPIC',      price: 15000, effect: '테스트 보상 +5P' },
+    'F_AURORA':   { name: '오로라 여우', emoji: '🌈', grade: 'EPIC',      price: 15000, effect: '테스트 보상 +5P' },
+    'F_CELESTIAL':{ name: '천상 여우',   emoji: '✨', grade: 'LEGENDARY', price: 50000, effect: '모든 보상 +10%' }
+};

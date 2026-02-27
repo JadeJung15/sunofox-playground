@@ -52,6 +52,9 @@ export function renderProfile() {
     const progress = tier === nextTier ? 100 : Math.min(100, (currentScore / nextTier.min) * 100);
     const stats = UserState.data.arcadeStats || { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 };
 
+    const activePetId = UserState.data.activePet || 'NONE';
+    const activePet = PET_SHOP[activePetId] || { emoji: '🐾', name: '없음', effect: '파트너를 등록해보세요.' };
+
     const activeBorderClass = UserState.data.activeBorder !== 'NONE' ? BORDER_SHOP[UserState.data.activeBorder]?.class || '' : '';
     const activeBackgroundClass = UserState.data.activeBackground !== 'NONE' ? BACKGROUND_SHOP[UserState.data.activeBackground]?.class || '' : '';
     const activeAuraClass = UserState.data.activeAura !== 'NONE' ? AURA_SHOP[UserState.data.activeAura]?.class || '' : '';
@@ -60,6 +63,13 @@ export function renderProfile() {
         <div class="profile-page fade-in">
             <div class="card profile-header-card ${activeBackgroundClass}" style="padding: 2.5rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
                 <div class="profile-accent-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); opacity: 0.1;"></div>
+                
+                <!-- 펫 파트너 노출 -->
+                <div style="position: absolute; top: 20px; right: 20px; text-align: center;">
+                    <div style="font-size: 2.5rem; animation: float 3s ease-in-out infinite;">${activePet.emoji}</div>
+                    <div style="font-size: 0.6rem; font-weight: 900; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 8px; border-radius: 4px; margin-top: 4px;">MY PARTNER</div>
+                </div>
+
                 <div id="user-emoji" class="author-emoji-circle ${activeBorderClass} ${activeAuraClass}" style="font-size: 5rem; margin: 0 auto 1rem; position: relative; display: flex; background: var(--card-bg); border-radius: 50%; width: 120px; height: 120px; align-items: center; justify-content: center; box-shadow: var(--shadow-md);">👤</div>
                 <div class="tier-badge" style="background: var(--accent-color); color: #fff; display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.5rem; position: relative;">${tier.name}</div>
                 <h2 id="user-name" style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">닉네임</h2>
@@ -74,6 +84,39 @@ export function renderProfile() {
                     </div>
                 </div>
             </div>
+
+            <details class="profile-details" open>
+                <summary>🐾 나의 펫 파트너</summary>
+                <div class="content-area">
+                    <div style="background: rgba(var(--accent-rgb), 0.05); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--accent-soft); display: flex; align-items: center; gap: 20px; margin-bottom: 2rem;">
+                        <div style="font-size: 3.5rem;">${activePet.emoji}</div>
+                        <div>
+                            <h4 style="font-size: 1.2rem; font-weight: 900; color: var(--accent-color); margin-bottom: 4px;">${activePet.name}</h4>
+                            <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">${activePet.effect}</p>
+                        </div>
+                    </div>
+
+                    <h4 style="font-size:0.9rem; margin-bottom:1rem; color:var(--text-main); font-weight: 800;">🥚 펫 입양/보유 목록</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem;">
+                        ${Object.entries(PET_SHOP).map(([id, info]) => {
+                            const isOwned = (UserState.data.unlockedPets || []).includes(id);
+                            const isActive = activePetId === id;
+                            return `
+                                <div class="pet-card" style="background: #fff; padding: 1.2rem 1rem; border-radius: 16px; border: 2px solid ${isActive ? 'var(--accent-color)' : 'var(--border-color)'}; text-align: center; position: relative; transition: all 0.2s;">
+                                    <div style="font-size: 2rem; margin-bottom: 10px;">${info.emoji}</div>
+                                    <div style="font-weight: 800; font-size: 0.85rem; margin-bottom: 4px;">${info.name}</div>
+                                    <div style="font-size: 0.65rem; color: var(--text-sub); margin-bottom: 12px; height: 2.4rem; display: flex; align-items: center; justify-content: center;">${info.effect}</div>
+                                    ${isOwned ? `
+                                        <button class="btn-pet-equip" data-id="${id}" style="width: 100%; padding: 6px; border-radius: 8px; font-size: 0.75rem; border: 1px solid var(--accent-color); background: ${isActive ? 'var(--accent-color)' : 'none'}; color: ${isActive ? '#fff' : 'var(--accent-color)'}; font-weight: 800;">${isActive ? '함께하는 중' : '함께하기'}</button>
+                                    ` : `
+                                        <button class="btn-pet-buy" data-id="${id}" style="width: 100%; padding: 6px; border-radius: 8px; font-size: 0.75rem; border: none; background: var(--text-main); color: #fff; font-weight: 800;">${info.price.toLocaleString()}P</button>
+                                    `}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </details>
 
             <details class="profile-details" open>
                 <summary>🎨 내 꾸미기 관리</summary>
@@ -173,6 +216,48 @@ export function renderProfile() {
             </details>
         </div>
     `;
+
+    app.querySelectorAll('.btn-pet-equip').forEach(btn => {
+        btn.onclick = async () => {
+            const { id } = btn.dataset;
+            const { changePet } = await import('../auth.js?v=7.1.0');
+            if (await changePet(id)) {
+                alert("펫 파트너가 변경되었습니다! 🐾");
+                renderProfile();
+            } else {
+                alert("변경 중 오류가 발생했습니다.");
+            }
+        };
+    });
+
+    app.querySelectorAll('.btn-pet-buy').forEach(btn => {
+        btn.onclick = async () => {
+            const { id } = btn.dataset;
+            const info = PET_SHOP[id];
+            const { usePoints, updateUI } = await import('../auth.js?v=7.1.0');
+            
+            if (confirm(`${info.name}을(를) 입양하시겠습니까?\n(${info.price.toLocaleString()}P 소모)`)) {
+                if (await usePoints(info.price, `펫 ${info.name} 입양`)) {
+                    try {
+                        const unlocked = [...(UserState.data.unlockedPets || []), id];
+                        await updateDoc(doc(db, "users", UserState.user.uid), { 
+                            unlockedPets: unlocked,
+                            activePet: id 
+                        });
+                        UserState.data.unlockedPets = unlocked;
+                        UserState.data.activePet = id;
+                        alert(`${info.name}이(가) 새로운 가족이 되었습니다! 🎉`);
+                        renderProfile();
+                        updateUI();
+                    } catch (e) {
+                        alert("입양 처리 중 오류가 발생했습니다.");
+                    }
+                } else {
+                    alert("포인트가 부족합니다.");
+                }
+            }
+        };
+    });
 
     app.querySelectorAll('.btn-equip-profile').forEach(btn => {
         btn.onclick = async () => {

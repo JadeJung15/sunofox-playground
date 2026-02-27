@@ -6,8 +6,33 @@ import {
     getGrade, 
     TIERS, 
     getTier, 
-    COLOR_SHOP 
+    COLOR_SHOP,
+    PET_SHOP 
 } from './constants/shops.js';
+
+// ... (existing code) ...
+
+export async function changePet(petId) {
+    if (!UserState.user || !UserState.data.unlockedPets?.includes(petId)) return false;
+    try {
+        await updateDoc(doc(db, "users", UserState.user.uid), { activePet: petId });
+        UserState.data.activePet = petId;
+        updateUI();
+        return true;
+    } catch (e) { return false; }
+}
+
+export function getPetBuff() {
+    if (!UserState.data?.activePet) return { mineBonus: 0, testBonus: 0, multiplier: 1 };
+    const pet = PET_SHOP[UserState.data.activePet];
+    if (!pet) return { mineBonus: 0, testBonus: 0, multiplier: 1 };
+    
+    return {
+        mineBonus: (pet.grade === 'RARE') ? 2 : 0,
+        testBonus: (pet.grade === 'EPIC') ? 5 : 0,
+        multiplier: (pet.grade === 'LEGENDARY') ? 1.1 : 1
+    };
+}
 import {
     onAuthStateChanged,
     signInWithPopup,
@@ -161,7 +186,8 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         
         document.querySelectorAll('#user-name').forEach(el => {
             let prefix = UserState.isMaster ? '💎 ' : (UserState.isAdmin ? '👑 ' : '');
-            el.textContent = prefix + (data.nickname || UserState.user?.displayName || '사용자');
+            const petEmoji = data.activePet && PET_SHOP[data.activePet] ? PET_SHOP[data.activePet].emoji : '';
+            el.innerHTML = `${prefix}${data.nickname || UserState.user?.displayName || '사용자'} <span style="font-size: 0.8em; margin-left: 4px;">${petEmoji}</span>`;
             el.style.color = data.nameColor || 'var(--text-main)';
         });
         document.querySelectorAll('#user-points').forEach(el => el.textContent = (data.points || 0).toLocaleString());
@@ -197,6 +223,7 @@ async function loadUserData(user) {
             originalEmail: user.email || '이메일 없음',
             emoji: '👤', unlockedEmojis: ['👤'], points: 1000,
             inventory: [], totalScore: 0, discoveredItems: [],
+            activePet: 'F_NORMAL', unlockedPets: ['F_NORMAL'],
             nicknameChanged: false, lastNicknameChange: null, nameColor: '#333333',
             arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
             quests: { date: null, list: {} }, createdAt: serverTimestamp()
