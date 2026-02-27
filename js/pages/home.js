@@ -91,22 +91,22 @@ export async function renderHome(hash) {
             <div class="dashboard fade-in" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem 6rem; box-sizing: border-box;">
                 
                 <!-- 1. 고밀도 환영 섹션 -->
-                <div style="margin-bottom: 2rem; padding: 0 0.5rem;">
-                    <p style="font-size: 0.85rem; font-weight: 800; color: var(--accent-color); letter-spacing: 0.1em; margin-bottom: 4px;">PREMIUM ANALYTICS</p>
-                    <h2 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; letter-spacing: -0.02em;">환영합니다, ${userName}님! 👋</h2>
+                <div style="margin-bottom: 1.25rem; padding: 0 0.5rem; text-align: center;">
+                    <p style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); letter-spacing: 0.1em; margin-bottom: 2px;">PREMIUM ANALYTICS</p>
+                    <h2 style="font-size: 1.5rem; font-weight: 900; color: #1e293b; letter-spacing: -0.02em;">환영합니다, ${userName}님! 👋</h2>
                 </div>
 
-                <!-- 2. 아이코닉 퀵 메뉴 -->
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 3.5rem;">
+                <!-- 2. 단순화된 퀵 메뉴 (간격 축소 및 미니멀 디자인) -->
+                <div style="display: flex; justify-content: center; gap: 0.75rem; margin-bottom: 2.5rem; width: 100%; padding: 0 0.5rem;">
                     ${[
-                        { id: 'arcade', label: '오락실', icon: '🕹️', color: '#10b981' },
-                        { id: 'ranking', label: '랭킹', icon: '🏆', color: '#f59e0b' },
-                        { id: 'board', label: '게시판', icon: '💬', color: '#6366f1' },
-                        { id: 'profile', label: '내 정보', icon: '👤', color: '#1e293b' }
+                        { id: 'arcade', label: '오락실', icon: '🕹️' },
+                        { id: 'ranking', label: '랭킹', icon: '🏆' },
+                        { id: 'board', label: '게시판', icon: '💬' },
+                        { id: 'profile', label: '마이룸', icon: '👤' }
                     ].map(item => `
-                        <div onclick="location.hash='#${item.id}'" style="background:#fff; padding: 1.5rem 0.5rem; border-radius: 28px; text-align: center; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.02); cursor: pointer; transition: transform 0.2s;">
-                            <div style="font-size: 2.2rem; margin-bottom: 8px;">${item.icon}</div>
-                            <span style="font-size: 0.85rem; font-weight: 800; color: #475569;">${item.label}</span>
+                        <div onclick="location.hash='#${item.id}'" style="flex: 1; max-width: 80px; text-align: center; cursor: pointer; transition: transform 0.2s;">
+                            <div style="font-size: 2.2rem; margin-bottom: 6px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.05));">${item.icon}</div>
+                            <span style="font-size: 0.75rem; font-weight: 800; color: #475569; letter-spacing: -0.02em;">${item.label}</span>
                         </div>
                     `).join('')}
                 </div>
