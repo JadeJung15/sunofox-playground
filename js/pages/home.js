@@ -139,27 +139,14 @@ export async function renderHome(hash) {
         app.innerHTML = `
             <div class="dashboard fade-in" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem 5rem; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
                 
-                <!-- 1. 상단 퀵 메뉴 (스토리 스타일 - 가로 스크롤 대칭) -->
-                <div class="quick-menu-stories" style="display: flex; gap: 1.5rem; overflow-x: auto; width: 100%; padding: 1.5rem 0.5rem; scrollbar-width: none; -webkit-overflow-scrolling: touch; margin-bottom: 1.5rem; justify-content: flex-start; md-justify-content: center;">
-                    <div class="story-item" onclick="location.hash='#arcade'" style="flex-shrink: 0; text-align: center; width: 75px; cursor: pointer;">
-                        <div style="width: 68px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); padding: 3px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 8px;">🕹️</div>
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b;">오락실</span>
-                    </div>
-                    <div class="story-item" onclick="location.hash='#ranking'" style="flex-shrink: 0; text-align: center; width: 75px; cursor: pointer;">
-                        <div style="width: 68px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #d97706); padding: 3px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.2); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 8px;">🏆</div>
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b;">랭킹</span>
-                    </div>
-                    <div class="story-item" onclick="location.hash='#board'" style="flex-shrink: 0; text-align: center; width: 75px; cursor: pointer;">
-                        <div style="width: 68px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #4f46e5); padding: 3px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 8px;">💬</div>
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b;">커뮤니티</span>
-                    </div>
-                    <div class="story-item" onclick="location.hash='#guide'" style="flex-shrink: 0; text-align: center; width: 75px; cursor: pointer;">
-                        <div style="width: 68px; height: 64px; border-radius: 50%; background: #94a3b8; padding: 3px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 8px;">📖</div>
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b;">가이드</span>
-                    </div>
-                    <div class="story-item" onclick="location.hash='#profile'" style="flex-shrink: 0; text-align: center; width: 75px; cursor: pointer;">
-                        <div style="width: 68px; height: 64px; border-radius: 50%; background: #1e293b; padding: 3px; border: 2px solid #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 8px;">👤</div>
-                        <span style="font-size: 0.75rem; font-weight: 800; color: #1e293b;">내 정보</span>
+                <!-- 1. 상단 퀵 액션 (직사각형 위젯) -->
+                <div style="width:100%; margin-bottom: 1.75rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.65rem;">
+                        <button onclick="location.hash='#arcade'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🕹️ 오락실</button>
+                        <button onclick="location.hash='#ranking'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🏆 랭킹</button>
+                        <button onclick="location.hash='#board'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">💬 커뮤니티</button>
+                        <button onclick="location.hash='#guide'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#64748b,#475569); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">📖 가이드</button>
+                        <button onclick="location.hash='#profile'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#334155,#1e293b); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">👤 내 정보</button>
                     </div>
                 </div>
 
