@@ -112,16 +112,15 @@ export async function renderHome(hash) {
                 </div>
 
                 <!-- 3. 대형 히어로 보드 (1:1 고정) -->
-                <div style="display: flex; justify-content: center; margin-bottom: 4rem;">
-                    <div class="hero-card" style="width: 100%; max-width: 480px; aspect-ratio: 1/1; background: #1e1b4b; border-radius: 56px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; color: #fff; box-shadow: var(--shadow-premium);">
+                <div style="display: flex; justify-content: center; margin-bottom: 4rem; width: 100%; padding: 0 0.5rem; box-sizing: border-box;">
+                    <div class="hero-card" style="width: 100%; max-width: 420px; aspect-ratio: 1/1; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 48px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; color: #fff; box-shadow: var(--shadow-premium); box-sizing: border-box;">
                         <div style="position: absolute; top: -10%; left: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);"></div>
-                        <div style="position: relative; z-index: 2; text-align: center;">
-                            <div style="font-size: 5rem; margin-bottom: 1rem; animation: float 3s infinite;">🦊</div>
-                            <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 0.8rem 1.5rem; border-radius: 24px; border: 1px solid rgba(255,255,255,0.15); margin-bottom: 2rem; font-weight: 700; font-size: 0.95rem; line-height: 1.5; color: #e0e7ff;">
+                        <div style="position: relative; z-index: 2; text-align: center; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                            <div style="background: rgba(255,255,255,0.12); backdrop-filter: blur(15px); padding: 0.7rem 1.2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem; font-weight: 700; font-size: clamp(0.85rem, 3.5vw, 1rem); line-height: 1.4; color: #e0e7ff; max-width: 90%;">
                                 "${randomAdvice}"
                             </div>
-                            <h1 style="font-size: 2.6rem; font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -0.04em;">당신의 숨겨진<br>본질을 확인하세요</h1>
-                            <button class="btn-primary" style="padding: 1.2rem 3rem; font-size: 1.1rem; border-radius: 24px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 10px 30px rgba(255,255,255,0.2);" onclick="location.hash='#7check'">시작하기 →</button>
+                            <h1 style="font-size: clamp(1.8rem, 8vw, 2.4rem); font-weight: 900; line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.04em; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">당신의 숨겨진<br>본질을 확인하세요</h1>
+                            <button class="btn-primary" style="padding: 0.9rem 2.5rem; font-size: clamp(0.95rem, 4vw, 1.1rem); border-radius: 20px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 10px 30px rgba(255,255,255,0.2);" onclick="location.hash='#7check'">시작하기 →</button>
                         </div>
                     </div>
                 </div>
