@@ -219,30 +219,43 @@ export function renderTestCard(t) {
     const baseLikes = Math.floor(playCount * (0.2 + ((seed % 20) / 100)));
     const displayLikes = actualLikes + baseLikes;
 
+    // 카드의 배경을 다채롭게 만들기 위한 그라데이션 팔레트 (투명도를 살짝 주어 세련된 느낌)
+    const gradients = [
+        'linear-gradient(135deg, rgba(238, 242, 255, 0.9) 0%, rgba(224, 231, 255, 0.6) 100%)', // Indigo
+        'linear-gradient(135deg, rgba(240, 253, 244, 0.9) 0%, rgba(220, 252, 231, 0.6) 100%)', // Green
+        'linear-gradient(135deg, rgba(255, 241, 242, 0.9) 0%, rgba(255, 228, 230, 0.6) 100%)', // Rose
+        'linear-gradient(135deg, rgba(255, 251, 235, 0.9) 0%, rgba(254, 243, 199, 0.6) 100%)', // Amber
+        'linear-gradient(135deg, rgba(245, 243, 255, 0.9) 0%, rgba(237, 233, 254, 0.6) 100%)', // Violet
+        'linear-gradient(135deg, rgba(240, 249, 255, 0.9) 0%, rgba(224, 242, 254, 0.6) 100%)'  // Sky
+    ];
+    const cardBg = gradients[seed % gradients.length];
+
     return `
-    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative; background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, border-color 0.2s; box-shadow: var(--shadow-sm);">
-        <div class="test-info" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
+    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative; background: ${cardBg}; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid rgba(0,0,0,0.05); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); backdrop-filter: blur(10px);">
+        <div class="test-info" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 2;">
             <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
-                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase; background: rgba(var(--accent-rgb), 0.1); padding: 4px 10px; border-radius: 8px;">${t.category}</span>
+                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 800; color: rgba(0,0,0,0.7); text-transform: uppercase; background: rgba(255,255,255,0.6); padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                    ${t.category}
+                </span>
                 
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <div style="background: rgba(0,0,0,0.05); color: var(--text-sub); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; display: flex; align-items:center; gap:4px;">
+                    <div style="background: rgba(255,255,255,0.5); color: rgba(0,0,0,0.6); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; display: flex; align-items:center; gap:4px; border: 1px solid rgba(255,255,255,0.8);">
                         <span style="font-size:0.8rem; opacity:0.8;">🔥</span> <span>${formatEngUnit(playCount)} Play</span>
                     </div>
                 </div>
             </div>
             
-            <h3 style="font-size: 1.3rem; font-weight: 800; line-height: 1.4; color: var(--text-main); margin-bottom: 0.5rem; word-break: keep-all;">${t.title}</h3>
-            <p style="font-size: 0.9rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all;">${t.desc}</p>
+            <h3 style="font-size: 1.3rem; font-weight: 900; line-height: 1.4; color: #1e293b; margin-bottom: 0.5rem; word-break: keep-all; letter-spacing: -0.02em;">${t.title}</h3>
+            <p style="font-size: 0.9rem; color: #475569; line-height: 1.6; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; font-weight: 500;">${t.desc}</p>
             
-            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1rem;">
                 <div id="like-badge-${t.id}"
                      onclick="event.stopPropagation(); handleLike('${t.id}')"
-                     style="color: var(--text-sub); background: rgba(0,0,0,0.03); padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; display: flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease;">
+                     style="color: #475569; background: rgba(255,255,255,0.6); padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; display: flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease; border: 1px solid rgba(255,255,255,0.8);">
                     <span style="font-size:1rem; line-height:1; color: #ef4444;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
                 </div>
                 
-                <span style="font-size: 0.85rem; font-weight: 800; color: var(--accent-color); display: flex; align-items: center; gap: 4px;">분석 시작 <span style="font-size: 1.1rem;">➔</span></span>
+                <span style="font-size: 0.85rem; font-weight: 900; color: #334155; display: flex; align-items: center; gap: 4px; background: rgba(255,255,255,0.4); padding: 6px 12px; border-radius: 20px;">분석 시작 <span style="font-size: 1.1rem;">➔</span></span>
             </div>
         </div>
     </div>`;
