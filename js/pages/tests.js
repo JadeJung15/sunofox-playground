@@ -353,17 +353,18 @@ export function renderTestExecution(testId) {
 
     const renderIntro = () => {
         app.innerHTML = `
-            <div class="test-intro-container fade-in" style="padding: 2rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
-                <div class="test-visual-header" style="margin-top: 2rem; margin-bottom: 2.5rem;">
-                    <div class="test-thumb-wrapper" style="width: 140px; height: 140px; margin: 0 auto; border-radius: 35px; overflow: hidden; box-shadow: var(--shadow-lg); border: 4px solid var(--card-bg);">
-                        <img src="${test.thumb}" alt="" style="width:100%; height:100%; object-fit:cover;" onerror="window.handleImgError(this)">
-                    </div>
-                    <span class="test-category-tag" style="margin-top: 1.5rem; display: inline-block;">${test.category} 분석 리포트</span>
-                    <h2 style="font-size: 2.2rem; font-weight: 900; margin-top: 1rem; line-height: 1.2;">${test.title}</h2>
+            <div class="test-intro-container fade-in" style="padding: 3rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
+                <div class="test-visual-header" style="margin-top: 1rem; margin-bottom: 2.5rem; position: relative;">
+                    <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.9;">✨</div>
+                    <span class="test-category-tag" style="display: inline-block; font-size: 0.85rem; font-weight: 800; color: var(--accent-color); background: rgba(var(--accent-rgb), 0.1); padding: 6px 16px; border-radius: 50px; letter-spacing: 0.05em; margin-bottom: 1rem;">
+                        ${test.category} 분석 리포트
+                    </span>
+                    <h2 style="font-size: 2.2rem; font-weight: 900; line-height: 1.3; color: var(--text-main); word-break: keep-all; margin: 0;">${test.title}</h2>
                 </div>
 
-                <div class="card" style="padding: 2.5rem 1.5rem; margin-bottom: 2.5rem; background: var(--card-bg); border-radius: 30px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md);">
-                    <p style="font-size: 1.15rem; line-height: 1.8; color: var(--text-main); font-weight: 600; word-break: keep-all;">${test.desc}</p>
+                <div class="card" style="padding: 2.5rem 2rem; margin-bottom: 3rem; background: var(--card-bg); border-radius: 30px; border: 1px solid var(--border-color); box-shadow: var(--shadow-md); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; left: -10px; font-size: 5rem; opacity: 0.03; pointer-events: none;">💬</div>
+                    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-main); font-weight: 600; word-break: keep-all; position: relative; z-index: 1;">${test.desc}</p>
                 </div>
 
                 <div style="display: grid; gap: 1rem;">
