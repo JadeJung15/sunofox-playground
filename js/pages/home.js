@@ -163,15 +163,16 @@ export async function renderHome(hash) {
                 </div>
 
                 <!-- 2. 메인 배너 (정사각형 Bento) -->
-                <div class="hero-section" style="width: 100%; aspect-ratio: 1 / 1; max-width: 500px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 40px; margin-bottom: 2.5rem; position: relative; overflow: hidden; text-align: center; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.4); box-sizing: border-box;">
-                    <div style="position: absolute; top: -10%; left: -10%; width: 50%; height: 50%; background: var(--accent-color); filter: blur(80px); opacity: 0.4;"></div>
-                    <div class="hero-content" style="position: relative; z-index: 5; width: 100%;">
-                        <div style="font-size: 4rem; margin-bottom: 1rem; animation: float 3s infinite;">🦊</div>
-                        <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 0.8rem 1.2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem; font-weight: 700; font-size: 0.95rem;">
+                <div class="hero-section" style="width: 100%; aspect-ratio: 1 / 1; max-width: 450px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 40px; margin-bottom: 2.5rem; position: relative; overflow: hidden; text-align: center; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 1.5rem; box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.4); box-sizing: border-box;">
+                    <div style="position: absolute; top: -10%; left: -10%; width: 60%; height: 60%; background: var(--accent-color); filter: blur(80px); opacity: 0.4;"></div>
+                    <div class="hero-content" style="position: relative; z-index: 5; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                        <div style="font-size: clamp(3rem, 15vw, 4.5rem); margin-bottom: 0.5rem; animation: float 3s infinite;">🦊</div>
+                        <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 0.6rem 1rem; border-radius: 18px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1.2rem; font-weight: 700; font-size: clamp(0.8rem, 3.2vw, 0.95rem); max-width: 90%; line-height: 1.4;">
                             "${randomAdvice}"
                         </div>
-                        <h1 style="font-size: 2.2rem; font-weight: 900; line-height: 1.2; margin-bottom: 1rem;">진짜 당신을<br>마주할 시간</h1>
-                        <button class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 20px; background: #fff; color: #1e1b4b; font-weight: 900; border: none;" onclick="location.hash='#7check'">분석 시작하기 ➔</button>
+                        <h1 style="font-size: clamp(1.8rem, 8.5vw, 2.4rem); font-weight: 900; line-height: 1.2; margin-bottom: 0.8rem; letter-spacing: -0.03em;">진짜 당신을<br>마주할 시간</h1>
+                        <p style="font-size: clamp(0.85rem, 3.5vw, 1rem); opacity: 0.8; margin-bottom: 1.8rem; font-weight: 500; line-height: 1.5;">7번의 질문으로 완성되는<br>정교한 아우라 리포트</p>
+                        <button class="btn-primary" style="padding: 0.8rem 2.2rem; font-size: clamp(0.9rem, 4vw, 1.1rem); border-radius: 20px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 10px 25px rgba(0,0,0,0.2);" onclick="location.hash='#7check'">분석 시작 ➔</button>
                     </div>
                 </div>
 
