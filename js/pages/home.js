@@ -229,49 +229,44 @@ export function renderTestCard(t) {
     const baseLikes = Math.floor(playCount * (0.2 + ((seed % 20) / 100)));
     const displayLikes = actualLikes + baseLikes;
 
-    // 카테고리별/아이디별 더욱 선명하고 세련된 그라데이션 팔레트
-    const gradients = [
-        { bg: 'linear-gradient(135deg, #6366f1 0%, #a5b4fc 100%)', text: '#fff', sub: 'rgba(255,255,255,0.8)', accent: '#fff', btn: '#4338ca' }, // Indigo
-        { bg: 'linear-gradient(135deg, #10b981 0%, #6ee7b7 100%)', text: '#fff', sub: 'rgba(255,255,255,0.8)', accent: '#fff', btn: '#047857' }, // Emerald
-        { bg: 'linear-gradient(135deg, #f43f5e 0%, #fda4af 100%)', text: '#fff', sub: 'rgba(255,255,255,0.8)', accent: '#fff', btn: '#be123c' }, // Rose
-        { bg: 'linear-gradient(135deg, #f59e0b 0%, #fcd34d 100%)', text: '#fff', sub: 'rgba(255,255,255,0.8)', accent: '#fff', btn: '#b45309' }, // Amber
-        { bg: 'linear-gradient(135deg, #8b5cf6 0%, #c4b5fd 100%)', text: '#fff', sub: 'rgba(255,255,255,0.8)', accent: '#fff', btn: '#6d28d9' }, // Violet
-        { bg: 'linear-gradient(135deg, #0ea5e9 0%, #7dd3fc 100%)', text: '#fff', sub: 'rgba(255,255,255,0.8)', accent: '#fff', btn: '#0369a1' }  // Sky
+    // 가독성을 위해 불투명하고 밝은 파스텔톤 배경색 팔레트 (글자가 잘 보이도록 보정)
+    const themes = [
+        { bg: '#eef2ff', text: '#1e1b4b', sub: '#4338ca', accent: '#6366f1', border: '#c7d2fe' }, // Indigo
+        { bg: '#ecfdf5', text: '#064e3b', sub: '#059669', accent: '#10b981', border: '#a7f3d0' }, // Emerald
+        { bg: '#fff1f2', text: '#881337', sub: '#e11d48', accent: '#f43f5e', border: '#fecdd3' }, // Rose
+        { bg: '#fffbeb', text: '#78350f', sub: '#d97706', accent: '#f59e0b', border: '#fde68a' }, // Amber
+        { bg: '#f5f3ff', text: '#4c1d95', sub: '#7c3aed', accent: '#8b5cf6', border: '#ddd6fe' }, // Violet
+        { bg: '#f0f9ff', text: '#0c4a6e', sub: '#0284c7', accent: '#0ea5e9', border: '#bae6fd' }  // Sky
     ];
-    const theme = gradients[seed % gradients.length];
+    const theme = themes[seed % themes.length];
 
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" 
-         style="position:relative; background: ${theme.bg}; border-radius: 28px; overflow: hidden; border: none; display: flex; flex-direction: column; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 15px 35px rgba(0,0,0,0.1); color: ${theme.text};">
+         style="position:relative; background: ${theme.bg}; border-radius: 24px; overflow: hidden; border: 2px solid ${theme.border}; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.05); color: ${theme.text};">
         
-        <!-- 장식용 배경 이모지 -->
-        <div style="position: absolute; top: -10px; right: -10px; font-size: 7rem; opacity: 0.12; transform: rotate(15deg); pointer-events: none;">
-            ${t.category === '성격' ? '🧠' : (t.category === '얼굴' ? '✨' : (t.category === '사주' ? '🔮' : '🎨'))}
-        </div>
-
-        <div class="test-info" style="padding: 2rem; flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 2;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
-                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 900; color: #fff; text-transform: uppercase; background: rgba(255,255,255,0.25); padding: 6px 14px; border-radius: 50px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.3);">
+        <div class="test-info" style="padding: 1.75rem; flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 2;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 900; color: #fff; background: ${theme.accent}; padding: 4px 12px; border-radius: 50px;">
                     ${t.category}
                 </span>
                 
-                <div style="background: rgba(0,0,0,0.15); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:6px;">
+                <div style="background: rgba(0,0,0,0.05); color: ${theme.sub}; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:4px; border: 1px solid rgba(0,0,0,0.03);">
                     <span style="font-size:0.9rem;">🔥</span> <span>${formatEngUnit(playCount)} Play</span>
                 </div>
             </div>
             
-            <h3 style="font-size: 1.5rem; font-weight: 900; line-height: 1.3; color: #fff; margin-bottom: 0.8rem; word-break: keep-all; letter-spacing: -0.03em; text-shadow: 0 2px 10px rgba(0,0,0,0.1);">${t.title}</h3>
-            <p style="font-size: 1rem; color: ${theme.sub}; line-height: 1.6; margin-bottom: 2rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; font-weight: 600;">${t.desc}</p>
+            <h3 style="font-size: 1.4rem; font-weight: 900; line-height: 1.4; color: ${theme.text}; margin-bottom: 0.7rem; word-break: keep-all; letter-spacing: -0.02em;">${t.title}</h3>
+            <p style="font-size: 0.95rem; color: #4b5563; line-height: 1.6; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; font-weight: 600;">${t.desc}</p>
             
-            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center;">
+            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1.25rem;">
                 <div id="like-badge-${t.id}"
                      onclick="event.stopPropagation(); handleLike('${t.id}')"
-                     style="color: #fff; background: rgba(255,255,255,0.2); padding: 8px 18px; border-radius: 50px; font-size: 0.9rem; font-weight: 800; display: flex; align-items:center; gap:8px; cursor:pointer; transition:all 0.3s ease; border: 1px solid rgba(255,255,255,0.2);">
+                     style="color: ${theme.sub}; background: #fff; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; display: flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease; border: 1px solid ${theme.border};">
                     <span style="font-size:1.1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
                 </div>
                 
-                <div style="background: #fff; color: ${theme.btn}; padding: 10px 20px; border-radius: 18px; font-weight: 900; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                    분석 시작 <span style="font-size: 1.2rem;">➔</span>
+                <div style="color: ${theme.accent}; font-weight: 900; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">
+                    시작하기 <span style="font-size: 1.2rem;">➔</span>
                 </div>
             </div>
         </div>
