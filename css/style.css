@@ -107,13 +107,23 @@ header {
   display: flex; 
   gap: 0.25rem; 
   padding: 0.25rem 0; 
-  overflow-x: auto; 
+  overflow: visible; /* 드롭다운이 잘리지 않도록 visible로 변경 */
   flex-wrap: nowrap;
-  scrollbar-width: none;
 }
-.nav-tabs::-webkit-scrollbar { display: none; }
 
-.nav-link {
+/* 모바일에서만 가로 스크롤이 필요한 경우를 위해 컨테이너 별도 처리 권장되나 우선 visible 유지 */
+@media (max-width: 768px) {
+  .nav-tabs { 
+    overflow-x: auto; 
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  
+  /* 모바일 스크롤 시에도 드롭다운이 보이도록 position 설정 조정 */
+  .nav-dropdown { position: static; }
+  .dropdown-content { width: 100%; left: 0; top: 100%; }
+}
   text-decoration: none; color: #64748b;
   padding: 0.6rem 1.1rem; border-radius: 50px;
   font-weight: 700; font-size: 0.95rem; white-space: nowrap;

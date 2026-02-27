@@ -210,33 +210,49 @@ authReady.then(() => {
     if (!isRouting) router(); 
 });
 
-// 모바일 드롭다운 메뉴 자동 닫기 및 토글 로직
-document.addEventListener('DOMContentLoaded', () => {
+// 드롭다운 메뉴 토글 로직
+const initDropdown = () => {
     const dropdown = document.querySelector('.nav-dropdown');
     const dropbtn = document.querySelector('.nav-dropbtn');
     const dropdownContent = document.querySelector('.dropdown-content');
 
-    if (dropbtn && dropdownContent) {
-        dropbtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            const isActive = dropdownContent.classList.contains('is-active');
-            document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
-            if (!isActive) {
-                dropdownContent.classList.add('is-active');
-            }
-        });
+    if (!dropbtn || !dropdownContent) return;
 
-        dropdownContent.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                dropdownContent.classList.remove('is-active');
-            });
-        });
+    // 기존 리스너 제거 (중복 방지) 및 새 리스너 등록
+    const newBtn = dropbtn.cloneNode(true);
+    dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
-        document.addEventListener('click', (e) => {
-            if (!dropdown.contains(e.target)) {
-                dropdownContent.classList.remove('is-active');
-            }
+    newBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const isActive = dropdownContent.classList.contains('is-active');
+        
+        // 다른 열려있는 드롭다운 닫기
+        document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
+        
+        if (!isActive) {
+            dropdownContent.classList.add('is-active');
+        }
+    });
+
+    // 링크 클릭 시 닫기
+    dropdownContent.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            dropdownContent.classList.remove('is-active');
         });
-    }
-});
+    });
+
+    // 바깥 영역 클릭 시 닫기
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdownContent.classList.remove('is-active');
+        }
+    });
+};
+
+// DOM 로드 완료 후 실행
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initDropdown);
+} else {
+    initDropdown();
+}
