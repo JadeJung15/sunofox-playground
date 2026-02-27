@@ -1755,3 +1755,75 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
 /* Infinite Scroll Trigger */
 #scroll-trigger { height: 20px; width: 100%; }
+
+/* Home Renewal Fine-tuning */
+.home-renewal button {
+  transition: transform 0.2s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+.home-renewal button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.04);
+}
+
+@media (max-width: 900px) {
+  .home-primary-hero {
+    min-height: 270px !important;
+    padding: 1.35rem !important;
+  }
+
+  .home-hero-side {
+    grid-template-rows: auto auto auto !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-renewal {
+    padding: 0.75rem 0.75rem 4.4rem !important;
+  }
+
+  .home-hero-shell {
+    border-radius: 24px !important;
+    padding: 0.8rem !important;
+  }
+
+  .home-hero-grid {
+    gap: 0.7rem !important;
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-primary-hero {
+    border-radius: 22px !important;
+  }
+
+  .home-primary-hero h1 {
+    font-size: clamp(1.55rem, 8.6vw, 2.05rem) !important;
+  }
+
+  .home-primary-hero p {
+    font-size: 0.86rem !important;
+  }
+
+  .home-primary-hero button,
+  .home-quick-grid button,
+  .home-pill-grid > div {
+    min-height: 42px;
+  }
+
+  .home-quick-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.45rem !important;
+  }
+
+  .home-pill-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.55rem !important;
+  }
+
+  .home-pill-grid > div {
+    padding: 0.72rem 0.74rem !important;
+  }
+
+  .home-renewal-test-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
