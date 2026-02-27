@@ -75,44 +75,54 @@ window.handleLike = handleLike;
 
 export function renderCategorySelection() {
     const app = document.getElementById('app');
+    
+    // 카테고리별 세련된 파스텔 그라데이션 정의
+    const catStyles = {
+        personality: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', // Indigo
+        face: 'linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%)',        // Rose
+        fortune: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',     // Amber
+        fun: 'linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%)'          // Violet
+    };
+
     app.innerHTML = `
-        <div class="category-selection-page fade-in">
-            <div class="section-header" style="text-align:center; flex-direction:column; gap:1rem; margin-bottom:3.5rem; margin-top: 2rem;">
-                <h2 class="section-title" style="font-size:2.2rem; width:100%; text-align:center;">✨ 어떤 분석을 원하시나요?</h2>
-                <p class="text-sub" style="font-weight:600; font-size: 1.1rem;">당신의 본모습을 찾아줄 7가지 질문이 기다리고 있습니다.</p>
+        <div class="category-selection-page fade-in" style="padding-bottom: 5rem;">
+            <div class="section-header" style="text-align:center; flex-direction:column; gap:1rem; margin-bottom:4rem; margin-top: 3rem;">
+                <div style="font-size: 3.5rem; margin-bottom: 0.5rem; opacity: 0.9;">🎭</div>
+                <h2 class="section-title" style="font-size:2.5rem; width:100%; text-align:center; letter-spacing: -0.04em; color: #1e293b; font-weight: 900;">어떤 분석을 원하시나요?</h2>
+                <p class="text-sub" style="font-weight:600; font-size: 1.15rem; color: #64748b;">당신의 본모습을 찾아줄 분석 리포트가 준비되어 있습니다.</p>
             </div>
-            <div class="category-large-grid">
-                <div class="cat-large-card" onclick="location.hash='#personality'" style="--cat-color: var(--color-personality);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">🧠</span>
-                        <h3>성격 분석</h3>
-                        <p>내면의 심리와 숨겨진 성향을<br>심층 분석합니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
+            
+            <div class="category-large-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding: 0 1rem;">
+                <div class="cat-large-card" onclick="location.hash='#personality'" style="background: ${catStyles.personality}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🧠</div>
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🧠</span>
+                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">성격 분석</h3>
+                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">내면의 심리와 숨겨진 성향을<br>전문적인 문항으로 심층 분석합니다.</p>
+                    <span style="font-size: 0.95rem; font-weight: 900; color: #312e81; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">분석 시작하기 →</span>
                 </div>
-                <div class="cat-large-card" onclick="location.hash='#face'" style="--cat-color: var(--color-face);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">✨</span>
-                        <h3>비주얼/얼굴</h3>
-                        <p>이목구비와 첫인상이 주는<br>고유한 매력을 진단합니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
+
+                <div class="cat-large-card" onclick="location.hash='#face'" style="background: ${catStyles.face}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">✨</div>
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">✨</span>
+                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">비주얼/얼굴</h3>
+                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">이목구비와 첫인상이 주는<br>당신만의 고유한 매력을 진단합니다.</p>
+                    <span style="font-size: 0.95rem; font-weight: 900; color: #881337; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">진단 시작하기 →</span>
                 </div>
-                <div class="cat-large-card" onclick="location.hash='#fortune'" style="--cat-color: var(--color-fortune);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">🔮</span>
-                        <h3>오늘의 운세</h3>
-                        <p>영적 타로와 사주 관법으로<br>오늘의 운을 점쳐봅니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
+
+                <div class="cat-large-card" onclick="location.hash='#fortune'" style="background: ${catStyles.fortune}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🔮</div>
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🔮</span>
+                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">오늘의 운세</h3>
+                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">영적 타로와 사주 관법을 통해<br>운명의 흐름과 행운을 점쳐봅니다.</p>
+                    <span style="font-size: 0.95rem; font-weight: 900; color: #92400e; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">점괘 확인하기 →</span>
                 </div>
-                <div class="cat-large-card" onclick="location.hash='#fun'" style="--cat-color: var(--color-fun);">
-                    <div class="cat-card-inner">
-                        <span class="cat-icon">🎨</span>
-                        <h3>재미/심리</h3>
-                        <p>일상의 소소한 취향과<br>재미있는 심리 테스트입니다.</p>
-                        <span class="cat-go">시작하기 →</span>
-                    </div>
+
+                <div class="cat-large-card" onclick="location.hash='#fun'" style="background: ${catStyles.fun}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🎨</div>
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🎨</span>
+                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">재미/심리</h3>
+                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">일상의 소소한 취향을 발견하는<br>가볍고 즐거운 심리 테스트입니다.</p>
+                    <span style="font-size: 0.95rem; font-weight: 900; color: #4c1d95; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">즐기러 가기 →</span>
                 </div>
             </div>
         </div>
