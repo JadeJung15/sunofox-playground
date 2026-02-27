@@ -1,6 +1,6 @@
-import { UserState, updateUI, updateProfileCache } from '../auth.js?v=5.6.0';
+import { UserState, updateUI, updateProfileCache } from '../auth.js?v=7.0.0';
 import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=5.6.0';
+import { db } from '../firebase-init.js?v=7.0.0';
 import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export function renderProfile() {
@@ -161,13 +161,60 @@ export function renderProfile() {
         btn.onclick = async () => {
             const { type, id } = btn.dataset;
             const activeKey = `active${type}`;
-            await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
-            UserState.data[activeKey] = id;
-            updateProfileCache(UserState.user.uid, { [activeKey]: id });
-            renderProfile();
-            updateUI();
+            try {
+                await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
+                UserState.data[activeKey] = id;
+                updateProfileCache(UserState.user.uid, { [activeKey]: id });
+                alert("장착이 완료되었습니다!");
+                renderProfile();
+                updateUI();
+            } catch (e) {
+                alert("업데이트 중 오류가 발생했습니다.");
+            }
         };
     });
+
+    // 닉네임 색상 변경 리스너 직접 등록
+    app.querySelectorAll('.color-btn').forEach(btn => {
+        btn.onclick = async () => {
+            const color = btn.dataset.color;
+            const { changeNameColor } = await import('../auth.js?v=7.0.0');
+            await changeNameColor(color);
+        };
+    });
+
+    // 아이콘 변경 리스너 직접 등록
+    app.querySelectorAll('.emoji-btn').forEach(btn => {
+        btn.onclick = async () => {
+            const emoji = btn.dataset.emoji;
+            const { handleEmojiExchange } = await import('../auth.js?v=7.0.0');
+            await handleEmojiExchange(emoji);
+        };
+    });
+
+    // 닉네임 저장 리스너 직접 등록
+    const nickSaveBtn = document.getElementById('nickname-save');
+    if (nickSaveBtn) {
+        nickSaveBtn.onclick = async () => {
+            const { changeNickname } = await import('../auth.js?v=7.0.0');
+            await changeNickname();
+        };
+    }
+
+    // 로그아웃 리스너 직접 등록
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.onclick = () => {
+            const logoutConfirm = confirm("로그아웃 하시겠습니까?");
+            if (logoutConfirm) {
+                const logoutBtnInAuth = document.createElement('button');
+                logoutBtnInAuth.id = 'logout-btn';
+                document.body.appendChild(logoutBtnInAuth);
+                logoutBtnInAuth.click();
+                logoutBtnInAuth.remove();
+            }
+        };
+    }
 
     updateUI();
 }

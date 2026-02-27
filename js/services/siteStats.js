@@ -1,4 +1,4 @@
-import { db } from '../firebase-init.js?v=5.6.0';
+import { db } from '../firebase-init.js?v=7.0.0';
 import { doc, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function trackVisit() {

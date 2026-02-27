@@ -1,9 +1,9 @@
-import { UserState, addPoints } from '../auth.js?v=5.6.0';
+import { UserState, addPoints } from '../auth.js?v=7.0.0';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=5.6.0';
+import { db } from '../firebase-init.js?v=7.0.0';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=4.3.0';
+import { TESTS } from '../tests-data.js?v=7.0.0';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {

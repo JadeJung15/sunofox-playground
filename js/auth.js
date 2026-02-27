@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-init.js?v=5.6.0';
+import { auth, db } from './firebase-init.js?v=7.0.0';
 import { 
     EMOJI_SHOP, 
     ITEM_VALUES, 
@@ -238,30 +238,65 @@ export async function fetchUserRank(uid) {
     } catch (e) { return "-"; }
 }
 
-async function handleEmojiExchange(emoji) {
+export async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji || UserState.data.emoji === emoji) return;
     if (await usePoints(500, `아이콘 변경`)) {
         await updateDoc(doc(db, "users", UserState.user.uid), { emoji: emoji });
-        UserState.data.emoji = emoji; updateUI();
+        UserState.data.emoji = emoji; 
+        alert("아이콘이 변경되었습니다!");
+        updateUI();
+        if (location.hash === '#profile') {
+            const { renderProfile } = await import('./pages/profile.js?v=7.0.0');
+            renderProfile();
+        }
     }
 }
 
-async function changeNameColor(color) {
-    if (!UserState.user || !color || UserState.data.nameColor === color) return;
+let isColorChanging = false;
+export async function changeNameColor(color) {
+    if (isColorChanging || !UserState.user || !color || UserState.data.nameColor === color) return;
+    isColorChanging = true;
     if (await usePoints(1000, `닉네임 색상 변경`)) {
-        await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
-        UserState.data.nameColor = color; updateUI();
+        try {
+            await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
+            UserState.data.nameColor = color; 
+            alert("닉네임 색상이 변경되었습니다!");
+            updateUI();
+            if (location.hash === '#profile') {
+                const { renderProfile } = await import('./pages/profile.js?v=7.0.0');
+                renderProfile();
+            }
+        } catch (e) {
+            alert("색상 변경 중 오류가 발생했습니다.");
+        }
+    } else {
+        alert("포인트가 부족합니다 (1,000P 필요)");
     }
+    isColorChanging = false;
 }
 
-async function changeNickname() {
+export async function changeNickname() {
     const input = document.getElementById('nickname-input');
     if (!UserState.user || !input?.value.trim()) return;
     const newName = input.value.trim();
+    if (newName.length < 2 || newName.length > 10) return alert("닉네임은 2~10자 사이여야 합니다.");
+    
     const cost = UserState.data.nicknameChanged ? 5000 : 0;
     if (cost === 0 || await usePoints(cost, `닉네임 변경`)) {
-        await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, nicknameChanged: true });
-        UserState.data.nickname = newName; UserState.data.nicknameChanged = true; updateUI();
+        try {
+            await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, nicknameChanged: true });
+            UserState.data.nickname = newName; UserState.data.nicknameChanged = true; 
+            alert("닉네임이 변경되었습니다!");
+            updateUI();
+            if (location.hash === '#profile') {
+                const { renderProfile } = await import('./pages/profile.js?v=7.0.0');
+                renderProfile();
+            }
+        } catch (e) {
+            alert("닉네임 변경 중 오류가 발생했습니다.");
+        }
+    } else {
+        alert("포인트가 부족합니다 (5,000P 필요)");
     }
 }
 

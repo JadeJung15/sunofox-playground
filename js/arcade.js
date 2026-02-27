@@ -1,6 +1,6 @@
-import { addPoints, usePoints, UserState, updateUI } from './auth.js?v=5.6.0';
+import { addPoints, usePoints, UserState, updateUI } from './auth.js?v=7.0.0';
 import { ITEM_VALUES, ITEM_GRADES, getGrade } from './constants/shops.js';
-import { db } from './firebase-init.js?v=5.6.0';
+import { db } from './firebase-init.js?v=7.0.0';
 import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { soundManager } from './sound.js';
 
