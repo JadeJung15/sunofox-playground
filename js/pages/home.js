@@ -48,6 +48,37 @@ async function handleLike(testId) {
 }
 window.handleLike = handleLike;
 
+export function renderCategorySelection() {
+    const app = document.getElementById('app');
+    const categories = [
+        { id: 'personality', name: '성격 분석', icon: '🧠', bg: 'linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%)', text: '#4338ca', desc: '내면의 심리와 성향 분석' },
+        { id: 'face', name: '비주얼/얼굴', icon: '✨', bg: 'linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%)', text: '#e11d48', desc: '첫인상과 매력 포인트 진단' },
+        { id: 'fortune', name: '오늘의 운세', icon: '🔮', bg: 'linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)', text: '#d97706', desc: '행운의 흐름과 운명 확인' },
+        { id: 'fun', name: '재미/심리', icon: '🎨', bg: 'linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)', text: '#7c3aed', desc: '소소한 즐거움과 취향 발견' }
+    ];
+
+    app.innerHTML = `
+        <div class="category-selection-page fade-in" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 6rem; box-sizing: border-box;">
+            <div style="margin-bottom: 3.5rem; text-align: center;">
+                <p style="font-size: 0.85rem; font-weight: 800; color: var(--accent-color); letter-spacing: 0.1em; margin-bottom: 8px;">CATEGORY SELECT</p>
+                <h2 style="font-size: 2.2rem; font-weight: 900; color: #1e293b; letter-spacing: -0.04em;">어떤 분석을 원하시나요?</h2>
+            </div>
+            
+            <div class="category-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem;">
+                ${categories.map(cat => `
+                    <div class="cat-card" onclick="location.hash='#${cat.id}'" 
+                         style="background: ${cat.bg}; border-radius: 36px; padding: 2.5rem 2rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 10px 25px rgba(0,0,0,0.02); position: relative; overflow: hidden;">
+                        <div style="font-size: 3.5rem; margin-bottom: 1.5rem;">${cat.icon}</div>
+                        <h3 style="font-size: 1.6rem; font-weight: 900; color: #1e293b; margin-bottom: 0.6rem;">${cat.name}</h3>
+                        <p style="font-size: 0.95rem; color: #64748b; font-weight: 600; margin-bottom: 2rem;">${cat.desc}</p>
+                        <span style="font-size: 0.9rem; font-weight: 800; color: ${cat.text}; background: #fff; padding: 8px 18px; border-radius: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">리포트 보기 →</span>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
 export async function renderHome(hash) {
     const app = document.getElementById('app');
     await fetchAllLikes();
