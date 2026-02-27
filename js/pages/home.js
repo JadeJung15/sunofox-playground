@@ -138,25 +138,36 @@ export async function renderHome(hash) {
 
         app.innerHTML = `
             <div class="dashboard fade-in">
-                <div class="hero-section">
-                    <div class="hero-content">
-                        <div class="fox-advice-container fade-in" style="margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px;">
-                            <div class="fox-avatar" style="font-size: 3rem; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.2));">🦊</div>
-                            <div class="advice-bubble" style="background: rgba(255,255,255,0.9); padding: 0.8rem 1.5rem; border-radius: 20px 20px 20px 4px; box-shadow: var(--shadow-md); position: relative; font-weight: 800; color: #334155; font-size: 1rem; border: 2px solid var(--accent-soft); backdrop-filter: blur(5px);">
-                                ${randomAdvice}
+                <div class="hero-section" style="padding: 5rem 1.5rem; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 40px; margin-bottom: 2rem; position: relative; overflow: hidden; text-align: center; color: #fff;">
+                    <!-- 배경 아우라 효과 -->
+                    <div style="position: absolute; top: -100px; left: -100px; width: 300px; height: 300px; background: var(--accent-color); filter: blur(100px); opacity: 0.3;"></div>
+                    <div style="position: absolute; bottom: -100px; right: -100px; width: 300px; height: 300px; background: var(--accent-secondary); filter: blur(100px); opacity: 0.2;"></div>
+                    
+                    <div class="hero-content" style="position: relative; z-index: 5; max-width: 800px; margin: 0 auto;">
+                        <div class="fox-advice-container fade-in" style="margin-bottom: 3rem; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                            <div class="fox-avatar" style="font-size: 4rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.3)); animation: float 3s ease-in-out infinite;">🦊</div>
+                            <div class="advice-bubble" style="background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 1rem 2rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); box-shadow: 0 10px 30px rgba(0,0,0,0.2); font-weight: 700; color: #fff; font-size: 1.1rem; line-height: 1.5;">
+                                <span style="display: block; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; opacity: 0.7; color: var(--accent-soft);">Today's Fox Wisdom</span>
+                                "${randomAdvice}"
                             </div>
                         </div>
-                        <span class="hero-tag">✨ 7번의 질문으로 찾는 나</span>
-                        <h1>당신이 몰랐던<br>진짜 모습을 확인하세요</h1>
-                        <p>심리학적 기반의 정교한 분석 리포트와<br>즐거운 미니게임이 기다리고 있습니다.</p>
-                        <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1rem;">
-                            <button class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem; border-radius: 50px;" onclick="location.hash='#7check'">테스트 시작하기</button>
-                            <button class="btn-secondary" style="padding: 1rem 2rem; font-size: 1.1rem; border-radius: 50px; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: #fff;" onclick="window.globalShareSite()">🔗 공유하기</button>
+
+                        <div style="margin-bottom: 1rem;">
+                            <span class="hero-tag" style="background: rgba(255,255,255,0.1); color: var(--accent-soft); padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; border: 1px solid rgba(255,255,255,0.1); letter-spacing: 0.05em;">✨ 프리미엄 심리 분석 플랫폼</span>
+                        </div>
+                        
+                        <h1 style="font-size: 3.5rem; font-weight: 900; line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.04em; background: linear-gradient(to bottom, #ffffff 60%, rgba(255,255,255,0.7)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">당신이 몰랐던<br>진짜 모습을 찾아서</h1>
+                        
+                        <p style="font-size: 1.25rem; opacity: 0.8; margin-bottom: 3rem; font-weight: 500; line-height: 1.6;">7번의 질문으로 완성되는 정교한 아우라 리포트.<br>나만의 고유한 색깔을 지금 바로 확인해 보세요.</p>
+                        
+                        <div style="display: flex; gap: 1.25rem; justify-content: center; flex-wrap: wrap;">
+                            <button class="btn-primary" style="padding: 1.2rem 3rem; font-size: 1.2rem; border-radius: 20px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 15px 35px rgba(255,255,255,0.2); transition: transform 0.2s;" onclick="location.hash='#7check'">분석 시작하기 ➔</button>
+                            <button class="btn-secondary" style="padding: 1.2rem 2.5rem; font-size: 1.1rem; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); color: #fff; font-weight: 800; backdrop-filter: blur(10px);" onclick="window.globalShareSite()">🔗 결과 공유</button>
                         </div>
                     </div>
                 </div>
 
-                <div class="banner-grid" style="margin-top: 2rem;">
+                <div class="banner-grid" style="margin-top: 2.5rem;">
                     <div class="arcade-preview-card" onclick="location.hash='#arcade'">
                         <div style="position:relative; z-index:1;">
                             <span style="font-size: 0.8rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 50px; margin-bottom: 1rem; display: inline-block;">DAILY MISSION</span>
