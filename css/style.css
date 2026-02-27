@@ -57,8 +57,25 @@ header {
 }
 .nav-container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; display: flex; flex-direction: column; gap: 0.8rem; }
 .nav-top { display: flex; justify-content: space-between; align-items: center; width: 100%; padding-bottom: 0.2rem; }
-.logo { font-size: 1.6rem; font-weight: 900; color: #1e293b; text-decoration: none; display: flex; align-items: center; gap: 4px; letter-spacing: -0.03em; white-space: nowrap; }
-.logo span { color: var(--accent-color); }
+.logo { 
+  font-size: 1.6rem; 
+  font-weight: 900; 
+  color: #1e293b; 
+  text-decoration: none; 
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+  letter-spacing: -0.04em; 
+  white-space: nowrap; 
+}
+
+.logo span { 
+  background: linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #db2777 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 900;
+}
 
 .logo-wrapper {
   display: flex;
