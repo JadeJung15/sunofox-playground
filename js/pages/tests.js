@@ -106,21 +106,19 @@ export async function renderResult(testId, traitScores) {
         </div>
         <div class="result-page fade-in" style="min-height: 100vh; padding: 1.5rem 0.75rem;">
             <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-lg); border: 1px solid ${themeColor}22; backdrop-filter: blur(10px);">
-                <div style="padding: 1.25rem 1.25rem 0;">
-                    <div class="result-img-wrapper" style="height: 220px; position: relative; border-radius: 18px; overflow: hidden; box-shadow: 0 8px 16px rgba(0,0,0,0.12); border: 2px solid #fff;">
-                        <img src="${result.img}" alt="${result.title}"
-                             style="width: 100%; height: 100%; object-fit: cover;"
-                             onerror="window.handleImgError(this)">
+                <div style="padding: 2.5rem 1.25rem 1.5rem; text-align: center; background: linear-gradient(180deg, ${themeColor}15 0%, transparent 100%);">
+                    <div style="width: 100px; height: 100px; margin: 0 auto 1.5rem; border-radius: 50%; background: ${themeColor}22; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; box-shadow: 0 8px 24px ${themeColor}33; border: 4px solid #fff;">
+                        ${tags[0]?.replace(/[^a-zA-Z0-9가-힣]/g, '') === '신뢰' ? '🤝' : (tags[0]?.replace(/[^a-zA-Z0-9가-힣]/g, '') === '유니크' ? '🎨' : '✨')}
                     </div>
-                </div>
-                <div style="padding: 1.25rem 1.25rem 2rem; text-align: center;">
                     <div style="display:flex; justify-content:center; gap:6px; margin-bottom:1.25rem;" class="result-tag-floating">
                         ${tags.map(tag => `<span style="background:${themeColor}15; color:${themeColor}; padding:4px 12px; border-radius:50px; font-size:0.75rem; font-weight:800; border:1px solid ${themeColor}22;">${tag}</span>`).join('')}
                     </div>
-                    <h2 style="font-size: 2rem; font-weight: 900; color: ${themeColor}; margin-bottom: 1.25rem; letter-spacing: -0.04em; line-height: 1.2; word-break: keep-all;">${result.title}</h2>
+                    <h2 style="font-size: 2.2rem; font-weight: 900; color: ${themeColor}; margin-bottom: 0; letter-spacing: -0.04em; line-height: 1.2; word-break: keep-all;">${result.title}</h2>
+                </div>
+                <div style="padding: 0 1.25rem 2rem; text-align: center;">
 
-                    <div style="min-height: 6rem; margin-bottom: 2rem; background: rgba(var(--accent-rgb), 0.03); padding: 1.25rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
-                        <p id="typing-desc" style="font-size: 1rem; line-height: 1.7; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
+                    <div style="min-height: 6rem; margin-bottom: 2rem; background: rgba(var(--accent-rgb), 0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
+                        <p id="typing-desc" style="font-size: 1.05rem; line-height: 1.8; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
                     </div>
 
                                         <div class="soul-analysis-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
@@ -236,17 +234,19 @@ export async function renderResult(testId, traitScores) {
 
             <div id="story-capture-area" style="position: absolute; top: 0; left: 0; z-index: -100; opacity: 0; pointer-events: none; width: 400px; height: 711px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', -apple-system, sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;">
                 <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.6) 100%); z-index: 1;"></div>
-                <div style="position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 40px 30px; box-sizing: border-box; align-items: center;">
-                    <div style="text-align: center; margin-bottom: 25px; width: 100%;">
+                <div style="position: relative; z-index: 2; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 50px 30px; box-sizing: border-box; align-items: center;">
+                    <div style="text-align: center; margin-bottom: 40px; width: 100%;">
                         <span style="background: rgba(255,255,255,0.2); padding: 6px 16px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; letter-spacing: 0.1em; display: inline-block;">SEVEN CHECK REPORT</span>
                     </div>
-                    <div class="story-img-wrapper" style="width: 320px; height: 320px; border-radius: 20px; overflow:hidden; margin: 0 auto 30px; border: 4px solid #fff; box-shadow: 0 15px 30px rgba(0,0,0,0.3); flex-shrink: 0; position: relative;">
-                        <img src="${result.img}" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                    
+                    <div style="width: 160px; height: 160px; margin: 0 auto 30px; border-radius: 50%; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-size: 6rem; box-shadow: 0 15px 30px rgba(0,0,0,0.2); border: 4px solid rgba(255,255,255,0.4); backdrop-filter: blur(10px);">
+                        ${tags[0]?.replace(/[^a-zA-Z0-9가-힣]/g, '') === '신뢰' ? '🤝' : (tags[0]?.replace(/[^a-zA-Z0-9가-힣]/g, '') === '유니크' ? '🎨' : '✨')}
                     </div>
+                    
                     <div style="text-align: center; width: 100%;">
-                        <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 20px; line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.3); word-break: keep-all;">${result.title}</h2>
-                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 25px;">
-                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); padding:6px 14px; border-radius:50px; font-size:0.8rem; font-weight:700; backdrop-filter:blur(5px); display: inline-block;">${tag}</span>`).join('')}
+                        <h2 style="font-size: 2.4rem; font-weight: 900; margin-bottom: 25px; line-height: 1.3; text-shadow: 0 4px 10px rgba(0,0,0,0.3); word-break: keep-all;">${result.title}</h2>
+                        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 25px;">
+                            ${tags.map(tag => `<span style="background:rgba(255,255,255,0.25); padding:8px 18px; border-radius:50px; font-size:0.9rem; font-weight:800; backdrop-filter:blur(5px); display: inline-block; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">${tag}</span>`).join('')}
                         </div>
                     </div>
                     <div style="margin-top: auto; text-align: center; width: 100%; background: rgba(255,255,255,0.15); padding: 25px; border-radius: 20px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); box-sizing: border-box;">
