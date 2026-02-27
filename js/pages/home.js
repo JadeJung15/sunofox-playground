@@ -167,42 +167,68 @@ export async function renderHome(hash) {
                     </div>
                 </div>
 
-                <div class="banner-grid" style="margin-top: 2.5rem;">
-                    <div class="arcade-preview-card" onclick="location.hash='#arcade'">
-                        <div style="position:relative; z-index:1;">
-                            <span style="font-size: 0.8rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 50px; margin-bottom: 1rem; display: inline-block;">DAILY MISSION</span>
-                            <h3 style="font-size: 1.8rem; font-weight: 900; margin-bottom: 0.5rem;">세븐 오락실 오픈!</h3>
-                            <p style="font-weight: 600; opacity: 0.9;">매일 출석하고 포인트 채굴해서<br>희귀 이모지를 수집하세요.</p>
+                <div class="banner-grid" style="margin-top: 3rem; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                    <!-- 대형 오락실 카드 -->
+                    <div class="arcade-preview-card" onclick="location.hash='#arcade'" 
+                         style="grid-column: span 2; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 32px; padding: 2.5rem; color: #fff; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(16, 185, 129, 0.15); min-height: 280px;">
+                        <div style="position:relative; z-index:2;">
+                            <span style="font-size: 0.75rem; font-weight: 900; background: rgba(255,255,255,0.2); color: #fff; padding: 6px 14px; border-radius: 50px; margin-bottom: 1.5rem; display: inline-block; letter-spacing: 0.05em; border: 1px solid rgba(255,255,255,0.2);">PLAY & EARN</span>
+                            <h3 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 1rem; line-height: 1.2;">세븐 오락실에서<br>행운을 채굴하세요</h3>
+                            <p style="font-weight: 600; opacity: 0.9; font-size: 1.05rem; line-height: 1.6;">매일 주어지는 퀘스트를 완료하고<br>희귀 아이템과 포인트를 수집해 보세요.</p>
                         </div>
-                        <span style="position:absolute; bottom: -20px; right: -10px; font-size: 8rem; opacity: 0.2;">🎰</span>
+                        <div style="position:relative; z-index:2; margin-top: 2rem;">
+                            <button style="background: #fff; color: #059669; border: none; padding: 12px 24px; border-radius: 16px; font-weight: 900; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.1);">입장하기 🎮</button>
+                        </div>
+                        <span style="position:absolute; bottom: -30px; right: -20px; font-size: 12rem; opacity: 0.15; transform: rotate(-15deg); filter: blur(2px); pointer-events: none;">🎰</span>
                     </div>
-                    <div class="ranking-preview-card">
-                        <h4 style="font-weight: 800; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">🏆 명예의 전당</h4>
-                        <div id="mini-ranking-container" style="display: flex; flex-direction: column; gap: 0.75rem;">
-                            <p class="text-sub" style="font-size: 0.8rem;">실시간 랭킹 확인하기</p>
-                            <button class="btn-secondary" style="width:100%; padding: 0.5rem; font-size: 0.8rem;" onclick="location.hash='#ranking'">랭킹 보기</button>
+
+                    <!-- 랭킹 카드 -->
+                    <div class="ranking-preview-card" onclick="location.hash='#ranking'"
+                         style="grid-column: span 2; background: #fff; border-radius: 32px; padding: 2rem; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.03); display: flex; flex-direction: column; justify-content: center; cursor: pointer; min-height: 280px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h4 style="font-weight: 900; font-size: 1.3rem; color: #1e293b; display: flex; align-items: center; gap: 10px;">🏆 명예의 전당</h4>
+                            <span style="color: var(--accent-color); font-weight: 800; font-size: 0.9rem;">전체보기 ➔</span>
+                        </div>
+                        <div id="mini-ranking-container" style="display: flex; gap: 1rem; align-items: center;">
+                            <div style="flex: 1; background: #f8fafc; padding: 1.5rem 1rem; border-radius: 20px; text-align: center; border: 1px solid #f1f5f9;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🥇</div>
+                                <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Top Rank</div>
+                            </div>
+                            <div style="flex: 1; background: #f8fafc; padding: 1.5rem 1rem; border-radius: 20px; text-align: center; border: 1px solid #f1f5f9;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🥈</div>
+                                <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Pro Collector</div>
+                            </div>
+                            <div style="flex: 1; background: #f8fafc; padding: 1.5rem 1rem; border-radius: 20px; text-align: center; border: 1px solid #f1f5f9;">
+                                <div style="font-size: 2rem; margin-bottom: 8px;">🥉</div>
+                                <div style="font-size: 0.75rem; font-weight: 800; color: #64748b; text-transform: uppercase;">Active User</div>
+                            </div>
                         </div>
                     </div>
-                    <div class="guide-preview-card" onclick="location.hash='#guide'">
-                        <div style="position:relative; z-index:1;">
-                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">📖 이용 가이드</h4>
-                            <p style="font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">포인트 획득 방법부터<br>등급 시스템까지 한눈에!</p>
-                        </div>
-                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.1;">📒</span>
+
+                    <!-- 소형 메뉴 카드들 -->
+                    <div class="guide-preview-card" onclick="location.hash='#guide'"
+                         style="background: #fff; border-radius: 32px; padding: 2rem 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: center; cursor: pointer; transition: transform 0.2s;">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">📖</div>
+                        <h4 style="font-weight: 800; font-size: 1.1rem; color: #1e293b; margin-bottom: 5px;">이용 가이드</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; font-weight: 600;">초보자 안내서</p>
                     </div>
-                    <div class="board-preview-card" onclick="location.hash='#board'">
-                        <div style="position:relative; z-index:1;">
-                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">💬 커뮤니티</h4>
-                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">다른 이용자들과 소통하고<br>나만의 분석 결과를 공유하세요.</p>
-                        </div>
-                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.05;">✨</span>
+
+                    <div class="board-preview-card" onclick="location.hash='#board'"
+                         style="background: #fff; border-radius: 32px; padding: 2rem 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: center; cursor: pointer; transition: transform 0.2s;">
+                        <div style="font-size: 2.5rem; margin-bottom: 12px;">💬</div>
+                        <h4 style="font-weight: 800; font-size: 1.1rem; color: #1e293b; margin-bottom: 5px;">커뮤니티</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; font-weight: 600;">자유로운 소통</p>
                     </div>
-                    <div class="profile-preview-card" onclick="location.hash='#profile'">
-                        <div style="position:relative; z-index:1;">
-                            <h4 style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">👤 내 정보</h4>
-                            <p class="text-sub" style="font-size: 0.8rem; line-height: 1.5;">보유 포인트와 아이템,<br>현재 등급을 확인하세요.</p>
+
+                    <div class="profile-preview-card" onclick="location.hash='#profile'"
+                         style="background: #fff; border-radius: 32px; padding: 2rem 1.5rem; border: 1px solid var(--border-color); box-shadow: 0 10px 30px rgba(0,0,0,0.03); text-align: center; cursor: pointer; transition: transform 0.2s; grid-column: span 2;">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                            <div style="font-size: 3rem;">👤</div>
+                            <div style="text-align: left;">
+                                <h4 style="font-weight: 800; font-size: 1.2rem; color: #1e293b; margin-bottom: 4px;">나의 분석 리포트</h4>
+                                <p style="font-size: 0.9rem; color: #64748b; font-weight: 600;">아이템 및 포인트 관리</p>
+                            </div>
                         </div>
-                        <span style="position:absolute; bottom: -10px; right: -5px; font-size: 4rem; opacity: 0.05;">🆔</span>
                     </div>
                 </div>
             </div>
