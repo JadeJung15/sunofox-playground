@@ -118,19 +118,15 @@ export async function renderHome(hash) {
                     </div>
                 </div>
 
-                <!-- 2. 슬림 퀵 메뉴 -->
-                <div style="display: flex; justify-content: center; gap: 1rem; width: 100%; margin-bottom: 3.5rem; overflow-x: auto; padding: 0.5rem; scrollbar-width: none; -webkit-overflow-scrolling: touch;">
-                    ${[
-                        { id: 'arcade', label: '오락실', icon: '🕹️' },
-                        { id: 'ranking', label: '랭킹', icon: '🏆' },
-                        { id: 'board', label: '게시판', icon: '💬' },
-                        { id: 'profile', label: '마이룸', icon: '👤' }
-                    ].map(item => `
-                        <div onclick="location.hash='#${item.id}'" style="flex: 1; min-width: 75px; max-width: 85px; text-align: center; cursor: pointer;">
-                            <div style="width: 60px; height: 60px; border-radius: 50%; background: #fff; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem;">${item.icon}</div>
-                            <span style="font-size: 0.75rem; font-weight: 800; color: #475569;">${item.label}</span>
-                        </div>
-                    `).join('')}
+                <!-- 2. 상단 퀵 액션 (직사각형 위젯) -->
+                <div style="width:100%; margin-bottom: 3.5rem;">
+                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.65rem;">
+                        <button onclick="location.hash='#arcade'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🕹️ 오락실</button>
+                        <button onclick="location.hash='#ranking'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🏆 랭킹</button>
+                        <button onclick="location.hash='#board'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">💬 커뮤니티</button>
+                        <button onclick="location.hash='#guide'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#64748b,#475569); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">📖 가이드</button>
+                        <button onclick="location.hash='#profile'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#334155,#1e293b); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">👤 내 정보</button>
+                    </div>
                 </div>
 
                 <!-- 3. 메인 배너 (중앙 대칭 1:1 - 여우 이미지 제거) -->
