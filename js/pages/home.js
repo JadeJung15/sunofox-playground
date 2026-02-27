@@ -121,11 +121,11 @@ export async function renderHome(hash) {
                 <!-- 2. 상단 퀵 액션 (직사각형 위젯) -->
                 <div style="width:100%; margin-bottom: 3.5rem;">
                     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.65rem;">
-                        <button onclick="location.hash='#arcade'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🕹️ 오락실</button>
-                        <button onclick="location.hash='#ranking'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🏆 랭킹</button>
-                        <button onclick="location.hash='#board'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">💬 커뮤니티</button>
-                        <button onclick="location.hash='#guide'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#64748b,#475569); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">📖 가이드</button>
-                        <button onclick="location.hash='#profile'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#334155,#1e293b); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">👤 내 정보</button>
+                        <button onclick="location.hash='#arcade'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#34d399 0%,#10b981 45%,#047857 100%); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; box-shadow:0 10px 22px rgba(16,185,129,0.28);">🕹️ 오락실</button>
+                        <button onclick="location.hash='#ranking'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#facc15 0%,#f59e0b 50%,#b45309 100%); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; box-shadow:0 10px 22px rgba(245,158,11,0.3);">🏆 랭킹</button>
+                        <button onclick="location.hash='#board'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#60a5fa 0%,#6366f1 50%,#4338ca 100%); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; box-shadow:0 10px 22px rgba(79,70,229,0.3);">💬 커뮤니티</button>
+                        <button onclick="location.hash='#guide'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#94a3b8 0%,#64748b 50%,#334155 100%); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; box-shadow:0 10px 22px rgba(71,85,105,0.28);">📖 가이드</button>
+                        <button onclick="location.hash='#profile'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#475569 0%,#1e293b 50%,#0f172a 100%); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer; box-shadow:0 10px 22px rgba(30,41,59,0.32);">👤 내 정보</button>
                     </div>
                 </div>
 
@@ -139,7 +139,7 @@ export async function renderHome(hash) {
                             </div>
                             <h1 style="font-size: clamp(1.8rem, 8.5vw, 2.4rem); font-weight: 900; line-height: 1.2; margin-bottom: 1.5rem; letter-spacing: -0.04em; text-shadow: 0 4px 15px rgba(0,0,0,0.2);">진짜 당신을<br>확인할 시간</h1>
                             <p style="font-size: 0.95rem; opacity: 0.85; margin-bottom: 2.5rem; font-weight: 500; line-height: 1.5; max-width: 80%; margin-left: auto; margin-right: auto;">7번의 질문으로 완성되는 정교한 분석 리포트를 시작하세요.</p>
-                            <button class="btn-primary" style="padding: 1rem 2.8rem; font-size: clamp(0.95rem, 4vw, 1.1rem); border-radius: 24px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 15px 30px rgba(255,255,255,0.2);" onclick="location.hash='#7check'">시작하기 ➔</button>
+                            <button class="btn-primary" style="padding: 1rem 2.8rem; font-size: clamp(0.95rem, 4vw, 1.1rem); border-radius: 24px; background: linear-gradient(135deg,#ffffff 0%,#e0e7ff 40%,#c7d2fe 100%); color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 16px 30px rgba(199,210,254,0.42);" onclick="location.hash='#7check'">시작하기 ➔</button>
                         </div>
                     </div>
                 </div>
@@ -160,13 +160,13 @@ export async function renderHome(hash) {
                     <div class="bento-box" onclick="location.hash='#arcade'" style="background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border-radius: 36px; padding: 2rem; color: #fff; position: relative; overflow: hidden; min-height: 180px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.1); cursor: pointer; transition: transform 0.2s;">
                         <h4 style="font-size: 1.5rem; font-weight: 900; color: #064e3b; margin-bottom: 0.5rem; position: relative; z-index: 2;">세븐 오락실</h4>
                         <p style="font-size: 0.95rem; font-weight: 600; color: #059669; margin-bottom: 1.5rem; position: relative; z-index: 2;">포인트를 모아 펫을 입양하세요.</p>
-                        <button style="background: #059669; color: #fff; border: none; padding: 8px 20px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; width: fit-content; position: relative; z-index: 2;">참여하기</button>
+                        <button style="background: linear-gradient(135deg,#34d399 0%,#10b981 45%,#047857 100%); color: #fff; border: none; padding: 8px 20px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; width: fit-content; position: relative; z-index: 2; box-shadow: 0 10px 18px rgba(5,150,105,0.28);">참여하기</button>
                         <span style="position: absolute; bottom: -10px; right: -10px; font-size: 6rem; opacity: 0.15; transform: rotate(-15deg); pointer-events: none;">🎰</span>
                     </div>
                     <div class="bento-box" onclick="location.hash='#ranking'" style="background: #fff; border-radius: 32px; padding: 2rem; border: 1px solid #f1f5f9; position: relative; overflow: hidden; min-height: 180px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s;">
                         <h4 style="font-size: 1.5rem; font-weight: 900; color: #1e293b; margin-bottom: 0.5rem; position: relative; z-index: 2;">명예의 전당</h4>
                         <p style="font-size: 0.95rem; font-weight: 600; color: #64748b; margin-bottom: 1.5rem; position: relative; z-index: 2;">최고의 분석가 순위 확인</p>
-                        <button style="background: #1e293b; color: #fff; border: none; padding: 8px 20px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; width: fit-content; position: relative; z-index: 2;">랭킹보기</button>
+                        <button style="background: linear-gradient(135deg,#64748b 0%,#334155 50%,#0f172a 100%); color: #fff; border: none; padding: 8px 20px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; width: fit-content; position: relative; z-index: 2; box-shadow: 0 10px 18px rgba(15,23,42,0.25);">랭킹보기</button>
                         <span style="position: absolute; bottom: -10px; right: -10px; font-size: 6rem; opacity: 0.05; transform: rotate(-15deg); pointer-events: none;">🏆</span>
                     </div>
                 </div>
