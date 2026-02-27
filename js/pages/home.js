@@ -135,85 +135,96 @@ export async function renderHome(hash) {
 
     if (hash === '#home' || !hash) {
         const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
+        const userName = UserState.user ? UserState.data?.nickname || '사용자' : '방문자';
+        const heroTest = TESTS[0];
 
         app.innerHTML = `
-            <div class="dashboard fade-in" style="width: 100%; max-width: 1100px; margin: 0 auto; padding: 1rem 1.25rem 5rem; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
-                
-                <!-- 1. 상단 퀵 액션 (직사각형 위젯) -->
-                <div style="width:100%; margin-bottom: 1.75rem;">
-                    <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:0.65rem;">
-                        <button onclick="location.hash='#arcade'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#10b981,#059669); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🕹️ 오락실</button>
-                        <button onclick="location.hash='#ranking'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">🏆 랭킹</button>
-                        <button onclick="location.hash='#board'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">💬 커뮤니티</button>
-                        <button onclick="location.hash='#guide'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#64748b,#475569); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">📖 가이드</button>
-                        <button onclick="location.hash='#profile'" style="border:none; border-radius:14px; padding:0.8rem 0.9rem; background:linear-gradient(135deg,#334155,#1e293b); color:#fff; font-weight:800; font-size:0.86rem; display:flex; align-items:center; justify-content:center; gap:0.4rem; cursor:pointer;">👤 내 정보</button>
-                    </div>
-                </div>
+            <div class="dashboard fade-in" style="width: 100%; max-width: 1120px; margin: 0 auto; padding: 1.2rem 1.1rem 5.5rem; box-sizing: border-box;">
+                <section style="position:relative; margin-bottom:2rem; border-radius:34px; padding:1.2rem; background:linear-gradient(155deg,#eef2ff 0%,#f8fafc 44%,#ecfeff 100%); border:1px solid #e2e8f0; overflow:hidden;">
+                    <div style="position:absolute; width:380px; height:380px; right:-180px; top:-210px; border-radius:50%; background:radial-gradient(circle,rgba(99,102,241,0.26) 0%, rgba(99,102,241,0) 72%);"></div>
+                    <div style="position:absolute; width:320px; height:320px; left:-170px; bottom:-220px; border-radius:50%; background:radial-gradient(circle,rgba(16,185,129,0.18) 0%, rgba(16,185,129,0) 72%);"></div>
 
-                <!-- 2. 완전히 새로워진 와이드 레이어드 히어로 섹션 (오픈형 디자인) -->
-                <div class="new-hero-wrapper" style="width: 100%; margin-top: 1rem; margin-bottom: 4.5rem; position: relative; padding: 0 0.5rem; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
-                    <!-- 배경 장식 (은은한 오로라) -->
-                    <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 140%; height: 300px; background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%); z-index: 0; pointer-events: none;"></div>
-                    
-                    <div class="new-hero-content" style="position: relative; z-index: 2; width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-                        
-                        <!-- 오늘의 라이브 상태 카드 -->
-                        <div class="live-advice-card fade-in" style="background: #fff; padding: 0.75rem 1.25rem; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; margin-bottom: 2.5rem; transform: rotate(-0.5deg);">
-                            <div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                            <span style="font-size: 0.9rem; font-weight: 800; color: #475569; letter-spacing: -0.01em;">${randomAdvice}</span>
-                        </div>
-
-                        <!-- 메인 헤드라인 (앱 스타일 타이포그래피) -->
-                        <div style="margin-bottom: 3.5rem;">
-                            <div style="font-size: 0.95rem; font-weight: 900; color: var(--accent-color); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1.2rem; opacity: 0.9;">Premium Lab Report</div>
-                            <h1 style="font-size: clamp(2.5rem, 11vw, 4rem); font-weight: 950; line-height: 1.05; color: #1e293b; letter-spacing: -0.05em; margin: 0;">
-                                <span style="display: block; margin-bottom: 0.2rem;">가장 정교하게,</span>
-                                <span style="display: block; background: linear-gradient(135deg, #4f46e5, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">나를 만날 시간</span>
-                            </h1>
-                        </div>
-
-                        <!-- 와이드 액션 버튼 박스 (피지컬 UI) -->
-                        <div class="main-action-trigger" onclick="location.hash='#7check'" style="width: 100%; max-width: 440px; background: #1e1b4b; border-radius: 36px; padding: 1.6rem 2rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.3); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transform: translateX(-100%); animation: shine 3s infinite;"></div>
-                            <div style="text-align: left; position: relative; z-index: 2;">
-                                <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 4px;">SYSTEM READY</div>
-                                <div style="color: #fff; font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em;">분석 리포트 시작하기</div>
+                    <div style="position:relative; z-index:2; display:grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap:1rem;">
+                        <article style="background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#312e81 100%); border-radius:28px; padding:1.8rem; color:#fff; min-height:300px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 24px 50px -22px rgba(15,23,42,0.7);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                                <span style="font-size:0.72rem; letter-spacing:0.12em; font-weight:800; color:rgba(255,255,255,0.75);">PREMIUM ANALYTICS HOME</span>
+                                <span style="font-size:0.74rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.15); border-radius:999px; padding:0.25rem 0.65rem;">LIVE</span>
                             </div>
-                            <div style="width: 56px; height: 56px; background: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #1e1b4b; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; z-index: 2;">➔</div>
+                            <div>
+                                <h1 style="font-size:clamp(1.9rem,7.6vw,2.8rem); line-height:1.08; letter-spacing:-0.04em; margin-bottom:0.7rem;">${userName}님을 위한<br>정밀 리포트 허브</h1>
+                                <p style="font-size:0.95rem; color:rgba(226,232,240,0.95); line-height:1.55; max-width: 95%;">심리, 비주얼, 운세, 재미 테스트를 하나의 흐름으로 연결한 고급 분석 경험을 시작하세요.</p>
+                            </div>
+                            <div style="display:flex; gap:0.6rem; margin-top:1.2rem; flex-wrap:wrap;">
+                                <button onclick="location.hash='#test/${heroTest.id}'" style="border:none; border-radius:14px; padding:0.75rem 1.05rem; background:linear-gradient(135deg,#22d3ee 0%,#6366f1 55%,#7c3aed 100%); color:#fff; font-weight:900; font-size:0.86rem; cursor:pointer; box-shadow:0 12px 24px rgba(99,102,241,0.35);">추천 테스트 시작</button>
+                                <button onclick="location.hash='#7check'" style="border:1px solid rgba(255,255,255,0.24); border-radius:14px; padding:0.75rem 1.05rem; background:rgba(255,255,255,0.07); color:#fff; font-weight:800; font-size:0.86rem; cursor:pointer;">전체 카테고리 보기</button>
+                            </div>
+                        </article>
+
+                        <div style="display:grid; gap:0.8rem; grid-template-rows:auto auto 1fr;">
+                            <div style="background:#fff; border-radius:20px; border:1px solid #e2e8f0; padding:1rem 1rem; box-shadow:0 14px 25px rgba(15,23,42,0.05);">
+                                <div style="font-size:0.72rem; font-weight:900; color:#6366f1; letter-spacing:0.1em; margin-bottom:0.4rem;">TODAY INSIGHT</div>
+                                <div style="font-size:0.92rem; font-weight:700; color:#334155; line-height:1.5;">${randomAdvice}</div>
+                            </div>
+
+                            <div style="position:relative;">
+                                <input type="text" id="home-search" placeholder="테스트 제목/카테고리 검색" style="width:100%; padding:0.92rem 1rem 0.92rem 2.9rem; border-radius:16px; border:1px solid #dbe3ef; background:#ffffff; font-size:0.9rem; font-weight:700; color:#1e293b; outline:none; box-shadow:0 10px 20px rgba(15,23,42,0.04);">
+                                <span style="position:absolute; left:0.95rem; top:50%; transform:translateY(-50%); font-size:1.08rem; opacity:0.5;">⌕</span>
+                            </div>
+
+                            <div style="background:#fff; border-radius:20px; border:1px solid #e2e8f0; padding:0.8rem; box-shadow:0 14px 25px rgba(15,23,42,0.05);">
+                                <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.55rem;">
+                                    <button onclick="location.hash='#arcade'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#34d399,#059669); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">🕹️ 오락실</button>
+                                    <button onclick="location.hash='#ranking'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#facc15,#d97706); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">🏆 랭킹</button>
+                                    <button onclick="location.hash='#board'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#60a5fa,#4338ca); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">💬 커뮤니티</button>
+                                    <button onclick="location.hash='#profile'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#64748b,#0f172a); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">👤 내 정보</button>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </section>
 
-                        <p style="margin-top: 2.2rem; font-size: 0.95rem; color: #94a3b8; font-weight: 600; letter-spacing: -0.01em;">당신의 데이터로 완성되는 고유한 아우라 지표</p>
+                <section style="margin-bottom:1.8rem; display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:0.72rem;">
+                    <div onclick="location.hash='#personality'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
+                        <div style="font-size:0.75rem; color:#6366f1; font-weight:900; margin-bottom:0.22rem;">MENTAL LAB</div>
+                        <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">성격 분석 컬렉션</div>
                     </div>
-                </div>
+                    <div onclick="location.hash='#face'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
+                        <div style="font-size:0.75rem; color:#db2777; font-weight:900; margin-bottom:0.22rem;">AURA LOOK</div>
+                        <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">비주얼 진단실</div>
+                    </div>
+                    <div onclick="location.hash='#fortune'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
+                        <div style="font-size:0.75rem; color:#d97706; font-weight:900; margin-bottom:0.22rem;">FORTUNE FLOW</div>
+                        <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">오늘의 운세 리포트</div>
+                    </div>
+                    <div onclick="location.hash='#fun'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
+                        <div style="font-size:0.75rem; color:#059669; font-weight:900; margin-bottom:0.22rem;">PLAY MIND</div>
+                        <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">재미/심리 큐레이션</div>
+                    </div>
+                </section>
 
-                <!-- 3. 실시간 핫 테스트 (대칭형 리스트) -->
-                <div style="width: 100%; margin-bottom: 3.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 0 0.5rem;">
-                        <h3 style="font-size: 1.4rem; font-weight: 900; color: #1e293b; display: flex; align-items: center; gap: 8px;">🔥 지금 핫한 분석</h3>
-                        <span style="font-size: 0.9rem; font-weight: 800; color: var(--accent-color); cursor: pointer;" onclick="location.hash='#7check'">전체보기 ➔</span>
-                    </div>
-                    <div class="test-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; width: 100%;">
-                        ${TESTS.slice(0, 4).map(t => renderTestCard(t)).join('')}
-                    </div>
-                </div>
-
-                <!-- 4. 하단 벤토 그리드 (완벽 대칭) -->
-                <div class="bento-symmetric-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; width: 100%;">
-                    <div class="bento-box" onclick="location.hash='#arcade'" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 32px; padding: 2rem; color: #fff; position: relative; overflow: hidden; min-height: 180px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 15px 30px rgba(16, 185, 129, 0.15); cursor: pointer; transition: transform 0.2s;">
-                        <h4 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 0.5rem; position: relative; z-index: 2;">포인트 채굴</h4>
-                        <p style="font-size: 0.95rem; font-weight: 600; opacity: 0.9; margin-bottom: 1.5rem; position: relative; z-index: 2;">행운의 주사위를 굴려보세요.</p>
-                        <button style="background: #fff; color: #059669; border: none; padding: 8px 20px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; width: fit-content; position: relative; z-index: 2;">참여하기</button>
-                        <span style="position: absolute; bottom: -10px; right: -10px; font-size: 6rem; opacity: 0.2; transform: rotate(-15deg); pointer-events: none;">🎰</span>
-                    </div>
-                    <div class="bento-box" onclick="location.hash='#ranking'" style="background: #fff; border-radius: 32px; padding: 2rem; border: 1px solid #f1f5f9; position: relative; overflow: hidden; min-height: 180px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 15px 30px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s;">
-                        <h4 style="font-size: 1.5rem; font-weight: 900; color: #1e293b; margin-bottom: 0.5rem; position: relative; z-index: 2;">명예의 전당</h4>
-                        <p style="font-size: 0.95rem; font-weight: 600; color: #64748b; margin-bottom: 1.5rem; position: relative; z-index: 2;">최고의 분석가를 확인하세요.</p>
-                        <button style="background: #1e293b; color: #fff; border: none; padding: 8px 20px; border-radius: 12px; font-weight: 900; font-size: 0.85rem; width: fit-content; position: relative; z-index: 2;">랭킹보기</button>
-                        <span style="position: absolute; bottom: -10px; right: -10px; font-size: 6rem; opacity: 0.05; transform: rotate(-15deg); pointer-events: none;">🏆</span>
-                    </div>
+                <section style="margin-bottom:1.4rem; display:flex; justify-content:space-between; align-items:center;">
+                    <h3 style="font-size:1.35rem; font-weight:900; color:#0f172a; letter-spacing:-0.02em;">큐레이션 테스트</h3>
+                    <span onclick="location.hash='#7check'" style="font-size:0.84rem; font-weight:800; color:#6366f1; cursor:pointer;">전체 보기</span>
+                </section>
+                <div id="test-list-grid" class="test-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:0.95rem; width:100%;">
+                    ${TESTS.slice(0, 6).map(t => renderTestCard(t)).join('')}
                 </div>
             </div>
         `;
+
+        const searchInput = document.getElementById('home-search');
+        if (searchInput) {
+            searchInput.oninput = (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                const filtered = TESTS.filter(t => t.title.toLowerCase().includes(term) || t.category.toLowerCase().includes(term));
+                const grid = document.getElementById('test-list-grid');
+                if (grid) {
+                    grid.innerHTML = filtered.length > 0
+                        ? filtered.slice(0, 12).map(t => renderTestCard(t)).join('')
+                        : `<div style="grid-column:1/-1; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:2rem; text-align:center; color:#64748b; font-weight:700;">검색 결과가 없습니다.</div>`;
+                }
+            };
+        }
     } else {
         const filtered = TESTS.filter(t => t.category === window._currentFilter);
         app.innerHTML = `
@@ -239,52 +250,48 @@ export function renderTestCard(t) {
     };
 
     const actualLikes = testLikesData[t.id] || 0;
-    // 테스트 ID를 기반으로 고정된 대형 참여자 수 생성 (시각적 마케팅 효과)
     const seed = t.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     const playCount = (seed * 123) % 15000 + 5000; 
-    
-    // 이용자 수에 비례하게 하트(좋아요) 숫자도 뻥튀기 (대략 20~40% 수준)
     const baseLikes = Math.floor(playCount * (0.2 + ((seed % 20) / 100)));
     const displayLikes = actualLikes + baseLikes;
 
-    // 가독성을 위해 불투명하고 밝은 파스텔톤 배경색 팔레트 (글자가 잘 보이도록 보정)
     const themes = [
-        { bg: '#eef2ff', text: '#1e1b4b', sub: '#4338ca', accent: '#6366f1', border: '#c7d2fe' }, // Indigo
-        { bg: '#ecfdf5', text: '#064e3b', sub: '#059669', accent: '#10b981', border: '#a7f3d0' }, // Emerald
-        { bg: '#fff1f2', text: '#881337', sub: '#e11d48', accent: '#f43f5e', border: '#fecdd3' }, // Rose
-        { bg: '#fffbeb', text: '#78350f', sub: '#d97706', accent: '#f59e0b', border: '#fde68a' }, // Amber
-        { bg: '#f5f3ff', text: '#4c1d95', sub: '#7c3aed', accent: '#8b5cf6', border: '#ddd6fe' }, // Violet
-        { bg: '#f0f9ff', text: '#0c4a6e', sub: '#0284c7', accent: '#0ea5e9', border: '#bae6fd' }  // Sky
+        { bg: 'linear-gradient(145deg,#eef2ff 0%,#e0e7ff 100%)', text: '#1e1b4b', sub: '#4338ca', accent: '#6366f1', border: '#c7d2fe' },
+        { bg: 'linear-gradient(145deg,#ecfdf5 0%,#d1fae5 100%)', text: '#064e3b', sub: '#059669', accent: '#10b981', border: '#a7f3d0' },
+        { bg: 'linear-gradient(145deg,#fff1f2 0%,#ffe4e6 100%)', text: '#881337', sub: '#e11d48', accent: '#f43f5e', border: '#fecdd3' },
+        { bg: 'linear-gradient(145deg,#fffbeb 0%,#fef3c7 100%)', text: '#78350f', sub: '#d97706', accent: '#f59e0b', border: '#fde68a' },
+        { bg: 'linear-gradient(145deg,#f5f3ff 0%,#ede9fe 100%)', text: '#4c1d95', sub: '#7c3aed', accent: '#8b5cf6', border: '#ddd6fe' },
+        { bg: 'linear-gradient(145deg,#f0f9ff 0%,#e0f2fe 100%)', text: '#0c4a6e', sub: '#0284c7', accent: '#0ea5e9', border: '#bae6fd' }
     ];
     const theme = themes[seed % themes.length];
 
     return `
     <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" 
-         style="position:relative; background: ${theme.bg}; border-radius: 24px; overflow: hidden; border: 2px solid ${theme.border}; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.05); color: ${theme.text};">
+         style="position:relative; background:${theme.bg}; border-radius:20px; overflow:hidden; border:1px solid ${theme.border}; display:flex; flex-direction:column; cursor:pointer; transition:transform 0.2s; box-shadow:0 10px 20px rgba(15,23,42,0.06); color:${theme.text};">
         
-        <div class="test-info" style="padding: 1.75rem; flex-grow: 1; display: flex; flex-direction: column; position: relative; z-index: 2;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
-                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 900; color: #fff; background: ${theme.accent}; padding: 4px 12px; border-radius: 50px;">
+        <div class="test-info" style="padding:1.15rem; flex-grow:1; display:flex; flex-direction:column; position:relative; z-index:2;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.95rem;">
+                <span class="test-category-tag" style="font-size:0.68rem; font-weight:900; color:#fff; background:${theme.accent}; padding:4px 10px; border-radius:999px;">
                     ${t.category}
                 </span>
                 
-                <div style="background: rgba(0,0,0,0.05); color: ${theme.sub}; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:4px; border: 1px solid rgba(0,0,0,0.03);">
-                    <span style="font-size:0.9rem;">🔥</span> <span>${formatEngUnit(playCount)} Play</span>
+                <div style="background:rgba(255,255,255,0.6); color:${theme.sub}; padding:4px 10px; border-radius:999px; font-size:0.72rem; font-weight:800; display:flex; align-items:center; gap:4px; border:1px solid rgba(255,255,255,0.75);">
+                    <span style="font-size:0.85rem;">🔥</span> <span>${formatEngUnit(playCount)}</span>
                 </div>
             </div>
             
-            <h3 style="font-size: 1.4rem; font-weight: 900; line-height: 1.4; color: ${theme.text}; margin-bottom: 0.7rem; word-break: keep-all; letter-spacing: -0.02em;">${t.title}</h3>
-            <p style="font-size: 0.95rem; color: #4b5563; line-height: 1.6; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all; font-weight: 600;">${t.desc}</p>
+            <h3 style="font-size:1.16rem; font-weight:900; line-height:1.35; color:${theme.text}; margin-bottom:0.62rem; word-break:keep-all; letter-spacing:-0.02em;">${t.title}</h3>
+            <p style="font-size:0.86rem; color:#475569; line-height:1.55; margin-bottom:1.15rem; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; word-break:keep-all; font-weight:600;">${t.desc}</p>
             
-            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(0,0,0,0.06); padding-top: 1.25rem;">
+            <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(30,41,59,0.09); padding-top:0.9rem;">
                 <div id="like-badge-${t.id}"
                      onclick="event.stopPropagation(); handleLike('${t.id}')"
-                     style="color: ${theme.sub}; background: #fff; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 800; display: flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease; border: 1px solid ${theme.border};">
-                    <span style="font-size:1.1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
+                     style="color:${theme.sub}; background:#fff; padding:5px 12px; border-radius:999px; font-size:0.78rem; font-weight:800; display:flex; align-items:center; gap:5px; cursor:pointer; border:1px solid ${theme.border};">
+                    <span style="font-size:0.96rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
                 </div>
                 
-                <div style="color: ${theme.accent}; font-weight: 900; font-size: 0.95rem; display: flex; align-items: center; gap: 4px;">
-                    시작하기 <span style="font-size: 1.2rem;">➔</span>
+                <div style="color:${theme.accent}; font-weight:900; font-size:0.84rem; display:flex; align-items:center; gap:3px;">
+                    시작하기 <span style="font-size:1rem;">➔</span>
                 </div>
             </div>
         </div>
