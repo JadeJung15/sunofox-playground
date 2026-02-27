@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
-const vm = require('vm');
+const os = require('os');
+const { spawnSync } = require('child_process');
 
 const ROOT = process.cwd();
 const TARGET_DIRS = ['js', 'scripts'];
@@ -30,13 +31,27 @@ function isModuleFile(filePath) {
 }
 
 function checkFile(filePath) {
-  const source = fs.readFileSync(filePath, 'utf8');
-  const relPath = path.relative(ROOT, filePath);
-  if (isModuleFile(filePath)) {
-    new vm.SourceTextModule(source, { identifier: relPath });
+  if (!isModuleFile(filePath)) {
+    const result = spawnSync('node', ['--check', filePath], { encoding: 'utf8' });
+    if (result.status !== 0) {
+      throw new Error((result.stderr || result.stdout || 'Unknown syntax error').trim());
+    }
     return;
   }
-  new vm.Script(source, { filename: relPath });
+
+  const source = fs.readFileSync(filePath, 'utf8');
+  const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'syntax-check-'));
+  const tmpFile = path.join(tmpDir, `${path.basename(filePath)}.mjs`);
+
+  try {
+    fs.writeFileSync(tmpFile, source, 'utf8');
+    const result = spawnSync('node', ['--check', tmpFile], { encoding: 'utf8' });
+    if (result.status !== 0) {
+      throw new Error((result.stderr || result.stdout || 'Unknown syntax error').trim());
+    }
+  } finally {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  }
 }
 
 function main() {
