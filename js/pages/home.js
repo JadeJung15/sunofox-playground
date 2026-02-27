@@ -220,33 +220,29 @@ export function renderTestCard(t) {
     const displayLikes = actualLikes + baseLikes;
 
     return `
-    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative; background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, border-color 0.2s;">
-        <div class="thumb-wrapper" style="position: relative; aspect-ratio: 16/9; overflow: hidden;">
-            <img src="${t.thumb}" alt="${t.title}"
-                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease;"
-                 onerror="window.handleImgError(this)">
-            <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
-
-            <!-- 참여자 수 뱃지 (Social Proof) -->
-            <div style="position:absolute; top:12px; right:12px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); z-index:10;">
-                <span style="font-size:0.8rem; opacity:0.9;">🔥</span> <span>${formatEngUnit(playCount)} Play</span>
+    <div class="test-card fade-in" data-cat="${t.category}" onclick="location.hash='#test/${t.id}'" style="position:relative; background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border-color); display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s, border-color 0.2s; box-shadow: var(--shadow-sm);">
+        <div class="test-info" style="padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase; background: rgba(var(--accent-rgb), 0.1); padding: 4px 10px; border-radius: 8px;">${t.category}</span>
+                
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="background: rgba(0,0,0,0.05); color: var(--text-sub); padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 800; display: flex; align-items:center; gap:4px;">
+                        <span style="font-size:0.8rem; opacity:0.8;">🔥</span> <span>${formatEngUnit(playCount)} Play</span>
+                    </div>
+                </div>
             </div>
-
-            <div id="like-badge-${t.id}"
-                 onclick="event.stopPropagation(); handleLike('${t.id}')"
-                 style="position:absolute; bottom:12px; left:12px; z-index:20; background: rgba(0,0,0,0.6); color: #fff; backdrop-filter: blur(4px); padding: 6px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 900; display: flex; align-items:center; gap:6px; border: 1px solid rgba(255,255,255,0.3); cursor:pointer; transition:all 0.3s ease;">
-                <span style="font-size:1rem; line-height:1;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
-            </div>
-        </div>
-        <div class="test-info" style="padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem;">
-                <span class="test-category-tag" style="font-size: 0.75rem; font-weight: 800; color: var(--accent-color); text-transform: uppercase;">${t.category}</span>
-                <span style="font-size: 0.7rem; font-weight: 800; color: var(--text-sub); background: var(--bg-color); padding: 2px 8px; border-radius: 4px;">분석시간 3분</span>
-            </div>
-            <h3 style="font-size: 1.15rem; font-weight: 800; line-height: 1.4; color: var(--text-main); margin-bottom: 0.5rem;">${t.title}</h3>
-            <p style="font-size: 0.85rem; color: var(--text-sub); line-height: 1.5; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">${t.desc}</p>
-            <div style="margin-top: auto; display: flex; justify-content: flex-end;">
-                <span style="font-size: 0.8rem; font-weight: 800; color: var(--accent-color); display: flex; align-items: center; gap: 4px;">시작하기 <span style="font-size: 1rem;">➔</span></span>
+            
+            <h3 style="font-size: 1.3rem; font-weight: 800; line-height: 1.4; color: var(--text-main); margin-bottom: 0.5rem; word-break: keep-all;">${t.title}</h3>
+            <p style="font-size: 0.9rem; color: var(--text-sub); line-height: 1.6; margin-bottom: 1.5rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: keep-all;">${t.desc}</p>
+            
+            <div style="margin-top: auto; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1rem;">
+                <div id="like-badge-${t.id}"
+                     onclick="event.stopPropagation(); handleLike('${t.id}')"
+                     style="color: var(--text-sub); background: rgba(0,0,0,0.03); padding: 6px 14px; border-radius: 50px; font-size: 0.8rem; font-weight: 800; display: flex; align-items:center; gap:6px; cursor:pointer; transition:all 0.2s ease;">
+                    <span style="font-size:1rem; line-height:1; color: #ef4444;">❤️</span> <span id="like-count-${t.id}">${formatEngUnit(displayLikes)}</span>
+                </div>
+                
+                <span style="font-size: 0.85rem; font-weight: 800; color: var(--accent-color); display: flex; align-items: center; gap: 4px;">분석 시작 <span style="font-size: 1.1rem;">➔</span></span>
             </div>
         </div>
     </div>`;
