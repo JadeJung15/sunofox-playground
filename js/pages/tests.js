@@ -354,7 +354,7 @@ export function renderTestExecution(testId) {
         const pageBg = gradients[seed % gradients.length];
 
         if (step >= test.questions.length) {
-            renderLoading(pageBg);
+            renderLoading();
             return;
         }
 
@@ -407,17 +407,17 @@ export function renderTestExecution(testId) {
         };
     };
 
-    const renderLoading = (pageBg) => {
+    const renderLoading = () => {
         app.innerHTML = `
-            <div class="test-page-wrapper" style="min-height: 100vh; background: ${pageBg}; display: flex; align-items: center; justify-content: center;">
+            <div class="test-page-wrapper" style="min-height: 100vh; background: #ffffff; display: flex; align-items: center; justify-content: center;">
                 <div class="fade-in" style="padding: 4rem 1.5rem; max-width: 500px; margin: 0 auto; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <div class="alchemy-animation" style="margin-bottom: 2rem;">
-                        <span style="font-size: 4rem; display: block; animation: bounce 1s infinite;">🧪</span>
+                    <div class="alchemy-animation" style="margin-bottom: 2rem; background: none; border: none; box-shadow: none;">
+                        <span style="font-size: 5rem; display: block; animation: bounce 1s infinite; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.05));">🧪</span>
                     </div>
-                    <h2 style="font-size: 1.5rem; font-weight: 900; margin-bottom: 1rem; color: #1e293b;">분석 리포트를 작성 중입니다...</h2>
-                    <p style="color: #64748b; font-weight: 600;">당신의 답변을 바탕으로 인생 보고서를 생성하고 있습니다.</p>
-                    <div class="test-progress-container" style="width: 200px; margin-top: 2rem; background: rgba(0,0,0,0.05);">
-                        <div class="test-progress-bar" style="width: 100%; animation: pulse 1.5s infinite;"></div>
+                    <h2 style="font-size: 1.6rem; font-weight: 900; margin-bottom: 1rem; color: #1e293b; letter-spacing: -0.02em;">분석 리포트를 작성 중입니다...</h2>
+                    <p style="color: #64748b; font-weight: 600; font-size: 1rem;">당신의 답변을 바탕으로 인생 보고서를 생성하고 있습니다.</p>
+                    <div class="test-progress-container" style="width: 180px; margin-top: 2.5rem; background: rgba(0,0,0,0.03); height: 6px; border-radius: 10px; overflow: hidden;">
+                        <div class="test-progress-bar" style="width: 100%; height: 100%; background: var(--accent-color); animation: pulse 1.5s infinite;"></div>
                     </div>
                 </div>
             </div>
