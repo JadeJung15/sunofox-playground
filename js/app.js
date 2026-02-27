@@ -195,11 +195,6 @@ window.globalShareSite = async () => {
 // Init
 // =================================================================
 
-const headerShareBtn = document.getElementById('share-site-btn');
-if (headerShareBtn) {
-    headerShareBtn.onclick = window.globalShareSite;
-}
-
 window.addEventListener('hashchange', router);
 window.addEventListener('load', router);
 
