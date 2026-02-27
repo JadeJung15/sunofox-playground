@@ -173,37 +173,6 @@ export async function renderResult(testId, traitScores) {
                                             </div>
                                         </div>
                     
-                                        <div class="radar-chart-container" style="background: var(--bg-color); border-radius: 20px; padding: 2rem 1.5rem; margin-bottom: 2.5rem; border: 1px solid var(--border-color); position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
-                                            <h4 style="margin-bottom: 1.5rem; font-size: 0.9rem; color: var(--text-main); font-weight: 900; letter-spacing: 0.05em; display:flex; align-items:center; justify-content:center; gap:8px;">
-                                                <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
-                                                7단계 심층 아우라 지표
-                                                <span style="display:inline-block; width:8px; height:8px; background:${themeColor}; border-radius:50%;"></span>
-                                            </h4>
-                                            
-                                            <div style="position:relative; margin-bottom: 2rem;">
-                                                <canvas id="radarChart" width="220" height="220" style="margin: 0 auto; max-width: 100%; display:block; filter: drop-shadow(0px 8px 16px rgba(0,0,0,0.08));"></canvas>
-                                            </div>
-                    
-                                            <div class="aura-stats-bars" style="display:flex; flex-direction:column; gap: 1rem; margin-top: 1.5rem;">
-                                                ${[
-                                                    { id: 'bar-energy', label: '에너지 (Energy)', val: Math.round(stats.energy || 0), color: '#f59e0b' },
-                                                    { id: 'bar-logic', label: '논리력 (Logic)', val: Math.round(stats.logic || 0), color: '#3b82f6' },
-                                                    { id: 'bar-empathy', label: '공감력 (Empathy)', val: Math.round(stats.empathy || 0), color: '#ec4899' },
-                                                    { id: 'bar-creativity', label: '독창성 (Creativity)', val: Math.round(stats.creativity || 0), color: '#8b5cf6' }
-                                                ].map(s => `
-                                                    <div class="stat-bar-row" style="display:flex; flex-direction:column; gap:6px;">
-                                                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                                                            <span style="font-size: 0.75rem; font-weight: 800; color: var(--text-main);">${s.label}</span>
-                                                            <span style="font-size: 0.75rem; font-weight: 900; color: ${s.color};">${s.val}%</span>
-                                                        </div>
-                                                        <div style="width:100%; height:8px; background:rgba(0,0,0,0.05); border-radius:10px; overflow:hidden;">
-                                                            <div id="${s.id}" data-width="${s.val}%" style="width:0%; height:100%; background:${s.color}; border-radius:10px; transition: width 1.5s cubic-bezier(0.22, 1, 0.36, 1);"></div>
-                                                        </div>
-                                                    </div>
-                                                `).join('')}
-                                            </div>
-                                        </div>
-                    
                                         <div class="reward-box" style="background: linear-gradient(135deg, #1e293b, #334155); color: #fff; padding: 1.5rem; border-radius: 20px; margin-bottom: 2rem; box-shadow: 0 8px 20px rgba(0,0,0,0.12); position: relative; overflow: hidden;">
                                             <div style="position: absolute; top: -5px; right: -5px; font-size: 3rem; opacity: 0.1;">✨</div>
                                             <span style="font-size: 0.7rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
@@ -271,42 +240,6 @@ export async function renderResult(testId, traitScores) {
         }
     };
     setTimeout(type, 600);
-
-    const canvas = document.getElementById('radarChart');
-    if (canvas && !test.customTraits) {
-        const ctx = canvas.getContext('2d');
-        const cx = 110, cy = 110, r = 85;
-        const labels = ['energy', 'logic', 'empathy', 'creativity'];
-
-        ctx.strokeStyle = '#e2e8f0';
-        ctx.lineWidth = 1;
-        [0.3, 0.6, 1].forEach(scale => {
-            ctx.beginPath();
-            labels.forEach((_, idx) => {
-                const angle = (idx * 90 - 90) * Math.PI / 180;
-                const x = cx + Math.cos(angle) * r * scale;
-                const y = cy + Math.sin(angle) * r * scale;
-                idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-            });
-            ctx.closePath();
-            ctx.stroke();
-        });
-
-        ctx.fillStyle = themeColor + '44';
-        ctx.strokeStyle = themeColor;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        labels.forEach((label, idx) => {
-            const angle = (idx * 90 - 90) * Math.PI / 180;
-            const val = stats[label] / 100;
-            const x = cx + Math.cos(angle) * r * val;
-            const y = cy + Math.sin(angle) * r * val;
-            idx === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
-        });
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-    }
 
     const resultShareBtn = document.getElementById('result-share-btn');
     if (resultShareBtn) {
@@ -466,13 +399,3 @@ export function renderTestExecution(testId) {
 
     renderIntro();
 }
-
-// 프로그레스 바 애니메이션 실행
-setTimeout(() => {
-    ['energy', 'logic', 'empathy', 'creativity'].forEach(label => {
-        const bar = document.getElementById(`bar-${label}`);
-        if (bar) {
-            bar.style.width = bar.dataset.width || '0%';
-        }
-    });
-}, 100);
