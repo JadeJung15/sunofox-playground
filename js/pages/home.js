@@ -228,8 +228,8 @@ export function renderTestCard(t) {
             <div class="thumb-overlay" style="position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%); pointer-events: none;"></div>
 
             <!-- 참여자 수 뱃지 (Social Proof) -->
-            <div style="position:absolute; top:12px; right:12px; background: rgba(3, 199, 90, 0.9); color: #fff; padding: 4px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 900; display: flex; align-items:center; gap:4px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index:10;">
-                <span style="font-size:0.8rem;">🎮</span> ${formatEngUnit(playCount)} Play
+            <div style="position:absolute; top:12px; right:12px; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; display: flex; align-items:center; gap:6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.2); z-index:10;">
+                <span style="font-size:0.8rem; opacity:0.9;">🔥</span> <span>${formatEngUnit(playCount)} Play</span>
             </div>
 
             <div id="like-badge-${t.id}"
