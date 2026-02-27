@@ -1,6 +1,6 @@
-import { UserState, usePoints, updateUI } from '../auth.js?v=7.1.0';
+import { UserState, usePoints, updateUI } from '../auth.js?v=7.1.1';
 import { initArcade } from '../arcade.js';
-import { db } from '../firebase-init.js?v=7.1.0';
+import { db } from '../firebase-init.js?v=7.1.1';
 import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export function renderArcade() {

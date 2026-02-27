@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "lint": "node scripts/check-syntax.cjs",
+    "test": "node scripts/check-syntax.cjs"
+  },
   "dependencies": {
     "firebase-admin": "^13.6.1"
   }
