@@ -163,29 +163,39 @@ export async function renderHome(hash) {
                     </div>
                 </div>
 
-                <!-- 2. 메인 배너 (정사각형 Bento - 중앙 집중) -->
-                <div class="hero-container" style="display: flex; justify-content: center; width: 100%; margin-bottom: 3.5rem;">
-                    <div class="hero-section" style="width: 100%; max-width: 480px; aspect-ratio: 1 / 1; background: #1e1b4b; border-radius: 56px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2.2rem; box-shadow: 0 30px 60px -12px rgba(30, 27, 75, 0.5); text-align: center; color: #fff; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box;">
-                        <!-- Mesh Gradient / Aura Effect -->
-                        <div style="position: absolute; top: -10%; left: -10%; width: 70%; height: 70%; background: radial-gradient(circle, rgba(99, 102, 241, 0.4) 0%, transparent 70%);"></div>
-                        <div style="position: absolute; bottom: -10%; right: -10%; width: 60%; height: 60%; background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, transparent 70%);"></div>
+                <!-- 2. 완전히 새로워진 와이드 레이어드 히어로 섹션 (오픈형 디자인) -->
+                <div class="new-hero-wrapper" style="width: 100%; margin-top: 1rem; margin-bottom: 4.5rem; position: relative; padding: 0 0.5rem; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;">
+                    <!-- 배경 장식 (은은한 오로라) -->
+                    <div style="position: absolute; top: -50px; left: 50%; transform: translateX(-50%); width: 140%; height: 300px; background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%); z-index: 0; pointer-events: none;"></div>
+                    
+                    <div class="new-hero-content" style="position: relative; z-index: 2; width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; text-align: center;">
                         
-                        <div class="hero-content" style="position: relative; z-index: 5; width: 100%;">
-                            <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(15px); padding: 0.8rem 1.5rem; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); margin-bottom: 2rem; font-weight: 700; font-size: clamp(0.85rem, 3.5vw, 1rem); display: inline-block; max-width: 85%; line-height: 1.5; color: #e0e7ff; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
-                                <span style="display: block; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.15em; margin-bottom: 6px; color: #818cf8; opacity: 0.9;">Today's Wisdom</span>
-                                "${randomAdvice}"
-                            </div>
-                            
-                            <div style="margin-bottom: 1.5rem;">
-                                <span style="font-size: 0.85rem; font-weight: 900; color: #10b981; letter-spacing: 0.1em; text-transform: uppercase;">Premium Analysis</span>
-                            </div>
-
-                            <h1 style="font-size: clamp(2.2rem, 9vw, 3rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; letter-spacing: -0.04em; text-shadow: 0 4px 15px rgba(0,0,0,0.3);">당신이 몰랐던<br>진짜 본모습</h1>
-                            
-                            <p style="font-size: clamp(0.9rem, 3.2vw, 1.05rem); opacity: 0.8; margin-bottom: 2.5rem; font-weight: 500; line-height: 1.6; max-width: 80%; margin-left: auto; margin-right: auto;">7번의 질문으로 완성되는 정교한 아우라 리포트를 지금 바로 확인해 보세요.</p>
-                            
-                            <button class="btn-primary" style="padding: 1.1rem 3rem; font-size: clamp(1rem, 4vw, 1.2rem); border-radius: 24px; background: #fff; color: #1e1b4b; font-weight: 900; border: none; box-shadow: 0 15px 35px rgba(255,255,255,0.2); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onclick="location.hash='#7check'">테스트 시작 ➔</button>
+                        <!-- 오늘의 라이브 상태 카드 -->
+                        <div class="live-advice-card fade-in" style="background: #fff; padding: 0.75rem 1.25rem; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; display: flex; align-items: center; gap: 12px; margin-bottom: 2.5rem; transform: rotate(-0.5deg);">
+                            <div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                            <span style="font-size: 0.9rem; font-weight: 800; color: #475569; letter-spacing: -0.01em;">${randomAdvice}</span>
                         </div>
+
+                        <!-- 메인 헤드라인 (앱 스타일 타이포그래피) -->
+                        <div style="margin-bottom: 3.5rem;">
+                            <div style="font-size: 0.95rem; font-weight: 900; color: var(--accent-color); letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 1.2rem; opacity: 0.9;">Premium Lab Report</div>
+                            <h1 style="font-size: clamp(2.5rem, 11vw, 4rem); font-weight: 950; line-height: 1.05; color: #1e293b; letter-spacing: -0.05em; margin: 0;">
+                                <span style="display: block; margin-bottom: 0.2rem;">가장 정교하게,</span>
+                                <span style="display: block; background: linear-gradient(135deg, #4f46e5, #9333ea); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">나를 만날 시간</span>
+                            </h1>
+                        </div>
+
+                        <!-- 와이드 액션 버튼 박스 (피지컬 UI) -->
+                        <div class="main-action-trigger" onclick="location.hash='#7check'" style="width: 100%; max-width: 440px; background: #1e1b4b; border-radius: 36px; padding: 1.6rem 2rem; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 0 25px 50px -12px rgba(30, 27, 75, 0.3); border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); transform: translateX(-100%); animation: shine 3s infinite;"></div>
+                            <div style="text-align: left; position: relative; z-index: 2;">
+                                <div style="color: rgba(255,255,255,0.5); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 4px;">SYSTEM READY</div>
+                                <div style="color: #fff; font-size: 1.35rem; font-weight: 900; letter-spacing: -0.02em;">분석 리포트 시작하기</div>
+                            </div>
+                            <div style="width: 56px; height: 56px; background: #fff; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; color: #1e1b4b; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: relative; z-index: 2;">➔</div>
+                        </div>
+
+                        <p style="margin-top: 2.2rem; font-size: 0.95rem; color: #94a3b8; font-weight: 600; letter-spacing: -0.01em;">당신의 데이터로 완성되는 고유한 아우라 지표</p>
                     </div>
                 </div>
 
