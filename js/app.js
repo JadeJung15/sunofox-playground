@@ -88,8 +88,8 @@ async function router() {
             link.classList.toggle('active', isActive);
         });
 
-        // 즉시 렌더링 가능한 페이지가 아니면 인증 상태 대기
-        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact'];
+        // 즉시 렌더링 가능한 페이지 (비회원 접근 허용)
+        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board'];
         if (!instantPages.includes(hash) && !hash.startsWith('#test/')) {
             await authReady;
         }

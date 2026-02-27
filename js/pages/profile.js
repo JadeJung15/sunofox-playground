@@ -5,16 +5,33 @@ import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/fireba
 
 export function renderProfile() {
     const app = document.getElementById('app');
+    
+    // 비로그인 상태 UI 처리
     if (!UserState.user) {
         app.innerHTML = `
-            <div class="card" style="text-align:center; padding:4rem;">
-                <div style="font-size: 4rem; margin-bottom: 1.5rem;">👤</div>
-                <h2>로그인이 필요합니다</h2>
-                <p class="text-sub" style="margin-top: 1rem;">상단 메뉴의 <strong>[로그인]</strong> 버튼을 눌러 서비스를 시작해 보세요.</p>
+            <div class="profile-page fade-in">
+                <div class="card profile-header-card" style="padding: 4rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
+                    <div class="profile-accent-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); opacity: 0.05;"></div>
+                    <div style="font-size: 5rem; margin-bottom: 1.5rem; position: relative; opacity: 0.3;">👤</div>
+                    <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; position: relative;">나만의 분석 프로필</h2>
+                    <p class="text-sub" style="margin-bottom: 2rem; position: relative; font-weight: 600;">로그인하시면 수집한 아이템과<br>나의 등급을 확인할 수 있습니다.</p>
+                    <button class="btn-primary" onclick="document.getElementById('login-btn')?.click()" style="padding: 1rem 3rem; border-radius: 50px; font-weight: 800; position: relative; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">지금 로그인하기</button>
+                </div>
+
+                <div style="opacity: 0.4; pointer-events: none; filter: grayscale(1);">
+                    <details class="profile-details" open>
+                        <summary>🎒 내 인벤토리 (로그인 필요)</summary>
+                        <div class="content-area"><p class="text-sub">수집한 아이템이 이곳에 표시됩니다.</p></div>
+                    </details>
+                    <details class="profile-details">
+                        <summary>📊 오락실 이용 통계 (로그인 필요)</summary>
+                    </details>
+                </div>
             </div>
         `;
         return;
     }
+    
     const inv = UserState.data.inventory || [];
     const groupedInv = inv.reduce((acc, item) => { acc[item] = (acc[item] || 0) + 1; return acc; }, {});
     const invHTML = Object.entries(groupedInv).map(([name, count]) => {
