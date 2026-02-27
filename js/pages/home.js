@@ -207,7 +207,6 @@ export async function renderHome(hash) {
             </div>
         `;
     } else {
-    } else {
         const filtered = TESTS.filter(t => t.category === window._currentFilter);
         app.innerHTML = `
             <div class="category-page fade-in">
