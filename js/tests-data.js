@@ -1269,6 +1269,54 @@ export const TESTS = [
             B: { title: '따뜻한 사랑의 안식처', desc: '당신은 관계와 정서적 충만함을 최고의 가치로 여기는 분입니다. 당신의 존재 자체가 누군가에겐 살아가는 이유입니다.', img: 'https://images.unsplash.com/photo-1516589174184-c68d8e5fcc4a?auto=format&fit=crop&w=800&q=80' }
         }
     },
+    {
+        id: 'p36', category: '재미', title: '전생에 잃어버린 양말이었다면?', desc: '당신의 영혼이 왜 늘 짝을 못 찾는지, 이제 양말 관점에서 해명해드립니다.', thumb: 'https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '세탁기 안에서 정신을 차렸을 때 당신의 첫 반응은?', options: [{ text: '일단 회전 리듬에 몸을 맡긴다', type: 'A' }, { text: '내 짝 어디 갔냐며 바로 분노한다', type: 'B' }] },
+            { q: '주인이 당신을 한쪽만 신고 나갔습니다. 당신은?', options: [{ text: '오늘은 외다리 패션 혁명이다', type: 'A' }, { text: '이 집안에 시스템이 없다며 속으로 운다', type: 'B' }] },
+            { q: '당신이 가장 자주 발견되는 장소는?', options: [{ text: '침대 밑 어둠의 차원문', type: 'A' }, { text: '건조대 끝자락의 외로운 꼭대기', type: 'B' }] },
+            { q: '양말 무늬를 고를 수 있다면?', options: [{ text: '치킨, 고양이, 번개가 다 들어간 혼종', type: 'A' }, { text: '검정 무지로 위장해 생존력 확보', type: 'B' }] },
+            { q: '주인이 발냄새가 심한 편입니다. 당신의 태도는?', options: [{ text: '이 또한 숙명, 오늘도 묵묵히 흡수', type: 'A' }, { text: '내가 무슨 죄냐며 영혼 이탈', type: 'B' }] },
+            { q: '짝 양말과 재회한다면 가장 먼저 할 말은?', options: [{ text: '야 너도 다른 집 다녀왔냐', type: 'A' }, { text: '다신 헤어지지 말자고 오열', type: 'B' }] },
+            { q: '결국 당신의 최종 목표는?', options: [{ text: '양말계의 전설이 되어 밈으로 남기', type: 'A' }, { text: '서랍 한 칸에서 조용히 정착하기', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '차원문에 빨려간 광란의 양말', desc: '당신은 조용히 사라졌다가 가장 이상한 순간에 튀어나오는 타입입니다. 정상인 척하지만 내면엔 세탁기 EDM이 영원히 재생 중입니다.', img: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '짝 잃고 각성한 비련의 양말', desc: '당신은 은근히 감성파지만 한 번 서운하면 평생 기억하는 타입입니다. 겉은 무지 양말인데 속은 막장 드라마 120부작입니다.', img: 'https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p37', category: '재미', title: '내 흑역사 유출되면 도망 캐릭터 뭐냐', desc: '단톡방에 내 과거가 풀렸을 때, 당신의 영혼은 어떤 방식으로 증발하는지 측정합니다.', thumb: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '10년 전 싸이월드 감성 글이 단톡에 올라왔다. 첫 반응은?', options: [{ text: '핸드폰 비행기 모드부터 켠다', type: 'A' }, { text: '내가 쓴 거 아닌 척 말투를 바꾼다', type: 'B' }] },
+            { q: '친구가 "이거 너 맞지?"라고 묻는다. 당신은?', options: [{ text: '갑자기 와이파이 문제인 척 잠수', type: 'A' }, { text: '예술 하던 시절이었다며 우긴다', type: 'B' }] },
+            { q: '흑역사 사진의 헤어스타일이 너무 심각하다. 당신의 대응은?', options: [{ text: '사진 속 나를 사촌이라고 주장', type: 'A' }, { text: '저 시절은 패션이 앞서갔다고 재해석', type: 'B' }] },
+            { q: '댓글이 57개 달리는 중이다. 가장 무서운 사람은?', options: [{ text: 'ㅋㅋㅋㅋ만 남기는 조용한 친구', type: 'A' }, { text: '확대해서 디테일 분석하는 친구', type: 'B' }] },
+            { q: '지금 당장 가능한 최선의 도피처는?', options: [{ text: '해외 간 척 스토리 올리기', type: 'A' }, { text: '오히려 밈으로 만들어 역공하기', type: 'B' }] },
+            { q: '누가 "하나 더 있다"라고 말한다. 당신은?', options: [{ text: '인생 종료 브금이 머릿속에 흐른다', type: 'A' }, { text: '어차피 망한 거 시즌2도 보자고 한다', type: 'B' }] },
+            { q: '결국 당신의 생존 방식은?', options: [{ text: '존재를 지워서 기억도 지운다', type: 'A' }, { text: '부끄러움을 콘텐츠로 승화한다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '와이파이 끊긴 척 장인', desc: '당신은 위기 상황에서 흔적부터 지우는 은신형입니다. 알림은 꺼도 심장은 못 꺼서, 혼자 이불 속에서 6시간 동안 발버둥 칩니다.', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '흑역사를 먹고 사는 밈 인간', desc: '당신은 망한 순간조차 콘텐츠로 바꾸는 괴물입니다. 부끄러움이 없어서 강한 게 아니라, 이미 오래전에 다 태워 먹은 타입입니다.', img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
+    {
+        id: 'p38', category: '재미', title: '내 영혼의 편의점 음식 조합', desc: '당신의 뇌 구조를 가장 정확하게 설명하는 편의점 조합을 비정상적으로 진단합니다.', thumb: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '밤 11시 48분, 편의점에 들어간 당신의 표정은?', options: [{ text: '오늘도 위대한 조합을 발명하러 왔다', type: 'A' }, { text: '배고파서 판단력이 이미 끝났다', type: 'B' }] },
+            { q: '제일 먼저 손이 가는 코너는?', options: [{ text: '라면, 핫바, 삼각김밥의 뜨거운 구역', type: 'A' }, { text: '젤리, 아이스크림, 탄산의 혼돈 구역', type: 'B' }] },
+            { q: '친구가 "그걸 왜 같이 먹어?"라고 묻는다. 당신은?', options: [{ text: '천재는 원래 이해받지 못한다', type: 'A' }, { text: '나도 몰라, 근데 지금은 이게 맞다', type: 'B' }] },
+            { q: '전자레인지 앞에서 가장 중요한 것은?', options: [{ text: '정확한 초 단위 세팅', type: 'A' }, { text: '대충 돌려도 맛있으면 승리', type: 'B' }] },
+            { q: '당신이 은근 집착하는 건?', options: [{ text: '짠맛, 매운맛, 탄수화물의 삼위일체', type: 'A' }, { text: '당과 카페인으로 여는 제3의 눈', type: 'B' }] },
+            { q: '계산대 앞 최종 추가 구매는?', options: [{ text: '치즈 하나 더. 이건 투자다', type: 'A' }, { text: '이상한 신상 젤리. 오늘은 실험이다', type: 'B' }] },
+            { q: '결국 당신이 원하는 한 끼는?', options: [{ text: '맛도 칼로리도 논란도 큰 조합', type: 'A' }, { text: '달고 차갑고 정신없는 감정 회복식', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '불닭에 치즈 꽂는 폭주 미식가', desc: '당신은 인생도 음식도 세게 가야 직성이 풀리는 타입입니다. 내일 속이 아플 걸 알면서도 오늘의 도파민을 선택하는 대담한 혀를 가졌습니다.', img: 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?auto=format&fit=crop&w=800&q=80' },
+            B: { title: '젤리콜라빙수로 버티는 감정형 인간', desc: '당신은 배를 채우는 게 아니라 기분을 급하게 패치하는 타입입니다. 영양 밸런스는 망했지만 이상하게 오늘 하루는 살아낼 수 있습니다.', img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=800&q=80' }
+        }
+    },
     // --- Fortune Tests (15) ---
     {
         id: 'f21', category: '사주', title: '오늘의 행운 상징 타로', desc: '당신을 행운으로 이끌어줄 오늘의 특별한 상징물을 확인하세요.', thumb: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60',
