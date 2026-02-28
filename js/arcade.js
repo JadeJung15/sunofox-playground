@@ -657,7 +657,12 @@ async function buyBoosterPack() {
 
     const cost = 100;
     if ((UserState.data.points || 0) < cost) {
-        alert(`포인트가 부족합니다. (필요: ${cost}P / 보유: ${(UserState.data.points || 0).toLocaleString()}P)`);
+        soundManager.playFailure();
+        button.textContent = '포인트 부족';
+        setTimeout(() => {
+            const currentButton = document.getElementById('buy-booster-btn');
+            if (currentButton) currentButton.textContent = '부스터 20회 충전 (100P)';
+        }, 1200);
         return;
     }
 
@@ -673,8 +678,8 @@ async function buyBoosterPack() {
 
         await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(20) });
         UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
+        soundManager.playSuccess();
         updateUI();
-        alert("부스터 20회가 충전되었습니다. ⚡");
 
         if (window.location.hash === '#arcade') {
             window._preventScroll = true;
@@ -682,7 +687,8 @@ async function buyBoosterPack() {
         }
     } catch (e) {
         console.error(e);
-        alert("부스터 충전 중 오류가 발생했습니다.");
+        soundManager.playFailure();
+        button.textContent = '충전 실패';
     } finally {
         if (document.getElementById('buy-booster-btn')) {
             const refreshedButton = document.getElementById('buy-booster-btn');
