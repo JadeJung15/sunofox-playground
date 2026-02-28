@@ -32,6 +32,15 @@ function getLatestTests() {
     return [...TESTS].reverse();
 }
 
+function getRandomTests(count) {
+    const shuffled = [...TESTS];
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled.slice(0, count);
+}
+
 async function handleLike(testId) {
     console.log("handleLike called for:", testId);
     if (!UserState.user) {
@@ -138,6 +147,7 @@ export async function renderHome(hash) {
     const app = document.getElementById('app');
     await fetchAllLikes();
     const latestTests = getLatestTests();
+    const curatedTests = getRandomTests(6);
 
     if (hash === '#home' || !hash) {
         const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
@@ -213,7 +223,7 @@ export async function renderHome(hash) {
                     <span onclick="location.hash='#7check'" style="font-size:0.84rem; font-weight:800; color:#6366f1; cursor:pointer;">전체 보기</span>
                 </section>
                 <div id="test-list-grid" class="test-grid home-renewal-test-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:0.95rem; width:100%;">
-                    ${latestTests.slice(0, 6).map(t => renderTestCard(t)).join('')}
+                    ${curatedTests.map(t => renderTestCard(t)).join('')}
                 </div>
             </div>
         `;
