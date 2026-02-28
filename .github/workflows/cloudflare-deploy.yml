@@ -27,3 +27,4 @@ jobs:
           projectName: sunofox-playground
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: main
