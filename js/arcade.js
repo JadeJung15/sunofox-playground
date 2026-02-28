@@ -642,11 +642,15 @@ async function playDailyCheckin() {
     if (!UserState.user) return;
     const today = new Date().toISOString().split('T')[0];
     if (localStorage.getItem(`last_checkin_${UserState.user.uid}`) === today) return alert("이미 완료!");
-    if (await addPoints(100)) {
+    const { getPetBuff } = await import('./auth.js?v=8.4.0');
+    const petBuff = getPetBuff();
+    const reward = Math.floor(100 * petBuff.multiplier) + petBuff.checkinBonus;
+
+    if (await addPoints(reward)) {
         await updateArcadeStat('checkin');
         soundManager.playSuccess(); // 출석 성공음
         localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
-        alert("100P 지급! ✨"); updateUI();
+        alert(`${reward}P 지급! ✨`); updateUI();
     }
 }
 

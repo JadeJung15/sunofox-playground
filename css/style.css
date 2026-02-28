@@ -220,6 +220,179 @@ header {
   --color-profile: #0f172a;
 }
 
+.pet-active-hero {
+  padding: 1.5rem;
+  border-radius: 24px;
+  border: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 2rem;
+}
+
+.pet-active-avatar,
+.pet-emoji-shell {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border-color);
+}
+
+.pet-active-avatar {
+  width: 92px;
+  height: 92px;
+  font-size: 3.5rem;
+  flex-shrink: 0;
+}
+
+.pet-grade-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  border: 1px solid transparent;
+  margin-bottom: 0.55rem;
+}
+
+.pet-card {
+  padding: 1.2rem 1rem;
+  border-radius: 20px;
+  border: 2px solid var(--border-color);
+  text-align: center;
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.pet-card:hover {
+  transform: translateY(-2px);
+}
+
+.pet-card.is-active {
+  transform: translateY(-3px);
+}
+
+.pet-emoji-shell {
+  width: 72px;
+  height: 72px;
+  font-size: 2.1rem;
+  margin: 0 auto 12px;
+}
+
+@media (max-width: 768px) {
+  .pet-active-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.profile-floating-toast {
+  position: fixed;
+  top: 92px;
+  left: 50%;
+  transform: translate(-50%, -12px);
+  background: rgba(255, 255, 255, 0.96);
+  border: 2px solid var(--accent-color);
+  border-radius: 999px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 900;
+  z-index: 2200;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+  opacity: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.profile-floating-toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+.pet-unlock-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.38);
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  z-index: 2300;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.pet-unlock-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pet-unlock-card {
+  width: min(100%, 360px);
+  border: 1px solid var(--border-color);
+  border-radius: 28px;
+  padding: 1.4rem 1.2rem 1.2rem;
+  text-align: center;
+  transform: translateY(10px) scale(0.96);
+  transition: transform 0.22s ease;
+}
+
+.pet-unlock-overlay.show .pet-unlock-card {
+  transform: translateY(0) scale(1);
+}
+
+.pet-unlock-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.8rem;
+}
+
+.pet-unlock-emoji {
+  width: 116px;
+  height: 116px;
+  margin: 0 auto 0.9rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border-color);
+  font-size: 4rem;
+}
+
+.pet-unlock-card h3 {
+  font-size: 1.3rem;
+  font-weight: 900;
+  margin-bottom: 0.35rem;
+}
+
+.pet-unlock-card p {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-sub);
+  margin-bottom: 1rem;
+}
+
+.pet-unlock-close {
+  border: none;
+  color: #fff;
+  border-radius: 14px;
+  padding: 0.8rem 1rem;
+  width: 100%;
+  font-size: 0.9rem;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 .nav-link[data-filter="전체"].active { background: #1e293b; }
 .nav-link[data-filter="성격"].active { background: var(--color-personality); }
 .nav-link[data-filter="얼굴"].active { background: var(--color-face); }

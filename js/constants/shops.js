@@ -109,10 +109,10 @@ export const BACKGROUND_SHOP = {
 
 // ── 펫 상점 ──────────────────────────────────────────────────────
 export const PET_SHOP = {
-    'F_NORMAL':   { name: '꼬마 여우',   emoji: '🦊', grade: 'NORMAL',    price: 1000,  effect: '기본 파트너' },
-    'F_WHITE':    { name: '눈꽃 여우',   emoji: '❄️', grade: 'RARE',      price: 5000,  effect: '채굴 시 +2P 추가' },
-    'F_FIRE':     { name: '불꽃 여우',   emoji: '🔥', grade: 'RARE',      price: 5000,  effect: '채굴 시 +2P 추가' },
-    'F_SHADOW':   { name: '그림자 여우', emoji: '🌑', grade: 'EPIC',      price: 15000, effect: '테스트 보상 +5P' },
-    'F_AURORA':   { name: '오로라 여우', emoji: '🌈', grade: 'EPIC',      price: 15000, effect: '테스트 보상 +5P' },
-    'F_CELESTIAL':{ name: '천상 여우',   emoji: '✨', grade: 'LEGENDARY', price: 50000, effect: '모든 보상 +10%' }
+    'F_NORMAL':   { name: '복실 토끼',   emoji: '🐰', grade: 'NORMAL',    price: 1000,  effect: '테스트 +1P / 출석 +10P' },
+    'F_WHITE':    { name: '솜사탕 고양이', emoji: '🐱', grade: 'RARE',      price: 5000,  effect: '채굴 +2P / 출석 +20P' },
+    'F_FIRE':     { name: '해피 강아지', emoji: '🐶', grade: 'RARE',      price: 5000,  effect: '채굴 +4P / 테스트 +2P' },
+    'F_SHADOW':   { name: '말랑 판다',   emoji: '🐼', grade: 'EPIC',      price: 15000, effect: '테스트 +6P / 채굴 +1P' },
+    'F_AURORA':   { name: '무지개 유니콘', emoji: '🦄', grade: 'EPIC',      price: 15000, effect: '테스트 +4P / 출석 +40P' },
+    'F_CELESTIAL':{ name: '전설의 여우', emoji: '🦊', grade: 'LEGENDARY', price: 50000, effect: '모든 보상 +15% / 출석 +50P' }
 };

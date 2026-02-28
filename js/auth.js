@@ -21,15 +21,19 @@ export async function changePet(petId) {
 }
 
 export function getPetBuff() {
-    if (!UserState.data?.activePet) return { mineBonus: 0, testBonus: 0, multiplier: 1 };
-    const pet = PET_SHOP[UserState.data.activePet];
-    if (!pet) return { mineBonus: 0, testBonus: 0, multiplier: 1 };
-    
-    return {
-        mineBonus: (pet.grade === 'RARE') ? 2 : 0,
-        testBonus: (pet.grade === 'EPIC') ? 5 : 0,
-        multiplier: (pet.grade === 'LEGENDARY') ? 1.1 : 1
+    const defaultBuff = { mineBonus: 0, testBonus: 0, checkinBonus: 0, multiplier: 1 };
+    if (!UserState.data?.activePet) return defaultBuff;
+
+    const petBuffs = {
+        F_NORMAL: { mineBonus: 0, testBonus: 1, checkinBonus: 10, multiplier: 1 },
+        F_WHITE: { mineBonus: 2, testBonus: 0, checkinBonus: 20, multiplier: 1 },
+        F_FIRE: { mineBonus: 4, testBonus: 2, checkinBonus: 0, multiplier: 1 },
+        F_SHADOW: { mineBonus: 1, testBonus: 6, checkinBonus: 0, multiplier: 1 },
+        F_AURORA: { mineBonus: 0, testBonus: 4, checkinBonus: 40, multiplier: 1 },
+        F_CELESTIAL: { mineBonus: 2, testBonus: 5, checkinBonus: 50, multiplier: 1.15 }
     };
+
+    return petBuffs[UserState.data.activePet] || defaultBuff;
 }
 import {
     onAuthStateChanged,

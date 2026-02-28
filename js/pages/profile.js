@@ -1,7 +1,73 @@
-import { UserState, updateUI, updateProfileCache } from '../auth.js?v=8.4.0';
+import { UserState, getPetBuff, updateUI, updateProfileCache } from '../auth.js?v=8.4.0';
 import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP, PET_SHOP } from '../constants/shops.js';
 import { db } from '../firebase-init.js?v=8.4.0';
 import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { soundManager } from '../sound.js';
+
+function getPetTheme(grade) {
+    const themes = {
+        NORMAL: {
+            tone: '#22c55e',
+            bg: 'linear-gradient(135deg, rgba(34,197,94,0.14), rgba(255,255,255,0.96))',
+            ring: 'rgba(34,197,94,0.26)',
+            badge: 'rgba(34,197,94,0.14)'
+        },
+        RARE: {
+            tone: '#3b82f6',
+            bg: 'linear-gradient(135deg, rgba(59,130,246,0.16), rgba(255,255,255,0.96))',
+            ring: 'rgba(59,130,246,0.28)',
+            badge: 'rgba(59,130,246,0.14)'
+        },
+        EPIC: {
+            tone: '#a855f7',
+            bg: 'linear-gradient(135deg, rgba(168,85,247,0.18), rgba(255,255,255,0.96))',
+            ring: 'rgba(168,85,247,0.3)',
+            badge: 'rgba(168,85,247,0.15)'
+        },
+        LEGENDARY: {
+            tone: '#f59e0b',
+            bg: 'linear-gradient(135deg, rgba(245,158,11,0.24), rgba(255,248,220,0.98))',
+            ring: 'rgba(245,158,11,0.36)',
+            badge: 'rgba(245,158,11,0.18)'
+        }
+    };
+    return themes[grade] || themes.NORMAL;
+}
+
+function showProfileToast(message, tone = 'var(--accent-color)') {
+    const toast = document.createElement('div');
+    toast.className = 'profile-floating-toast';
+    toast.textContent = message;
+    toast.style.borderColor = tone;
+    toast.style.color = tone;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 240);
+    }, 1500);
+}
+
+function showPetUnlockOverlay(info) {
+    const theme = getPetTheme(info.grade);
+    const overlay = document.createElement('div');
+    overlay.className = 'pet-unlock-overlay';
+    overlay.innerHTML = `
+        <div class="pet-unlock-card" style="background: ${theme.bg}; border-color: ${theme.ring}; box-shadow: 0 24px 60px ${theme.ring};">
+            <div class="pet-unlock-badge" style="background: ${theme.badge}; color: ${theme.tone}; border-color: ${theme.ring};">${info.grade}</div>
+            <div class="pet-unlock-emoji" style="border-color: ${theme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 16px 36px ${theme.ring};">${info.emoji}</div>
+            <h3 style="color: ${theme.tone};">${info.name}</h3>
+            <p>${info.effect}</p>
+            <button type="button" class="pet-unlock-close" style="background: ${theme.tone};">같이 놀기 시작</button>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('show'));
+    overlay.querySelector('.pet-unlock-close')?.addEventListener('click', () => {
+        overlay.classList.remove('show');
+        setTimeout(() => overlay.remove(), 220);
+    });
+}
 
 export function renderProfile() {
     const app = document.getElementById('app');
@@ -54,6 +120,9 @@ export function renderProfile() {
 
     const activePetId = UserState.data.activePet || 'NONE';
     const activePet = PET_SHOP[activePetId] || { emoji: '🐾', name: '없음', effect: '파트너를 등록해보세요.' };
+    const petBuff = getPetBuff();
+    const ownedPetCount = (UserState.data.unlockedPets || []).length;
+    const activePetTheme = getPetTheme(activePet.grade);
 
     const activeBorderClass = UserState.data.activeBorder !== 'NONE' ? BORDER_SHOP[UserState.data.activeBorder]?.class || '' : '';
     const activeBackgroundClass = UserState.data.activeBackground !== 'NONE' ? BACKGROUND_SHOP[UserState.data.activeBackground]?.class || '' : '';
@@ -88,11 +157,34 @@ export function renderProfile() {
             <details class="profile-details" open>
                 <summary>🐾 나의 펫 파트너</summary>
                 <div class="content-area">
-                    <div style="background: rgba(var(--accent-rgb), 0.05); padding: 1.5rem; border-radius: 20px; border: 1px solid var(--accent-soft); display: flex; align-items: center; gap: 20px; margin-bottom: 2rem;">
-                        <div style="font-size: 3.5rem;">${activePet.emoji}</div>
-                        <div>
-                            <h4 style="font-size: 1.2rem; font-weight: 900; color: var(--accent-color); margin-bottom: 4px;">${activePet.name}</h4>
+                    <div class="pet-active-hero" style="background: ${activePetTheme.bg}; border-color: ${activePetTheme.ring}; box-shadow: 0 16px 36px ${activePetTheme.ring};">
+                        <div class="pet-active-avatar" style="border-color: ${activePetTheme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 24px ${activePetTheme.ring};">
+                            ${activePet.emoji}
+                        </div>
+                        <div style="flex: 1;">
+                            <div class="pet-grade-badge" style="background: ${activePetTheme.badge}; color: ${activePetTheme.tone}; border-color: ${activePetTheme.ring};">${activePet.grade || 'NORMAL'}</div>
+                            <h4 style="font-size: 1.2rem; font-weight: 900; color: ${activePetTheme.tone}; margin-bottom: 4px;">${activePet.name}</h4>
                             <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">${activePet.effect}</p>
+                            <p style="font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-top: 6px;">보유 펫 ${ownedPetCount} / ${Object.keys(PET_SHOP).length}</p>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
+                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
+                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">채굴 보너스</div>
+                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">+${petBuff.mineBonus}P</div>
+                        </div>
+                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
+                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">테스트 보너스</div>
+                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">+${petBuff.testBonus}P</div>
+                        </div>
+                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
+                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">출석 보너스</div>
+                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">+${petBuff.checkinBonus}P</div>
+                        </div>
+                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
+                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">전체 배수</div>
+                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">x${petBuff.multiplier.toFixed(2)}</div>
                         </div>
                     </div>
 
@@ -101,15 +193,17 @@ export function renderProfile() {
                         ${Object.entries(PET_SHOP).map(([id, info]) => {
                             const isOwned = (UserState.data.unlockedPets || []).includes(id);
                             const isActive = activePetId === id;
+                            const theme = getPetTheme(info.grade);
                             return `
-                                <div class="pet-card" style="background: #fff; padding: 1.2rem 1rem; border-radius: 16px; border: 2px solid ${isActive ? 'var(--accent-color)' : 'var(--border-color)'}; text-align: center; position: relative; transition: all 0.2s;">
-                                    <div style="font-size: 2rem; margin-bottom: 10px;">${info.emoji}</div>
-                                    <div style="font-weight: 800; font-size: 0.85rem; margin-bottom: 4px;">${info.name}</div>
-                                    <div style="font-size: 0.65rem; color: var(--text-sub); margin-bottom: 12px; height: 2.4rem; display: flex; align-items: center; justify-content: center;">${info.effect}</div>
+                                <div class="pet-card ${isActive ? 'is-active' : ''}" style="background: ${theme.bg}; border-color: ${isActive ? theme.tone : theme.ring}; box-shadow: ${isActive ? `0 16px 32px ${theme.ring}` : '0 8px 20px rgba(15,23,42,0.05)'};">
+                                    <div class="pet-grade-badge" style="background: ${theme.badge}; color: ${theme.tone}; border-color: ${theme.ring};">${info.grade}</div>
+                                    <div class="pet-emoji-shell" style="border-color: ${theme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 24px ${theme.ring};">${info.emoji}</div>
+                                    <div style="font-weight: 900; font-size: 0.9rem; margin-bottom: 4px; color: ${theme.tone};">${info.name}</div>
+                                    <div style="font-size: 0.65rem; color: var(--text-sub); margin-bottom: 12px; min-height: 2.6rem; display: flex; align-items: center; justify-content: center;">${info.effect}</div>
                                     ${isOwned ? `
-                                        <button class="btn-pet-equip" data-id="${id}" style="width: 100%; padding: 6px; border-radius: 8px; font-size: 0.75rem; border: 1px solid var(--accent-color); background: ${isActive ? 'var(--accent-color)' : 'none'}; color: ${isActive ? '#fff' : 'var(--accent-color)'}; font-weight: 800;">${isActive ? '함께하는 중' : '함께하기'}</button>
+                                        <button class="btn-pet-equip" data-id="${id}" style="width: 100%; padding: 8px; border-radius: 10px; font-size: 0.75rem; border: 1px solid ${theme.tone}; background: ${isActive ? theme.tone : 'rgba(255,255,255,0.8)'}; color: ${isActive ? '#fff' : theme.tone}; font-weight: 900;">${isActive ? '함께하는 중' : '함께하기'}</button>
                                     ` : `
-                                        <button class="btn-pet-buy" data-id="${id}" style="width: 100%; padding: 6px; border-radius: 8px; font-size: 0.75rem; border: none; background: var(--text-main); color: #fff; font-weight: 800;">${info.price.toLocaleString()}P</button>
+                                        <button class="btn-pet-buy" data-id="${id}" style="width: 100%; padding: 8px; border-radius: 10px; font-size: 0.75rem; border: none; background: ${theme.tone}; color: #fff; font-weight: 900;">${info.price.toLocaleString()}P</button>
                                     `}
                                 </div>
                             `;
@@ -222,8 +316,9 @@ export function renderProfile() {
             const { id } = btn.dataset;
             const { changePet } = await import('../auth.js?v=8.4.0');
             if (await changePet(id)) {
-                alert("펫 파트너가 변경되었습니다! 🐾");
+                soundManager.playSuccess();
                 renderProfile();
+                showProfileToast(`${PET_SHOP[id]?.name || '펫'} 출전 완료`, getPetTheme(PET_SHOP[id]?.grade).tone);
             } else {
                 alert("변경 중 오류가 발생했습니다.");
             }
@@ -246,9 +341,10 @@ export function renderProfile() {
                         });
                         UserState.data.unlockedPets = unlocked;
                         UserState.data.activePet = id;
-                        alert(`${info.name}이(가) 새로운 가족이 되었습니다! 🎉`);
+                        soundManager.playSuccess();
                         renderProfile();
                         updateUI();
+                        showPetUnlockOverlay(info);
                     } catch (e) {
                         alert("입양 처리 중 오류가 발생했습니다.");
                     }
