@@ -155,7 +155,7 @@ export async function renderHome(hash) {
                                 <p style="font-size:0.95rem; color:rgba(226,232,240,0.95); line-height:1.55; max-width: 95%;">심리, 비주얼, 운세, 재미 테스트를 하나의 흐름으로 연결한 고급 분석 경험을 시작하세요.</p>
                             </div>
                             <div style="display:flex; gap:0.6rem; margin-top:1.2rem; flex-wrap:wrap;">
-                                <button class="home-cta-main" onclick="location.hash='#test/${heroTest.id}'" style="border:none; border-radius:14px; padding:0.75rem 1.05rem; background:linear-gradient(135deg,#22d3ee 0%,#6366f1 55%,#7c3aed 100%); color:#fff; font-weight:900; font-size:0.86rem; cursor:pointer; box-shadow:0 12px 24px rgba(99,102,241,0.35);">랜덤테스트</button>
+                                <button class="home-cta-main" onclick="location.hash='#test/${heroTest.id}'" style="border:none; border-radius:14px; padding:0.75rem 1.05rem; background:linear-gradient(135deg,#22d3ee 0%,#6366f1 55%,#7c3aed 100%); color:#fff; font-weight:900; font-size:0.86rem; cursor:pointer; box-shadow:0 12px 24px rgba(99,102,241,0.35);">나를 위한 추천</button>
                                 <button onclick="location.hash='#7check'" style="border:1px solid rgba(255,255,255,0.24); border-radius:14px; padding:0.75rem 1.05rem; background:rgba(255,255,255,0.07); color:#fff; font-weight:800; font-size:0.86rem; cursor:pointer;">전체 카테고리 보기</button>
                             </div>
                         </article>
