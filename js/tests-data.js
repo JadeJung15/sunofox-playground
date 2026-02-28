@@ -1286,5 +1286,68 @@ export const TESTS = [
             B: { title: '은은한 달빛의 상징', desc: '오늘은 통찰과 안정을 상징하는 기운이 감도는 날입니다. 조급함보다는 침착함을 유지하면 큰 결실을 맺게 될 것입니다.', img: 'https://images.unsplash.com/photo-1499209974431-9dac3e5d9774?auto=format&fit=crop&w=500&q=60' }
         }
     },
-    // ... (14 more fortune tests would go here, IDs f22-f35)
+    {
+        id: 'f22', category: '사주', title: '올해 대운 터지는 달 캘린더', desc: '당신의 운이 가장 크게 상승하는 시기와 조심해야 할 달을 미리 짚어드립니다.', thumb: 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '요즘 가장 자주 드는 감정은?', options: [{ text: '조금만 더 가면 뭔가 터질 것 같은 기대감', type: 'A' }, { text: '기회가 와도 타이밍이 계속 어긋나는 답답함', type: 'B' }] },
+            { q: '새로운 계획을 세울 때 당신은?', options: [{ text: '특정 시기를 정해 몰입해서 밀어붙인다', type: 'A' }, { text: '상황을 보며 천천히 맞춰 간다', type: 'B' }] },
+            { q: '행운이 온다고 느끼는 순간은?', options: [{ text: '갑자기 좋은 연락과 제안이 몰릴 때', type: 'A' }, { text: '작은 기회가 조용히 이어질 때', type: 'B' }] },
+            { q: '일정표를 볼 때 가장 먼저 보는 것은?', options: [{ text: '승부를 걸 큰 이벤트 날짜', type: 'A' }, { text: '무리 없는 흐름과 휴식 구간', type: 'B' }] },
+            { q: '운세를 본다면 가장 궁금한 건?', options: [{ text: '언제 크게 치고 올라갈 수 있는지', type: 'A' }, { text: '언제 쉬어야 손해를 피하는지', type: 'B' }] },
+            { q: '지금 당신의 하루 리듬은?', options: [{ text: '들쭉날쭉하지만 몰입할 때 확 불타오른다', type: 'A' }, { text: '꾸준하지만 기복이 적고 안정적이다', type: 'B' }] },
+            { q: '올해를 한 장면으로 표현하면?', options: [{ text: '폭죽이 터지기 직전의 밤하늘', type: 'A' }, { text: '안개가 걷히기 전의 새벽', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '상승 대운 집중형', desc: '당신은 올해 특정 시기에 운이 강하게 몰리는 타입입니다. 기회가 올 때는 짧고 강하게 오니, 승부수를 던질 달을 미리 잡아두는 것이 핵심입니다. 특히 상반기 말과 초가을 흐름이 강합니다.', img: 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '후반 역전 대운형', desc: '당신의 운은 초반보다 후반에 더 크게 열리는 타입입니다. 조급하게 결과를 당기기보다 기반을 다진 뒤, 하반기와 연말에 힘을 주면 훨씬 좋은 결실을 얻을 수 있습니다.', img: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f23', category: '사주', title: '내 인생 귀인 출몰 레이더', desc: '당신의 운을 확 끌어올려 줄 사람의 성향과, 언제 나타나는지 신호를 읽어드립니다.', thumb: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '힘든 순간 가장 큰 힘이 되는 것은?', options: [{ text: '나를 믿어주는 한 사람의 응원', type: 'A' }, { text: '실질적인 정보와 구체적인 도움', type: 'B' }] },
+            { q: '새로운 사람을 만날 때 먼저 보는 것은?', options: [{ text: '따뜻함과 인간적인 분위기', type: 'A' }, { text: '능력과 일 처리 방식', type: 'B' }] },
+            { q: '귀인이 온다고 느끼는 신호는?', options: [{ text: '이상하게 편하고 말이 잘 통한다', type: 'A' }, { text: '막혀 있던 일이 갑자기 풀리기 시작한다', type: 'B' }] },
+            { q: '당신이 더 끌리는 관계는?', options: [{ text: '나를 이해해주는 정서적 동반자', type: 'A' }, { text: '함께 성장하게 만드는 자극적 관계', type: 'B' }] },
+            { q: '어떤 칭찬이 더 크게 남나요?', options: [{ text: '너는 참 사람 냄새 난다', type: 'A' }, { text: '너는 진짜 실력이 있다', type: 'B' }] },
+            { q: '운이 풀릴 때 자주 생기는 일은?', options: [{ text: '좋은 인연 소개나 연결이 생긴다', type: 'A' }, { text: '일이나 공부에서 결정적 기회가 온다', type: 'B' }] },
+            { q: '당신의 귀인은 어떤 모습에 가까울까요?', options: [{ text: '부드럽고 다정하지만 단단한 사람', type: 'A' }, { text: '냉정해 보여도 확실히 밀어주는 사람', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '정서형 귀인 동행운', desc: '당신의 귀인은 마음이 먼저 닿는 사람으로 들어옵니다. 차갑고 화려한 인물보다, 이상하게 오래 기억에 남는 따뜻한 인연이 당신의 흐름을 바꿉니다. 인간관계 속 작은 연결을 가볍게 넘기지 마세요.', img: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '기회형 귀인 개척운', desc: '당신의 귀인은 실질적인 문을 열어주는 사람입니다. 함께 일하거나 배우는 자리에서 만날 가능성이 높고, 말보다 기회와 추천으로 당신을 끌어올립니다. 올해는 능력 있는 사람과의 접점이 곧 운입니다.', img: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f24', category: '사주', title: '이직·합격운 타이밍 체크', desc: '지금이 밀어붙일 때인지, 준비를 더 해야 할 때인지 운의 타이밍으로 읽어드립니다.', thumb: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '새로운 기회가 보이면 당신은?', options: [{ text: '일단 지원하고 보며 감을 잡는다', type: 'A' }, { text: '충분히 준비됐을 때만 움직인다', type: 'B' }] },
+            { q: '최근 가장 자주 드는 생각은?', options: [{ text: '지금 여기서 벗어나야 할 것 같다', type: 'A' }, { text: '조금만 더 다듬으면 판이 바뀔 것 같다', type: 'B' }] },
+            { q: '당신이 강해지는 환경은?', options: [{ text: '압박이 있어도 성과를 내야 하는 실전판', type: 'A' }, { text: '천천히 실력을 쌓을 수 있는 안정된 환경', type: 'B' }] },
+            { q: '기회를 잡을 때 더 중요한 것은?', options: [{ text: '속도와 결단', type: 'A' }, { text: '완성도와 준비도', type: 'B' }] },
+            { q: '요즘 자주 들어오는 신호는?', options: [{ text: '새 제안, 공고, 추천이 눈에 자주 띈다', type: 'A' }, { text: '정리, 공부, 포트폴리오 욕구가 커진다', type: 'B' }] },
+            { q: '실패에 대한 두려움이 온다면?', options: [{ text: '해보고 깨지는 게 낫다고 생각한다', type: 'A' }, { text: '지금은 때가 아니라고 판단한다', type: 'B' }] },
+            { q: '올해 내 커리어 운은?', options: [{ text: '판을 바꾸는 전환점이 될 것 같다', type: 'A' }, { text: '도약 전 실력을 갈고닦는 해 같다', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '즉시 도전형 합격운', desc: '당신은 지금 움직일수록 운이 붙는 흐름입니다. 완벽함을 기다리면 오히려 기회를 놓치기 쉽고, 빠른 지원과 적극적인 시도가 합격운을 끌어올립니다. 지금은 타이밍이 실력의 일부입니다.', img: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '준비 후 폭발형 이직운', desc: '당신의 운은 섣부른 이동보다 정교한 준비 뒤에 강하게 열립니다. 지금은 실력과 자료를 쌓는 구간에 가깝고, 한 번의 정확한 지원이 큰 결과로 이어질 가능성이 큽니다. 조용한 축적이 곧 대운입니다.', img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'f25', category: '사주', title: '악연 정리운 vs 관계 회복운', desc: '지금 붙잡아야 할 인연인지, 미련 없이 정리해야 할 인연인지 운의 방향을 읽어드립니다.', thumb: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '마음이 불편한 관계를 떠올리면 먼저 드는 감정은?', options: [{ text: '이제는 정말 끝내고 싶다', type: 'A' }, { text: '한 번쯤은 다시 풀어보고 싶다', type: 'B' }] },
+            { q: '그 사람과의 기억은 어떤 편인가요?', options: [{ text: '좋았던 순간보다 소모감이 더 크게 남는다', type: 'A' }, { text: '상처도 있었지만 좋은 장면도 분명하다', type: 'B' }] },
+            { q: '관계를 이어갈 때 가장 중요한 것은?', options: [{ text: '나의 평온과 에너지 보존', type: 'A' }, { text: '서로 다시 맞춰갈 의지', type: 'B' }] },
+            { q: '최근 당신의 인간관계 흐름은?', options: [{ text: '정리할 사람과 남길 사람이 뚜렷해진다', type: 'A' }, { text: '오해가 풀리거나 다시 이어질 조짐이 있다', type: 'B' }] },
+            { q: '그 사람에게 다시 연락이 온다면?', options: [{ text: '읽고도 답하지 않을 가능성이 크다', type: 'A' }, { text: '상황을 보고 조심스럽게 대화해볼 수 있다', type: 'B' }] },
+            { q: '당신이 진짜 원하는 것은?', options: [{ text: '미련 없는 정리와 새 출발', type: 'A' }, { text: '관계의 매듭을 제대로 풀어내는 것', type: 'B' }] },
+            { q: '지금 당신의 인연운 키워드는?', options: [{ text: '정리, 차단, 거리두기', type: 'A' }, { text: '회복, 대화, 재정비', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '악연 정리운 강세', desc: '지금의 운은 붙잡는 것보다 덜어내는 데 힘이 실립니다. 관계를 유지하기 위해 계속 에너지를 쓰는 것보다, 선을 분명히 긋고 나를 회복하는 쪽이 더 큰 행운으로 이어집니다. 정리는 손해가 아니라 회복입니다.', img: 'https://images.unsplash.com/photo-1516302752625-fcc3c50ae61f?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '관계 회복운 열림', desc: '당신의 인연운은 완전한 단절보다 재조율 쪽으로 기울어 있습니다. 다만 예전 방식 그대로 돌아가는 것이 아니라, 한 번 더 솔직하게 정리하고 새 룰을 만드는 관계만 살아남습니다. 회복은 가능하지만 기준이 필요합니다.', img: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=500&q=60' }
+        }
+    }
 ];
