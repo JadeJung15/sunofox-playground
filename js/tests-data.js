@@ -787,6 +787,86 @@ export const TESTS = [
             B: { title: '완벽한 조화의 비주얼 마스터', desc: '당신은 모든 부위가 황금 비율로 어우러진 최고의 밸런스를 가졌습니다. 볼수록 깊이가 느껴지는 진정한 미의 소유자입니다.', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60' }
         }
     },
+    {
+        id: 'v21', category: '얼굴', title: '나의 플러팅 얼굴 무기고', desc: '당신이 가만히 있어도 사람 심장 박동을 미묘하게 흔드는 비주얼 무기를 찾아드립니다.', thumb: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '셀카를 찍으면 제일 먼저 시선이 꽂히는 곳은?', options: [{ text: '눈빛. 약간 잘못 보면 사람 홀리는 쪽', type: 'A' }, { text: '입매. 안 웃어도 뭔가 의미심장한 쪽', type: 'B' }] },
+            { q: '무표정일 때 가장 자주 듣는 말은?', options: [{ text: '왜 이렇게 치명적이냐는 소리', type: 'A' }, { text: '웃으면 난리 난다는 소리', type: 'B' }] },
+            { q: '이성에게 가장 자주 먹히는 순간은?', options: [{ text: '조용히 쳐다볼 때 갑자기 분위기 바뀜', type: 'A' }, { text: '툭 웃을 때 경계가 무너짐', type: 'B' }] },
+            { q: '더 잘 어울리는 조명은?', options: [{ text: '어두운 바 조명 같은 음영 맛집', type: 'A' }, { text: '카페 창가 햇살처럼 맑은 직광', type: 'B' }] },
+            { q: '당신의 한 방은 어떤 느낌인가요?', options: [{ text: '서늘하게 꽂히는 한 마디', type: 'A' }, { text: '귀엽게 웃고 끝내는 반칙', type: 'B' }] },
+            { q: '연애 예능에 나간다면 별명은?', options: [{ text: '눈빛으로 서사 만드는 사람', type: 'A' }, { text: '웃음 한 번에 판 뒤집는 사람', type: 'B' }] },
+            { q: '결국 당신 얼굴의 위험성은?', options: [{ text: '괜히 쳐다보다가 과몰입 유발', type: 'A' }, { text: '방심하다가 호감 버튼 눌림', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '저음 눈빛 플러터', desc: '당신의 매력은 대놓고 시끄럽지 않은데 이상하게 오래 남습니다. 지나가다 한 번 봤을 뿐인데 상대가 혼자 OST 깔고 서사 쓰는 타입입니다.', img: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '입꼬리 치트키 플러터', desc: '당신은 웃는 순간 분위기가 갑자기 로코 12화가 됩니다. 평소엔 멀쩡한데 웃을 때만 사람들 판단력이 고장 나는 편입니다.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'v22', category: '얼굴', title: '치명적 옆태 신고센터', desc: '당신의 옆모습이 사람들 집중력을 어디까지 박살 내는지 공공기관급으로 점검합니다.', thumb: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '머리를 귀 뒤로 넘겼을 때 분위기는?', options: [{ text: '갑자기 드라마 서브주인공에서 메인으로 승격', type: 'A' }, { text: '청순한데 묘하게 사람 미치게 함', type: 'B' }] },
+            { q: '옆선에서 가장 자신 있는 곳은?', options: [{ text: '코-입술-턱선 라인의 정리감', type: 'A' }, { text: '목선과 귀 주변의 은근한 분위기', type: 'B' }] },
+            { q: '바람 불 때 제일 사기인 포인트는?', options: [{ text: '날렵하게 살아나는 실루엣', type: 'A' }, { text: '잔머리까지 합세한 인간 필터 효과', type: 'B' }] },
+            { q: '사진 찍을 때 자꾸 측면을 고집하는 이유는?', options: [{ text: '정면보다 서사가 3배 깊다', type: 'A' }, { text: '괜히 예뻐서 본능적으로 안다', type: 'B' }] },
+            { q: '사람들이 힐끔 보는 타이밍은?', options: [{ text: '창밖 볼 때 괜히 영화 포스터 됨', type: 'A' }, { text: '웃으며 고개 돌릴 때 심장 흔들림', type: 'B' }] },
+            { q: '옆모습에 잘 어울리는 스타일링은?', options: [{ text: '깔끔한 셔츠, 실버 액세서리, 절제된 무드', type: 'A' }, { text: '부드러운 니트, 잔광 메이크업, 포근한 무드', type: 'B' }] },
+            { q: '결국 당신 옆태의 장르는?', options: [{ text: '냉미남/냉미녀 범죄 스릴러', type: 'A' }, { text: '청순한데 위험한 로맨스', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '측면 최강 냉미장군', desc: '당신의 옆태는 괜히 각 잡고 보게 만드는 힘이 있습니다. 지하철 창문에 비친 옆모습만으로도 누군가 하루 루틴을 망칠 수 있습니다.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '측면 사기 청순빌런', desc: '당신은 포근해 보이는데 고개 한 번 돌리면 분위기가 확 바뀝니다. innocent하게 생겼는데 사람 마음에는 재난문자를 보내는 타입입니다.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'v23', category: '얼굴', title: '썸 타면 제일 위험한 표정 테스트', desc: '당신이 의도 없이 썸 판도를 바꿔버리는 문제의 표정을 색출합니다.', thumb: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '상대가 농담했을 때 당신의 기본 반응은?', options: [{ text: '입꼬리만 슬쩍 올라가는 반쪽 미소', type: 'A' }, { text: '눈까지 접히는 밝은 웃음', type: 'B' }] },
+            { q: '집중해서 들을 때 표정은?', options: [{ text: '가만히 응시해서 괜히 심각해짐', type: 'A' }, { text: '고개 끄덕이며 리액션이 다정함', type: 'B' }] },
+            { q: '사진 찍기 직전 가장 많이 나오는 표정은?', options: [{ text: '무심한데 정리된 시선 처리', type: 'A' }, { text: '참다가 터지는 귀여운 웃음', type: 'B' }] },
+            { q: '상대가 이름 불렀을 때 돌아보는 순간은?', options: [{ text: '무표정에서 눈빛만 움직여서 치명적', type: 'A' }, { text: '어? 하고 바로 웃어서 방심 금지', type: 'B' }] },
+            { q: '술 한 잔 들어가면 더 무서운 건?', options: [{ text: '평소보다 깊어지는 눈빛', type: 'A' }, { text: '평소보다 말랑해지는 표정', type: 'B' }] },
+            { q: '연락 올 때 상대가 기대하는 얼굴은?', options: [{ text: '읽씹할 것 같다가 답장하는 냉온탕 표정', type: 'A' }, { text: '바로 답장할 것 같은 무해한 표정', type: 'B' }] },
+            { q: '당신 표정의 최종 부작용은?', options: [{ text: '상대 혼자 의미부여 과다복용', type: 'A' }, { text: '상대 혼자 미래 상상 과다복용', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '무심 눈빛 과몰입 유발형', desc: '당신은 특별히 뭘 안 했는데도 상대가 혼자 해석본을 씁니다. 말수는 적어도 표정이 너무 많은 이야기를 해서 문제입니다.', img: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '웃는 순간 썸 증폭형', desc: '당신의 표정은 "편안함"으로 시작해서 "왜 계속 생각나지?"로 끝납니다. 귀엽고 다정한데 이상하게 후폭풍이 오래 가는 타입입니다.', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'v24', category: '얼굴', title: '나의 얼굴, 유죄 판결문', desc: '당신의 비주얼이 어떤 죄목으로 사람 마음을 어질럽히는지 웃기게 선고합니다.', thumb: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '당신이 제일 많이 듣는 억울한 오해는?', options: [{ text: '차가워 보이는데 알고 보면 또 반전 있음', type: 'A' }, { text: '순해 보이는데 묘하게 플러팅 같음', type: 'B' }] },
+            { q: '증거물 1호로 제출할 포인트는?', options: [{ text: '날카롭게 정리된 눈썹과 눈매', type: 'A' }, { text: '사람 무장해제시키는 미소 라인', type: 'B' }] },
+            { q: '당신 얼굴의 공범은?', options: [{ text: '낮은 목소리나 절제된 말투', type: 'A' }, { text: '밝은 말투와 다정한 리액션', type: 'B' }] },
+            { q: 'SNS 사진에서 가장 반응 좋은 컷은?', options: [{ text: '무표정 셀카 하나로 댓글 폭주', type: 'A' }, { text: '웃는 사진 하나로 저장각 유발', type: 'B' }] },
+            { q: '실제보다 더 위험한 순간은?', options: [{ text: '검정 옷 입고 조용히 있을 때', type: 'A' }, { text: '머리 묶고 활짝 웃을 때', type: 'B' }] },
+            { q: '당신을 변호하기 가장 어려운 이유는?', options: [{ text: '본인도 치명적인 거 은근 알고 있음', type: 'A' }, { text: '본인은 아닌 척하는데 더 위험함', type: 'B' }] },
+            { q: '최종 선고는?', options: [{ text: '치명적 분위기 유포죄', type: 'A' }, { text: '무해한 척 심장 흔들기죄', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '치명적 분위기 유포죄, 징역 12화', desc: '당신은 그냥 서 있었을 뿐인데 주변이 멜로드라마가 됩니다. 존재감이 너무 선명해서 사람들 뇌 속에 혼자 편집본이 돌아가는 수준입니다.', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '무해한 척 심장 흔들기죄, 집행유예 없음', desc: '당신은 순하고 편안해 보이는데 그게 더 문제입니다. 방심하고 다가간 사람들이 나중에 혼자 설렘 정산서를 받아보는 타입입니다.', img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
+    {
+        id: 'v25', category: '얼굴', title: '연애 예능 캐스팅상 테스트', desc: '당신 얼굴이 연애 예능에 나가면 어떤 캐릭터로 실시간 서사를 독점하는지 판정합니다.', thumb: 'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=500&q=60',
+        questions: [
+            { q: '첫 등장 3초 컷의 임팩트는?', options: [{ text: '조용히 등장했는데 모두 긴장함', type: 'A' }, { text: '밝게 등장했는데 모두 마음 풀림', type: 'B' }] },
+            { q: '제작진이 자막으로 달아줄 문구는?', options: [{ text: '분위기 반칙', type: 'A' }, { text: '웃음 반칙', type: 'B' }] },
+            { q: '메기 투입 날 당신의 무기는?', options: [{ text: '한마디 적게 하고 표정으로 끝냄', type: 'A' }, { text: '친근하게 다가가서 심리전 종결', type: 'B' }] },
+            { q: '시청자 반응이 가장 뜨거운 순간은?', options: [{ text: '조용히 바라보다가 이름 부를 때', type: 'A' }, { text: '환하게 웃으며 챙겨줄 때', type: 'B' }] },
+            { q: '삼각관계가 벌어지면 당신은?', options: [{ text: '말 안 해도 존재감으로 흔듦', type: 'A' }, { text: '편하게 웃기다가 갑자기 치고 올라옴', type: 'B' }] },
+            { q: '최종회 엔딩곡이 흐를 때 당신의 얼굴은?', options: [{ text: '눈빛 하나로 댓글창 마비', type: 'A' }, { text: '미소 하나로 재방문 유발', type: 'B' }] },
+            { q: '결국 당신의 캐릭터성은?', options: [{ text: '말수 적은데 서사 제일 많은 사람', type: 'A' }, { text: '순둥한데 최종 선택 독식하는 사람', type: 'B' }] }
+        ],
+        results: {
+            A: { title: '메인 예고편 장악형', desc: '당신은 등장만 해도 BGM이 자동으로 깔리는 얼굴입니다. 대사 두 줄인데 조회수와 댓글 분량은 혼자 가져가는 타입입니다.', img: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=500&q=60' },
+            B: { title: '시청자 과몰입 제조형', desc: '당신은 친근한데 결정적 순간마다 너무 잘생기고 예뻐서 문제입니다. 초반엔 무해한데 후반부에 마음 다 털어가는 캐릭터입니다.', img: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=500&q=60' }
+        }
+    },
     // --- Fortune Tests (15) ---
     {
         id: 'f6', category: '사주', title: '오늘의 비밀 메시지', desc: '우주가 당신에게 보내는 오늘의 단 한마디 조언을 확인하세요.', thumb: 'https://images.unsplash.com/photo-1501139083538-0139583c060f?auto=format&fit=crop&w=500&q=60',
