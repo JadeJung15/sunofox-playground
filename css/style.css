@@ -553,6 +553,36 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   border-color: var(--accent-soft);
 }
 
+.arcade-tone-mint {
+  background: linear-gradient(145deg, #ecfdf5 0%, #ffffff 100%);
+  border-color: #bbf7d0;
+}
+
+.arcade-tone-indigo {
+  background: linear-gradient(145deg, #eef2ff 0%, #ffffff 100%);
+  border-color: #c7d2fe;
+}
+
+.arcade-tone-peach {
+  background: linear-gradient(145deg, #fff7ed 0%, #ffffff 100%);
+  border-color: #fed7aa;
+}
+
+.arcade-tone-emerald {
+  background: linear-gradient(145deg, #ecfdf5 0%, #f8fafc 100%);
+  border-color: #a7f3d0;
+}
+
+.arcade-tone-rose {
+  background: linear-gradient(145deg, #fff1f2 0%, #ffffff 100%);
+  border-color: #fecdd3;
+}
+
+.arcade-tone-violet {
+  background: linear-gradient(145deg, #f5f3ff 0%, #ffffff 100%);
+  border-color: #ddd6fe;
+}
+
 .lotto-scratcher { animation: pulse 1s infinite; color: #fda085; font-weight: 800; }
 @keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 

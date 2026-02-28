@@ -1,253 +1,404 @@
-import { UserState, usePoints, updateUI } from '../auth.js?v=8.4.0';
+import { UserState, updateUI } from '../auth.js?v=8.4.0';
 import { initArcade } from '../arcade.js';
-import { db } from '../firebase-init.js?v=8.4.0';
-import { doc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+
+function renderArcadeCardShell({ title, icon, badge, badgeStyle, desc, body, tone = 'neutral' }) {
+    return `
+        <article class="card arcade-item-card arcade-tone-${tone}" style="margin-bottom:0; display:flex; flex-direction:column; border-radius:26px; overflow:hidden;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.9rem; margin-bottom:0.95rem;">
+                <div style="display:flex; align-items:center; gap:0.78rem; min-width:0;">
+                    <div style="width:52px; height:52px; border-radius:18px; display:flex; align-items:center; justify-content:center; font-size:1.55rem; background:rgba(255,255,255,0.9); box-shadow:0 10px 18px rgba(15,23,42,0.08); flex-shrink:0;">
+                        ${icon}
+                    </div>
+                    <div style="min-width:0;">
+                        <h3 style="font-size:1.14rem; font-weight:900; color:#0f172a; margin:0 0 0.2rem; letter-spacing:-0.03em; line-height:1.2;">${title}</h3>
+                        <p style="font-size:0.84rem; color:#475569; line-height:1.55; font-weight:650; margin:0;">${desc}</p>
+                    </div>
+                </div>
+                <span style="${badgeStyle}">${badge}</span>
+            </div>
+            <div style="margin-top:auto;">
+                ${body}
+            </div>
+        </article>
+    `;
+}
 
 export function renderArcade() {
     const app = document.getElementById('app');
     const isLoggedIn = !!UserState.user;
     const userData = UserState.data || {};
     const lastGrade = sessionStorage.getItem('last_alchemy_grade') || 'COMMON';
+    const inventoryCount = (userData.inventory || []).length;
+    const totalScore = userData.totalScore || 0;
 
     app.innerHTML = `
-        <div class="arcade-page fade-in">
-            <div class="card arcade-header" style="text-align:center; padding: 2.5rem 1.5rem; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); color: #fff; border: none; margin-bottom: 2rem; border-radius: var(--radius-lg); position: relative; overflow: hidden;">
-                <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://www.transparenttextures.com/patterns/cubes.png'); opacity: 0.1;"></div>
-                <h2 style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; position: relative;">🎰 SEVEN ARCADE</h2>
-                <p style="opacity: 0.9; font-size: 1rem; font-weight: 600; position: relative;">매일 즐거운 게임과 포인트 혜택!</p>
-                
-                ${isLoggedIn ? `
-                <div class="arcade-user-stats" style="display: inline-flex; justify-content: center; gap: 2rem; margin-top: 2rem; background: rgba(255,255,255,0.2); padding: 0.8rem 2rem; border-radius: 50px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.3); position: relative;">
-                    <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:0.85rem; font-weight:700;">내 포인트:</span><span id="user-points" style="font-weight:900; font-size: 1.1rem;">0</span></div>
-                    <div style="display:flex; align-items:center; gap:8px;"><span style="font-size:0.85rem; font-weight:700;">부스터:</span><span style="font-weight:900; font-size: 1.1rem;">${userData.boosterCount || 0}회</span></div>
+        <div class="arcade-page fade-in" style="max-width:1120px; margin:0 auto; padding:1.2rem 1rem 5rem;">
+            <section class="arcade-command-hero" style="position:relative; overflow:hidden; border-radius:36px; padding:1.3rem; margin-bottom:1.4rem; background:linear-gradient(145deg,#0f172a 0%, #312e81 40%, #0f766e 100%); color:#fff; box-shadow:0 24px 50px rgba(15,23,42,0.22);">
+                <div style="position:absolute; width:380px; height:380px; top:-200px; right:-120px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 72%);"></div>
+                <div style="position:absolute; width:280px; height:280px; bottom:-160px; left:-90px; border-radius:50%; background:radial-gradient(circle, rgba(45,212,191,0.26) 0%, rgba(45,212,191,0) 72%);"></div>
+                <div style="position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem; align-items:stretch;">
+                    <div style="display:flex; flex-direction:column; justify-content:space-between; min-height:320px;">
+                        <div>
+                            <div style="font-size:0.76rem; font-weight:900; letter-spacing:0.16em; color:rgba(255,255,255,0.72); margin-bottom:0.85rem;">SEVEN ARCADE CONTROL ROOM</div>
+                            <div style="font-size:3rem; margin-bottom:0.75rem;">🎰</div>
+                            <h2 style="font-size:clamp(2rem, 6vw, 3rem); line-height:1.03; letter-spacing:-0.05em; font-weight:950; margin:0 0 0.8rem;">한 판만 하려다<br>계속 눌러보는 곳</h2>
+                            <p style="font-size:0.98rem; line-height:1.72; color:rgba(240,253,250,0.92); font-weight:650; max-width:95%;">무료 보상부터 한방 승부, 수집/정리 콘텐츠까지 흐름을 나눠서 다시 정리했습니다. 처음 들어와도 무엇부터 해야 할지 바로 보이는 오락실로 바꿨습니다.</p>
+                        </div>
+                        <div style="display:flex; gap:0.55rem; flex-wrap:wrap; margin-top:1.15rem;">
+                            <span style="padding:0.5rem 0.8rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16); font-size:0.77rem; font-weight:850;">무료 입문 존</span>
+                            <span style="padding:0.5rem 0.8rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16); font-size:0.77rem; font-weight:850;">리스크/한방 존</span>
+                            <span style="padding:0.5rem 0.8rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16); font-size:0.77rem; font-weight:850;">수집/정리 존</span>
+                        </div>
+                    </div>
+
+                    <div style="display:grid; gap:0.85rem; align-content:start;">
+                        <div style="background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.16); border-radius:28px; padding:1rem 1.05rem; backdrop-filter:blur(10px);">
+                            <div style="font-size:0.74rem; font-weight:900; letter-spacing:0.1em; color:rgba(255,255,255,0.72); margin-bottom:0.55rem;">PLAYER STATUS</div>
+                            <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.7rem;">
+                                <div style="padding:0.9rem; border-radius:18px; background:rgba(255,255,255,0.12);">
+                                    <div style="font-size:0.74rem; font-weight:800; color:rgba(255,255,255,0.72); margin-bottom:0.24rem;">보유 포인트</div>
+                                    <div style="font-size:1.3rem; font-weight:950;">${(userData.points || 0).toLocaleString()}P</div>
+                                </div>
+                                <div style="padding:0.9rem; border-radius:18px; background:rgba(255,255,255,0.12);">
+                                    <div style="font-size:0.74rem; font-weight:800; color:rgba(255,255,255,0.72); margin-bottom:0.24rem;">부스터</div>
+                                    <div style="font-size:1.3rem; font-weight:950;">${userData.boosterCount || 0}회</div>
+                                </div>
+                                <div style="padding:0.9rem; border-radius:18px; background:rgba(255,255,255,0.12);">
+                                    <div style="font-size:0.74rem; font-weight:800; color:rgba(255,255,255,0.72); margin-bottom:0.24rem;">인벤토리</div>
+                                    <div style="font-size:1.3rem; font-weight:950;">${inventoryCount.toLocaleString()}개</div>
+                                </div>
+                                <div style="padding:0.9rem; border-radius:18px; background:rgba(255,255,255,0.12);">
+                                    <div style="font-size:0.74rem; font-weight:800; color:rgba(255,255,255,0.72); margin-bottom:0.24rem;">아이템 점수</div>
+                                    <div style="font-size:1.3rem; font-weight:950;">${totalScore.toLocaleString()}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="background:#f8fafc; color:#0f172a; border-radius:28px; padding:1rem; border:1px solid rgba(255,255,255,0.2); box-shadow:0 18px 30px rgba(15,23,42,0.12);">
+                            <div style="font-size:0.74rem; font-weight:900; color:#4f46e5; letter-spacing:0.1em; margin-bottom:0.55rem;">STARTING ROUTE</div>
+                            <div style="display:grid; gap:0.55rem;">
+                                <div style="font-size:0.9rem; color:#334155; font-weight:750;">무료 보상 챙기기: <strong>출석체크</strong> → <strong>포인트 채굴</strong></div>
+                                <div style="font-size:0.9rem; color:#334155; font-weight:750;">한방 노리기: <strong>이모지 슬롯</strong> → <strong>주사위 베팅</strong> → <strong>폭탄 돌리기</strong></div>
+                                <div style="font-size:0.9rem; color:#334155; font-weight:750;">수집/정리 루프: <strong>아이템 뽑기</strong> → <strong>연금술</strong> → <strong>중고장터</strong></div>
+                            </div>
+                            ${isLoggedIn ? '' : `
+                                <button class="btn-primary" onclick="document.getElementById('login-btn')?.click()" style="margin-top:0.9rem; width:100%; background:linear-gradient(135deg,#4f46e5,#7c3aed); border:none; height:52px; font-weight:900;">로그인하고 포인트 흐름 시작</button>
+                            `}
+                        </div>
+                    </div>
                 </div>
-                ` : `
-                <button class="btn-primary" onclick="document.getElementById('login-btn')?.click()" style="margin-top: 1.5rem; background: #fff; color: var(--accent-color); font-weight: 800; border: none; padding: 0.6rem 2rem; border-radius: 50px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">지금 로그인하고 포인트 받기 ➔</button>
-                `}
-            </div>
+            </section>
 
             ${isLoggedIn ? `
-            <details class="profile-details quest-section fade-in" style="margin-bottom: 2rem; border: 2px solid var(--accent-soft);">
-                <summary id="quest-summary" style="font-size:1.1rem; font-weight:800;">📜 일일 퀘스트 (로딩 중...)</summary>
-                <div id="daily-quest-list" class="content-area"></div>
-            </details>
+                <details class="profile-details quest-section fade-in" style="margin-bottom: 1.5rem; border: 2px solid var(--accent-soft); border-radius:24px; overflow:hidden;">
+                    <summary id="quest-summary" style="font-size:1.04rem; font-weight:900; padding:1rem 1.2rem; background:linear-gradient(135deg,#eef2ff,#ffffff);">📜 오늘의 오락실 미션 (로딩 중...)</summary>
+                    <div id="daily-quest-list" class="content-area"></div>
+                </details>
             ` : ''}
 
-            <div class="arcade-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem;">
-                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">📅 일일 출석체크</h3>
-                        <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">FREE</span>
+            <section style="margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:0.76rem; color:#10b981; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">FREE ENTRY</div>
+                        <h3 style="font-size:1.45rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0;">가볍게 시작하는 무료 존</h3>
                     </div>
-                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">하루 한 번, 클릭만으로 <strong>100P</strong>를 즉시 획득하세요.</p>
-                    <button id="daily-checkin-btn" class="btn-primary" style="width:100%; background:#10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);">출석체크 완료하기</button>
+                    <div style="font-size:0.86rem; color:#64748b; font-weight:700;">리스크 없이 포인트를 모으는 첫 루프</div>
                 </div>
+                <div class="arcade-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:1rem;">
+                    ${renderArcadeCardShell({
+                        title: '일일 출석체크',
+                        icon: '📅',
+                        badge: 'FREE',
+                        tone: 'mint',
+                        badgeStyle: 'background: rgba(16,185,129,0.12); color:#059669; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '하루 한 번, 가장 빠르게 포인트를 챙기는 입장권입니다.',
+                        body: `
+                            <div style="background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.12); border-radius:18px; padding:0.95rem; margin-bottom:1rem; min-height:88px; display:flex; flex-direction:column; justify-content:center;">
+                                <div style="font-size:0.76rem; color:#059669; font-weight:900; letter-spacing:0.08em; margin-bottom:0.25rem;">TODAY REWARD</div>
+                                <div style="font-size:1.4rem; font-weight:950; color:#065f46;">100P</div>
+                                <div style="font-size:0.84rem; color:#475569; font-weight:650;">눌러두면 오늘의 기본 보상 확보</div>
+                            </div>
+                            <button id="daily-checkin-btn" class="btn-primary" style="width:100%; background:#10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3); height:55px; border:none; font-weight:900;">출석체크 완료하기</button>
+                        `
+                    })}
 
-                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">⛏️ 포인트 채굴</h3>
-                        <span style="background: rgba(99, 102, 241, 0.1); color: var(--accent-color); padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">LIMITLESS</span>
-                    </div>
-                    <p class="text-sub" style="font-size:0.9rem; margin-bottom:1.5rem; flex-grow: 1;">채굴기를 가동하여 무작위 포인트를 생산합니다. (5~15P)</p>
-                    <button id="click-game-btn" class="btn-primary" style="width:100%; height:55px; background:linear-gradient(90deg, var(--accent-color), #8b5cf6);">채굴기 가동 시작</button>
-                </div>
-
-                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🎰 이모지 슬롯</h3>
-                        <span style="background: rgba(253, 160, 133, 0.1); color: #fda085; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">JACKPOT</span>
-                    </div>
-                    <div id="slot-machine-container" style="height:100px; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:1.25rem; border:2px solid #fda085; border-radius:15px; background:rgba(253,160,133,0.05); font-size: 3rem; overflow: hidden;">
-                        <div class="slot-reel" id="slot-1">🎰</div>
-                        <div class="slot-reel" id="slot-2">🎰</div>
-                        <div class="slot-reel" id="slot-3">🎰</div>
-                    </div>
-                    <button id="slot-spin-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3); height:55px; font-weight: 800;">슬롯 돌리기 (300P)</button>
-                </div>
-
-                <div class="card arcade-item-card" style="margin-bottom:0;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">📦 아이템 뽑기</h3>
-                        <span style="background: rgba(var(--accent-rgb), 0.1); color: var(--accent-color); padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">GACHA</span>
-                    </div>
-
-                    <div id="gacha-result" class="gacha-box" style="min-height:75px; display:flex; align-items:center; justify-content:center; margin-bottom:1.25rem; border:2px dashed var(--border-color); border-radius:15px; text-align:center; font-size:0.9rem; background:rgba(0,0,0,0.02); font-weight: 600; padding: 10px;">희귀 아이템이 쏟아집니다</div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem; margin-top: 0.5rem;">
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">100P</span>
-                            <button id="gacha-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">1회 뽑기</button>
-                        </div>
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">950P 🔥</span>
-                            <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">10회 뽑기</button>
-                        </div>
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f43f5e; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2,700P 🔥</span>
-                            <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">30회 뽑기</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card arcade-item-card dice-card" style="margin-bottom:0; border: 2px solid #10b981; background: rgba(16, 185, 129, 0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🎲 주사위 3개 베팅</h3>
-                        <span style="background: rgba(16, 185, 129, 0.1); color: #10b981; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">BIG/SMALL</span>
-                    </div>
-
-                    <div style="background: var(--bg-color); padding: 1rem; border-radius: 15px; margin-bottom: 1.25rem; border: 1px solid var(--border-color); text-align:center;">
-                        <label style="display: block; font-size: 0.7rem; font-weight: 800; color: var(--text-sub); margin-bottom: 0.5rem; letter-spacing: 0.05em;">베팅 금액 (10P ~ 10,000P)</label>
-                        <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
-                            <span style="font-size:1.2rem; font-weight:900; color:#10b981;">₩</span>
-                            <input type="number" id="bet-amount" value="100" min="10" max="10000" step="10"
-                                   style="width:120px; background: transparent; border: none; text-align:center; font-size:1.8rem; font-weight:900; color: var(--text-main); outline: none; border-bottom: 2px solid #10b981; padding: 0;">
-                            <span style="font-size:1.2rem; font-weight:900; color:var(--text-sub);">P</span>
-                        </div>
-                    </div>
-
-                    <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1.25rem; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(16, 185, 129, 0.05); border-radius:12px; padding: 15px; border: 1px dashed #10b981;">
-                        <div id="dice-display" style="display:flex; gap:20px; margin-bottom: 12px; transition: all 0.3s ease; height: 70px; align-items: center;">
-                            <div class="dice-container">
-                                <div class="dice show-1" id="dice-cube-1">
-                                    <div class="dice-face face-1"><div class="dot"></div></div>
-                                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                    ${renderArcadeCardShell({
+                        title: '포인트 채굴',
+                        icon: '⛏️',
+                        badge: 'LIMITLESS',
+                        tone: 'indigo',
+                        badgeStyle: 'background: rgba(79,70,229,0.1); color:#4f46e5; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '버튼 한 번으로 랜덤 포인트를 뽑아내는 무한 반복 구간입니다.',
+                        body: `
+                            <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.65rem; margin-bottom:1rem;">
+                                <div style="padding:0.95rem; border-radius:18px; background:#eef2ff; text-align:center;">
+                                    <div style="font-size:0.73rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">획득 범위</div>
+                                    <div style="font-size:1.2rem; font-weight:950; color:#312e81;">5~15P</div>
+                                </div>
+                                <div style="padding:0.95rem; border-radius:18px; background:#eef2ff; text-align:center;">
+                                    <div style="font-size:0.73rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">체감 난이도</div>
+                                    <div style="font-size:1.2rem; font-weight:950; color:#312e81;">아주 낮음</div>
                                 </div>
                             </div>
-                            <div class="dice-container">
-                                <div class="dice show-1" id="dice-cube-2">
-                                    <div class="dice-face face-1"><div class="dot"></div></div>
-                                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                            <button id="click-game-btn" class="btn-primary" style="width:100%; height:55px; background:linear-gradient(90deg, var(--accent-color), #8b5cf6); border:none; font-weight:900;">채굴기 가동 시작</button>
+                        `
+                    })}
+                </div>
+            </section>
+
+            <section style="margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:0.76rem; color:#ef4444; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">HIGH RISK / HIGH FUN</div>
+                        <h3 style="font-size:1.45rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0;">한 번 더 누르게 되는 승부 존</h3>
+                    </div>
+                    <div style="font-size:0.86rem; color:#64748b; font-weight:700;">한방 잭팟과 긴장감 있는 게임 구간</div>
+                </div>
+                <div class="arcade-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">
+                    ${renderArcadeCardShell({
+                        title: '이모지 슬롯',
+                        icon: '🎰',
+                        badge: 'JACKPOT',
+                        tone: 'peach',
+                        badgeStyle: 'background: rgba(253,160,133,0.12); color:#ea580c; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '짧지만 가장 드라마틱한 당첨 연출을 보는 게임입니다.',
+                        body: `
+                            <div id="slot-machine-container" style="height:108px; display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:1.1rem; border:2px solid #fdba74; border-radius:18px; background:linear-gradient(145deg, rgba(253,160,133,0.1), rgba(255,255,255,0.7)); font-size:3rem; overflow:hidden;">
+                                <div class="slot-reel" id="slot-1">🎰</div>
+                                <div class="slot-reel" id="slot-2">🎰</div>
+                                <div class="slot-reel" id="slot-3">🎰</div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0.55rem; margin-bottom:1rem;">
+                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">비용</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">300P</div></div>
+                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">2개 일치</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">600P</div></div>
+                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">잭팟</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">5000P</div></div>
+                            </div>
+                            <button id="slot-spin-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3); height:55px; font-weight: 900; border:none;">슬롯 돌리기 (300P)</button>
+                        `
+                    })}
+
+                    ${renderArcadeCardShell({
+                        title: '주사위 3개 베팅',
+                        icon: '🎲',
+                        badge: 'BIG / SMALL',
+                        tone: 'emerald',
+                        badgeStyle: 'background: rgba(16,185,129,0.12); color:#059669; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '금액을 직접 정하고, 한 번의 선택으로 판을 가르는 승부입니다.',
+                        body: `
+                            <div style="background: var(--bg-color); padding: 1rem; border-radius: 18px; margin-bottom: 1rem; border: 1px solid var(--border-color); text-align:center;">
+                                <label style="display: block; font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 0.5rem; letter-spacing: 0.08em;">베팅 금액 (10P ~ 10,000P)</label>
+                                <div style="display:flex; align-items:center; justify-content:center; gap:10px;">
+                                    <span style="font-size:1.2rem; font-weight:900; color:#10b981;">₩</span>
+                                    <input type="number" id="bet-amount" value="100" min="10" max="10000" step="10"
+                                        style="width:120px; background: transparent; border: none; text-align:center; font-size:1.8rem; font-weight:900; color: var(--text-main); outline: none; border-bottom: 2px solid #10b981; padding: 0;">
+                                    <span style="font-size:1.2rem; font-weight:900; color:var(--text-sub);">P</span>
                                 </div>
                             </div>
-                            <div class="dice-container">
-                                <div class="dice show-1" id="dice-cube-3">
-                                    <div class="dice-face face-1"><div class="dot"></div></div>
-                                    <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                                    <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                            <div id="bet-result-msg" style="text-align:center; font-weight:800; margin-bottom:1rem; min-height:150px; display:flex; flex-direction:column; align-items:center; justify-content:center; background:rgba(16, 185, 129, 0.05); border-radius:16px; padding: 15px; border: 1px dashed #10b981;">
+                                <div id="dice-display" style="display:flex; gap:20px; margin-bottom: 12px; transition: all 0.3s ease; height: 70px; align-items: center;">
+                                    <div class="dice-container">
+                                        <div class="dice show-1" id="dice-cube-1">
+                                            <div class="dice-face face-1"><div class="dot"></div></div>
+                                            <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="dice-container">
+                                        <div class="dice show-1" id="dice-cube-2">
+                                            <div class="dice-face face-1"><div class="dot"></div></div>
+                                            <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                        </div>
+                                    </div>
+                                    <div class="dice-container">
+                                        <div class="dice show-1" id="dice-cube-3">
+                                            <div class="dice-face face-1"><div class="dot"></div></div>
+                                            <div class="dice-face face-2"><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-3"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-4"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-5"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                            <div class="dice-face face-6"><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="dice-status-text" style="color:var(--text-sub); font-size: 0.85rem;">행운의 숫자를 기대하세요!</div>
+                            </div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#10b981; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배</span>
+                                    <button class="bet-btn btn-primary" style="background:#10b981; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:14px;" data-game="dice3" data-choice="small">소(3~8)</button>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2배</span>
+                                    <button class="bet-btn btn-primary" style="background:#3b82f6; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:14px;" data-game="dice3" data-choice="middle">중(9~12)</button>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f59e0b; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배</span>
+                                    <button class="bet-btn btn-primary" style="background:#f59e0b; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:14px;" data-game="dice3" data-choice="big">대(13~18)</button>
                                 </div>
                             </div>
-                        </div>
-                        <div id="dice-status-text" style="color:var(--text-sub); font-size: 0.85rem;">행운의 숫자를 기대하세요!</div>
-                    </div>
+                        `
+                    })}
 
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#10b981; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배 ✨</span>
-                            <button class="bet-btn btn-primary" style="background:#10b981; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:12px;" data-game="dice3" data-choice="small">소(3~8)</button>
-                        </div>
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2배 ✨</span>
-                            <button class="bet-btn btn-primary" style="background:#3b82f6; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:12px;" data-game="dice3" data-choice="middle">중(9~12)</button>
-                        </div>
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f59e0b; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배 ✨</span>
-                            <button class="bet-btn btn-primary" style="background:#f59e0b; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:12px;" data-game="dice3" data-choice="big">대(13~18)</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card arcade-item-card alchemy-card" style="margin-bottom:0; display: flex; flex-direction: column; border: 2px solid #8b5cf6; background: rgba(139, 92, 246, 0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">⚗️ 아이템 연금술</h3>
-                        <span style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">UPGRADE</span>
-                    </div>
-
-                    <div style="background:var(--bg-color); padding:1.25rem 1rem; border-radius:12px; margin-bottom:1.25rem; border: 1px solid var(--border-color); text-align:center;">
-                        <p style="font-size:0.75rem; font-weight:800; color:var(--text-sub); margin-bottom:1rem;">연성할 재료 등급 선택<br><span style="color:var(--accent-color); font-size:0.65rem;">(동일 등급 재료 6개 소모)</span></p>
-
-                        <div class="alchemy-grade-boxes" id="alchemy-grade-boxes">
-                            <div class="alchemy-grade-box ${lastGrade === 'COMMON' ? 'active' : ''}" data-grade="COMMON">
-                                <span class="g-icon">💩</span>
-                                <span class="g-name">일반</span>
-                                <span class="g-count" id="count-COMMON">0</span>
+                    ${renderArcadeCardShell({
+                        title: '폭탄 돌리기',
+                        icon: '🧨',
+                        badge: 'DANGER',
+                        tone: 'rose',
+                        badgeStyle: 'background: rgba(244,63,94,0.12); color:#e11d48; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '멈출지 더 갈지 고민하게 만드는 긴장형 적립 게임입니다.',
+                        body: `
+                            <p id="bomb-msg" class="text-sub" style="font-size:0.9rem; margin-bottom:1rem; text-align: center; min-height: 24px; font-weight:700;">전선을 선택하세요! (현재 누적: 0P)</p>
+                            <div id="bomb-wires" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.5rem; margin-bottom:1.1rem;">
+                                <button class="wire-btn" data-wire="0" style="height:60px; background:#ef4444; border:none; border-radius:12px;"></button>
+                                <button class="wire-btn" data-wire="1" style="height:60px; background:#3b82f6; border:none; border-radius:12px;"></button>
+                                <button class="wire-btn" data-wire="2" style="height:60px; background:#10b981; border:none; border-radius:12px;"></button>
+                                <button class="wire-btn" data-wire="3" style="height:60px; background:#f59e0b; border:none; border-radius:12px;"></button>
+                                <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:12px;"></button>
                             </div>
-                            <div class="alchemy-grade-box ${lastGrade === 'UNCOMMON' ? 'active' : ''}" data-grade="UNCOMMON">
-                                <span class="g-icon">🥈</span>
-                                <span class="g-name">고급</span>
-                                <span class="g-count" id="count-UNCOMMON">0</span>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
+                                <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.84rem; height:52px; border:none; font-weight:900;">게임 시작 (300P)</button>
+                                <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.84rem; height:52px; border-color:#f43f5e; color:#f43f5e; font-weight:900;" disabled>포인트 챙기기</button>
                             </div>
-                            <div class="alchemy-grade-box ${lastGrade === 'RARE' ? 'active' : ''}" data-grade="RARE">
-                                <span class="g-icon">💎</span>
-                                <span class="g-name">희귀</span>
-                                <span class="g-count" id="count-RARE">0</span>
+                        `
+                    })}
+                </div>
+            </section>
+
+            <section style="margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:0.76rem; color:#8b5cf6; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">COLLECT / UPGRADE / CLEANUP</div>
+                        <h3 style="font-size:1.45rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0;">수집과 정리에 빠지는 루프 존</h3>
+                    </div>
+                    <div style="font-size:0.86rem; color:#64748b; font-weight:700;">가챠, 연성, 장터를 한 흐름으로 정리</div>
+                </div>
+                <div class="arcade-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">
+                    ${renderArcadeCardShell({
+                        title: '아이템 뽑기',
+                        icon: '📦',
+                        badge: 'GACHA',
+                        tone: 'violet',
+                        badgeStyle: 'background: rgba(99,102,241,0.12); color:#4f46e5; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '포인트를 태워 인벤토리를 불리는 가장 직관적인 수집 루트입니다.',
+                        body: `
+                            <div id="gacha-result" class="gacha-box" style="min-height:80px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem; border:2px dashed var(--border-color); border-radius:18px; text-align:center; font-size:0.9rem; background:rgba(99,102,241,0.03); font-weight: 600; padding: 12px;">희귀 아이템이 쏟아집니다</div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">100P</span>
+                                    <button id="gacha-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.8rem; width:100%; height:55px; font-weight:900; padding-top:5px; border:none;">1회 뽑기</button>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:var(--accent-color); color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">950P</span>
+                                    <button id="gacha-10-btn" class="btn-primary" style="background:var(--accent-color); font-size:0.8rem; width:100%; height:55px; font-weight:900; padding-top:5px; border:none;">10회 뽑기</button>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f43f5e; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2,700P</span>
+                                    <button id="gacha-30-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; width:100%; height:55px; font-weight:900; padding-top:5px; border:none;">30회 뽑기</button>
+                                </div>
+                            </div>
+                        `
+                    })}
+
+                    ${renderArcadeCardShell({
+                        title: '아이템 연금술',
+                        icon: '⚗️',
+                        badge: 'UPGRADE',
+                        tone: 'violet',
+                        badgeStyle: 'background: rgba(139,92,246,0.12); color:#7c3aed; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '같은 등급 재료를 태워 상위 등급으로 밀어 올리는 핵심 업그레이드 구간입니다.',
+                        body: `
+                            <div style="background:var(--bg-color); padding:1rem; border-radius:16px; margin-bottom:1rem; border: 1px solid var(--border-color); text-align:center;">
+                                <p style="font-size:0.75rem; font-weight:900; color:var(--text-sub); margin-bottom:1rem;">연성할 재료 등급 선택<br><span style="color:var(--accent-color); font-size:0.66rem;">동일 등급 재료 6개 소모</span></p>
+                                <div class="alchemy-grade-boxes" id="alchemy-grade-boxes">
+                                    <div class="alchemy-grade-box ${lastGrade === 'COMMON' ? 'active' : ''}" data-grade="COMMON">
+                                        <span class="g-icon">💩</span>
+                                        <span class="g-name">일반</span>
+                                        <span class="g-count" id="count-COMMON">0</span>
+                                    </div>
+                                    <div class="alchemy-grade-box ${lastGrade === 'UNCOMMON' ? 'active' : ''}" data-grade="UNCOMMON">
+                                        <span class="g-icon">🥈</span>
+                                        <span class="g-name">고급</span>
+                                        <span class="g-count" id="count-UNCOMMON">0</span>
+                                    </div>
+                                    <div class="alchemy-grade-box ${lastGrade === 'RARE' ? 'active' : ''}" data-grade="RARE">
+                                        <span class="g-icon">💎</span>
+                                        <span class="g-name">희귀</span>
+                                        <span class="g-count" id="count-RARE">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1rem; min-height:60px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:14px; padding: 0.5rem;">금단의 연성법을 시전합니다</div>
+                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem;">
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#8b5cf6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">500P</span>
+                                    <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.8rem; width:100%; height:55px; font-weight:900; padding-top:5px; border:none;">1회 연성</button>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#7c3aed; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2,200P</span>
+                                    <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.8rem; width:100%; height:55px; font-weight:900; padding-top:5px; border:none;">5회 연성</button>
+                                </div>
+                                <div style="position:relative;">
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#6d28d9; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">4,000P</span>
+                                    <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.8rem; width:100%; height:55px; font-weight:900; padding-top:5px; border:none;">10회 연성</button>
+                                </div>
+                            </div>
+                        `
+                    })}
+
+                    ${renderArcadeCardShell({
+                        title: '아이템 중고장터',
+                        icon: '🏪',
+                        badge: 'BULK SELL',
+                        tone: 'emerald',
+                        badgeStyle: 'background: rgba(16,185,129,0.12); color:#059669; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '가치가 낮은 아이템을 정리해 다시 포인트 흐름으로 되돌리는 회수 구간입니다.',
+                        body: `
+                            <div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.12); border-radius:16px; padding:1rem; margin-bottom:1rem;">
+                                <div style="font-size:0.76rem; color:#059669; font-weight:900; letter-spacing:0.08em; margin-bottom:0.22rem;">REFUND RULE</div>
+                                <div style="font-size:1.1rem; font-weight:950; color:#065f46; margin-bottom:0.18rem;">아이템 가치의 70%</div>
+                                <div style="font-size:0.84rem; color:#475569; font-weight:650;">인벤토리를 한 번에 정리하고 포인트를 회수합니다.</div>
+                            </div>
+                            <div id="market-ui-container"></div>
+                            <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-secondary); color:var(--accent-secondary); font-weight: 900; height:55px;">아이템 일괄 판매 열기</button>
+                        `
+                    })}
+                </div>
+            </section>
+
+            <section>
+                <div class="card booster-section fade-in" style="background:linear-gradient(125deg, rgba(99, 102, 241, 0.12), rgba(168, 85, 247, 0.12) 55%, rgba(34, 211, 238, 0.12)); border: 2px solid var(--accent-soft); padding: 1.4rem; border-radius: 28px;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1rem; align-items:center;">
+                        <div>
+                            <div style="font-size:0.78rem; color:#4f46e5; font-weight:900; letter-spacing:0.12em; margin-bottom:0.35rem;">BOOSTER LAB</div>
+                            <h3 style="font-size:1.5rem; font-weight:950; color:var(--accent-color); margin-bottom:0.4rem; letter-spacing:-0.03em;">⚡ 슈퍼 부스터 충전소</h3>
+                            <p class="text-sub" style="font-size:0.95rem; font-weight: 650; line-height:1.7;">부스터를 활성화하면 모든 테스트 보상이 <strong>2배(20P)</strong>로 뛰어오릅니다. 테스트를 몰아서 돌릴 때 가장 효율적인 업그레이드입니다.</p>
+                        </div>
+                        <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.75rem;">
+                            <div style="padding:1rem; border-radius:20px; background:#fff; border:1px solid rgba(99,102,241,0.12); text-align:center;">
+                                <div style="font-size:0.74rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">현재 부스터</div>
+                                <div style="font-size:1.35rem; font-weight:950; color:#312e81;">${userData.boosterCount || 0}회</div>
+                            </div>
+                            <div style="padding:1rem; border-radius:20px; background:#fff; border:1px solid rgba(99,102,241,0.12); text-align:center;">
+                                <div style="font-size:0.74rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">충전 가격</div>
+                                <div style="font-size:1.35rem; font-weight:950; color:#312e81;">100P</div>
                             </div>
                         </div>
                     </div>
-
-                    <div id="alchemy-result" style="text-align:center; font-weight:800; color:#8b5cf6; margin-bottom:1.25rem; min-height:60px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; background:rgba(139, 92, 246, 0.05); border-radius:10px; padding: 0.5rem;">금단의 연성법을 시전합니다</div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.5rem; margin-top: 0.5rem;">
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#8b5cf6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">500P</span>
-                            <button id="alchemy-btn" class="btn-primary" style="background:#8b5cf6; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">1회 연성</button>
-                        </div>
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#7c3aed; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2,200P 🔥</span>
-                            <button id="alchemy-5-btn" class="btn-primary" style="background:#7c3aed; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">5회 연성</button>
-                        </div>
-                        <div style="position:relative;">
-                            <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#6d28d9; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">4,000P 🔥</span>
-                            <button id="alchemy-10-btn" class="btn-primary" style="background:#6d28d9; font-size:0.8rem; width:100%; height:55px; font-weight:800; padding-top:5px; border:none;">10회 연성</button>
-                        </div>
-                    </div>
+                    <button id="buy-booster-btn" class="btn-primary" style="margin-top:1rem; width:100%; background:linear-gradient(135deg,#4f46e5,#7c3aed); padding: 1rem 2rem; font-size: 1rem; border-radius: 18px; border:none; font-weight:950;">부스터 20회 충전 (100P)</button>
                 </div>
-
-                <div class="card arcade-item-card" style="margin-bottom:0; display: flex; flex-direction: column;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🧨 폭탄 돌리기</h3>
-                        <span style="background: rgba(244, 63, 94, 0.1); color: #f43f5e; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">DANGER</span>
-                    </div>
-                    <p id="bomb-msg" class="text-sub" style="font-size:0.9rem; margin-bottom:1rem; text-align: center; min-height: 24px;">전선을 선택하세요! (현재 누적: 0P)</p>
-                    <div id="bomb-wires" style="display:grid; grid-template-columns: repeat(5, 1fr); gap:0.5rem; margin-bottom:1.5rem;">
-                        <button class="wire-btn" data-wire="0" style="height:60px; background:#ef4444; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="1" style="height:60px; background:#3b82f6; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="2" style="height:60px; background:#10b981; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="3" style="height:60px; background:#f59e0b; border:none; border-radius:8px;"></button>
-                        <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:8px;"></button>
-                    </div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
-                        <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.8rem; height:50px;">게임 시작 (300P)</button>
-                        <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.8rem; height:50px; border-color:#f43f5e; color:#f43f5e;" disabled>포인트 챙기기</button>
-                    </div>
-                </div>
-
-                <div class="card arcade-item-card market-card" style="margin-bottom:0; border: 2px solid var(--accent-secondary); background: rgba(16, 185, 129, 0.02);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                        <h3 style="font-size:1.2rem; font-weight: 800; display:flex; align-items:center; gap:10px;">🏪 아이템 중고장터</h3>
-                        <span style="background: var(--accent-secondary); color: #fff; padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 800;">BULK SELL</span>
-                    </div>
-                    <p class="text-sub" style="font-size:0.85rem; margin-bottom:1.5rem; line-height:1.4;">보유한 아이템을 포인트로 대량 환전하세요.<br>(아이템 가치의 <strong>70%</strong> 환급)</p>
-                    <div id="market-ui-container"></div>
-                    <button id="market-open-btn" class="btn-secondary" style="width:100%; border-width: 2px; border-color:var(--accent-secondary); color:var(--accent-secondary); font-weight: 800;">아이템 일괄 판매 열기</button>
-                </div>
-            </div>
-
-            <div class="card booster-section fade-in" style="margin-top:2.5rem; background:linear-gradient(90deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); border: 2px solid var(--accent-soft); padding: 2rem; border-radius: var(--radius-lg);">
-                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1.5rem;">
-                    <div style="flex: 1; min-width: 250px;">
-                        <h3 style="font-size:1.4rem; font-weight: 900; color:var(--accent-color); margin-bottom:0.5rem; display: flex; align-items: center; gap: 8px;">⚡ 슈퍼 부스터 (Super Booster)</h3>
-                        <p class="text-sub" style="font-size:0.95rem; font-weight: 600;">부스터 활성화 시 모든 테스트 보상 포인트가 <strong>2배(20P)</strong>로 지급됩니다.</p>
-                    </div>
-                    <button id="buy-booster-btn" class="btn-primary" style="background:var(--accent-color); padding: 1rem 2.5rem; font-size: 1rem; border-radius: 50px;">부스터 20회 충전 (100P)</button>
-                </div>
-            </div>
+            </section>
         </div>
     `;
 
     initArcade();
 
-    // 기존 리스너들이 UserState.user를 체크하도록 오버라이드
     document.querySelectorAll('.arcade-item-card button, .bet-btn, .wire-btn, #buy-booster-btn').forEach(btn => {
         const originalOnClick = btn.onclick;
         btn.onclick = (e) => {
