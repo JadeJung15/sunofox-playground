@@ -1,4 +1,4 @@
-import { UserState } from '../auth.js?v=8.3.0';
+import { UserState } from '../auth.js?v=8.3.1';
 import { ITEM_GRADES, ITEM_VALUES } from '../constants/shops.js';
 
 export function renderAbout() {
