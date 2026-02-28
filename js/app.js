@@ -205,7 +205,7 @@ authReady.then(() => {
     if (!isRouting) router(); 
 });
 
-// 드롭다운 메뉴 토글 로직
+// 드롭다운 메뉴 토글 로직 (완전 재작성)
 const initDropdown = () => {
     const dropdown = document.querySelector('.nav-dropdown');
     const dropbtn = document.querySelector('.nav-dropbtn');
@@ -213,28 +213,30 @@ const initDropdown = () => {
 
     if (!dropbtn || !dropdownContent || !dropdown) return;
 
-    // 기존 리스너 제거 (중복 방지) 및 새 리스너 등록
+    // 기존 이벤트가 중복 등록되지 않도록 버튼을 복제하여 교체
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
-    // 모바일 클릭 이벤트 (가장 단순하고 확실한 형태)
+    // [핵심] 클릭 이벤트: 모바일 및 PC 클릭 대응
     newBtn.addEventListener('click', (e) => {
-        // e.preventDefault() 제거: 브라우저 기본 터치/클릭을 막지 않음
-        e.stopPropagation(); // 바깥 영역 클릭 이벤트로 전파되는 것만 막음
-        
-        const isActive = dropdownContent.classList.contains('is-active');
-        
-        // 다른 열려있는 드롭다운 닫기
+        // 기본 동작(링크 이동 등) 막지 않음. 이벤트 전파만 차단하여 바깥영역 클릭과 분리.
+        e.stopPropagation();
+
+        // 현재 상태 확인 (스타일 display 속성이나 클래스 유무로 판단)
+        const isOpened = dropdownContent.classList.contains('is-active');
+
+        // 다른 드롭다운이 있다면 모두 닫기 (현재는 하나지만 확장성 고려)
         document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
-        
-        if (!isActive) {
+
+        // 토글 동작
+        if (!isOpened) {
             dropdownContent.classList.add('is-active');
         } else {
             dropdownContent.classList.remove('is-active');
         }
     });
 
-    // PC 호버 이벤트 (JS로 한 번 더 확실하게 처리)
+    // PC 호버 지원 (JS로 부드럽게)
     dropdown.addEventListener('mouseenter', () => {
         if (window.innerWidth > 768) {
             dropdownContent.classList.add('is-active');
@@ -247,15 +249,16 @@ const initDropdown = () => {
         }
     });
 
-    // 링크 클릭 시 닫기
+    // 드롭다운 내부 링크 클릭 시 메뉴 닫기
     dropdownContent.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
             dropdownContent.classList.remove('is-active');
         });
     });
 
-    // 바깥 영역 클릭 시 닫기
+    // 바탕 영역 클릭 시 닫기
     document.addEventListener('click', (e) => {
+        // 클릭한 대상이 드롭다운 내부가 아닐 때만 닫기
         if (!dropdown.contains(e.target)) {
             dropdownContent.classList.remove('is-active');
         }
