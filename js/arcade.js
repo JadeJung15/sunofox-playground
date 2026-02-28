@@ -42,6 +42,7 @@ export function initArcade() {
             if (target.classList && target.classList.contains('wire-btn')) await cutWire(parseInt(target.dataset.wire));
             if (target.id === 'bomb-claim-btn') await claimBombPoints();
             if (target.id === 'daily-checkin-btn') await playDailyCheckin();
+            if (target.id === 'buy-booster-btn') await buyBoosterPack();
             
             if (target.classList && target.classList.contains('bet-btn')) {
                 const gameType = target.dataset.game;
@@ -646,6 +647,48 @@ async function playDailyCheckin() {
         soundManager.playSuccess(); // 출석 성공음
         localStorage.setItem(`last_checkin_${UserState.user.uid}`, today);
         alert("100P 지급! ✨"); updateUI();
+    }
+}
+
+async function buyBoosterPack() {
+    if (!UserState.user) return alert("로그인이 필요합니다!");
+    const button = document.getElementById('buy-booster-btn');
+    if (!button || button.disabled) return;
+
+    const cost = 100;
+    if ((UserState.data.points || 0) < cost) {
+        alert(`포인트가 부족합니다. (필요: ${cost}P / 보유: ${(UserState.data.points || 0).toLocaleString()}P)`);
+        return;
+    }
+
+    button.disabled = true;
+    button.textContent = '충전 중...';
+
+    try {
+        const spent = await usePoints(cost, '슈퍼 부스터 충전');
+        if (!spent) {
+            alert("부스터 충전에 실패했습니다.");
+            return;
+        }
+
+        await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(20) });
+        UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
+        updateUI();
+        alert("부스터 20회가 충전되었습니다. ⚡");
+
+        if (window.location.hash === '#arcade') {
+            window._preventScroll = true;
+            window.dispatchEvent(new HashChangeEvent('hashchange'));
+        }
+    } catch (e) {
+        console.error(e);
+        alert("부스터 충전 중 오류가 발생했습니다.");
+    } finally {
+        if (document.getElementById('buy-booster-btn')) {
+            const refreshedButton = document.getElementById('buy-booster-btn');
+            refreshedButton.disabled = false;
+            refreshedButton.textContent = '부스터 20회 충전 (100P)';
+        }
     }
 }
 
