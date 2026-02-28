@@ -208,7 +208,7 @@ authReady.then(() => {
 // 드롭다운 메뉴 토글 로직
 const initDropdown = () => {
     const dropdown = document.querySelector('.nav-dropdown');
-    const dropbtn = document.querySelector('.nav-dropdown > .nav-dropbtn, .nav-dropbtn');
+    const dropbtn = document.querySelector('.nav-dropbtn');
     const dropdownContent = document.querySelector('.dropdown-content');
 
     if (!dropbtn || !dropdownContent || !dropdown) return;
@@ -217,10 +217,8 @@ const initDropdown = () => {
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
-    let isHandlingTouch = false;
-
-    // 모바일 클릭/터치 이벤트 처리를 위한 함수
-    const toggleDropdown = (e) => {
+    // 모바일 클릭/터치 이벤트
+    newBtn.addEventListener('click', (e) => {
         if (window.innerWidth <= 768) {
             e.preventDefault();
             e.stopPropagation();
@@ -236,18 +234,6 @@ const initDropdown = () => {
                 dropdownContent.classList.remove('is-active');
             }
         }
-    };
-
-    // 모바일 환경 클릭 및 터치 이벤트 (고스트 클릭 방지)
-    newBtn.addEventListener('touchstart', (e) => {
-        isHandlingTouch = true;
-        toggleDropdown(e);
-        setTimeout(() => { isHandlingTouch = false; }, 300);
-    }, { passive: false });
-
-    newBtn.addEventListener('click', (e) => {
-        if (isHandlingTouch) return; // 터치가 발생했다면 클릭 무시 (중복 실행 방지)
-        toggleDropdown(e);
     });
 
     // PC 호버 이벤트 (JS로 한 번 더 확실하게 처리)
@@ -276,13 +262,6 @@ const initDropdown = () => {
             dropdownContent.classList.remove('is-active');
         }
     });
-    
-    // 바깥 영역 터치 시 닫기 (모바일 보완)
-    document.addEventListener('touchstart', (e) => {
-        if (!dropdown.contains(e.target)) {
-            dropdownContent.classList.remove('is-active');
-        }
-    }, { passive: true });
 };
 // DOM 로드 완료 후 실행
 if (document.readyState === 'loading') {
