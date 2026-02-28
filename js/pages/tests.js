@@ -1,9 +1,9 @@
-import { UserState, addPoints } from '../auth.js?v=8.2.0';
+import { UserState, addPoints } from '../auth.js?v=8.3.0';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=8.2.0';
+import { db } from '../firebase-init.js?v=8.3.0';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=8.2.0';
+import { TESTS } from '../tests-data.js?v=8.3.0';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {
@@ -64,7 +64,7 @@ export async function renderResult(testId, traitScores) {
     const soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
     const rpgStats = weaponPool[poolTrait];
 
-    const { getPetBuff } = await import('../auth.js?v=8.2.0');
+    const { getPetBuff } = await import('../auth.js?v=8.3.0');
     const petBuff = getPetBuff();
 
     let basePointReward = 10 + petBuff.testBonus;
@@ -225,6 +225,7 @@ export async function renderResult(testId, traitScores) {
                             </div>
                             <div style="text-align: left;">
                                 <span style="color: rgba(255,255,255,0.9); font-size: 0.9rem; font-weight: 800; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.05em;">Analysis Result</span>
+                                <div style="color: rgba(255,255,255,0.82); font-size: 0.86rem; font-weight: 800; margin-bottom: 8px; line-height: 1.35; word-break: keep-all;">${test.title}</div>
                                 <h2 style="font-size: 2rem; font-weight: 900; color: #fff; margin-bottom: 10px; line-height: 1.2; text-shadow: 0 2px 10px rgba(0,0,0,0.1); word-break: keep-all;">${result.title}</h2>
                                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                     ${tags.map(tag => `<span style="background:rgba(255,255,255,0.2); color:#fff; padding:4px 12px; border-radius:50px; font-size:0.8rem; font-weight:800; border: 1px solid rgba(255,255,255,0.1);">${tag}</span>`).join('')}
