@@ -53,5 +53,10 @@ service cloud.firestore {
     match /siteStats/{statsId} {
       allow read, write: if true;
     }
+
+    match /songDrafts/{draftId} {
+      allow create: if isSignedIn();
+      allow read, update, delete: if isAdmin();
+    }
   }
 }

@@ -1,8 +1,8 @@
 window.__SEVENCHECK_CONFIG__ = window.__SEVENCHECK_CONFIG__ || {};
 
 window.__SEVENCHECK_CONFIG__.sunoGenerator = {
-  // Example: "http://localhost:8787/api/suno-draft"
-  endpointUrl: "",
+  // Default same-origin Worker route. Override only for local/dev if needed.
+  endpointUrl: "/api/generate",
   requestTimeoutMs: 15000,
   access: {
     // SHA-256 hex string only. Do not store plaintext passcodes in source.
@@ -11,8 +11,4 @@ window.__SEVENCHECK_CONFIG__.sunoGenerator = {
     allowFirebaseWhitelist: true,
     sessionHours: 12
   },
-  storage: {
-    enabled: false,
-    collection: "sunoDrafts"
-  }
 };

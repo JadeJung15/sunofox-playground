@@ -1,9 +1,9 @@
 import { UserState } from "../auth.js?v=8.0.0";
 import {
-    SUNO_PRESETS,
-    SUNO_LANGUAGE_MODE_OPTIONS,
-    SUNO_ENERGY_MODE_OPTIONS,
-    SUNO_THEME_PRESET_OPTIONS
+    SUNO_ENERGY_MODES,
+    SUNO_GENRE_PRESETS,
+    SUNO_LANGUAGE_MODES,
+    SUNO_THEME_PRESETS
 } from "../suno/presets.js?v=8.1.0";
 import {
     consumeSunoGateRequest,
@@ -14,13 +14,15 @@ import {
 } from "../suno/access.js?v=8.1.0";
 import { generateSunoDraft, saveSunoDraft } from "../suno/service.js?v=8.1.0";
 
+const DEFAULT_PRESET = SUNO_GENRE_PRESETS[0];
+
 const state = {
-    presetId: SUNO_PRESETS[0].id,
+    presetId: DEFAULT_PRESET.id,
     options: {
-        genrePreset: SUNO_PRESETS[0].name,
-        themePreset: "Reunion Promise",
+        genrePreset: DEFAULT_PRESET.label,
+        themePreset: "reunion_promise",
         languageMode: "KR_ONLY",
-        energyMode: "Emotional",
+        energyMode: "emotional",
         youtubeMode: true
     },
     draft: {
@@ -35,7 +37,7 @@ const state = {
 let listenersBound = false;
 
 function getSelectedPreset() {
-    return SUNO_PRESETS.find(preset => preset.id === state.presetId) || SUNO_PRESETS[0];
+    return SUNO_GENRE_PRESETS.find((preset) => preset.id === state.presetId) || DEFAULT_PRESET;
 }
 
 function isUnlocked() {
@@ -72,10 +74,13 @@ async function handleGenerate(variation = false) {
 
     try {
         const preset = getSelectedPreset();
-        state.draft = await generateSunoDraft(preset, state.options, variation);
+        if (variation) {
+            state.options.youtubeMode = true;
+        }
+        state.draft = await generateSunoDraft(preset, state.options);
     } catch (error) {
         console.error("Suno draft generation failed:", error);
-        alert("생성 중 오류가 발생했습니다.");
+        alert(`생성 중 오류가 발생했습니다: ${error.message}`);
     } finally {
         state.isBusy = false;
         renderSunoGenerator();
@@ -88,23 +93,25 @@ async function handleSave() {
         return;
     }
 
+    if (!UserState.user) {
+        alert("저장을 위해 Firebase 로그인이 필요합니다.");
+        return;
+    }
+
     if (!state.draft.title || !state.draft.style || !state.draft.lyrics) {
         alert("저장할 초안이 없습니다. 먼저 생성해 주세요.");
         return;
     }
 
     try {
+        const preset = getSelectedPreset();
         const result = await saveSunoDraft(state.draft, {
-            presetId: state.presetId,
-            presetName: getSelectedPreset().name,
-            options: state.options,
-            user: UserState.user
+            genre: state.options.genrePreset || preset.label,
+            theme: state.options.themePreset,
+            languageMode: state.options.languageMode,
+            energyMode: state.options.energyMode,
+            youtubeMode: state.options.youtubeMode
         });
-
-        if (!result.ok && result.reason === "storage-disabled") {
-            alert("저장 기능은 아직 비활성화 상태입니다. 설정에서 storage.enabled를 켜면 바로 연결됩니다.");
-            return;
-        }
 
         alert("초안이 저장되었습니다.");
     } catch (error) {
@@ -143,18 +150,18 @@ function getGateMessage() {
 }
 
 function renderPresetButtons() {
-    return SUNO_PRESETS.map(preset => `
+    return SUNO_GENRE_PRESETS.map((preset) => `
         <button
             class="suno-chip ${state.presetId === preset.id ? "active" : ""}"
             data-suno-preset="${preset.id}"
             ${!isUnlocked() ? "disabled" : ""}
-        >${preset.name}</button>
+        >${preset.label}</button>
     `).join("");
 }
 
 function renderSelectOptions(options, selectedValue) {
-    return options.map(option => `
-        <option value="${option.value}" ${selectedValue === option.value ? "selected" : ""}>${option.label}</option>
+    return options.map((option) => `
+        <option value="${option.id}" ${selectedValue === option.id ? "selected" : ""}>${option.label}</option>
     `).join("");
 }
 
@@ -163,15 +170,15 @@ function bindPageEvents() {
     const unlocked = isUnlocked();
     if (!app) return;
 
-    app.querySelectorAll("[data-suno-preset]").forEach(button => {
+    app.querySelectorAll("[data-suno-preset]").forEach((button) => {
         button.addEventListener("click", () => {
             state.presetId = button.dataset.sunoPreset;
-            state.options.genrePreset = getSelectedPreset().name;
+            state.options.genrePreset = getSelectedPreset().label;
             renderSunoGenerator();
         });
     });
 
-    app.querySelectorAll("[data-suno-option]").forEach(input => {
+    app.querySelectorAll("[data-suno-option]").forEach((input) => {
         input.addEventListener("change", () => {
             if (input.type === "checkbox") {
                 state.options[input.dataset.sunoOption] = input.checked;
@@ -181,7 +188,7 @@ function bindPageEvents() {
         });
     });
 
-    app.querySelectorAll("[data-suno-field]").forEach(textarea => {
+    app.querySelectorAll("[data-suno-field]").forEach((textarea) => {
         textarea.addEventListener("input", () => {
             state.draft[textarea.dataset.sunoField] = textarea.value;
         });
@@ -191,7 +198,7 @@ function bindPageEvents() {
     app.querySelector("#suno-variation-btn")?.addEventListener("click", () => handleGenerate(true));
     app.querySelector("#suno-save-btn")?.addEventListener("click", handleSave);
 
-    app.querySelectorAll("[data-copy-field]").forEach(button => {
+    app.querySelectorAll("[data-copy-field]").forEach((button) => {
         button.addEventListener("click", () => {
             const field = button.dataset.copyField;
             const labels = { title: "제목", style: "스타일", lyrics: "가사" };
@@ -255,9 +262,6 @@ export function renderSunoGenerator() {
     }
 
     const preset = getSelectedPreset();
-    const config = getSunoRuntimeConfig();
-    const hasSave = !!config.storage?.enabled;
-
     app.innerHTML = `
         <div class="suno-page fade-in">
             <section class="suno-hero">
@@ -296,19 +300,19 @@ export function renderSunoGenerator() {
                         <label class="suno-field">
                             <span>테마 프리셋</span>
                             <select data-suno-option="themePreset" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_THEME_PRESET_OPTIONS, state.options.themePreset)}
+                                ${renderSelectOptions(SUNO_THEME_PRESETS, state.options.themePreset)}
                             </select>
                         </label>
                         <label class="suno-field">
                             <span>언어 모드</span>
                             <select data-suno-option="languageMode" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_LANGUAGE_MODE_OPTIONS, state.options.languageMode)}
+                                ${renderSelectOptions(SUNO_LANGUAGE_MODES, state.options.languageMode)}
                             </select>
                         </label>
                         <label class="suno-field">
                             <span>에너지 모드</span>
                             <select data-suno-option="energyMode" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_ENERGY_MODE_OPTIONS, state.options.energyMode)}
+                                ${renderSelectOptions(SUNO_ENERGY_MODES, state.options.energyMode)}
                             </select>
                         </label>
                         <label class="suno-field">
@@ -322,7 +326,7 @@ export function renderSunoGenerator() {
                     <div class="suno-action-row">
                         <button id="suno-generate-btn" class="btn-primary" ${!unlocked || state.isBusy ? "disabled" : ""}>${state.isBusy ? "생성 중..." : "생성"}</button>
                         <button id="suno-variation-btn" class="btn-secondary" ${!unlocked || state.isBusy ? "disabled" : ""}>변주/다시 생성</button>
-                        <button id="suno-save-btn" class="btn-secondary" ${!unlocked ? "disabled" : ""}>저장${hasSave ? "" : " (대기)"}</button>
+                        <button id="suno-save-btn" class="btn-secondary" ${!unlocked ? "disabled" : ""}>Save</button>
                     </div>
                 </div>
             </section>

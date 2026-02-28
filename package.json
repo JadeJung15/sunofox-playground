@@ -3,7 +3,9 @@
     "build": "mkdir -p dist && cp -r index.html css js *.png sitemap.xml ads.txt dist/ 2>/dev/null || true",
     "lint": "node scripts/check-syntax.cjs",
     "test": "node scripts/check-syntax.cjs",
-    "suno:server": "node scripts/suno-draft-server.cjs"
+    "suno:server": "node scripts/suno-draft-server.cjs",
+    "worker:dev": "wrangler dev",
+    "worker:deploy": "wrangler deploy"
   },
   "dependencies": {
     "firebase-admin": "^13.6.1"

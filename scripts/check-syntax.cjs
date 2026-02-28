@@ -5,7 +5,7 @@ const os = require('os');
 const { spawnSync } = require('child_process');
 
 const ROOT = process.cwd();
-const TARGET_DIRS = ['js', 'scripts'];
+const TARGET_DIRS = ['js', 'scripts', 'worker'];
 const VALID_EXTENSIONS = new Set(['.js', '.mjs', '.cjs']);
 
 function walk(dir, collected) {

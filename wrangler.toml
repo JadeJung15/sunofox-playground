@@ -1,0 +1,9 @@
+name = "sunofox-generate-worker"
+main = "worker/index.mjs"
+compatibility_date = "2026-02-28"
+
+[vars]
+# Set this to your frontend origin, e.g. https://your-domain.com
+CORS_ALLOWED_ORIGIN = ""
+OPENAI_COMPAT_BASE_URL = ""
+OPENAI_MODEL = ""

@@ -1,35 +1,18 @@
-# Suno Draft Backend
+# Suno Generate API
 
-This repo does not include a deployed API by default. A minimal backend handler is available at `scripts/suno-draft-server.cjs`.
-
-## Request shape
-
-The frontend now sends:
+`/suno-generator` now calls `POST /api/generate` and expects:
 
 ```json
 {
-  "promptTemplate": "rule text",
-  "input": {
-    "genrePreset": "Symphonic DnB, Cinematic Bass | strings, breakbeats, synth bass, choir",
-    "languageMode": "KR_ONLY",
-    "vocalGender": "FEMALE",
-    "bpmHint": 174,
-    "themeHint": "빗속 재회",
-    "intensity": "EMOTIONAL"
-  },
-  "preset": {
-    "id": "symphonic-dnb",
-    "name": "Symphonic DnB",
-    "genres": ["Symphonic DnB", "Cinematic Bass"],
-    "bpm": 174,
-    "instruments": ["strings", "breakbeats", "synth bass", "choir"],
-    "moodFocus": "비장"
-  },
-  "variation": false
+  "genrePreset": "Symphonic DnB",
+  "themePreset": "reunion_promise",
+  "languageMode": "KR_ONLY",
+  "energyMode": "emotional",
+  "youtubeMode": true
 }
 ```
 
-The backend must return JSON only:
+The Worker response must be:
 
 ```json
 {
@@ -39,44 +22,58 @@ The backend must return JSON only:
 }
 ```
 
-## Local run
+## Worker env
 
-Mock mode:
+`OPENAI_API_KEY` must be stored as a Cloudflare Worker Secret.
+
+Regular vars in `wrangler.toml`:
+
+```toml
+[vars]
+CORS_ALLOWED_ORIGIN = "https://your-domain.com"
+OPENAI_COMPAT_BASE_URL = "https://your-provider.example.com/v1"
+OPENAI_MODEL = "your-model"
+```
+
+Secret:
 
 ```bash
-node scripts/suno-draft-server.cjs
+wrangler secret put OPENAI_API_KEY
 ```
 
-Health check:
+## Local test
+
+Install/configure Wrangler first, then:
 
 ```bash
-curl http://localhost:8787/healthz
+npm test
+wrangler secret put OPENAI_API_KEY
+npm run worker:dev
+firebase emulators:start --only hosting,firestore
 ```
 
-Frontend config:
-
-Set `window.__SEVENCHECK_CONFIG__.sunoGenerator.endpointUrl` in [js/site-config.js](/home/user/sunofox-test-01/js/site-config.js) to your deployed API URL, for example:
-
-```js
-endpointUrl: "http://localhost:8787/api/suno-draft",
-```
-
-## Provider mode
-
-The server supports two modes:
-
-- `mock`
-- `openai_compatible`
-
-`mock` returns a deterministic local draft and is useful for integration testing.
-
-`openai_compatible` expects these env vars:
+Quick API test:
 
 ```bash
-SUNO_DRAFT_PROVIDER=openai_compatible
-OPENAI_COMPAT_BASE_URL=https://your-provider.example.com/v1
-OPENAI_API_KEY=...
-OPENAI_MODEL=...
+curl -i http://127.0.0.1:8787/api/generate \
+  -H 'Content-Type: application/json' \
+  -H 'Origin: https://your-domain.com' \
+  --data '{"genrePreset":"Symphonic DnB","themePreset":"reunion_promise","languageMode":"KR_ONLY","energyMode":"emotional","youtubeMode":true}'
 ```
 
-The handler sends the frontend `promptTemplate`, `input`, `preset`, and `variation` to a chat-completions compatible endpoint and still enforces the final `title/style/lyrics` response shape.
+## Deploy
+
+Deploy Firestore rules + frontend:
+
+```bash
+firebase deploy --only hosting,firestore
+```
+
+Deploy Worker:
+
+```bash
+wrangler secret put OPENAI_API_KEY
+wrangler deploy
+```
+
+If you want the frontend to call a same-origin `/api/generate`, attach the Worker to your domain route for `/api/*`.

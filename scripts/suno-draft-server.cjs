@@ -15,8 +15,24 @@ Return ONLY JSON.
   "lyrics": ""
 }`;
 
+const THEME_ID_BY_LABEL = {
+  'Adventure Start': 'adventure_start',
+  'Night Journey': 'night_journey',
+  'Reunion Promise': 'reunion_promise',
+  'Lost Memory': 'time_loop',
+  'Final Battle': 'final_battle',
+  'Victory Scene': 'victory_scene',
+  'Training Montage': 'adventure_start',
+  'School Youth': 'summer_festival',
+  'Summer Festival': 'summer_festival',
+  'Ocean Voyage': 'ocean_voyage',
+  'Sci-Fi Exploration': 'time_loop',
+  'Time Loop Story': 'time_loop'
+};
+
 const THEME_LIBRARY = {
-  'Adventure Start': {
+  adventure_start: {
+    label: 'Adventure Start',
     krTitle: '새벽의 출발선',
     enTitle: 'First Light Departure',
     imageA: '낯선 길목',
@@ -25,7 +41,8 @@ const THEME_LIBRARY = {
     hookKr: '두려움 너머로 먼저 달려가',
     hookEn: 'Run into the light'
   },
-  'Reunion Promise': {
+  reunion_promise: {
+    label: 'Reunion Promise',
     krTitle: '다시 만나는 약속',
     enTitle: 'Promise to Meet Again',
     imageA: '젖은 골목 끝',
@@ -34,7 +51,8 @@ const THEME_LIBRARY = {
     hookKr: '멀어졌던 손끝 다시 닿아 와',
     hookEn: 'Stay with me tonight'
   },
-  'Night Journey': {
+  night_journey: {
+    label: 'Night Journey',
     krTitle: '밤을 건너는 숨',
     enTitle: 'Breath Across the Night',
     imageA: '긴 그림자',
@@ -43,16 +61,8 @@ const THEME_LIBRARY = {
     hookKr: '깊은 어둠 너머 별이 열려 와',
     hookEn: 'Follow the fading blue'
   },
-  'Lost Memory': {
-    krTitle: '잊힌 장면의 끝',
-    enTitle: 'At the Edge of Memory',
-    imageA: '빈 창가',
-    imageB: '흐린 사진',
-    promise: '남겨진 한 조각',
-    hookKr: '지워진 시간 속 너를 다시 불러',
-    hookEn: 'Bring it back to me'
-  },
-  'Final Battle': {
+  final_battle: {
+    label: 'Final Battle',
     krTitle: '마지막 불꽃 앞에서',
     enTitle: 'Before the Last Flame',
     imageA: '갈라진 대지',
@@ -61,7 +71,8 @@ const THEME_LIBRARY = {
     hookKr: '무너진 밤 위로 내가 다시 선다',
     hookEn: 'Stand through the fire'
   },
-  'Victory Scene': {
+  victory_scene: {
+    label: 'Victory Scene',
     krTitle: '빛으로 남는 순간',
     enTitle: 'The Moment We Remain',
     imageA: '들뜬 숨결',
@@ -70,25 +81,8 @@ const THEME_LIBRARY = {
     hookKr: '멈춘 줄 알았던 하늘이 열려 와',
     hookEn: 'We made it alive'
   },
-  'Training Montage': {
-    krTitle: '넘어선 발자국',
-    enTitle: 'Steps Beyond the Limit',
-    imageA: '거친 숨',
-    imageB: '이른 아침빛',
-    promise: '쌓여 가는 의지',
-    hookKr: '흔들린 어제보다 더 멀리 올라',
-    hookEn: 'Rise above again'
-  },
-  'School Youth': {
-    krTitle: '교정 끝의 바람',
-    enTitle: 'Wind at the School Gate',
-    imageA: '환한 복도',
-    imageB: '늦은 종소리',
-    promise: '아직 말하지 못한 마음',
-    hookKr: '서툰 하루 끝에 웃음이 번져 와',
-    hookEn: 'Stay in this moment'
-  },
-  'Summer Festival': {
+  summer_festival: {
+    label: 'Summer Festival',
     krTitle: '불꽃 아래 여름',
     enTitle: 'Summer Under Fireworks',
     imageA: '붉은 등불',
@@ -97,7 +91,8 @@ const THEME_LIBRARY = {
     hookKr: '스쳐 간 한순간 오래 남아 있어',
     hookEn: 'Hold the summer night'
   },
-  'Ocean Voyage': {
+  ocean_voyage: {
+    label: 'Ocean Voyage',
     krTitle: '푸른 항로의 끝',
     enTitle: 'Beyond the Blue Route',
     imageA: '젖은 갑판',
@@ -106,16 +101,8 @@ const THEME_LIBRARY = {
     hookKr: '부서진 파도 너머 내일이 밀려와',
     hookEn: 'Sail into the sky'
   },
-  'Sci-Fi Exploration': {
-    krTitle: '별 사이의 좌표',
-    enTitle: 'Coordinates Between Stars',
-    imageA: '낮은 엔진빛',
-    imageB: '푸른 궤도선',
-    promise: '아직 읽히지 않은 신호',
-    hookKr: '먼 우주 끝에도 우리의 길이 있어',
-    hookEn: 'Find the next horizon'
-  },
-  'Time Loop Story': {
+  time_loop: {
+    label: 'Time Loop',
     krTitle: '되돌아오는 새벽',
     enTitle: 'Dawn That Comes Again',
     imageA: '멈춘 시계',
@@ -124,6 +111,22 @@ const THEME_LIBRARY = {
     hookKr: '반복된 시간 너머 결국 널 만나',
     hookEn: 'Break the same sunrise'
   }
+};
+
+const ENERGY_ID_BY_LABEL = {
+  Calm: 'calm',
+  Emotional: 'emotional',
+  Epic: 'epic',
+  Bright: 'bright',
+  Dark: 'dark'
+};
+
+const ENERGY_LABEL_BY_ID = {
+  calm: 'Calm',
+  emotional: 'Emotional',
+  epic: 'Epic',
+  bright: 'Bright',
+  dark: 'Dark'
 };
 
 function json(res, statusCode, payload) {
@@ -138,6 +141,16 @@ function json(res, statusCode, payload) {
 
 function normalizeText(value) {
   return typeof value === 'string' ? value.trim().replace(/\s+/g, ' ') : '';
+}
+
+function normalizeThemeId(value) {
+  const cleanValue = normalizeText(value);
+  return THEME_LIBRARY[cleanValue] ? cleanValue : (THEME_ID_BY_LABEL[cleanValue] || 'reunion_promise');
+}
+
+function normalizeEnergyId(value) {
+  const cleanValue = normalizeText(value);
+  return ENERGY_LABEL_BY_ID[cleanValue] ? cleanValue : (ENERGY_ID_BY_LABEL[cleanValue] || 'emotional');
 }
 
 function parseBody(req) {
@@ -173,9 +186,9 @@ function normalizeRequest(body) {
     },
     input: {
       genrePreset: normalizeText(input.genrePreset) || normalizeText(preset.name),
-      themePreset: THEME_LIBRARY[input.themePreset] ? input.themePreset : 'Reunion Promise',
+      themePreset: normalizeThemeId(input.themePreset),
       languageMode: input.languageMode === 'KR_EN_MIX' ? 'KR_EN_MIX' : 'KR_ONLY',
-      energyMode: ['Calm', 'Emotional', 'Epic', 'Bright', 'Dark'].includes(input.energyMode) ? input.energyMode : 'Emotional',
+      energyMode: normalizeEnergyId(input.energyMode),
       youtubeMode: input.youtubeMode !== false
     }
   };
@@ -192,26 +205,26 @@ function buildStyle(payload, theme) {
   const genres = (payload.preset.genres.length ? payload.preset.genres : [payload.input.genrePreset]).slice(0, 3).join(', ');
   const instruments = payload.preset.instruments.length ? payload.preset.instruments.join(', ') : 'piano, strings, breakbeat drums, sub bass';
   const vocalTone = {
-    Calm: 'female vocal soft airy sincere',
-    Emotional: 'female vocal airy emotional sincere',
-    Epic: 'female vocal bright powerful sincere',
-    Bright: 'female vocal light clear hopeful',
-    Dark: 'female vocal soft tense shadowed'
+    calm: 'female vocal soft airy sincere',
+    emotional: 'female vocal airy emotional sincere',
+    epic: 'female vocal bright powerful sincere',
+    bright: 'female vocal light clear hopeful',
+    dark: 'female vocal soft tense shadowed'
   }[payload.input.energyMode];
   const direction = payload.input.youtubeMode
     ? {
-        Calm: 'immediate melody, gentle rise, bridge contrast, final chorus bloom',
-        Emotional: 'early hook, cinematic build, bridge contrast, final chorus peak',
-        Epic: 'immediate hook, strong build, dramatic bridge, final chorus explosion',
-        Bright: 'instant vocal lift, opening energy, contrast bridge, final chorus shine',
-        Dark: 'immediate tension, dark build, sharp bridge contrast, final chorus surge'
+        calm: 'immediate melody, gentle rise, bridge contrast, final chorus bloom',
+        emotional: 'early hook, cinematic build, bridge contrast, final chorus peak',
+        epic: 'immediate hook, strong build, dramatic bridge, final chorus explosion',
+        bright: 'instant vocal lift, opening energy, contrast bridge, final chorus shine',
+        dark: 'immediate tension, dark build, sharp bridge contrast, final chorus surge'
       }[payload.input.energyMode]
     : {
-        Calm: 'cinematic build, intimate verses, final chorus bloom',
-        Emotional: 'cinematic build, anime opening energy, final chorus peak',
-        Epic: 'heroic build, anime climax energy, final chorus explosion',
-        Bright: 'hopeful build, opening theme energy, final chorus shine',
-        Dark: 'tense build, story-driven intensity, final chorus release'
+        calm: 'cinematic build, intimate verses, final chorus bloom',
+        emotional: 'cinematic build, anime opening energy, final chorus peak',
+        epic: 'heroic build, anime climax energy, final chorus explosion',
+        bright: 'hopeful build, opening theme energy, final chorus shine',
+        dark: 'tense build, story-driven intensity, final chorus release'
       }[payload.input.energyMode];
 
   return `${genres} | ${payload.preset.bpm} BPM | ${instruments} | ${vocalTone} | ${direction}`;
@@ -231,19 +244,19 @@ function introLines(theme, payload) {
 function chorusLines(theme, payload) {
   if (payload.input.languageMode === 'KR_ONLY') {
     return {
-      Calm: [`${theme.hookKr}`, '늦은 하늘 아래 마음이 천천히 열려', '멀어진 계절 끝에 다시 웃을 수 있어', '지금의 떨림도 결국 빛이 돼'],
-      Emotional: [`${theme.hookKr}`, '흩어진 장면 끝에 네가 선명해져', '떨리던 하루 끝에 다시 숨을 쉬어', '지금의 눈물도 결국 빛이 돼'],
-      Epic: [`${theme.hookKr}`, '무너진 세계 끝에 내가 더 크게 외쳐', '붙잡은 약속 하나 끝까지 밀어 올려', '지금의 심장으로 내일을 깨워 내'],
-      Bright: [`${theme.hookKr}`, '반짝인 하늘 아래 웃음이 먼저 번져', '쏟아진 햇빛처럼 하루가 가벼워져', '지금의 설렘으로 문을 열어 가'],
-      Dark: [`${theme.hookKr}`, '낮게 젖은 그림자마저 뒤로 흘러가', '닫혀 있던 마음도 끝내 금을 내고', '지금의 침묵도 결국 깨어나']
+      calm: [`${theme.hookKr}`, '늦은 하늘 아래 마음이 천천히 열려', '멀어진 계절 끝에 다시 웃을 수 있어', '지금의 떨림도 결국 빛이 돼'],
+      emotional: [`${theme.hookKr}`, '흩어진 장면 끝에 네가 선명해져', '떨리던 하루 끝에 다시 숨을 쉬어', '지금의 눈물도 결국 빛이 돼'],
+      epic: [`${theme.hookKr}`, '무너진 세계 끝에 내가 더 크게 외쳐', '붙잡은 약속 하나 끝까지 밀어 올려', '지금의 심장으로 내일을 깨워 내'],
+      bright: [`${theme.hookKr}`, '반짝인 하늘 아래 웃음이 먼저 번져', '쏟아진 햇빛처럼 하루가 가벼워져', '지금의 설렘으로 문을 열어 가'],
+      dark: [`${theme.hookKr}`, '낮게 젖은 그림자마저 뒤로 흘러가', '닫혀 있던 마음도 끝내 금을 내고', '지금의 침묵도 결국 깨어나']
     }[payload.input.energyMode];
   }
   return {
-    Calm: [`${theme.hookKr}`, `${theme.hookEn}`, '늦은 하늘 아래 slowly we begin again', '지금의 떨림도 turns into light'],
-    Emotional: [`${theme.hookKr}`, `${theme.hookEn}`, '흩어진 장면 끝에 we are not too late', '지금의 눈물도 turns into light'],
-    Epic: [`${theme.hookKr}`, `${theme.hookEn}`, '무너진 세계 끝에 we rise again tonight', '붙잡은 약속으로 break the darkest line'],
-    Bright: [`${theme.hookKr}`, `${theme.hookEn}`, '반짝인 하늘 아래 we can run so high', '지금의 설렘으로 open up the sky'],
-    Dark: [`${theme.hookKr}`, `${theme.hookEn}`, '낮게 젖은 그림자 through the closing night', '지금의 침묵도 burns into light']
+    calm: [`${theme.hookKr}`, `${theme.hookEn}`, '늦은 하늘 아래 slowly we begin again', '지금의 떨림도 turns into light'],
+    emotional: [`${theme.hookKr}`, `${theme.hookEn}`, '흩어진 장면 끝에 we are not too late', '지금의 눈물도 turns into light'],
+    epic: [`${theme.hookKr}`, `${theme.hookEn}`, '무너진 세계 끝에 we rise again tonight', '붙잡은 약속으로 break the darkest line'],
+    bright: [`${theme.hookKr}`, `${theme.hookEn}`, '반짝인 하늘 아래 we can run so high', '지금의 설렘으로 open up the sky'],
+    dark: [`${theme.hookKr}`, `${theme.hookEn}`, '낮게 젖은 그림자 through the closing night', '지금의 침묵도 burns into light']
   }[payload.input.energyMode];
 }
 
@@ -252,11 +265,11 @@ function buildLyrics(theme, payload) {
   const finalChorus = [...chorus];
 
   if (payload.input.languageMode === 'KR_ONLY') {
-    if (payload.input.energyMode === 'Epic') finalChorus[1] = '갈라진 운명 끝에 내가 가장 크게 선다';
-    if (payload.input.energyMode === 'Bright') finalChorus[1] = '쏟아진 빛 한가운데 우리가 더 높이 선다';
+    if (payload.input.energyMode === 'epic') finalChorus[1] = '갈라진 운명 끝에 내가 가장 크게 선다';
+    if (payload.input.energyMode === 'bright') finalChorus[1] = '쏟아진 빛 한가운데 우리가 더 높이 선다';
   } else {
-    if (payload.input.energyMode === 'Epic') finalChorus[2] = '무너진 경계 너머 we rise again tonight';
-    if (payload.input.energyMode === 'Bright') finalChorus[2] = '눈부신 장면 위로 we can run so high';
+    if (payload.input.energyMode === 'epic') finalChorus[2] = '무너진 경계 너머 we rise again tonight';
+    if (payload.input.energyMode === 'bright') finalChorus[2] = '눈부신 장면 위로 we can run so high';
   }
 
   const verse4 = payload.input.languageMode === 'KR_ONLY' ? '흔들린 발끝도 조금씩 단단해져' : 'I can see the road ahead';
@@ -306,7 +319,7 @@ function buildLyrics(theme, payload) {
 }
 
 function buildMockDraft(payload) {
-  const theme = THEME_LIBRARY[payload.input.themePreset] || THEME_LIBRARY['Reunion Promise'];
+  const theme = THEME_LIBRARY[normalizeThemeId(payload.input.themePreset)] || THEME_LIBRARY.reunion_promise;
   return {
     title: payload.variation
       ? `🦊 ${theme.krTitle}의 끝 — ${theme.enTitle} Finale`
