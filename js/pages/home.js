@@ -81,7 +81,8 @@ export function renderCategorySelection() {
         personality: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', // Indigo
         face: 'linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%)',        // Rose
         fortune: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',     // Amber
-        fun: 'linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%)'          // Violet
+        fun: 'linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%)',         // Violet
+        suno: 'linear-gradient(135deg, #dcfce7 0%, #bfdbfe 100%)'
     };
 
     app.innerHTML = `
@@ -123,6 +124,14 @@ export function renderCategorySelection() {
                     <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">재미/심리</h3>
                     <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">일상의 소소한 취향을 발견하는<br>가볍고 즐거운 심리 테스트입니다.</p>
                     <span style="font-size: 0.95rem; font-weight: 900; color: #4c1d95; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">즐기러 가기 →</span>
+                </div>
+
+                <div class="cat-large-card" onclick="location.hash='#suno'" style="background: ${catStyles.suno}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
+                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🎼</div>
+                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🎼</span>
+                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">수노 생성기</h3>
+                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">애니 음악용 Title, Style, Lyrics를<br>빠르게 설계하는 내부 생성 도구입니다.</p>
+                    <span style="font-size: 0.95rem; font-weight: 900; color: #0f766e; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">작업실 열기 →</span>
                 </div>
             </div>
         </div>
@@ -177,6 +186,7 @@ export async function renderHome(hash) {
                                     <button onclick="location.hash='#ranking'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#facc15,#d97706); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">🏆 랭킹</button>
                                     <button onclick="location.hash='#board'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#60a5fa,#4338ca); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">💬 커뮤니티</button>
                                     <button onclick="location.hash='#profile'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#64748b,#0f172a); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">👤 내 정보</button>
+                                    <button onclick="location.hash='#suno'" style="border:none; border-radius:12px; padding:0.62rem 0.66rem; background:linear-gradient(135deg,#0ea5e9,#4f46e5); color:#fff; font-size:0.82rem; font-weight:800; cursor:pointer;">🎼 수노 생성기</button>
                                 </div>
                             </div>
                         </div>
@@ -199,6 +209,10 @@ export async function renderHome(hash) {
                     <div onclick="location.hash='#fun'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
                         <div style="font-size:0.75rem; color:#059669; font-weight:900; margin-bottom:0.22rem;">PLAY MIND</div>
                         <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">재미/심리 큐레이션</div>
+                    </div>
+                    <div onclick="location.hash='#suno'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
+                        <div style="font-size:0.75rem; color:#2563eb; font-weight:900; margin-bottom:0.22rem;">SUNO LAB</div>
+                        <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">애니 음악 생성 워크스페이스</div>
                     </div>
                 </section>
 
