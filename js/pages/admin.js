@@ -1,5 +1,5 @@
-import { UserState, chargeUserPoints, chargeUserScore } from '../auth.js?v=8.0.0';
-import { db } from '../firebase-init.js?v=8.0.0';
+import { UserState, chargeUserPoints, chargeUserScore } from '../auth.js?v=8.2.0';
+import { db } from '../firebase-init.js?v=8.2.0';
 import { collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function renderAdmin() {

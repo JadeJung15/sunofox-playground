@@ -1,9 +1,9 @@
-import { UserState, addPoints } from '../auth.js?v=8.0.0';
+import { UserState, addPoints } from '../auth.js?v=8.2.0';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=8.0.0';
+import { db } from '../firebase-init.js?v=8.2.0';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=8.0.0';
+import { TESTS } from '../tests-data.js?v=8.2.0';
 import { renderTestCard } from './home.js';
 
 export async function renderResult(testId, traitScores) {
@@ -64,7 +64,7 @@ export async function renderResult(testId, traitScores) {
     const soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
     const rpgStats = weaponPool[poolTrait];
 
-    const { getPetBuff } = await import('../auth.js?v=8.0.0');
+    const { getPetBuff } = await import('../auth.js?v=8.2.0');
     const petBuff = getPetBuff();
 
     let basePointReward = 10 + petBuff.testBonus;

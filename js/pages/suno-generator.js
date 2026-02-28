@@ -1,18 +1,18 @@
-import { UserState } from "../auth.js?v=8.0.0";
+import { UserState } from "../auth.js?v=8.2.0";
 import {
     SUNO_ENERGY_MODES,
     SUNO_GENRE_PRESETS,
     SUNO_LANGUAGE_MODES,
     SUNO_THEME_PRESETS
-} from "../suno/presets.js?v=8.1.0";
+} from "../suno/presets.js?v=8.2.0";
 import {
     consumeSunoGateRequest,
     getSunoRuntimeConfig,
     hasSunoAccess,
     unlockSunoForAllowedUser,
     unlockSunoWithPasscode
-} from "../suno/access.js?v=8.1.0";
-import { generateSunoDraft, saveSunoDraft } from "../suno/service.js?v=8.1.0";
+} from "../suno/access.js?v=8.2.0";
+import { generateSunoDraft, saveSunoDraft } from "../suno/service.js?v=8.2.0";
 
 const DEFAULT_PRESET = SUNO_GENRE_PRESETS[0];
 

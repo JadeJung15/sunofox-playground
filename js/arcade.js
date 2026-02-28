@@ -1,6 +1,6 @@
-import { addPoints, usePoints, UserState, updateUI } from './auth.js?v=8.0.0';
+import { addPoints, usePoints, UserState, updateUI } from './auth.js?v=8.2.0';
 import { ITEM_VALUES, ITEM_GRADES, getGrade } from './constants/shops.js';
-import { db } from './firebase-init.js?v=8.0.0';
+import { db } from './firebase-init.js?v=8.2.0';
 import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { soundManager } from './sound.js';
 
@@ -201,7 +201,7 @@ async function playClickGame() {
     await updateArcadeStat('mining');
     
     // 펫 보너스 적용
-    const { getPetBuff } = await import('./auth.js?v=8.0.0');
+    const { getPetBuff } = await import('./auth.js?v=8.2.0');
     const petBuff = getPetBuff();
     const baseEarn = Math.floor(Math.random() * 10) + 5;
     const earn = Math.floor(baseEarn * petBuff.multiplier) + petBuff.mineBonus;

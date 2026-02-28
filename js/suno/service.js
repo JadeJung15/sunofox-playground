@@ -1,5 +1,5 @@
 import { addDoc, collection, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { db } from "../firebase-init.js?v=8.0.0";
+import { db } from "../firebase-init.js?v=8.2.0";
 
 function getConfig() {
     return window.__SEVENCHECK_CONFIG__?.sunoGenerator || {};
