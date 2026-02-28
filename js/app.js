@@ -208,7 +208,7 @@ authReady.then(() => {
 // 드롭다운 메뉴 토글 로직
 const initDropdown = () => {
     const dropdown = document.querySelector('.nav-dropdown');
-    const dropbtn = document.querySelector('.nav-dropbtn');
+    const dropbtn = document.querySelector('.nav-dropdown > .nav-dropbtn, .nav-dropbtn');
     const dropdownContent = document.querySelector('.dropdown-content');
 
     if (!dropbtn || !dropdownContent || !dropdown) return;
@@ -217,19 +217,28 @@ const initDropdown = () => {
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
-    // 모바일 클릭/터치 이벤트
-    newBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const isActive = dropdownContent.classList.contains('is-active');
-
-        // 다른 열려있는 드롭다운 닫기
-        document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
-
-        if (!isActive) {
-            dropdownContent.classList.add('is-active');
+    // 모바일 클릭/터치 이벤트 처리를 위한 함수
+    const toggleDropdown = (e) => {
+        if (window.innerWidth <= 768) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const isActive = dropdownContent.classList.contains('is-active');
+            
+            // 다른 열려있는 드롭다운 닫기
+            document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
+            
+            if (!isActive) {
+                dropdownContent.classList.add('is-active');
+            } else {
+                dropdownContent.classList.remove('is-active');
+            }
         }
-    });
+    };
+
+    // 모바일 환경 클릭 및 터치 이벤트
+    newBtn.addEventListener('click', toggleDropdown);
+    newBtn.addEventListener('touchstart', toggleDropdown, { passive: false });
 
     // PC 호버 이벤트 (JS로 한 번 더 확실하게 처리)
     dropdown.addEventListener('mouseenter', () => {
@@ -257,6 +266,13 @@ const initDropdown = () => {
             dropdownContent.classList.remove('is-active');
         }
     });
+    
+    // 바깥 영역 터치 시 닫기 (모바일 보완)
+    document.addEventListener('touchstart', (e) => {
+        if (!dropdown.contains(e.target)) {
+            dropdownContent.classList.remove('is-active');
+        }
+    }, { passive: true });
 };
 // DOM 로드 완료 후 실행
 if (document.readyState === 'loading') {
