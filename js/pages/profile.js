@@ -76,22 +76,29 @@ export function renderProfile() {
     if (!UserState.user) {
         app.innerHTML = `
             <div class="profile-page fade-in">
-                <div class="card profile-header-card" style="padding: 4rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
-                    <div class="profile-accent-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); opacity: 0.05;"></div>
-                    <div style="font-size: 5rem; margin-bottom: 1.5rem; position: relative; opacity: 0.3;">👤</div>
-                    <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 1rem; position: relative;">나만의 분석 프로필</h2>
-                    <p class="text-sub" style="margin-bottom: 2rem; position: relative; font-weight: 600;">로그인하시면 수집한 아이템과<br>나의 등급을 확인할 수 있습니다.</p>
-                    <button class="btn-primary" onclick="document.getElementById('login-btn')?.click()" style="padding: 1rem 3rem; border-radius: 50px; font-weight: 800; position: relative; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.2);">지금 로그인하기</button>
-                </div>
+                <div class="profile-stage">
+                    <section class="profile-guest-hero">
+                        <div class="profile-guest-icon">👤</div>
+                        <div class="profile-hero-kicker">PERSONAL HUB</div>
+                        <h2>나만의 분석 프로필</h2>
+                        <p>로그인하면 펫, 인벤토리, 오락실 기록, 꾸미기 상태까지 한 번에 관리할 수 있습니다.</p>
+                        <button class="btn-primary profile-hero-login" onclick="document.getElementById('login-btn')?.click()">지금 로그인하기</button>
+                    </section>
 
-                <div style="opacity: 0.4; pointer-events: none; filter: grayscale(1);">
-                    <details class="profile-details" open>
-                        <summary>🎒 내 인벤토리 (로그인 필요)</summary>
-                        <div class="content-area"><p class="text-sub">수집한 아이템이 이곳에 표시됩니다.</p></div>
-                    </details>
-                    <details class="profile-details">
-                        <summary>📊 오락실 이용 통계 (로그인 필요)</summary>
-                    </details>
+                    <div class="profile-guest-grid">
+                        <div class="profile-ghost-card">
+                            <strong>🎒 인벤토리</strong>
+                            <span>수집한 아이템과 희귀도 확인</span>
+                        </div>
+                        <div class="profile-ghost-card">
+                            <strong>🐾 펫 파트너</strong>
+                            <span>장착 펫과 보너스 효과 관리</span>
+                        </div>
+                        <div class="profile-ghost-card">
+                            <strong>📊 오락실 통계</strong>
+                            <span>내 플레이 기록과 누적 활동량 보기</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
@@ -127,189 +134,248 @@ export function renderProfile() {
     const activeBorderClass = UserState.data.activeBorder !== 'NONE' ? BORDER_SHOP[UserState.data.activeBorder]?.class || '' : '';
     const activeBackgroundClass = UserState.data.activeBackground !== 'NONE' ? BACKGROUND_SHOP[UserState.data.activeBackground]?.class || '' : '';
     const activeAuraClass = UserState.data.activeAura !== 'NONE' ? AURA_SHOP[UserState.data.activeAura]?.class || '' : '';
+    const discoveredCount = (UserState.data.discoveredItems || []).length;
+    const inventoryCount = inv.length;
+    const totalPets = Object.keys(PET_SHOP).length;
+    const progressTarget = nextTier.min || currentScore;
 
     app.innerHTML = `
         <div class="profile-page fade-in">
-            <div class="card profile-header-card ${activeBackgroundClass}" style="padding: 2.5rem 1.5rem; text-align: center; overflow: hidden; position: relative;">
-                <div class="profile-accent-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100px; background: linear-gradient(135deg, var(--accent-color), var(--accent-soft)); opacity: 0.1;"></div>
-                
-                <!-- 펫 파트너 노출 -->
-                <div style="position: absolute; top: 20px; right: 20px; text-align: center;">
-                    <div style="font-size: 2.5rem; animation: float 3s ease-in-out infinite;">${activePet.emoji}</div>
-                    <div style="font-size: 0.6rem; font-weight: 900; background: rgba(0,0,0,0.5); color: #fff; padding: 2px 8px; border-radius: 4px; margin-top: 4px;">MY PARTNER</div>
-                </div>
-
-                <div id="user-emoji" class="author-emoji-circle ${activeBorderClass} ${activeAuraClass}" style="font-size: 5rem; margin: 0 auto 1rem; position: relative; display: flex; background: var(--card-bg); border-radius: 50%; width: 120px; height: 120px; align-items: center; justify-content: center; box-shadow: var(--shadow-md);">👤</div>
-                <div class="tier-badge" style="background: var(--accent-color); color: #fff; display: inline-block; padding: 4px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; margin-bottom: 0.5rem; position: relative;">${tier.name}</div>
-                <h2 id="user-name" style="font-size: 2rem; font-weight: 800; margin-bottom: 1.5rem;">닉네임</h2>
-
-                <div class="progress-container" style="max-width: 400px; margin: 0 auto 2rem; position:relative; z-index:1;">
-                    <div class="progress-label" style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 800; margin-bottom: 0.5rem; background: rgba(0,0,0,0.4); color: #fff; padding: 4px 12px; border-radius: 50px; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">
-                        <span>등급 성장도</span>
-                        <span>${currentScore.toLocaleString()} / ${nextTier.min.toLocaleString()}</span>
-                    </div>
-                    <div class="progress-track" style="height: 12px; background: rgba(0,0,0,0.1); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2);">
-                        <div class="progress-fill" style="width: ${progress}%; height: 100%; background: linear-gradient(90deg, var(--accent-color), var(--accent-soft)); border-radius: 10px; box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);"></div>
-                    </div>
-                </div>
-            </div>
-
-            <details class="profile-details" open>
-                <summary>🐾 나의 펫 파트너</summary>
-                <div class="content-area">
-                    <div class="pet-active-hero" style="background: ${activePetTheme.bg}; border-color: ${activePetTheme.ring}; box-shadow: 0 16px 36px ${activePetTheme.ring};">
-                        <div class="pet-active-avatar" style="border-color: ${activePetTheme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 24px ${activePetTheme.ring};">
-                            ${activePet.emoji}
+            <div class="profile-stage">
+                <div id="profile-feedback" class="profile-inline-feedback" style="display:none;"></div>
+                <section class="profile-hero-shell ${activeBackgroundClass}">
+                    <div class="profile-hero-main">
+                        <div class="profile-hero-kicker">PLAYER PROFILE</div>
+                        <div class="profile-hero-avatar-row">
+                            <div id="user-emoji" class="author-emoji-circle profile-hero-avatar ${activeBorderClass} ${activeAuraClass}">👤</div>
+                            <div class="profile-hero-copy">
+                                <div class="tier-badge profile-tier-pill">${tier.name}</div>
+                                <h2 id="user-name">닉네임</h2>
+                                <p>${UserState.data.points?.toLocaleString() || '0'}P 보유 · ${currentScore.toLocaleString()} 누적 점수 · 발견 아이템 ${discoveredCount}종</p>
+                            </div>
                         </div>
-                        <div style="flex: 1;">
-                            <div class="pet-grade-badge" style="background: ${activePetTheme.badge}; color: ${activePetTheme.tone}; border-color: ${activePetTheme.ring};">${activePet.grade || 'NORMAL'}</div>
-                            <h4 style="font-size: 1.2rem; font-weight: 900; color: ${activePetTheme.tone}; margin-bottom: 4px;">${activePet.name}</h4>
-                            <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">${activePet.effect}</p>
-                            <p style="font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-top: 6px;">보유 펫 ${ownedPetCount} / ${Object.keys(PET_SHOP).length}</p>
+                        <div class="profile-progress-panel">
+                            <div class="profile-progress-copy">
+                                <strong>등급 성장도</strong>
+                                <span>${currentScore.toLocaleString()} / ${progressTarget.toLocaleString()}</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: ${progress}%;"></div>
+                            </div>
                         </div>
                     </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 0.75rem; margin-bottom: 1.5rem;">
-                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
-                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">채굴 보너스</div>
-                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">+${petBuff.mineBonus}P</div>
+                    <div class="profile-hero-side">
+                        <div class="profile-partner-mini" style="background:${activePetTheme.bg}; border-color:${activePetTheme.ring};">
+                            <div class="profile-partner-mini-top">
+                                <span>MY PARTNER</span>
+                                <strong>${activePet.grade || 'NORMAL'}</strong>
+                            </div>
+                            <div class="profile-partner-mini-emoji">${activePet.emoji}</div>
+                            <h3 style="color:${activePetTheme.tone};">${activePet.name}</h3>
+                            <p>${activePet.effect}</p>
                         </div>
-                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
-                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">테스트 보너스</div>
-                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">+${petBuff.testBonus}P</div>
-                        </div>
-                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
-                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">출석 보너스</div>
-                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">+${petBuff.checkinBonus}P</div>
-                        </div>
-                        <div style="background: #fff; border: 1px solid var(--border-color); border-radius: 16px; padding: 0.9rem 1rem;">
-                            <div style="font-size: 0.7rem; font-weight: 900; color: var(--text-sub); margin-bottom: 4px;">전체 배수</div>
-                            <div style="font-size: 1rem; font-weight: 900; color: var(--accent-color);">x${petBuff.multiplier.toFixed(2)}</div>
+                        <div class="profile-summary-stack">
+                            <div class="profile-quick-stat"><strong>${inventoryCount}</strong><span>보유 아이템</span></div>
+                            <div class="profile-quick-stat"><strong>${ownedPetCount}/${totalPets}</strong><span>펫 컬렉션</span></div>
+                            <div class="profile-quick-stat"><strong>${stats.checkin || 0}</strong><span>누적 출석</span></div>
                         </div>
                     </div>
+                </section>
 
-                    <h4 style="font-size:0.9rem; margin-bottom:1rem; color:var(--text-main); font-weight: 800;">🥚 펫 입양/보유 목록</h4>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1rem;">
-                        ${Object.entries(PET_SHOP).map(([id, info]) => {
-                            const isOwned = (UserState.data.unlockedPets || []).includes(id);
-                            const isActive = activePetId === id;
-                            const theme = getPetTheme(info.grade);
-                            return `
-                                <div class="pet-card ${isActive ? 'is-active' : ''}" style="background: ${theme.bg}; border-color: ${isActive ? theme.tone : theme.ring}; box-shadow: ${isActive ? `0 16px 32px ${theme.ring}` : '0 8px 20px rgba(15,23,42,0.05)'};">
-                                    <div class="pet-grade-badge" style="background: ${theme.badge}; color: ${theme.tone}; border-color: ${theme.ring};">${info.grade}</div>
-                                    <div class="pet-emoji-shell" style="border-color: ${theme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 24px ${theme.ring};">${info.emoji}</div>
-                                    <div style="font-weight: 900; font-size: 0.9rem; margin-bottom: 4px; color: ${theme.tone};">${info.name}</div>
-                                    <div style="font-size: 0.65rem; color: var(--text-sub); margin-bottom: 12px; min-height: 2.6rem; display: flex; align-items: center; justify-content: center;">${info.effect}</div>
-                                    ${isOwned ? `
-                                        <button class="btn-pet-equip" data-id="${id}" style="width: 100%; padding: 8px; border-radius: 10px; font-size: 0.75rem; border: 1px solid ${theme.tone}; background: ${isActive ? theme.tone : 'rgba(255,255,255,0.8)'}; color: ${isActive ? '#fff' : theme.tone}; font-weight: 900;">${isActive ? '함께하는 중' : '함께하기'}</button>
-                                    ` : `
-                                        <button class="btn-pet-buy" data-id="${id}" style="width: 100%; padding: 8px; border-radius: 10px; font-size: 0.75rem; border: none; background: ${theme.tone}; color: #fff; font-weight: 900;">${info.price.toLocaleString()}P</button>
-                                    `}
+                <section class="profile-summary-grid">
+                    <article class="profile-summary-card">
+                        <small>POINTS</small>
+                        <strong>${(UserState.data.points || 0).toLocaleString()}P</strong>
+                        <span>꾸미기, 반응, 오락실에서 사용하는 현재 포인트</span>
+                    </article>
+                    <article class="profile-summary-card">
+                        <small>INVENTORY</small>
+                        <strong>${inventoryCount.toLocaleString()}</strong>
+                        <span>수집한 전체 아이템 수량</span>
+                    </article>
+                    <article class="profile-summary-card">
+                        <small>DISCOVERY</small>
+                        <strong>${discoveredCount.toLocaleString()}</strong>
+                        <span>처음 발견한 아이템 종류 수</span>
+                    </article>
+                    <article class="profile-summary-card">
+                        <small>ARCADE</small>
+                        <strong>${((stats.mining || 0) + (stats.gacha || 0) + (stats.alchemy || 0) + (stats.lottery || 0) + (stats.betting || 0) + (stats.checkin || 0)).toLocaleString()}</strong>
+                        <span>오락실 총 활동 횟수</span>
+                    </article>
+                </section>
+
+                <section class="profile-detail-grid">
+                    <div class="profile-main-column">
+                        <details class="profile-details" open>
+                            <summary>🐾 나의 펫 파트너</summary>
+                            <div class="content-area">
+                                <div class="pet-active-hero" style="background: ${activePetTheme.bg}; border-color: ${activePetTheme.ring}; box-shadow: 0 16px 36px ${activePetTheme.ring};">
+                                    <div class="pet-active-avatar" style="border-color: ${activePetTheme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 24px ${activePetTheme.ring};">
+                                        ${activePet.emoji}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div class="pet-grade-badge" style="background: ${activePetTheme.badge}; color: ${activePetTheme.tone}; border-color: ${activePetTheme.ring};">${activePet.grade || 'NORMAL'}</div>
+                                        <h4 style="font-size: 1.2rem; font-weight: 900; color: ${activePetTheme.tone}; margin-bottom: 4px;">${activePet.name}</h4>
+                                        <p style="font-size: 0.85rem; font-weight: 700; color: var(--text-sub);">${activePet.effect}</p>
+                                        <p style="font-size: 0.75rem; font-weight: 700; color: var(--text-sub); margin-top: 6px;">보유 펫 ${ownedPetCount} / ${totalPets}</p>
+                                    </div>
                                 </div>
-                            `;
-                        }).join('')}
-                    </div>
-                </div>
-            </details>
 
-            <details class="profile-details" open>
-                <summary>🎨 내 꾸미기 관리</summary>
-                <div class="content-area">
-                    <div style="display: grid; gap: 1.5rem;">
-                        <div>
-                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🎨 닉네임 색상 변경 (1,000P)</h4>
-                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                                ${Object.entries(COLOR_SHOP).map(([name, code]) => {
-                                    const isDefault = name === '기본';
-                                    const displayColor = isDefault ? 'var(--text-main)' : code;
-                                    const isActive = UserState.data.nameColor === code;
-                                    return `
-                                        <button class="color-btn ${isActive ? 'active' : ''}" data-color="${code}"
-                                                style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px;
-                                                border:2px solid ${isActive ? displayColor : 'var(--border-color)'};
-                                                background:${isActive ? displayColor : 'rgba(255,255,255,0.05)'};
-                                                color:${isActive ? (isDefault ? 'var(--card-bg)' : '#fff') : displayColor};
-                                                font-weight:800; transition:all 0.2s;">
-                                            ${name}
-                                        </button>
-                                    `;
-                                }).join('')}
+                                <div class="profile-bonus-grid">
+                                    <div class="profile-bonus-card">
+                                        <div>채굴 보너스</div>
+                                        <strong>+${petBuff.mineBonus}P</strong>
+                                    </div>
+                                    <div class="profile-bonus-card">
+                                        <div>테스트 보너스</div>
+                                        <strong>+${petBuff.testBonus}P</strong>
+                                    </div>
+                                    <div class="profile-bonus-card">
+                                        <div>출석 보너스</div>
+                                        <strong>+${petBuff.checkinBonus}P</strong>
+                                    </div>
+                                    <div class="profile-bonus-card">
+                                        <div>전체 배수</div>
+                                        <strong>x${petBuff.multiplier.toFixed(2)}</strong>
+                                    </div>
+                                </div>
+
+                                <h4 class="profile-section-mini-title">🥚 펫 입양/보유 목록</h4>
+                                <div class="profile-pet-grid">
+                                    ${Object.entries(PET_SHOP).map(([id, info]) => {
+                                        const isOwned = (UserState.data.unlockedPets || []).includes(id);
+                                        const isActive = activePetId === id;
+                                        const theme = getPetTheme(info.grade);
+                                        return `
+                                            <div class="pet-card ${isActive ? 'is-active' : ''}" style="background: ${theme.bg}; border-color: ${isActive ? theme.tone : theme.ring}; box-shadow: ${isActive ? `0 16px 32px ${theme.ring}` : '0 8px 20px rgba(15,23,42,0.05)'};">
+                                                <div class="pet-grade-badge" style="background: ${theme.badge}; color: ${theme.tone}; border-color: ${theme.ring};">${info.grade}</div>
+                                                <div class="pet-emoji-shell" style="border-color: ${theme.ring}; box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 10px 24px ${theme.ring};">${info.emoji}</div>
+                                                <div style="font-weight: 900; font-size: 0.9rem; margin-bottom: 4px; color: ${theme.tone};">${info.name}</div>
+                                                <div style="font-size: 0.65rem; color: var(--text-sub); margin-bottom: 12px; min-height: 2.6rem; display: flex; align-items: center; justify-content: center;">${info.effect}</div>
+                                                ${isOwned ? `
+                                                    <button class="btn-pet-equip" data-id="${id}" style="width: 100%; padding: 8px; border-radius: 10px; font-size: 0.75rem; border: 1px solid ${theme.tone}; background: ${isActive ? theme.tone : 'rgba(255,255,255,0.8)'}; color: ${isActive ? '#fff' : theme.tone}; font-weight: 900;">${isActive ? '함께하는 중' : '함께하기'}</button>
+                                                ` : `
+                                                    <button class="btn-pet-buy" data-id="${id}" style="width: 100%; padding: 8px; border-radius: 10px; font-size: 0.75rem; border: none; background: ${theme.tone}; color: #fff; font-weight: 900;">${info.price.toLocaleString()}P</button>
+                                                `}
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🖼️ 보유한 테두리</h4>
-                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                                <button class="btn-equip-profile ${UserState.data.activeBorder === 'NONE' ? 'active' : ''}" data-type="Border" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
-                                ${(UserState.data.unlockedBorders || []).filter(id => id !== 'NONE').map(id => `
-                                    <button class="btn-equip-profile ${UserState.data.activeBorder === id ? 'active' : ''}" data-type="Border" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBorder === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBorder === id ? '#fff' : 'inherit'}">${BORDER_SHOP[id]?.name || id}</button>
+                        </details>
+
+                        <details class="profile-details" open>
+                            <summary>🎒 내 인벤토리</summary>
+                            <div class="content-area"><div class="inventory-grid">${invHTML}</div></div>
+                        </details>
+
+                        <details class="profile-details" open>
+                            <summary>🏪 아이콘 상점 (변경 시 500P)</summary>
+                            <div class="content-area shop-wrapper">
+                                ${Object.entries(EMOJI_SHOP).map(([cat, emojis]) => `
+                                    <h4 style="margin-top:1rem; font-size:0.9rem; color:var(--accent-color);">${cat}</h4>
+                                    <div class="emoji-grid" style="margin-top:0.8rem;">
+                                        ${Object.keys(emojis).map(e => `
+                                            <button class="emoji-btn ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
+                                                <span class="e-icon">${e}</span>
+                                                <span class="e-price">500P</span>
+                                            </button>`).join('')}
+                                    </div>
                                 `).join('')}
                             </div>
-                        </div>
-                        <div>
-                            <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🎨 보유한 배경</h4>
-                            <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
-                                <button class="btn-equip-profile ${UserState.data.activeBackground === 'NONE' ? 'active' : ''}" data-type="Background" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
-                                ${(UserState.data.unlockedBackgrounds || []).filter(id => id !== 'NONE').map(id => `
-                                    <button class="btn-equip-profile ${UserState.data.activeBackground === id ? 'active' : ''}" data-type="Background" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBackground === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBackground === id ? '#fff' : 'inherit'}">${BACKGROUND_SHOP[id]?.name || id}</button>
-                                `).join('')}
+                        </details>
+                    </div>
+
+                    <div class="profile-side-column">
+                        <details class="profile-details" open>
+                            <summary>🎨 내 꾸미기 관리</summary>
+                            <div class="content-area">
+                                <div style="display: grid; gap: 1.5rem;">
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🎨 닉네임 색상 변경 (1,000P)</h4>
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                            ${Object.entries(COLOR_SHOP).map(([name, code]) => {
+                                                const isDefault = name === '기본';
+                                                const displayColor = isDefault ? 'var(--text-main)' : code;
+                                                const isActive = UserState.data.nameColor === code;
+                                                return `
+                                                    <button class="color-btn ${isActive ? 'active' : ''}" data-color="${code}"
+                                                            style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px;
+                                                            border:2px solid ${isActive ? displayColor : 'var(--border-color)'};
+                                                            background:${isActive ? displayColor : 'rgba(255,255,255,0.05)'};
+                                                            color:${isActive ? (isDefault ? 'var(--card-bg)' : '#fff') : displayColor};
+                                                            font-weight:800; transition:all 0.2s;">
+                                                        ${name}
+                                                    </button>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🖼️ 보유한 테두리</h4>
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                            <button class="btn-equip-profile ${UserState.data.activeBorder === 'NONE' ? 'active' : ''}" data-type="Border" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
+                                            ${(UserState.data.unlockedBorders || []).filter(id => id !== 'NONE').map(id => `
+                                                <button class="btn-equip-profile ${UserState.data.activeBorder === id ? 'active' : ''}" data-type="Border" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBorder === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBorder === id ? '#fff' : 'inherit'}">${BORDER_SHOP[id]?.name || id}</button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🎨 보유한 배경</h4>
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                            <button class="btn-equip-profile ${UserState.data.activeBackground === 'NONE' ? 'active' : ''}" data-type="Background" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
+                                            ${(UserState.data.unlockedBackgrounds || []).filter(id => id !== 'NONE').map(id => `
+                                                <button class="btn-equip-profile ${UserState.data.activeBackground === id ? 'active' : ''}" data-type="Background" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBackground === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBackground === id ? '#fff' : 'inherit'}">${BACKGROUND_SHOP[id]?.name || id}</button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        </details>
+
+                        <details class="profile-details" open>
+                            <summary>📊 오락실 이용 통계</summary>
+                            <div class="content-area">
+                                <div class="profile-stats-grid">
+                                    <div class="profile-stat-card"><small>⛏️ 채굴</small><strong>${stats.mining || 0}</strong></div>
+                                    <div class="profile-stat-card"><small>📦 가챠</small><strong>${stats.gacha || 0}</strong></div>
+                                    <div class="profile-stat-card"><small>⚗️ 연금술</small><strong>${stats.alchemy || 0}</strong></div>
+                                    <div class="profile-stat-card"><small>🎫 복권</small><strong>${stats.lottery || 0}</strong></div>
+                                    <div class="profile-stat-card"><small>🎲 베팅</small><strong>${stats.betting || 0}</strong></div>
+                                    <div class="profile-stat-card"><small>📅 출석</small><strong>${stats.checkin || 0}</strong></div>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="profile-details">
+                            <summary>⚙️ 계정 설정</summary>
+                            <div class="content-area">
+                                <div class="setting-group" style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                                    <label style="display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 0.25rem;">닉네임 변경 ${UserState.data.nicknameChanged ? '(소모: 5,000P)' : '<span style="color:var(--accent-secondary);">(최초 1회 무료)</span>'}</label>
+                                    <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 0.75rem;">${UserState.data.nicknameChanged ? '닉네임 변경 시 포인트가 차감됩니다.' : '현재 랜덤 닉네임 상태입니다. 원하는 이름으로 변경해 보세요!'}</p>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="nickname-input" style="flex: 1; padding: 0.8rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.95rem;" placeholder="새 닉네임 (2~10자)">
+                                        <button id="nickname-save" class="btn-primary" style="padding: 0 1.5rem; font-size: 0.9rem;">변경</button>
+                                    </div>
+                                    <p id="nickname-msg" style="margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600;"></p>
+                                </div>
+                                <button id="logout-btn" class="btn-secondary" style="width: 100%; padding: 1rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); font-weight: 700;">로그아웃</button>
+                            </div>
+                        </details>
                     </div>
-                </div>
-            </details>
-
-            <details class="profile-details" open>
-                <summary>📊 오락실 이용 통계</summary>
-                <div class="content-area">
-                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
-                        <div><small class="text-sub">⛏️ 채굴</small><p><strong>${stats.mining || 0}</strong></p></div>
-                        <div><small class="text-sub">📦 가챠</small><p><strong>${stats.gacha || 0}</strong></p></div>
-                        <div><small class="text-sub">⚗️ 연금술</small><p><strong>${stats.alchemy || 0}</strong></p></div>
-                        <div><small class="text-sub">🎫 복권</small><p><strong>${stats.lottery || 0}</strong></p></div>
-                        <div><small class="text-sub">🎲 베팅</small><p><strong>${stats.betting || 0}</strong></p></div>
-                        <div><small class="text-sub">📅 출석</small><p><strong>${stats.checkin || 0}</strong></p></div>
-                    </div>
-                </div>
-            </details>
-
-            <details class="profile-details" open>
-                <summary>🎒 내 인벤토리</summary>
-                <div class="content-area"><div class="inventory-grid">${invHTML}</div></div>
-            </details>
-
-            <details class="profile-details" open>
-                <summary>🏪 아이콘 상점 (변경 시 500P)</summary>
-                <div class="content-area shop-wrapper">
-                    ${Object.entries(EMOJI_SHOP).map(([cat, emojis]) => `
-                        <h4 style="margin-top:1rem; font-size:0.9rem; color:var(--accent-color);">${cat}</h4>
-                        <div class="emoji-grid" style="margin-top:0.8rem;">
-                            ${Object.keys(emojis).map(e => `
-                                <button class="emoji-btn ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
-                                    <span class="e-icon">${e}</span>
-                                    <span class="e-price">500P</span>
-                                </button>`).join('')}
-                        </div>
-                    `).join('')}
-                </div>
-            </details>
-
-            <details class="profile-details">
-                <summary>⚙️ 계정 설정</summary>
-                <div class="content-area">
-                    <div class="setting-group" style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;">
-                        <label style="display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 0.25rem;">닉네임 변경 ${UserState.data.nicknameChanged ? '(소모: 5,000P)' : '<span style="color:var(--accent-secondary);">(최초 1회 무료)</span>'}</label>
-                        <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 0.75rem;">${UserState.data.nicknameChanged ? '닉네임 변경 시 포인트가 차감됩니다.' : '현재 랜덤 닉네임 상태입니다. 원하는 이름으로 변경해 보세요!'}</p>
-                        <div style="display: flex; gap: 0.5rem;">
-                            <input type="text" id="nickname-input" style="flex: 1; padding: 0.8rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.95rem;" placeholder="새 닉네임 (2~10자)">
-                            <button id="nickname-save" class="btn-primary" style="padding: 0 1.5rem; font-size: 0.9rem;">변경</button>
-                        </div>
-                        <p id="nickname-msg" style="margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600;"></p>
-                    </div>
-                    <button id="logout-btn" class="btn-secondary" style="width: 100%; padding: 1rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); font-weight: 700;">로그아웃</button>
-                </div>
-            </details>
-        </div>
+                </section>
+            </div>
     `;
+
+    const feedbackEl = document.getElementById('profile-feedback');
+    const setProfileFeedback = (message, type = 'info') => {
+        if (!feedbackEl) return;
+        feedbackEl.textContent = message;
+        feedbackEl.className = `profile-inline-feedback ${type}`;
+        feedbackEl.style.display = message ? 'block' : 'none';
+    };
 
     app.querySelectorAll('.btn-pet-equip').forEach(btn => {
         btn.onclick = async () => {
@@ -320,7 +386,7 @@ export function renderProfile() {
                 renderProfile();
                 showProfileToast(`${PET_SHOP[id]?.name || '펫'} 출전 완료`, getPetTheme(PET_SHOP[id]?.grade).tone);
             } else {
-                alert("변경 중 오류가 발생했습니다.");
+                setProfileFeedback("펫 변경 중 오류가 발생했습니다.", 'error');
             }
         };
     });
@@ -330,27 +396,39 @@ export function renderProfile() {
             const { id } = btn.dataset;
             const info = PET_SHOP[id];
             const { usePoints, updateUI } = await import('../auth.js?v=8.4.0');
-            
-            if (confirm(`${info.name}을(를) 입양하시겠습니까?\n(${info.price.toLocaleString()}P 소모)`)) {
-                if (await usePoints(info.price, `펫 ${info.name} 입양`)) {
-                    try {
-                        const unlocked = [...(UserState.data.unlockedPets || []), id];
-                        await updateDoc(doc(db, "users", UserState.user.uid), { 
-                            unlockedPets: unlocked,
-                            activePet: id 
-                        });
-                        UserState.data.unlockedPets = unlocked;
-                        UserState.data.activePet = id;
-                        soundManager.playSuccess();
-                        renderProfile();
-                        updateUI();
-                        showPetUnlockOverlay(info);
-                    } catch (e) {
-                        alert("입양 처리 중 오류가 발생했습니다.");
+
+            if (btn.dataset.confirming !== 'true') {
+                btn.dataset.confirming = 'true';
+                btn.textContent = '한 번 더 누르면 입양';
+                setProfileFeedback(`${info.name} 입양 확인: ${info.price.toLocaleString()}P 사용`, 'warning');
+                setTimeout(() => {
+                    const currentBtn = app.querySelector(`.btn-pet-buy[data-id="${id}"]`);
+                    if (currentBtn && currentBtn.dataset.confirming === 'true') {
+                        currentBtn.dataset.confirming = 'false';
+                        currentBtn.textContent = `${info.price.toLocaleString()}P`;
                     }
-                } else {
-                    alert("포인트가 부족합니다.");
+                }, 2500);
+                return;
+            }
+
+            if (await usePoints(info.price, `펫 ${info.name} 입양`)) {
+                try {
+                    const unlocked = [...(UserState.data.unlockedPets || []), id];
+                    await updateDoc(doc(db, "users", UserState.user.uid), { 
+                        unlockedPets: unlocked,
+                        activePet: id 
+                    });
+                    UserState.data.unlockedPets = unlocked;
+                    UserState.data.activePet = id;
+                    soundManager.playSuccess();
+                    renderProfile();
+                    updateUI();
+                    showPetUnlockOverlay(info);
+                } catch (e) {
+                    setProfileFeedback("입양 처리 중 오류가 발생했습니다.", 'error');
                 }
+            } else {
+                setProfileFeedback("포인트가 부족합니다.", 'error');
             }
         };
     });
@@ -363,11 +441,11 @@ export function renderProfile() {
                 await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
                 UserState.data[activeKey] = id;
                 updateProfileCache(UserState.user.uid, { [activeKey]: id });
-                alert("장착이 완료되었습니다!");
                 renderProfile();
                 updateUI();
+                showProfileToast("장착이 완료되었습니다!");
             } catch (e) {
-                alert("업데이트 중 오류가 발생했습니다.");
+                setProfileFeedback("업데이트 중 오류가 발생했습니다.", 'error');
             }
         };
     });
@@ -403,14 +481,25 @@ export function renderProfile() {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
         logoutBtn.onclick = () => {
-            const logoutConfirm = confirm("로그아웃 하시겠습니까?");
-            if (logoutConfirm) {
-                const logoutBtnInAuth = document.createElement('button');
-                logoutBtnInAuth.id = 'logout-btn';
-                document.body.appendChild(logoutBtnInAuth);
-                logoutBtnInAuth.click();
-                logoutBtnInAuth.remove();
+            if (logoutBtn.dataset.confirming !== 'true') {
+                logoutBtn.dataset.confirming = 'true';
+                logoutBtn.textContent = '한 번 더 누르면 로그아웃';
+                setProfileFeedback("로그아웃하려면 버튼을 한 번 더 눌러주세요.", 'warning');
+                setTimeout(() => {
+                    const currentBtn = document.getElementById('logout-btn');
+                    if (currentBtn && currentBtn.dataset.confirming === 'true') {
+                        currentBtn.dataset.confirming = 'false';
+                        currentBtn.textContent = '로그아웃';
+                    }
+                }, 2500);
+                return;
             }
+
+            const logoutBtnInAuth = document.createElement('button');
+            logoutBtnInAuth.id = 'logout-btn';
+            document.body.appendChild(logoutBtnInAuth);
+            logoutBtnInAuth.click();
+            logoutBtnInAuth.remove();
         };
     }
 
