@@ -149,35 +149,35 @@ export function renderCategorySelection() {
         .map((card) => `
             <article class="cat-large-card" onclick="location.hash='${card.hash}'" style="background:${card.gradient}; border-radius:32px; padding:1.55rem; cursor:pointer; border:1px solid rgba(255,255,255,0.72); box-shadow:0 18px 34px rgba(15,23,42,0.07); position:relative; overflow:hidden; display:flex; flex-direction:column; min-height:355px;">
                 <div style="position:absolute; inset:auto -24px -28px auto; font-size:8rem; opacity:0.09; transform:rotate(14deg); pointer-events:none;">${card.icon}</div>
-                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.15rem;">
-                    <div>
-                        <div style="font-size:0.74rem; letter-spacing:0.14em; font-weight:900; color:${card.accent}; opacity:0.92; margin-bottom:0.7rem;">${card.label}</div>
-                        <div style="display:flex; align-items:center; gap:0.8rem;">
-                            <span style="width:54px; height:54px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.62); font-size:1.9rem; box-shadow:inset 0 1px 0 rgba(255,255,255,0.75);">${card.icon}</span>
-                            <div>
-                                <h3 style="font-size:1.55rem; font-weight:900; color:#1e293b; margin:0 0 0.2rem; letter-spacing:-0.03em;">${card.title}</h3>
-                                <div style="font-size:0.84rem; font-weight:800; color:${card.accent};">${card.count}개 테스트 운영 중</div>
-                            </div>
+                <div style="margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
+                        <div style="font-size:0.74rem; letter-spacing:0.14em; font-weight:900; color:${card.accent}; opacity:0.92;">${card.label}</div>
+                        <div style="flex-shrink:0; padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.52); border:1px solid rgba(255,255,255,0.75); color:${card.accent}; font-size:0.74rem; font-weight:900;">NEW FLOW</div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; align-items:flex-start; gap:0.72rem;">
+                        <span style="width:54px; height:54px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.62); font-size:1.9rem; box-shadow:inset 0 1px 0 rgba(255,255,255,0.75);">${card.icon}</span>
+                        <div style="min-width:0; width:100%;">
+                            <h3 style="font-size:1.48rem; font-weight:900; color:#1e293b; margin:0 0 0.28rem; letter-spacing:-0.03em; line-height:1.16; word-break:keep-all;">${card.title}</h3>
+                            <div style="font-size:0.84rem; font-weight:800; color:${card.accent}; line-height:1.3;">${card.count}개 테스트 운영 중</div>
                         </div>
                     </div>
-                    <div style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.52); border:1px solid rgba(255,255,255,0.75); color:${card.accent}; font-size:0.74rem; font-weight:900;">NEW FLOW</div>
                 </div>
 
-                <p style="font-size:0.98rem; color:#334155; line-height:1.7; font-weight:650; margin:0 0 1.15rem;">${card.desc}</p>
+                <p style="font-size:0.96rem; color:#334155; line-height:1.68; font-weight:650; margin:0 0 1rem; word-break:keep-all;">${card.desc}</p>
 
-                <div style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-bottom:1.15rem;">
+                <div style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-bottom:1rem;">
                     ${card.chips.map((chip) => `<span style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.72); color:#334155; font-size:0.77rem; font-weight:800;">${chip}</span>`).join('')}
                 </div>
 
-                <div style="margin-top:auto; background:rgba(255,255,255,0.48); border:1px solid rgba(255,255,255,0.72); border-radius:22px; padding:1rem;">
-                    <div style="font-size:0.74rem; font-weight:900; color:${card.accent}; letter-spacing:0.1em; margin-bottom:0.65rem;">LATEST PICK</div>
-                    <div style="font-size:1rem; font-weight:850; color:#0f172a; line-height:1.45; margin-bottom:0.75rem; word-break:keep-all;">${card.latestTitle}</div>
-                    <div style="display:grid; gap:0.4rem; margin-bottom:1rem;">
-                        ${card.sampleTitles.map((title) => `<div style="font-size:0.79rem; color:#475569; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">• ${title}</div>`).join('')}
+                <div style="margin-top:auto; background:rgba(255,255,255,0.48); border:1px solid rgba(255,255,255,0.72); border-radius:22px; padding:1rem 1rem 0.95rem;">
+                    <div style="font-size:0.72rem; font-weight:900; color:${card.accent}; letter-spacing:0.11em; margin-bottom:0.45rem;">LATEST PICK</div>
+                    <div style="font-size:1.02rem; font-weight:870; color:#0f172a; line-height:1.42; margin-bottom:0.82rem; word-break:keep-all;">${card.latestTitle}</div>
+                    <div style="display:grid; gap:0.42rem; margin-bottom:0.95rem;">
+                        ${card.sampleTitles.map((title) => `<div style="display:grid; grid-template-columns:auto 1fr; align-items:start; column-gap:0.42rem;"><span style="font-size:0.82rem; color:${card.accent}; font-weight:900; line-height:1.35;">•</span><span style="font-size:0.79rem; color:#475569; font-weight:700; line-height:1.38; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${title}</span></div>`).join('')}
                     </div>
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="font-size:0.83rem; color:#475569; font-weight:800;">카테고리 전체 보기</span>
-                        <span style="font-size:1rem; font-weight:900; color:${card.accent};">→</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding-top:0.12rem; border-top:1px solid rgba(255,255,255,0.54);">
+                        <span style="font-size:0.82rem; color:#475569; font-weight:850;">카테고리 전체 보기</span>
+                        <span style="font-size:1.02rem; font-weight:900; color:${card.accent};">→</span>
                     </div>
                 </div>
             </article>
