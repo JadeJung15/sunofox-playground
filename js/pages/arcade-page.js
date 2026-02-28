@@ -35,13 +35,30 @@ function renderBalanceRows() {
         ['타이밍 챌린지', '80P', '0~220P', '중간', '실력형']
     ];
 
+    const riskTone = {
+        안정: { bg: 'rgba(16,185,129,0.12)', color: '#047857' },
+        낮음: { bg: 'rgba(14,165,233,0.12)', color: '#0369a1' },
+        중간: { bg: 'rgba(99,102,241,0.12)', color: '#4338ca' },
+        높음: { bg: 'rgba(244,63,94,0.12)', color: '#be123c' }
+    };
+
     return rows.map(([name, cost, reward, risk, note]) => `
         <tr>
-            <td>${name}</td>
-            <td>${cost}</td>
-            <td>${reward}</td>
-            <td>${risk}</td>
-            <td>${note}</td>
+            <td style="padding:0.95rem 0.9rem; border-bottom:1px solid #e2e8f0;">
+                <div style="font-size:0.92rem; font-weight:900; color:#0f172a; letter-spacing:-0.02em;">${name}</div>
+            </td>
+            <td style="padding:0.95rem 0.9rem; border-bottom:1px solid #e2e8f0;">
+                <span style="display:inline-flex; align-items:center; min-height:30px; padding:0.35rem 0.68rem; border-radius:999px; background:#f8fafc; border:1px solid #e2e8f0; font-size:0.8rem; font-weight:800; color:#334155;">${cost}</span>
+            </td>
+            <td style="padding:0.95rem 0.9rem; border-bottom:1px solid #e2e8f0;">
+                <div style="font-size:0.87rem; font-weight:850; color:#1e293b; line-height:1.5;">${reward}</div>
+            </td>
+            <td style="padding:0.95rem 0.9rem; border-bottom:1px solid #e2e8f0;">
+                <span style="display:inline-flex; align-items:center; min-height:30px; padding:0.35rem 0.68rem; border-radius:999px; background:${riskTone[risk].bg}; color:${riskTone[risk].color}; font-size:0.78rem; font-weight:900;">${risk}</span>
+            </td>
+            <td style="padding:0.95rem 0.9rem; border-bottom:1px solid #e2e8f0;">
+                <div style="font-size:0.82rem; font-weight:700; color:#64748b; line-height:1.55;">${note}</div>
+            </td>
         </tr>
     `).join('');
 }
