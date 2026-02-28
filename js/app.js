@@ -12,8 +12,6 @@ import { renderAdmin } from './pages/admin.js?v=8.2.0';
 import { renderArcade } from './pages/arcade-page.js?v=8.2.0';
 import { renderTestExecution, renderResult } from './pages/tests.js?v=8.2.0';
 import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.2.0';
-import { renderSunoGenerator } from './pages/suno-generator.js?v=8.2.0';
-import { requestSunoGateOpen } from './suno/access.js?v=8.2.0';
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80";
 
@@ -45,8 +43,7 @@ async function addPoints(amount, reason) {
 
 const categoryMap = {
     '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미',
-    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드', '#news': '공지',
-    '#suno': '수노 생성기', '#suno-generator': '수노 생성기'
+    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드', '#news': '공지'
 };
 let currentFilter = '전체';
 let isRouting = false;
@@ -92,7 +89,7 @@ async function router() {
         });
 
         // 즉시 렌더링 가능한 페이지 (비회원 접근 허용)
-        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board', '#suno', '#suno-generator'];
+        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board'];
         if (!instantPages.includes(hash) && !hash.startsWith('#test/')) {
             await authReady;
         }
@@ -109,7 +106,6 @@ async function router() {
         else if (hash === '#book') await renderEncyclopedia();
         else if (hash === '#profile') renderProfile();
         else if (hash === '#admin') renderAdmin();
-        else if (hash === '#suno' || hash === '#suno-generator') renderSunoGenerator();
         else if (hash === '#7check') renderCategorySelection();
         else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
         else {
@@ -207,21 +203,6 @@ initAuth();
 // router()를 직접 호출하지 않고 authReady 이후에 한 번만 실행하도록 유도 (중복 실행 방지)
 authReady.then(() => { 
     if (!isRouting) router(); 
-});
-
-document.addEventListener('click', (e) => {
-    const target = e.target.closest('#suno-admin-link');
-    if (!target) return;
-
-    e.preventDefault();
-    requestSunoGateOpen();
-
-    if (window.location.hash === '#suno' || window.location.hash === '#suno-generator') {
-        window.dispatchEvent(new CustomEvent('suno:open-gate'));
-        return;
-    }
-
-    window.location.hash = '#suno';
 });
 
 // 드롭다운 메뉴 토글 로직 (완전 재작성)
