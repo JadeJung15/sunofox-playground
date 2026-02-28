@@ -88,56 +88,151 @@ window.handleLike = handleLike;
 
 export function renderCategorySelection() {
     const app = document.getElementById('app');
-    
-    // 카테고리별 세련된 파스텔 그라데이션 정의
-    const catStyles = {
-        personality: 'linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%)', // Indigo
-        face: 'linear-gradient(135deg, #ffe4e6 0%, #fecdd3 100%)',        // Rose
-        fortune: 'linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)',     // Amber
-        fun: 'linear-gradient(135deg, #f5f3ff 0%, #ddd6fe 100%)'         // Violet
-    };
+
+    const latestTests = getLatestTests();
+    const categoryCards = [
+        {
+            hash: '#personality',
+            category: '성격',
+            icon: '🧠',
+            label: 'MENTAL LAB',
+            title: '성격 분석',
+            desc: '내면 패턴과 관계 습관, 감정의 결을 조금 더 정교하게 읽어내는 카테고리입니다.',
+            gradient: 'linear-gradient(145deg, #e0e7ff 0%, #c7d2fe 52%, #eef2ff 100%)',
+            accent: '#312e81',
+            chips: ['깊이 있는 질문', '심리 리포트', '자기이해 강화']
+        },
+        {
+            hash: '#face',
+            category: '얼굴',
+            icon: '✨',
+            label: 'VISUAL CODE',
+            title: '비주얼/얼굴',
+            desc: '분위기, 인상, 매력 포인트를 중심으로 내 비주얼 캐릭터를 재밌게 읽어내는 영역입니다.',
+            gradient: 'linear-gradient(145deg, #ffe4e6 0%, #fecdd3 52%, #fff1f2 100%)',
+            accent: '#9d174d',
+            chips: ['첫인상 분석', '매력 포인트', '분위기 진단']
+        },
+        {
+            hash: '#fortune',
+            category: '사주',
+            icon: '🔮',
+            label: 'FORTUNE FLOW',
+            title: '오늘의 운세',
+            desc: '오늘의 기운, 인연 흐름, 타이밍 감각까지 가볍게 보되 은근히 몰입되는 운세 모음입니다.',
+            gradient: 'linear-gradient(145deg, #fef3c7 0%, #fde68a 52%, #fffbeb 100%)',
+            accent: '#92400e',
+            chips: ['타이밍 체크', '행운 흐름', '인연 레이더']
+        },
+        {
+            hash: '#fun',
+            category: '재미',
+            icon: '🎨',
+            label: 'PLAY MIND',
+            title: '재미/심리',
+            desc: '밈, 캐릭터성, 병맛 감성까지 섞어서 친구에게 바로 던지기 좋은 테스트가 몰려 있습니다.',
+            gradient: 'linear-gradient(145deg, #f5f3ff 0%, #ddd6fe 52%, #faf5ff 100%)',
+            accent: '#5b21b6',
+            chips: ['병맛 테스트', '캐릭터 판정', '친구 공유 맛집']
+        }
+    ].map((card) => {
+        const tests = latestTests.filter((test) => test.category === card.category);
+        return {
+            ...card,
+            count: tests.length,
+            latestTitle: tests[0]?.title || '준비 중',
+            sampleTitles: tests.slice(0, 3).map((test) => test.title)
+        };
+    });
+
+    const featuredCards = categoryCards
+        .map((card) => `
+            <article class="cat-large-card" onclick="location.hash='${card.hash}'" style="background:${card.gradient}; border-radius:32px; padding:1.55rem; cursor:pointer; border:1px solid rgba(255,255,255,0.72); box-shadow:0 18px 34px rgba(15,23,42,0.07); position:relative; overflow:hidden; display:flex; flex-direction:column; min-height:355px;">
+                <div style="position:absolute; inset:auto -24px -28px auto; font-size:8rem; opacity:0.09; transform:rotate(14deg); pointer-events:none;">${card.icon}</div>
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; margin-bottom:1.15rem;">
+                    <div>
+                        <div style="font-size:0.74rem; letter-spacing:0.14em; font-weight:900; color:${card.accent}; opacity:0.92; margin-bottom:0.7rem;">${card.label}</div>
+                        <div style="display:flex; align-items:center; gap:0.8rem;">
+                            <span style="width:54px; height:54px; border-radius:18px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.62); font-size:1.9rem; box-shadow:inset 0 1px 0 rgba(255,255,255,0.75);">${card.icon}</span>
+                            <div>
+                                <h3 style="font-size:1.55rem; font-weight:900; color:#1e293b; margin:0 0 0.2rem; letter-spacing:-0.03em;">${card.title}</h3>
+                                <div style="font-size:0.84rem; font-weight:800; color:${card.accent};">${card.count}개 테스트 운영 중</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.52); border:1px solid rgba(255,255,255,0.75); color:${card.accent}; font-size:0.74rem; font-weight:900;">NEW FLOW</div>
+                </div>
+
+                <p style="font-size:0.98rem; color:#334155; line-height:1.7; font-weight:650; margin:0 0 1.15rem;">${card.desc}</p>
+
+                <div style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-bottom:1.15rem;">
+                    ${card.chips.map((chip) => `<span style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.5); border:1px solid rgba(255,255,255,0.72); color:#334155; font-size:0.77rem; font-weight:800;">${chip}</span>`).join('')}
+                </div>
+
+                <div style="margin-top:auto; background:rgba(255,255,255,0.48); border:1px solid rgba(255,255,255,0.72); border-radius:22px; padding:1rem;">
+                    <div style="font-size:0.74rem; font-weight:900; color:${card.accent}; letter-spacing:0.1em; margin-bottom:0.65rem;">LATEST PICK</div>
+                    <div style="font-size:1rem; font-weight:850; color:#0f172a; line-height:1.45; margin-bottom:0.75rem; word-break:keep-all;">${card.latestTitle}</div>
+                    <div style="display:grid; gap:0.4rem; margin-bottom:1rem;">
+                        ${card.sampleTitles.map((title) => `<div style="font-size:0.79rem; color:#475569; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">• ${title}</div>`).join('')}
+                    </div>
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:0.83rem; color:#475569; font-weight:800;">카테고리 전체 보기</span>
+                        <span style="font-size:1rem; font-weight:900; color:${card.accent};">→</span>
+                    </div>
+                </div>
+            </article>
+        `)
+        .join('');
+
+    const summaryStats = categoryCards
+        .map((card) => `
+            <div style="background:rgba(255,255,255,0.72); border:1px solid rgba(255,255,255,0.8); border-radius:20px; padding:1rem 1.05rem; box-shadow:0 10px 20px rgba(15,23,42,0.05);">
+                <div style="font-size:0.74rem; font-weight:900; color:${card.accent}; letter-spacing:0.1em; margin-bottom:0.45rem;">${card.label}</div>
+                <div style="font-size:1.55rem; font-weight:950; color:#0f172a; line-height:1;">${card.count}</div>
+                <div style="margin-top:0.35rem; font-size:0.84rem; color:#475569; font-weight:700;">${card.title}</div>
+            </div>
+        `)
+        .join('');
 
     app.innerHTML = `
-        <div class="category-selection-page fade-in" style="padding-bottom: 5rem;">
-            <div class="section-header" style="text-align:center; flex-direction:column; gap:1rem; margin-bottom:4rem; margin-top: 3rem;">
-                <div style="font-size: 3.5rem; margin-bottom: 0.5rem; opacity: 0.9;">🎭</div>
-                <h2 class="section-title" style="font-size:2.5rem; width:100%; text-align:center; letter-spacing: -0.04em; color: #1e293b; font-weight: 900;">어떤 분석을 원하시나요?</h2>
-                <p class="text-sub" style="font-weight:600; font-size: 1.15rem; color: #64748b;">당신의 본모습을 찾아줄 분석 리포트가 준비되어 있습니다.</p>
-            </div>
-            
-            <div class="category-large-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; padding: 0 1rem;">
-                <div class="cat-large-card" onclick="location.hash='#personality'" style="background: ${catStyles.personality}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🧠</div>
-                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🧠</span>
-                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">성격 분석</h3>
-                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">내면의 심리와 숨겨진 성향을<br>전문적인 문항으로 심층 분석합니다.</p>
-                    <span style="font-size: 0.95rem; font-weight: 900; color: #312e81; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">분석 시작하기 →</span>
-                </div>
+        <div class="category-selection-page fade-in" style="padding:1.4rem 1rem 5rem; max-width:1180px; margin:0 auto;">
+            <section style="position:relative; overflow:hidden; border-radius:36px; padding:1.45rem; margin:1rem 0 1.6rem; background:linear-gradient(140deg,#fff7ed 0%,#f8fafc 36%,#eef2ff 100%); border:1px solid #e2e8f0; box-shadow:0 22px 50px rgba(15,23,42,0.07);">
+                <div style="position:absolute; width:340px; height:340px; top:-170px; right:-110px; border-radius:50%; background:radial-gradient(circle,rgba(249,115,22,0.22) 0%, rgba(249,115,22,0) 72%);"></div>
+                <div style="position:absolute; width:280px; height:280px; bottom:-150px; left:-90px; border-radius:50%; background:radial-gradient(circle,rgba(99,102,241,0.16) 0%, rgba(99,102,241,0) 72%);"></div>
+                <div style="position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:1rem; align-items:stretch;">
+                    <div style="background:linear-gradient(145deg,#111827 0%,#1f2937 48%,#3730a3 100%); border-radius:30px; padding:1.8rem; color:#fff; min-height:300px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 22px 44px rgba(15,23,42,0.28);">
+                        <div>
+                            <div style="font-size:0.78rem; letter-spacing:0.16em; font-weight:900; color:rgba(255,255,255,0.72); margin-bottom:0.9rem;">CATEGORY GUIDE</div>
+                            <div style="font-size:3.1rem; line-height:1; margin-bottom:1rem;">🎭</div>
+                            <h2 class="section-title" style="font-size:clamp(2rem,7vw,2.9rem); width:100%; text-align:left; letter-spacing:-0.05em; color:#fff; font-weight:950; margin:0 0 0.8rem;">전체 카테고리 보기</h2>
+                            <p class="text-sub" style="font-weight:650; font-size:1rem; color:rgba(226,232,240,0.92); line-height:1.7; margin:0;">지금 기분에 맞는 테스트를 한 번에 고를 수 있게, 카테고리별 성격과 최신 흐름을 한 화면에 정리했습니다.</p>
+                        </div>
+                        <div style="display:flex; gap:0.55rem; flex-wrap:wrap; margin-top:1.2rem;">
+                            <span style="padding:0.5rem 0.78rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); font-size:0.78rem; font-weight:850;">총 ${TESTS.length}개 테스트</span>
+                            <span style="padding:0.5rem 0.78rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); font-size:0.78rem; font-weight:850;">최신순 정렬 반영</span>
+                        </div>
+                    </div>
 
-                <div class="cat-large-card" onclick="location.hash='#face'" style="background: ${catStyles.face}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">✨</div>
-                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">✨</span>
-                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">비주얼/얼굴</h3>
-                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">이목구비와 첫인상이 주는<br>당신만의 고유한 매력을 진단합니다.</p>
-                    <span style="font-size: 0.95rem; font-weight: 900; color: #881337; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">진단 시작하기 →</span>
-                </div>
+                    <div style="display:grid; gap:0.8rem; grid-template-rows:auto 1fr;">
+                        <div style="background:rgba(255,255,255,0.72); border-radius:24px; padding:1.15rem; border:1px solid rgba(255,255,255,0.85); box-shadow:0 12px 24px rgba(15,23,42,0.05);">
+                            <div style="font-size:0.78rem; font-weight:900; color:#ea580c; letter-spacing:0.13em; margin-bottom:0.55rem;">HOW TO PICK</div>
+                            <div style="display:grid; gap:0.55rem;">
+                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">지금 나를 깊게 보고 싶으면 성격 분석</div>
+                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">가볍게 매력 포인트 보고 싶으면 비주얼/얼굴</div>
+                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">타이밍과 흐름이 궁금하면 오늘의 운세</div>
+                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">친구랑 웃으면서 하기엔 재미/심리</div>
+                            </div>
+                        </div>
 
-                <div class="cat-large-card" onclick="location.hash='#fortune'" style="background: ${catStyles.fortune}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🔮</div>
-                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🔮</span>
-                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">오늘의 운세</h3>
-                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">영적 타로와 사주 관법을 통해<br>운명의 흐름과 행운을 점쳐봅니다.</p>
-                    <span style="font-size: 0.95rem; font-weight: 900; color: #92400e; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">점괘 확인하기 →</span>
+                        <div style="display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0.75rem;">
+                            ${summaryStats}
+                        </div>
+                    </div>
                 </div>
+            </section>
 
-                <div class="cat-large-card" onclick="location.hash='#fun'" style="background: ${catStyles.fun}; border-radius: 32px; padding: 2.5rem 2rem; cursor: pointer; border: 1px solid rgba(255,255,255,0.8); transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.04); position: relative; overflow: hidden;">
-                    <div style="position: absolute; top: -10px; right: -10px; font-size: 6rem; opacity: 0.1; transform: rotate(15deg);">🎨</div>
-                    <span style="font-size: 3rem; display: block; margin-bottom: 1.5rem;">🎨</span>
-                    <h3 style="font-size: 1.7rem; font-weight: 900; color: #1e293b; margin-bottom: 0.75rem; letter-spacing: -0.02em;">재미/심리</h3>
-                    <p style="font-size: 1rem; color: #475569; line-height: 1.6; font-weight: 600; margin-bottom: 2rem;">일상의 소소한 취향을 발견하는<br>가볍고 즐거운 심리 테스트입니다.</p>
-                    <span style="font-size: 0.95rem; font-weight: 900; color: #4c1d95; background: rgba(255,255,255,0.5); padding: 8px 18px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.8);">즐기러 가기 →</span>
-                </div>
-
+            <div class="category-large-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:1.15rem;">
+                ${featuredCards}
             </div>
         </div>
     `;
