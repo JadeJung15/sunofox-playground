@@ -1,7 +1,7 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.3.2';
-import { db } from '../firebase-init.js?v=8.3.2';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.4.0';
+import { db } from '../firebase-init.js?v=8.4.0';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.3.2';
+import { TESTS } from '../tests-data.js?v=8.4.0';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -134,6 +134,17 @@ export function renderCategorySelection() {
             gradient: 'linear-gradient(145deg, #f5f3ff 0%, #ddd6fe 52%, #faf5ff 100%)',
             accent: '#5b21b6',
             chips: ['병맛 테스트', '캐릭터 판정', '친구 공유 맛집']
+        },
+        {
+            hash: '#salary',
+            category: '월급 루팡',
+            icon: '🖥️',
+            label: 'OFFICE ESCAPE',
+            title: '월급 루팡',
+            desc: '회사 PC 앞에서 조용히 시간을 녹이는 직장인 전용 콘텐츠입니다. 티 안 나게 웃기고, 짧게 시작해도 은근 오래 붙잡힙니다.',
+            gradient: 'linear-gradient(145deg, #ccfbf1 0%, #99f6e4 52%, #f0fdfa 100%)',
+            accent: '#115e59',
+            chips: ['직장인 밈', 'PC 최적화', '조용한 시간순삭']
         }
     ].map((card) => {
         const tests = latestTests.filter((test) => test.category === card.category);
@@ -205,7 +216,7 @@ export function renderCategorySelection() {
                             <div style="font-size:0.78rem; letter-spacing:0.16em; font-weight:900; color:rgba(255,255,255,0.72); margin-bottom:0.9rem;">CATEGORY GUIDE</div>
                             <div style="font-size:3.1rem; line-height:1; margin-bottom:1rem;">🎭</div>
                             <h2 class="section-title" style="font-size:clamp(2rem,7vw,2.9rem); width:100%; text-align:left; letter-spacing:-0.05em; color:#fff; font-weight:950; margin:0 0 0.8rem;">전체 카테고리 보기</h2>
-                            <p class="text-sub" style="font-weight:650; font-size:1rem; color:rgba(226,232,240,0.92); line-height:1.7; margin:0;">지금 기분에 맞는 테스트를 한 번에 고를 수 있게, 카테고리별 성격과 최신 흐름을 한 화면에 정리했습니다.</p>
+                            <p class="text-sub" style="font-weight:650; font-size:1rem; color:rgba(226,232,240,0.92); line-height:1.7; margin:0;">지금 기분에 맞는 테스트를 한 번에 고를 수 있게, 카테고리별 성격과 최신 흐름을 한 화면에 정리했습니다. 새로 추가된 월급 루팡 카테고리도 여기서 바로 들어갈 수 있습니다.</p>
                         </div>
                         <div style="display:flex; gap:0.55rem; flex-wrap:wrap; margin-top:1.2rem;">
                             <span style="padding:0.5rem 0.78rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); font-size:0.78rem; font-weight:850;">총 ${TESTS.length}개 테스트</span>
@@ -221,6 +232,7 @@ export function renderCategorySelection() {
                                 <div style="font-size:0.92rem; color:#334155; font-weight:750;">가볍게 매력 포인트 보고 싶으면 비주얼/얼굴</div>
                                 <div style="font-size:0.92rem; color:#334155; font-weight:750;">타이밍과 흐름이 궁금하면 오늘의 운세</div>
                                 <div style="font-size:0.92rem; color:#334155; font-weight:750;">친구랑 웃으면서 하기엔 재미/심리</div>
+                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">회사에서 조용히 시간 보내려면 월급 루팡</div>
                             </div>
                         </div>
 
@@ -263,7 +275,7 @@ export async function renderHome(hash) {
                             </div>
                             <div>
                                 <h1 style="font-size:clamp(1.9rem,7.6vw,2.8rem); line-height:1.08; letter-spacing:-0.04em; margin-bottom:0.7rem;">${userName}님을 위한<br>정밀 리포트 허브</h1>
-                                <p style="font-size:0.95rem; color:rgba(226,232,240,0.95); line-height:1.55; max-width: 95%;">심리, 비주얼, 운세, 재미 테스트를 하나의 흐름으로 연결한 고급 분석 경험을 시작하세요.</p>
+                                <p style="font-size:0.95rem; color:rgba(226,232,240,0.95); line-height:1.55; max-width: 95%;">심리, 비주얼, 운세, 재미 테스트에 더해 직장인용 월급 루팡 콘텐츠까지 하나의 흐름으로 둘러보세요.</p>
                             </div>
                             <div style="display:flex; gap:0.6rem; margin-top:1.2rem; flex-wrap:wrap;">
                                 <button class="home-cta-main" onclick="location.hash='#test/${heroTest.id}'" style="border:none; border-radius:14px; padding:0.75rem 1.05rem; background:linear-gradient(135deg,#22d3ee 0%,#6366f1 55%,#7c3aed 100%); color:#fff; font-weight:900; font-size:0.86rem; cursor:pointer; box-shadow:0 12px 24px rgba(99,102,241,0.35);">나를 위한 추천</button>
@@ -311,6 +323,10 @@ export async function renderHome(hash) {
                         <div style="font-size:0.75rem; color:#059669; font-weight:900; margin-bottom:0.22rem;">PLAY MIND</div>
                         <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">재미/심리 큐레이션</div>
                     </div>
+                    <div onclick="location.hash='#salary'" style="cursor:pointer; background:#fff; border:1px solid #e2e8f0; border-radius:16px; padding:0.85rem 0.95rem; box-shadow:0 8px 16px rgba(15,23,42,0.04);">
+                        <div style="font-size:0.75rem; color:#0f766e; font-weight:900; margin-bottom:0.22rem;">OFFICE ESCAPE</div>
+                        <div style="font-size:0.95rem; color:#1e293b; font-weight:800;">월급 루팡 라운지</div>
+                    </div>
                 </section>
 
                 <section style="margin-bottom:1.4rem; display:flex; justify-content:space-between; align-items:center;">
@@ -338,12 +354,33 @@ export async function renderHome(hash) {
         }
     } else {
         const filtered = latestTests.filter(t => t.category === window._currentFilter);
+        const isSalaryCategory = window._currentFilter === '월급 루팡';
         app.innerHTML = `
             <div class="category-page fade-in">
                 <div class="section-header" style="margin-bottom: 2rem;">
                     <h2 class="section-title">${window._currentFilter} 테스트</h2>
                     <span class="text-sub" style="font-weight: 700;">총 ${filtered.length}개</span>
                 </div>
+                ${isSalaryCategory ? `
+                    <section style="margin-bottom:1.6rem; border-radius:28px; padding:1.2rem; background:linear-gradient(145deg,#0f172a 0%, #134e4a 55%, #0f766e 100%); color:#fff; position:relative; overflow:hidden; box-shadow:0 20px 40px rgba(15,23,42,0.16);">
+                        <div style="position:absolute; width:260px; height:260px; top:-130px; right:-90px; border-radius:50%; background:radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 72%);"></div>
+                        <div style="position:relative; z-index:1; display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1rem; align-items:center;">
+                            <div>
+                                <div style="font-size:0.76rem; font-weight:900; letter-spacing:0.14em; color:rgba(255,255,255,0.7); margin-bottom:0.65rem;">FEATURED MINI GAME</div>
+                                <h3 style="font-size:1.8rem; line-height:1.15; letter-spacing:-0.04em; font-weight:950; margin:0 0 0.6rem;">상사 오기 전<br>업무창 위장하기</h3>
+                                <p style="font-size:0.92rem; color:rgba(240,253,250,0.92); line-height:1.72; font-weight:650; max-width:95%;">회사 PC에서 조용히 즐기는 30초 생존 게임입니다. 비회원은 바로 체험, 회원은 최고점 저장과 포인트 획득이 가능합니다.</p>
+                            </div>
+                            <div style="display:grid; gap:0.7rem; align-content:start;">
+                                <div style="display:flex; flex-wrap:wrap; gap:0.45rem;">
+                                    <span style="padding:0.45rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16); font-size:0.75rem; font-weight:850;">무음 플레이</span>
+                                    <span style="padding:0.45rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16); font-size:0.75rem; font-weight:850;">회원 랭킹 저장</span>
+                                    <span style="padding:0.45rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.16); font-size:0.75rem; font-weight:850;">포인트 지급</span>
+                                </div>
+                                <button onclick="location.hash='#salary-tab-shift'" style="border:none; border-radius:18px; padding:0.95rem 1.1rem; background:#fff; color:#0f766e; font-size:0.95rem; font-weight:950; cursor:pointer; box-shadow:0 14px 24px rgba(15,23,42,0.16);">🖥️ 월급 루팡 게임 시작</button>
+                            </div>
+                        </div>
+                    </section>
+                ` : ''}
                 <div class="test-grid">
                     ${filtered.map(t => renderTestCard(t)).join('')}
                 </div>

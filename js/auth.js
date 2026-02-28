@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-init.js?v=8.3.2';
+import { auth, db } from './firebase-init.js?v=8.4.0';
 import { 
     EMOJI_SHOP, 
     ITEM_VALUES, 
@@ -271,7 +271,7 @@ export async function handleEmojiExchange(emoji) {
         alert("아이콘이 변경되었습니다!");
         updateUI();
         if (location.hash === '#profile') {
-            const { renderProfile } = await import('./pages/profile.js?v=8.3.2');
+            const { renderProfile } = await import('./pages/profile.js?v=8.4.0');
             renderProfile();
         }
     }
@@ -288,7 +288,7 @@ export async function changeNameColor(color) {
             alert("닉네임 색상이 변경되었습니다!");
             updateUI();
             if (location.hash === '#profile') {
-                const { renderProfile } = await import('./pages/profile.js?v=8.3.2');
+                const { renderProfile } = await import('./pages/profile.js?v=8.4.0');
                 renderProfile();
             }
         } catch (e) {
@@ -314,7 +314,7 @@ export async function changeNickname() {
             alert("닉네임이 변경되었습니다!");
             updateUI();
             if (location.hash === '#profile') {
-                const { renderProfile } = await import('./pages/profile.js?v=8.3.2');
+                const { renderProfile } = await import('./pages/profile.js?v=8.4.0');
                 renderProfile();
             }
         } catch (e) {

@@ -1,17 +1,18 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=8.3.2';
-import { copyLink } from './share.js?v=8.3.2';
-import { renderBoard } from './board.js?v=8.3.2';
-import { renderRanking } from './ranking.js?v=8.3.2';
-import { db } from './firebase-init.js?v=8.3.2';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=8.4.0';
+import { copyLink } from './share.js?v=8.4.0';
+import { renderBoard } from './board.js?v=8.4.0';
+import { renderRanking } from './ranking.js?v=8.4.0';
+import { db } from './firebase-init.js?v=8.4.0';
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.3.2';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.3.2';
-import { renderProfile } from './pages/profile.js?v=8.3.2';
-import { renderAdmin } from './pages/admin.js?v=8.3.2';
-import { renderArcade } from './pages/arcade-page.js?v=8.3.2';
-import { renderTestExecution, renderResult } from './pages/tests.js?v=8.3.2';
-import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.3.2';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.4.0';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.4.0';
+import { renderProfile } from './pages/profile.js?v=8.4.0';
+import { renderAdmin } from './pages/admin.js?v=8.4.0';
+import { renderArcade } from './pages/arcade-page.js?v=8.4.0';
+import { renderTestExecution, renderResult } from './pages/tests.js?v=8.4.0';
+import { renderSalaryGame } from './pages/salary.js?v=8.4.0';
+import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.4.0';
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80";
 
@@ -42,7 +43,7 @@ async function addPoints(amount, reason) {
 // =================================================================
 
 const categoryMap = {
-    '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미',
+    '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', '#salary': '월급 루팡',
     '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드', '#news': '공지'
 };
 let currentFilter = '전체';
@@ -89,7 +90,7 @@ async function router() {
         });
 
         // 즉시 렌더링 가능한 페이지 (비회원 접근 허용)
-        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board'];
+        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board', '#salary-tab-shift'];
         if (!instantPages.includes(hash) && !hash.startsWith('#test/')) {
             await authReady;
         }
@@ -107,6 +108,7 @@ async function router() {
         else if (hash === '#profile') renderProfile();
         else if (hash === '#admin') renderAdmin();
         else if (hash === '#7check') renderCategorySelection();
+        else if (hash === '#salary-tab-shift') await renderSalaryGame();
         else if (hash.startsWith('#test/')) renderTestExecution(hash.split('/')[1]);
         else {
             currentFilter = categoryMap[hash] || '전체';

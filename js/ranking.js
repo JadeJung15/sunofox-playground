@@ -1,8 +1,8 @@
-import { db } from './firebase-init.js?v=8.3.2';
+import { db } from './firebase-init.js?v=8.4.0';
 import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function renderRanking(container) {
-    let currentTab = 'score'; // 'score', 'points', 'activity'
+    let currentTab = 'score'; // 'score', 'points', 'activity', 'salary'
 
     const renderBaseUI = () => {
         container.innerHTML = `
@@ -13,10 +13,11 @@ export async function renderRanking(container) {
                     <p style="opacity: 0.9; font-size: 1.1rem; font-weight: 600; position: relative;">각 분야의 정점에 선 수집가들</p>
                 </div>
 
-                <div class="ranking-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 2rem; justify-content: center; background: var(--bg-color); padding: 0.5rem; border-radius: 50px; border: 1px solid var(--border-color); max-width: 500px; margin-left: auto; margin-right: auto;">
+                <div class="ranking-tabs" style="display: flex; gap: 0.5rem; margin-bottom: 2rem; justify-content: center; background: var(--bg-color); padding: 0.5rem; border-radius: 50px; border: 1px solid var(--border-color); max-width: 720px; margin-left: auto; margin-right: auto; flex-wrap: wrap;">
                     <button class="tab-btn ${currentTab === 'score' ? 'active' : ''}" data-tab="score" style="flex:1; padding: 0.8rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; background: ${currentTab === 'score' ? 'var(--accent-color)' : 'transparent'}; color: ${currentTab === 'score' ? '#fff' : 'var(--text-sub)'}">💎 아이템 점수</button>
                     <button class="tab-btn ${currentTab === 'points' ? 'active' : ''}" data-tab="points" style="flex:1; padding: 0.8rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; background: ${currentTab === 'points' ? 'var(--accent-secondary)' : 'transparent'}; color: ${currentTab === 'points' ? '#fff' : 'var(--text-sub)'}">💰 보유 자산</button>
                     <button class="tab-btn ${currentTab === 'activity' ? 'active' : ''}" data-tab="activity" style="flex:1; padding: 0.8rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; background: ${currentTab === 'activity' ? '#10b981' : 'transparent'}; color: ${currentTab === 'activity' ? '#fff' : 'var(--text-sub)'}">🎮 오락실 활동</button>
+                    <button class="tab-btn ${currentTab === 'salary' ? 'active' : ''}" data-tab="salary" style="flex:1; padding: 0.8rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; background: ${currentTab === 'salary' ? '#0f766e' : 'transparent'}; color: ${currentTab === 'salary' ? '#fff' : 'var(--text-sub)'}">🖥️ 월급 루팡</button>
                 </div>
 
                 <div class="ranking-list-container" id="ranking-list" style="display: flex; flex-direction: column; gap: 1rem; max-width: 800px; margin: 0 auto;">
@@ -42,10 +43,51 @@ export async function renderRanking(container) {
         const SPECIAL_EMOJIS = {
             score: ['👑', '💎', '🌟', '✨', '⭐'],
             points: ['💰', '💵', '💸', '🪙', '💳'],
-            activity: ['🕹️', '🎮', '⚡', '🔥', '🍀']
+            activity: ['🕹️', '🎮', '⚡', '🔥', '🍀'],
+            salary: ['🖥️', '⌨️', '📊', '🫥', '🚨']
         };
 
         try {
+            if (currentTab === 'salary') {
+                const salaryQuery = query(collection(db, "users"), orderBy("salaryGames.tabShift.bestScore", "desc"), limit(100));
+                const salarySnap = await getDocs(salaryQuery);
+                const salaryUsers = salarySnap.docs
+                    .filter(doc => doc.id !== ADMIN_UID)
+                    .map(d => ({ id: d.id, ...d.data() }))
+                    .filter(user => !user.isMaster && (user.salaryGames?.tabShift?.bestScore || 0) > 0)
+                    .slice(0, 10);
+
+                listContainer.innerHTML = salaryUsers.length ? salaryUsers.map((data, idx) => {
+                    const rank = idx + 1;
+                    const isTop3 = rank <= 3;
+                    const specialStyle = rank === 1
+                        ? 'background: linear-gradient(135deg, rgba(15,118,110,0.16) 0%, rgba(15,118,110,0.04) 100%); border: 2px solid #0f766e;'
+                        : (isTop3 ? 'border-left: 4px solid #0f766e;' : '');
+                    const gameStats = data.salaryGames?.tabShift || {};
+                    return `
+                        <div class="card ranking-item" style="display: flex; align-items: center; padding: 1.25rem 1.5rem; gap: 1.5rem; ${specialStyle} position: relative; overflow: hidden;">
+                            <div class="rank-number" style="font-size: ${isTop3 ? '1.8rem' : '1.2rem'}; font-weight: 900; width: 40px; text-align: center; color: ${isTop3 ? '#0f766e' : 'var(--text-sub)'}">${rank}</div>
+                            <div class="rank-avatar author-emoji-circle" style="width: 55px; height: 55px; font-size: 1.8rem; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid ${isTop3 ? '#0f766e' : 'var(--border-color)'};">
+                                ${data.emoji || SPECIAL_EMOJIS.salary[idx] || '👤'}
+                            </div>
+                            <div class="rank-info" style="flex: 1;">
+                                <div style="display: flex; align-items: center; gap: 8px;">
+                                    <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="margin-left:4px;">${SPECIAL_EMOJIS.salary[idx] || ''}</span></h4>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
+                                    최고점: <strong style="color:#0f766e; font-size: 1rem;">${(gameStats.bestScore || 0).toLocaleString()}</strong>
+                                    <span style="margin: 0 8px; opacity: 0.3;">|</span>
+                                    플레이: <strong style="color: var(--text-main); font-size: 0.9rem;">${(gameStats.plays || 0).toLocaleString()}회</strong>
+                                    <span style="margin: 0 8px; opacity: 0.3;">|</span>
+                                    위장 성공: <strong style="color: var(--text-main); font-size: 0.9rem;">${(gameStats.totalSaved || 0).toLocaleString()}회</strong>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('') : '<p style="text-align:center; padding:2rem; color:var(--text-sub);">아직 월급 루팡 게임 기록이 없습니다.</p>';
+                return;
+            }
+
             // 충분한 양의 유저 데이터를 가져와서 모든 랭킹을 클라이언트에서 계산
             const q = query(collection(db, "users"), orderBy("totalScore", "desc"), limit(100));
             const snap = await getDocs(q);

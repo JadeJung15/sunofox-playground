@@ -17,6 +17,7 @@
   --radius-md: 12px;
   --radius-sm: 8px;
   --nav-height: 110px;
+  --color-salary: #0f766e;
 }
 
 
@@ -223,6 +224,7 @@ header {
 .nav-link[data-filter="성격"].active { background: var(--color-personality); }
 .nav-link[data-filter="얼굴"].active { background: var(--color-face); }
 .nav-link[data-filter="사주"].active { background: var(--color-fortune); }
+.nav-link[data-filter="월급 루팡"].active { background: var(--color-salary); }
 .nav-link[data-filter="게시판"].active { background: var(--color-board); }
 .nav-link[data-filter="오락실"].active { background: var(--color-arcade); }
 .nav-link[data-filter="랭킹"].active { background: var(--color-ranking); }
@@ -249,6 +251,8 @@ header {
 .test-card[data-cat="사주"]:hover { border-color: var(--color-fortune); }
 .test-card[data-cat="재미"] .test-category-tag { color: var(--color-fun); background: rgba(16, 185, 129, 0.1); }
 .test-card[data-cat="재미"]:hover { border-color: var(--color-fun); }
+.test-card[data-cat="월급 루팡"] .test-category-tag { color: var(--color-salary); background: rgba(15, 118, 110, 0.1); }
+.test-card[data-cat="월급 루팡"]:hover { border-color: var(--color-salary); }
 
 /* Layout & Grid */
 main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80vh; }
