@@ -3,8 +3,16 @@ import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.
 
 export async function renderRanking(container) {
     let currentTab = 'score'; // 'score', 'points', 'activity', 'salary'
+    let currentSalaryGame = 'tabShift';
 
     const renderBaseUI = () => {
+        const salarySubtabs = currentTab === 'salary' ? `
+            <div class="salary-ranking-subtabs" style="display:flex; gap:0.5rem; justify-content:center; flex-wrap:wrap; margin-top:-0.6rem; margin-bottom:1.4rem;">
+                <button class="salary-subtab-btn" data-game="tabShift" style="border:none; border-radius:999px; padding:0.58rem 0.95rem; font-weight:850; cursor:pointer; background:${currentSalaryGame === 'tabShift' ? '#0f766e' : 'rgba(15,118,110,0.1)'}; color:${currentSalaryGame === 'tabShift' ? '#fff' : '#0f766e'};">🖥️ 업무창 위장하기</button>
+                <button class="salary-subtab-btn" data-game="inboxZero" style="border:none; border-radius:999px; padding:0.58rem 0.95rem; font-weight:850; cursor:pointer; background:${currentSalaryGame === 'inboxZero' ? '#2563eb' : 'rgba(37,99,235,0.1)'}; color:${currentSalaryGame === 'inboxZero' ? '#fff' : '#2563eb'};">📨 메일 분류하기</button>
+            </div>
+        ` : '';
+
         container.innerHTML = `
             <div class="ranking-page fade-in">
                 <div class="card ranking-header" style="text-align:center; padding: 3rem 1.5rem; background: linear-gradient(135deg, #1e293b, #334155); color: #fff; border: none; margin-bottom: 2rem; border-radius: var(--radius-lg); position: relative; overflow: hidden;">
@@ -19,6 +27,7 @@ export async function renderRanking(container) {
                     <button class="tab-btn ${currentTab === 'activity' ? 'active' : ''}" data-tab="activity" style="flex:1; padding: 0.8rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; background: ${currentTab === 'activity' ? '#10b981' : 'transparent'}; color: ${currentTab === 'activity' ? '#fff' : 'var(--text-sub)'}">🎮 오락실 활동</button>
                     <button class="tab-btn ${currentTab === 'salary' ? 'active' : ''}" data-tab="salary" style="flex:1; padding: 0.8rem; border-radius: 50px; border: none; font-weight: 800; cursor: pointer; transition: 0.3s; background: ${currentTab === 'salary' ? '#0f766e' : 'transparent'}; color: ${currentTab === 'salary' ? '#fff' : 'var(--text-sub)'}">🖥️ 월급 루팡</button>
                 </div>
+                ${salarySubtabs}
 
                 <div class="ranking-list-container" id="ranking-list" style="display: flex; flex-direction: column; gap: 1rem; max-width: 800px; margin: 0 auto;">
                     <div style="text-align:center; padding: 3rem;"><div class="loading-spinner">데이터를 분석 중...</div></div>
@@ -29,6 +38,14 @@ export async function renderRanking(container) {
         container.querySelectorAll('.tab-btn').forEach(btn => {
             btn.onclick = () => {
                 currentTab = btn.dataset.tab;
+                renderBaseUI();
+                loadData();
+            };
+        });
+
+        container.querySelectorAll('.salary-subtab-btn').forEach(btn => {
+            btn.onclick = () => {
+                currentSalaryGame = btn.dataset.game;
                 renderBaseUI();
                 loadData();
             };
@@ -44,42 +61,47 @@ export async function renderRanking(container) {
             score: ['👑', '💎', '🌟', '✨', '⭐'],
             points: ['💰', '💵', '💸', '🪙', '💳'],
             activity: ['🕹️', '🎮', '⚡', '🔥', '🍀'],
-            salary: ['🖥️', '⌨️', '📊', '🫥', '🚨']
+            salary: ['🖥️', '⌨️', '📊', '🫥', '🚨'],
+            inboxZero: ['📨', '📬', '📎', '🗂️', '📌']
         };
 
         try {
             if (currentTab === 'salary') {
-                const salaryQuery = query(collection(db, "users"), orderBy("salaryGames.tabShift.bestScore", "desc"), limit(100));
+                const salaryField = currentSalaryGame === 'inboxZero' ? 'salaryGames.inboxZero.bestScore' : 'salaryGames.tabShift.bestScore';
+                const salaryTitle = currentSalaryGame === 'inboxZero' ? '메일 분류 최고점' : '업무창 위장 최고점';
+                const salaryAccent = currentSalaryGame === 'inboxZero' ? '#2563eb' : '#0f766e';
+                const salaryBadges = currentSalaryGame === 'inboxZero' ? SPECIAL_EMOJIS.inboxZero : SPECIAL_EMOJIS.salary;
+                const salaryQuery = query(collection(db, "users"), orderBy(salaryField, "desc"), limit(100));
                 const salarySnap = await getDocs(salaryQuery);
                 const salaryUsers = salarySnap.docs
                     .filter(doc => doc.id !== ADMIN_UID)
                     .map(d => ({ id: d.id, ...d.data() }))
-                    .filter(user => !user.isMaster && (user.salaryGames?.tabShift?.bestScore || 0) > 0)
+                    .filter(user => !user.isMaster && ((currentSalaryGame === 'inboxZero' ? user.salaryGames?.inboxZero?.bestScore : user.salaryGames?.tabShift?.bestScore) || 0) > 0)
                     .slice(0, 10);
 
                 listContainer.innerHTML = salaryUsers.length ? salaryUsers.map((data, idx) => {
                     const rank = idx + 1;
                     const isTop3 = rank <= 3;
                     const specialStyle = rank === 1
-                        ? 'background: linear-gradient(135deg, rgba(15,118,110,0.16) 0%, rgba(15,118,110,0.04) 100%); border: 2px solid #0f766e;'
-                        : (isTop3 ? 'border-left: 4px solid #0f766e;' : '');
-                    const gameStats = data.salaryGames?.tabShift || {};
+                        ? `background: linear-gradient(135deg, ${salaryAccent}29 0%, ${salaryAccent}0a 100%); border: 2px solid ${salaryAccent};`
+                        : (isTop3 ? `border-left: 4px solid ${salaryAccent};` : '');
+                    const gameStats = currentSalaryGame === 'inboxZero' ? (data.salaryGames?.inboxZero || {}) : (data.salaryGames?.tabShift || {});
                     return `
                         <div class="card ranking-item" style="display: flex; align-items: center; padding: 1.25rem 1.5rem; gap: 1.5rem; ${specialStyle} position: relative; overflow: hidden;">
-                            <div class="rank-number" style="font-size: ${isTop3 ? '1.8rem' : '1.2rem'}; font-weight: 900; width: 40px; text-align: center; color: ${isTop3 ? '#0f766e' : 'var(--text-sub)'}">${rank}</div>
-                            <div class="rank-avatar author-emoji-circle" style="width: 55px; height: 55px; font-size: 1.8rem; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid ${isTop3 ? '#0f766e' : 'var(--border-color)'};">
-                                ${data.emoji || SPECIAL_EMOJIS.salary[idx] || '👤'}
+                            <div class="rank-number" style="font-size: ${isTop3 ? '1.8rem' : '1.2rem'}; font-weight: 900; width: 40px; text-align: center; color: ${isTop3 ? salaryAccent : 'var(--text-sub)'}">${rank}</div>
+                            <div class="rank-avatar author-emoji-circle" style="width: 55px; height: 55px; font-size: 1.8rem; background: var(--card-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid ${isTop3 ? salaryAccent : 'var(--border-color)'};">
+                                ${data.emoji || salaryBadges[idx] || '👤'}
                             </div>
                             <div class="rank-info" style="flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="margin-left:4px;">${SPECIAL_EMOJIS.salary[idx] || ''}</span></h4>
+                                    <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="margin-left:4px;">${salaryBadges[idx] || ''}</span></h4>
                                 </div>
                                 <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
-                                    최고점: <strong style="color:#0f766e; font-size: 1rem;">${(gameStats.bestScore || 0).toLocaleString()}</strong>
+                                    ${salaryTitle}: <strong style="color:${salaryAccent}; font-size: 1rem;">${(gameStats.bestScore || 0).toLocaleString()}</strong>
                                     <span style="margin: 0 8px; opacity: 0.3;">|</span>
                                     플레이: <strong style="color: var(--text-main); font-size: 0.9rem;">${(gameStats.plays || 0).toLocaleString()}회</strong>
-                                    <span style="margin: 0 8px; opacity: 0.3;">|</span>
-                                    위장 성공: <strong style="color: var(--text-main); font-size: 0.9rem;">${(gameStats.totalSaved || 0).toLocaleString()}회</strong>
+                                    ${currentSalaryGame === 'tabShift' ? `<span style="margin: 0 8px; opacity: 0.3;">|</span>
+                                    위장 성공: <strong style="color: var(--text-main); font-size: 0.9rem;">${(gameStats.totalSaved || 0).toLocaleString()}회</strong>` : ''}
                                 </div>
                             </div>
                         </div>
