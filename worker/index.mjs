@@ -64,6 +64,7 @@ function json(data, status = 200, headers = {}) {
         status,
         headers: {
             "Content-Type": "application/json; charset=utf-8",
+            "Cache-Control": "no-store, max-age=0",
             ...headers
         }
     });
@@ -112,13 +113,17 @@ function normalizePayload(input) {
         themePreset: normalizeThemeId(input.themePreset),
         languageMode: input.languageMode === "KR_EN_MIX" ? "KR_EN_MIX" : "KR_ONLY",
         energyMode: normalizeEnergyMode(input.energyMode),
-        youtubeMode: input.youtubeMode !== false
+        youtubeMode: input.youtubeMode !== false,
+        requestId: normalizeText(input.nonce)
     };
 }
 
 function validatePayload(payload) {
     if (!payload.genrePreset) {
         return "genrePreset is required";
+    }
+    if (!payload.requestId) {
+        return "nonce is required";
     }
     return null;
 }
@@ -145,9 +150,11 @@ function buildPrompt(payload) {
         `Energy: ${payload.energyMode} (${ENERGY_GUIDE[payload.energyMode]})`,
         `Language mode: ${payload.languageMode}`,
         `YouTube mode: ${payload.youtubeMode ? "on" : "off"}`,
+        `requestId: ${payload.requestId}`,
         "",
         languageRule,
         youtubeRule,
+        "Each request must produce fresh wording and a new hook.",
         "Female anime-style late-teen vocal tone. Emotional electronic / anime OST sensibility."
     ].join("\n");
 }
@@ -170,6 +177,7 @@ async function callProvider(env, payload) {
 
     const response = await fetch(`${baseUrl.replace(/\/$/, "")}${OPENAI_CHAT_COMPLETIONS_PATH}`, {
         method: "POST",
+        cache: "no-store",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${apiKey}`
@@ -225,7 +233,11 @@ export default {
             return json({ ok: true });
         }
 
-        if (request.method !== "POST" || url.pathname !== "/api/generate") {
+        if (url.pathname === "/api/generate" && request.method !== "POST") {
+            return json({ error: "Method not allowed" }, 405, corsHeaders || {});
+        }
+
+        if (url.pathname !== "/api/generate") {
             return json({ error: "Not found" }, 404);
         }
 

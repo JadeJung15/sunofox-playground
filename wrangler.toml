@@ -2,8 +2,11 @@ name = "sunofox-generate-worker"
 main = "worker/index.mjs"
 compatibility_date = "2026-02-28"
 
+routes = [
+  { pattern = "7checkfox.com/api/*", zone_name = "7checkfox.com" }
+]
+
 [vars]
-# Set this to your frontend origin, e.g. https://your-domain.com
-CORS_ALLOWED_ORIGIN = ""
-OPENAI_COMPAT_BASE_URL = ""
-OPENAI_MODEL = ""
+CORS_ALLOWED_ORIGIN = "https://7checkfox.com"
+OPENAI_COMPAT_BASE_URL = "https://api.openai.com/v1"
+OPENAI_MODEL = "gpt-4.1-mini"

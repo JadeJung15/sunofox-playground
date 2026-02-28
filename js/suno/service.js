@@ -27,7 +27,8 @@ function normalizeRequestPayload(preset, options = {}) {
         themePreset: cleanText(options.themePreset) || "reunion_promise",
         languageMode: options.languageMode === "KR_EN_MIX" ? "KR_EN_MIX" : "KR_ONLY",
         energyMode: cleanText(options.energyMode) || "emotional",
-        youtubeMode: options.youtubeMode !== false
+        youtubeMode: options.youtubeMode !== false,
+        nonce: crypto.randomUUID()
     };
 }
 
@@ -39,6 +40,7 @@ export async function generateSunoDraft(preset, rawOptions) {
     try {
         const response = await fetch(getEndpointUrl(), {
             method: "POST",
+            cache: "no-store",
             headers: {
                 "Content-Type": "application/json"
             },
@@ -56,11 +58,7 @@ export async function generateSunoDraft(preset, rawOptions) {
             throw new Error("Invalid response shape");
         }
 
-        return {
-            title: responseBody.title.trim(),
-            style: responseBody.style.trim(),
-            lyrics: responseBody.lyrics.trim()
-        };
+        return responseBody;
     } finally {
         clearTimeout(timeoutId);
     }

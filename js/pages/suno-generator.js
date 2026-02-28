@@ -63,7 +63,7 @@ function getBundledDraftText() {
     }, null, 2);
 }
 
-async function handleGenerate(variation = false) {
+async function handleGenerate() {
     if (!isUnlocked()) {
         alert("하단 Admin 링크에서 인증을 완료해 주세요.");
         return;
@@ -74,9 +74,6 @@ async function handleGenerate(variation = false) {
 
     try {
         const preset = getSelectedPreset();
-        if (variation) {
-            state.options.youtubeMode = true;
-        }
         state.draft = await generateSunoDraft(preset, state.options);
     } catch (error) {
         console.error("Suno draft generation failed:", error);
@@ -194,8 +191,8 @@ function bindPageEvents() {
         });
     });
 
-    app.querySelector("#suno-generate-btn")?.addEventListener("click", () => handleGenerate(false));
-    app.querySelector("#suno-variation-btn")?.addEventListener("click", () => handleGenerate(true));
+    app.querySelector("#suno-generate-btn")?.addEventListener("click", handleGenerate);
+    app.querySelector("#suno-variation-btn")?.addEventListener("click", handleGenerate);
     app.querySelector("#suno-save-btn")?.addEventListener("click", handleSave);
 
     app.querySelectorAll("[data-copy-field]").forEach((button) => {
