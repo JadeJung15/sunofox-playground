@@ -109,6 +109,7 @@ export async function renderResult(testId, traitScores) {
         .filter(t => t.id !== testId)
         .sort(() => 0.5 - Math.random())
         .slice(0, 3);
+    const surpriseTest = recommendedTests[0];
 
     app.innerHTML = `
         <div class="aura-bg-container">
@@ -196,7 +197,13 @@ export async function renderResult(testId, traitScores) {
                         <button id="save-story-btn" class="btn-secondary" style="height: 55px; font-weight: 800; font-size: 1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;"><span>📸</span> 이미지 저장</button>
                     </div>
 
-                    <div style="margin-top: 1.5rem;" data-html2canvas-ignore="true">
+                    <div style="margin-top: 1rem;" data-html2canvas-ignore="true">
+                        <button id="result-random-test-btn" class="btn-primary" style="width:100%; height:56px; border:none; border-radius:18px; background:linear-gradient(135deg,#111827 0%, #334155 50%, ${themeColor} 100%); color:#fff; font-size:0.98rem; font-weight:850; display:flex; align-items:center; justify-content:center; gap:0.55rem; box-shadow:0 14px 28px rgba(15,23,42,0.16);">
+                            <span>🎲</span> 나를 위한 다른 추천 보기
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 0.85rem;" data-html2canvas-ignore="true">
                         <button class="btn-secondary" style="width:100%; border:none; color:var(--text-sub); font-size:0.9rem; font-weight:700;" onclick="location.hash='#home'">← 홈으로 돌아가기</button>
                     </div>
 
@@ -312,6 +319,13 @@ export async function renderResult(testId, traitScores) {
             if (success) alert("공유용 고해상도 리포트가 저장되었습니다! 📸\n30P가 적립되었습니다.");
             storyBtn.disabled = false;
             storyBtn.innerHTML = "<span>📸</span> 공유이미지 저장";
+        };
+    }
+
+    const randomTestBtn = document.getElementById('result-random-test-btn');
+    if (randomTestBtn && surpriseTest) {
+        randomTestBtn.onclick = () => {
+            location.hash = `#test/${surpriseTest.id}`;
         };
     }
 }
