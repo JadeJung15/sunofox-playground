@@ -11,6 +11,10 @@ function getShareUrl(testId) {
     return `${window.location.origin}/?test=${testId}`;
 }
 
+function scrollTestViewToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
 export async function renderResult(testId, traitScores) {
     const app = document.getElementById('app');
     const test = TESTS.find(t => t.id === testId);
@@ -334,6 +338,9 @@ export function renderTestExecution(testId) {
     const app = document.getElementById('app');
     const test = TESTS.find(t => t.id === testId);
     if (!test) return;
+    const introSurpriseTest = TESTS
+        .filter((candidate) => candidate.id !== testId)
+        .sort(() => 0.5 - Math.random())[0];
     let step = 0;
     
     // Initialize traitScores dynamically based on test configuration or default to standard traits
@@ -358,6 +365,11 @@ export function renderTestExecution(testId) {
         app.innerHTML = `
             <div class="test-page-wrapper" style="min-height: 100vh; background: ${pageBg};">
                 <div class="test-intro-container fade-in" style="padding: 4rem 1.5rem 4rem; max-width: 500px; margin: 0 auto; text-align: center;">
+                    <div style="display:flex; justify-content:center; margin-bottom:1.1rem;">
+                        <button id="test-surprise-btn" class="btn-secondary" style="width:auto; max-width:100%; padding:0.9rem 1.2rem; border-radius:999px; font-size:0.9rem; font-weight:850; display:flex; align-items:center; justify-content:center; gap:0.45rem; background:rgba(255,255,255,0.72); border:1px solid rgba(0,0,0,0.05); box-shadow:0 10px 22px rgba(15,23,42,0.05);">
+                            <span>🎲</span> 나를 위한 다른 추천 보기
+                        </button>
+                    </div>
                     <div class="test-visual-header" style="margin-top: 1rem; margin-bottom: 2.5rem; position: relative;">
                         <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.9;">✨</div>
                         <span class="test-category-tag" style="display: inline-block; font-size: 0.85rem; font-weight: 800; color: var(--accent-color); background: rgba(255, 255, 255, 0.7); padding: 6px 16px; border-radius: 50px; letter-spacing: 0.05em; margin-bottom: 1rem; border: 1px solid rgba(0,0,0,0.05);">
@@ -382,7 +394,17 @@ export function renderTestExecution(testId) {
         `;
 
         const startBtn = document.getElementById('test-start-btn');
-        if (startBtn) startBtn.onclick = () => updateStep();
+        if (startBtn) startBtn.onclick = () => {
+            scrollTestViewToTop();
+            updateStep();
+        };
+
+        const surpriseBtn = document.getElementById('test-surprise-btn');
+        if (surpriseBtn && introSurpriseTest) {
+            surpriseBtn.onclick = () => {
+                location.hash = `#test/${introSurpriseTest.id}`;
+            };
+        }
 
         const shareBtn = document.getElementById('test-share-btn');
         if (shareBtn) {
@@ -446,6 +468,8 @@ export function renderTestExecution(testId) {
             </div>
         `;
 
+        scrollTestViewToTop();
+
         window.handleAnswer = (idx) => {
             const opt = q.options[idx];
             history.push({ traitScores: { ...traitScores }, step: step });
@@ -462,6 +486,7 @@ export function renderTestExecution(testId) {
             }
 
             step++;
+            scrollTestViewToTop();
             updateStep();
         };
     };
