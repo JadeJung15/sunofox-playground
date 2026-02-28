@@ -211,22 +211,36 @@ const initDropdown = () => {
     const dropbtn = document.querySelector('.nav-dropbtn');
     const dropdownContent = document.querySelector('.dropdown-content');
 
-    if (!dropbtn || !dropdownContent) return;
+    if (!dropbtn || !dropdownContent || !dropdown) return;
 
     // 기존 리스너 제거 (중복 방지) 및 새 리스너 등록
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
+    // 모바일 클릭/터치 이벤트
     newBtn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         const isActive = dropdownContent.classList.contains('is-active');
-        
+
         // 다른 열려있는 드롭다운 닫기
         document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
-        
+
         if (!isActive) {
             dropdownContent.classList.add('is-active');
+        }
+    });
+
+    // PC 호버 이벤트 (JS로 한 번 더 확실하게 처리)
+    dropdown.addEventListener('mouseenter', () => {
+        if (window.innerWidth > 768) {
+            dropdownContent.classList.add('is-active');
+        }
+    });
+
+    dropdown.addEventListener('mouseleave', () => {
+        if (window.innerWidth > 768) {
+            dropdownContent.classList.remove('is-active');
         }
     });
 
@@ -244,7 +258,6 @@ const initDropdown = () => {
         }
     });
 };
-
 // DOM 로드 완료 후 실행
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initDropdown);
