@@ -5,6 +5,14 @@ import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/f
 import { soundManager } from './sound.js';
 
 let arcadeInitialized = false;
+let timingRushState = { active: false, intervalId: null, value: 0, direction: 1 };
+const LUCKY_DRAW_COOLDOWN_MS = 5 * 60 * 1000;
+const MINING_COOLDOWN_MS = 2200;
+const WEEKLY_ARCADE_MILESTONES = [
+    { goal: 5, reward: 150, label: '워밍업 달성', desc: '한 주에 오락실 5판 플레이' },
+    { goal: 12, reward: 400, label: '루팡 루틴 완성', desc: '오락실 12판 달성 후 중간 보너스 수령' },
+    { goal: 25, reward: 1000, label: '주간 오락실 지배자', desc: '오락실 25판 달성 후 대형 보너스 수령' }
+];
 
 export function initArcade() {
     if (!arcadeInitialized) {
@@ -37,12 +45,19 @@ export function initArcade() {
             if (target.id === 'market-open-btn') renderMarketUI();
             
             if (target.id === 'click-game-btn') await playClickGame();
+            if (target.id === 'lucky-draw-btn') await playLuckyDraw();
             if (target.id === 'slot-spin-btn') await playSlotMachine();
+            if (target.id === 'coin-heads-btn') await playCoinFlip('heads');
+            if (target.id === 'coin-tails-btn') await playCoinFlip('tails');
+            if (target.id === 'timing-rush-btn') await playTimingRush();
             if (target.id === 'bomb-start-btn') await startBombGame();
             if (target.classList && target.classList.contains('wire-btn')) await cutWire(parseInt(target.dataset.wire));
             if (target.id === 'bomb-claim-btn') await claimBombPoints();
             if (target.id === 'daily-checkin-btn') await playDailyCheckin();
             if (target.id === 'buy-booster-btn') await buyBoosterPack();
+            if (target.classList && target.classList.contains('weekly-claim-btn')) {
+                await claimWeeklyArcadeReward(parseInt(target.dataset.goal, 10));
+            }
             
             if (target.classList && target.classList.contains('bet-btn')) {
                 const gameType = target.dataset.game;
@@ -78,11 +93,156 @@ export function updateAlchemyCounts() {
 async function updateArcadeStat(statKey) {
     if (!UserState.user) return;
     try {
+        const weeklyState = getWeeklyArcadeState();
         const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { [`arcadeStats.${statKey}`]: increment(1) });
+        await updateDoc(userRef, {
+            [`arcadeStats.${statKey}`]: increment(1),
+            'arcadeWeekly.weekKey': weeklyState.weekKey,
+            'arcadeWeekly.plays': increment(1),
+            'arcadeWeekly.claimedMilestones': weeklyState.claimedMilestones
+        });
         if (!UserState.data.arcadeStats) UserState.data.arcadeStats = {};
         UserState.data.arcadeStats[statKey] = (UserState.data.arcadeStats[statKey] || 0) + 1;
+        UserState.data.arcadeWeekly = {
+            weekKey: weeklyState.weekKey,
+            plays: weeklyState.plays + 1,
+            claimedMilestones: [...weeklyState.claimedMilestones]
+        };
+        renderDailyQuests();
     } catch (e) { console.error(e); }
+}
+
+function getSeoulDateParts(date = new Date()) {
+    const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Seoul',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).formatToParts(date);
+    const get = (type) => parts.find(part => part.type === type)?.value;
+    return {
+        year: Number(get('year')),
+        month: Number(get('month')),
+        day: Number(get('day'))
+    };
+}
+
+function formatWeekDateKey(date) {
+    return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
+}
+
+function getCurrentArcadeWeekKey() {
+    const { year, month, day } = getSeoulDateParts();
+    const utcDate = new Date(Date.UTC(year, month - 1, day));
+    const dayOfWeek = utcDate.getUTCDay();
+    const mondayOffset = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    utcDate.setUTCDate(utcDate.getUTCDate() - mondayOffset);
+    return formatWeekDateKey(utcDate);
+}
+
+function getWeeklyArcadeState() {
+    const currentWeekKey = getCurrentArcadeWeekKey();
+    const saved = UserState.data?.arcadeWeekly || {};
+    const claimedMilestones = Array.isArray(saved.claimedMilestones) ? saved.claimedMilestones.map(Number) : [];
+    if (saved.weekKey !== currentWeekKey) {
+        return {
+            weekKey: currentWeekKey,
+            plays: 0,
+            claimedMilestones: []
+        };
+    }
+    return {
+        weekKey: currentWeekKey,
+        plays: Number(saved.plays || 0),
+        claimedMilestones
+    };
+}
+
+function renderWeeklyArcadeBonus() {
+    const weeklyEl = document.getElementById('weekly-arcade-bonus');
+    if (!weeklyEl || !UserState.user || !UserState.data) return;
+
+    const weeklyState = getWeeklyArcadeState();
+    const maxGoal = WEEKLY_ARCADE_MILESTONES[WEEKLY_ARCADE_MILESTONES.length - 1].goal;
+    const progressRatio = Math.min(100, Math.round((weeklyState.plays / maxGoal) * 100));
+    const nextMilestone = WEEKLY_ARCADE_MILESTONES.find(item => weeklyState.plays < item.goal);
+
+    weeklyEl.innerHTML = `
+        <div style="border-radius:22px; padding:1.05rem; background:linear-gradient(145deg,#0f172a,#312e81 55%,#0f766e); color:#fff; box-shadow:0 18px 34px rgba(15,23,42,0.16);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.9rem; flex-wrap:wrap; margin-bottom:0.9rem;">
+                <div>
+                    <div style="font-size:0.74rem; letter-spacing:0.12em; font-weight:900; color:rgba(255,255,255,0.7); margin-bottom:0.24rem;">WEEKLY BONUS LOOP</div>
+                    <h4 style="margin:0 0 0.28rem; font-size:1.2rem; font-weight:950; letter-spacing:-0.03em;">주간 오락실 보너스</h4>
+                    <p style="margin:0; font-size:0.84rem; line-height:1.6; color:rgba(240,253,250,0.92); font-weight:650;">이번 주 오락실 플레이 수를 모아 단계별 포인트를 챙기세요. 로그인 회원만 누적과 수령이 기록됩니다.</p>
+                </div>
+                <div style="padding:0.8rem 0.95rem; border-radius:18px; background:rgba(255,255,255,0.12); min-width:180px;">
+                    <div style="font-size:0.72rem; color:rgba(255,255,255,0.72); font-weight:900; margin-bottom:0.18rem;">이번 주 진행도</div>
+                    <div style="font-size:1.35rem; font-weight:950;">${weeklyState.plays} / ${maxGoal}판</div>
+                    <div style="font-size:0.74rem; color:rgba(255,255,255,0.78); font-weight:700; margin-top:0.2rem;">${nextMilestone ? `다음 보상까지 ${nextMilestone.goal - weeklyState.plays}판` : '모든 주간 보상 수령 가능'}</div>
+                </div>
+            </div>
+            <div style="height:12px; border-radius:999px; background:rgba(255,255,255,0.14); overflow:hidden; margin-bottom:1rem;">
+                <div style="width:${progressRatio}%; height:100%; background:linear-gradient(90deg,#facc15,#fb7185,#22d3ee); border-radius:999px;"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(210px, 1fr)); gap:0.75rem;">
+                ${WEEKLY_ARCADE_MILESTONES.map((milestone) => {
+                    const isClaimed = weeklyState.claimedMilestones.includes(milestone.goal);
+                    const isReady = weeklyState.plays >= milestone.goal && !isClaimed;
+                    const remaining = Math.max(0, milestone.goal - weeklyState.plays);
+                    return `
+                        <div style="border-radius:18px; padding:0.95rem; background:${isReady ? 'rgba(250,204,21,0.16)' : 'rgba(255,255,255,0.1)'}; border:1px solid ${isReady ? 'rgba(250,204,21,0.35)' : 'rgba(255,255,255,0.12)'};">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:0.5rem; margin-bottom:0.55rem;">
+                                <div>
+                                    <div style="font-size:0.72rem; color:rgba(255,255,255,0.72); font-weight:900; letter-spacing:0.08em;">${milestone.goal} PLAY BONUS</div>
+                                    <div style="font-size:1rem; font-weight:900; margin-top:0.18rem;">${milestone.label}</div>
+                                </div>
+                                <div style="font-size:0.92rem; font-weight:950; color:#fde68a;">+${milestone.reward}P</div>
+                            </div>
+                            <div style="font-size:0.8rem; line-height:1.55; color:rgba(240,253,250,0.9); font-weight:650; margin-bottom:0.8rem;">${milestone.desc}</div>
+                            <button class="weekly-claim-btn" data-goal="${milestone.goal}" ${isReady ? '' : 'disabled'} style="width:100%; height:46px; border:none; border-radius:14px; font-weight:900; background:${isClaimed ? 'rgba(255,255,255,0.16)' : isReady ? 'linear-gradient(135deg,#facc15,#fb7185)' : 'rgba(255,255,255,0.16)'}; color:${isReady || isClaimed ? '#0f172a' : 'rgba(255,255,255,0.7)'}; cursor:${isReady ? 'pointer' : 'default'};">
+                                ${isClaimed ? '수령 완료' : isReady ? '보상 받기' : `${remaining}판 남음`}
+                            </button>
+                        </div>
+                    `;
+                }).join('')}
+            </div>
+        </div>
+    `;
+}
+
+async function claimWeeklyArcadeReward(goal) {
+    if (!UserState.user || !Number.isFinite(goal)) return;
+    const milestone = WEEKLY_ARCADE_MILESTONES.find(item => item.goal === goal);
+    if (!milestone) return;
+
+    const weeklyState = getWeeklyArcadeState();
+    if (weeklyState.plays < goal || weeklyState.claimedMilestones.includes(goal)) {
+        renderDailyQuests();
+        return;
+    }
+
+    const nextClaimed = [...weeklyState.claimedMilestones, goal].sort((a, b) => a - b);
+    try {
+        const userRef = doc(db, "users", UserState.user.uid);
+        await updateDoc(userRef, {
+            points: increment(milestone.reward),
+            'arcadeWeekly.weekKey': weeklyState.weekKey,
+            'arcadeWeekly.plays': weeklyState.plays,
+            'arcadeWeekly.claimedMilestones': nextClaimed
+        });
+        UserState.data.points = (UserState.data.points || 0) + milestone.reward;
+        UserState.data.arcadeWeekly = {
+            weekKey: weeklyState.weekKey,
+            plays: weeklyState.plays,
+            claimedMilestones: nextClaimed
+        };
+        soundManager.playSuccess();
+        updateUI();
+        renderDailyQuests();
+    } catch (e) {
+        console.error(e);
+        soundManager.playFailure();
+    }
 }
 
 async function playGacha(count, cost) {
@@ -204,12 +364,61 @@ async function playClickGame() {
     // 펫 보너스 적용
     const { getPetBuff } = await import('./auth.js?v=8.4.0');
     const petBuff = getPetBuff();
-    const baseEarn = Math.floor(Math.random() * 10) + 5;
+    const baseEarn = Math.floor(Math.random() * 7) + 4;
     const earn = Math.floor(baseEarn * petBuff.multiplier) + petBuff.mineBonus;
 
     btn.textContent = "채굴 중...";
     soundManager.playThud(0.1); // 채굴 타격음
-    setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "채굴기 가동 시작"; }, 1000);
+    setTimeout(async () => { await addPoints(earn); btn.disabled = false; btn.textContent = "채굴기 가동 시작"; }, MINING_COOLDOWN_MS);
+}
+
+async function playLuckyDraw() {
+    if (!UserState.user) return alert("로그인이 필요합니다!");
+    const btn = document.getElementById('lucky-draw-btn');
+    const resultEl = document.getElementById('lucky-draw-result');
+    if (!btn || !resultEl || btn.disabled) return;
+
+    const cooldownKey = `lucky_draw_cooldown_${UserState.user.uid}`;
+    const lastPlayedAt = parseInt(localStorage.getItem(cooldownKey) || '0', 10);
+    const remainingMs = LUCKY_DRAW_COOLDOWN_MS - (Date.now() - lastPlayedAt);
+    if (remainingMs > 0) {
+        const remainingMin = Math.ceil(remainingMs / 60000);
+        resultEl.innerHTML = `<span style="color:#ef4444; font-weight:800;">행운 캡슐은 ${remainingMin}분 후 다시 열 수 있습니다.</span>`;
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = '캡슐 오픈 중...';
+    resultEl.innerHTML = '<span class="loading-dots" style="color:#0f766e;">오늘의 운빨을 확인하는 중...</span>';
+    soundManager.playNoise(0.35, 'white', 0.08);
+    await updateArcadeStat('luckyDraw');
+
+    const rewards = [12, 18, 25, 35, 50];
+    const reward = rewards[Math.floor(Math.random() * rewards.length)];
+    const reactions = [
+        '사무실 서랍에서 간식 찾은 기분',
+        '오늘은 은근 운이 붙는 날',
+        '숨겨둔 잔돈을 발견한 느낌',
+        '점심 메뉴가 성공할 예감',
+        '오늘 루팡 기운 최고조'
+    ];
+
+    setTimeout(async () => {
+        localStorage.setItem(cooldownKey, String(Date.now()));
+        await addPoints(reward, '행운 캡슐 오픈');
+        resultEl.innerHTML = `
+            <div style="text-align:center; width:100%;">
+                <div style="font-size:0.78rem; color:#0f766e; font-weight:900; letter-spacing:0.08em; margin-bottom:0.3rem;">LUCKY DRAW</div>
+                <div style="font-size:1.5rem; font-weight:950; color:#065f46; margin-bottom:0.2rem;">+${reward}P</div>
+                <div style="font-size:0.8rem; color:#475569; font-weight:700; margin-bottom:0.25rem;">${reactions[Math.floor(Math.random() * reactions.length)]}</div>
+                <div style="font-size:0.72rem; color:#64748b; font-weight:700;">다음 캡슐 오픈까지 5분 대기</div>
+            </div>
+        `;
+        soundManager.playSuccess();
+        updateUI();
+        btn.disabled = false;
+        btn.textContent = '행운 캡슐 다시 열기';
+    }, 900);
 }
 
 const SLOT_EMOJIS = ['🎰', '💎', '🔥', '✨', '🍒', '7️⃣'];
@@ -243,11 +452,11 @@ async function playSlotMachine() {
                 let statusColor = "var(--text-sub)";
                 const unique = new Set(final).size;
                 if (unique === 1) { 
-                    winPoints = 5000; winMsg = "🎉 JACKPOT!!!"; subMsg = "축하합니다! 5,000P 잭팟에 당첨되셨습니다!"; statusColor = "#f59e0b"; 
+                    winPoints = 4000; winMsg = "🎉 JACKPOT!!!"; subMsg = "축하합니다! 4,000P 잭팟에 당첨되셨습니다!"; statusColor = "#f59e0b"; 
                     soundManager.playSuccess();
                 }
                 else if (unique === 2) { 
-                    winPoints = 600; winMsg = "✨ 2개 일치!"; subMsg = "나이스! 600P를 획득하셨습니다."; statusColor = "#10b981"; 
+                    winPoints = 450; winMsg = "✨ 2개 일치!"; subMsg = "나이스! 450P를 획득하셨습니다."; statusColor = "#10b981"; 
                     soundManager.playSuccess();
                 }
                 else { 
@@ -275,6 +484,119 @@ async function playSlotMachine() {
             }
         }, 100);
     }
+}
+
+async function playCoinFlip(choice) {
+    if (!UserState.user) return alert("로그인이 필요합니다!");
+    const statusEl = document.getElementById('coin-flip-status');
+    const coinEl = document.getElementById('coin-flip-coin');
+    const headsBtn = document.getElementById('coin-heads-btn');
+    const tailsBtn = document.getElementById('coin-tails-btn');
+    if (!statusEl || !coinEl || !headsBtn || !tailsBtn) return;
+
+    const cost = 150;
+    const winReward = 280;
+    if ((UserState.data.points || 0) < cost) {
+        statusEl.innerHTML = '<span style="color:#ef4444;">포인트가 부족합니다. (필요: 150P)</span>';
+        return;
+    }
+
+    headsBtn.disabled = true;
+    tailsBtn.disabled = true;
+    coinEl.textContent = '🪙';
+    statusEl.innerHTML = '<span style="color:#2563eb; font-weight:800;">동전을 튕기는 중...</span>';
+    soundManager.playSlotTick();
+    await updateArcadeStat('coinFlip');
+
+    if (!(await usePoints(cost, `코인 플립 (${choice})`))) {
+        headsBtn.disabled = false;
+        tailsBtn.disabled = false;
+        statusEl.innerHTML = '<span style="color:#ef4444;">베팅이 취소되었습니다.</span>';
+        return;
+    }
+
+    setTimeout(async () => {
+        const result = Math.random() < 0.5 ? 'heads' : 'tails';
+        const isWin = result === choice;
+        coinEl.textContent = result === 'heads' ? '🙂' : '🦊';
+        if (isWin) {
+            await addPoints(winReward, '코인 플립 승리');
+            statusEl.innerHTML = `<strong style="color:#10b981;">적중! ${result === 'heads' ? '앞면' : '뒷면'} · +${winReward}P</strong><br><span style="font-size:0.76rem; color:#475569;">150P 베팅, 실수령 +130P</span>`;
+            soundManager.playSuccess();
+        } else {
+            statusEl.innerHTML = `<span style="color:#ef4444; font-weight:800;">실패... ${result === 'heads' ? '앞면' : '뒷면'}이 나왔습니다.</span><br><span style="font-size:0.76rem; color:#64748b;">이번 판은 150P 손실</span>`;
+            soundManager.playFailure();
+        }
+        updateUI();
+        headsBtn.disabled = false;
+        tailsBtn.disabled = false;
+    }, 1000);
+}
+
+async function playTimingRush() {
+    if (!UserState.user) return alert("로그인이 필요합니다!");
+    const btn = document.getElementById('timing-rush-btn');
+    const fillEl = document.getElementById('timing-rush-fill');
+    const markerEl = document.getElementById('timing-rush-marker');
+    const statusEl = document.getElementById('timing-rush-status');
+    if (!btn || !fillEl || !markerEl || !statusEl) return;
+
+    if (!timingRushState.active) {
+        const entryCost = 80;
+        if ((UserState.data.points || 0) < entryCost) {
+            statusEl.innerHTML = '<span style="color:#ef4444; font-weight:800;">참가비 80P가 필요합니다.</span>';
+            return;
+        }
+        if (!(await usePoints(entryCost, '타이밍 챌린지 참가'))) {
+            statusEl.innerHTML = '<span style="color:#ef4444; font-weight:800;">타이밍 챌린지 시작에 실패했습니다.</span>';
+            return;
+        }
+        timingRushState.active = true;
+        timingRushState.value = 0;
+        timingRushState.direction = 1;
+        fillEl.style.width = '0%';
+        markerEl.textContent = '🎯';
+        btn.textContent = '지금 멈추기';
+        statusEl.innerHTML = '<span style="color:#7c3aed; font-weight:800;">참가비 80P 차감 완료. 보라색 구간에 최대한 가깝게 멈추세요.</span>';
+        await updateArcadeStat('timingRush');
+        soundManager.playNoise(0.25, 'white', 0.05);
+
+        timingRushState.intervalId = setInterval(() => {
+            timingRushState.value += timingRushState.direction * 4;
+            if (timingRushState.value >= 100) {
+                timingRushState.value = 100;
+                timingRushState.direction = -1;
+            }
+            if (timingRushState.value <= 0) {
+                timingRushState.value = 0;
+                timingRushState.direction = 1;
+            }
+            fillEl.style.width = `${timingRushState.value}%`;
+        }, 40);
+        return;
+    }
+
+    clearInterval(timingRushState.intervalId);
+    timingRushState.active = false;
+    btn.textContent = '타이밍 챌린지 시작';
+    const target = 72;
+    const diff = Math.abs(timingRushState.value - target);
+    let reward = 0;
+    let label = '타이밍 미스';
+    if (diff <= 4) { reward = 220; label = '완벽한 타이밍'; }
+    else if (diff <= 9) { reward = 140; label = '거의 근접'; }
+    else if (diff <= 16) { reward = 90; label = '무난한 감각'; }
+    else if (diff <= 24) { reward = 40; label = '간발의 차'; }
+
+    if (reward > 0) {
+        await addPoints(reward, '타이밍 챌린지');
+        soundManager.playSuccess();
+    } else {
+        soundManager.playFailure();
+    }
+    markerEl.textContent = '🎯';
+    statusEl.innerHTML = `<strong style="color:${reward > 0 ? '#7c3aed' : '#ef4444'};">${label}</strong><br><span style="font-size:0.82rem; color:#475569;">멈춘 위치 ${Math.round(timingRushState.value)} / 목표 72 · ${reward > 0 ? `+${reward}P` : '보상 없음'}</span>`;
+    updateUI();
 }
 
 let bombGameState = { active: false, bombIndex: -1, currentPool: 0, cutWires: [] };
@@ -328,7 +650,7 @@ async function cutWire(index) {
         document.querySelectorAll('.wire-btn').forEach(btn => btn.disabled = true);
     } else {
         soundManager.playSlotTick(); // 틱 소리
-        const reward = [100, 300, 600, 1200][bombGameState.cutWires.length - 1];
+        const reward = [80, 220, 500, 1000][bombGameState.cutWires.length - 1];
         bombGameState.currentPool = reward;
         if(msgEl) msgEl.textContent = `성공! 현재 보상: ${reward}P (다음은 더 큽니다!)`;
         if(claimBtn) claimBtn.disabled = false;
@@ -501,6 +823,16 @@ async function renderDailyQuests() {
     
     if (qData.date !== today) {
         summaryEl.textContent = "📜 일일 퀘스트 (갱신 필요)";
+        listEl.innerHTML = `
+            <div class="quest-item">
+                <div class="quest-info">
+                    <h4>새로운 하루 준비 중</h4>
+                    <p>일일 퀘스트 데이터가 아직 오늘 날짜로 갱신되지 않았습니다.</p>
+                </div>
+                <div class="quest-status">잠시 후 갱신</div>
+            </div>
+        `;
+        renderWeeklyArcadeBonus();
         return;
     }
 
@@ -528,6 +860,7 @@ async function renderDailyQuests() {
     }).join('');
 
     summaryEl.textContent = `📜 일일 퀘스트 (${doneCount}/3 완료)`;
+    renderWeeklyArcadeBonus();
 }
 
 function renderMarketUI() {
@@ -723,7 +1056,7 @@ async function playBettingGame(type, choice) {
             const d1 = Math.floor(Math.random() * 6) + 1; const d2 = Math.floor(Math.random() * 6) + 1; const d3 = Math.floor(Math.random() * 6) + 1;
             const results = [d1, d2, d3]; const sum = d1 + d2 + d3;
             const sumRange = choice === 'small' ? '소(3~8)' : (choice === 'middle' ? '중(9~12)' : '대(13~18)');
-            let win = false; let multiplier = choice === 'middle' ? 2 : 3.5;
+            let win = false; let multiplier = choice === 'middle' ? 1.9 : 3.2;
             if (choice === 'small' && sum <= 8) win = true;
             else if (choice === 'middle' && sum >= 9 && sum <= 12) win = true;
             else if (choice === 'big' && sum >= 13) win = true;

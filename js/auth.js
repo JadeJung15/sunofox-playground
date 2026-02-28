@@ -227,7 +227,20 @@ async function loadUserData(user) {
             inventory: [], totalScore: 0, discoveredItems: [],
             activePet: 'F_NORMAL', unlockedPets: ['F_NORMAL'],
             nicknameChanged: false, lastNicknameChange: null, nameColor: '#333333',
-            arcadeStats: { mining: 0, gacha: 0, alchemy: 0, lottery: 0, betting: 0, checkin: 0 },
+            arcadeStats: {
+                mining: 0,
+                gacha: 0,
+                alchemy: 0,
+                lottery: 0,
+                betting: 0,
+                checkin: 0,
+                luckyDraw: 0,
+                slot: 0,
+                coinFlip: 0,
+                timingRush: 0,
+                bomb: 0
+            },
+            arcadeWeekly: { weekKey: null, plays: 0, claimedMilestones: [] },
             quests: { date: null, list: {} }, createdAt: serverTimestamp()
         };
         await setDoc(userRef, newData);

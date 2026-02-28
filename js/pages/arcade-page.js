@@ -23,6 +23,29 @@ function renderArcadeCardShell({ title, icon, badge, badgeStyle, desc, body, ton
     `;
 }
 
+function renderBalanceRows() {
+    const rows = [
+        ['출석체크', '무료', '100P + 펫 보너스', '안정', '하루 1회 고정'],
+        ['포인트 채굴', '무료', '4~10P', '낮음', '2.2초 대기'],
+        ['행운 캡슐', '무료', '12~50P', '낮음', '5분 쿨타임'],
+        ['코인 플립', '150P', '280P 또는 0', '중간', '50:50'],
+        ['슬롯', '300P', '450P / 4000P / 0', '높음', '잭팟형'],
+        ['주사위 베팅', '가변', '1.9x ~ 3.2x', '중간', '선택형'],
+        ['폭탄 돌리기', '300P', '80~1000P 또는 0', '높음', '중간 탈출 가능'],
+        ['타이밍 챌린지', '80P', '0~220P', '중간', '실력형']
+    ];
+
+    return rows.map(([name, cost, reward, risk, note]) => `
+        <tr>
+            <td>${name}</td>
+            <td>${cost}</td>
+            <td>${reward}</td>
+            <td>${risk}</td>
+            <td>${note}</td>
+        </tr>
+    `).join('');
+}
+
 export function renderArcade() {
     const app = document.getElementById('app');
     const isLoggedIn = !!UserState.user;
@@ -92,9 +115,38 @@ export function renderArcade() {
             ${isLoggedIn ? `
                 <details class="profile-details quest-section fade-in" style="margin-bottom: 1.5rem; border: 2px solid var(--accent-soft); border-radius:24px; overflow:hidden;">
                     <summary id="quest-summary" style="font-size:1.04rem; font-weight:900; padding:1rem 1.2rem; background:linear-gradient(135deg,#eef2ff,#ffffff);">📜 오늘의 오락실 미션 (로딩 중...)</summary>
-                    <div id="daily-quest-list" class="content-area"></div>
+                    <div class="content-area" style="display:grid; gap:1rem;">
+                        <div id="daily-quest-list"></div>
+                        <div id="weekly-arcade-bonus"></div>
+                    </div>
                 </details>
             ` : ''}
+
+            <section class="card arcade-balance-card" style="margin-bottom:1.2rem; border-radius:28px; padding:1.2rem; border:1px solid rgba(226,232,240,0.95); background:linear-gradient(180deg,#ffffff,#f8fafc);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:0.76rem; color:#2563eb; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">BALANCE SHEET</div>
+                        <h3 style="font-size:1.35rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0;">게임별 수익 / 손실 기준표</h3>
+                    </div>
+                    <div style="font-size:0.82rem; color:#64748b; font-weight:700;">무료 루프와 고위험 게임의 기대값을 다시 조정한 기준표</div>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table style="width:100%; border-collapse:separate; border-spacing:0; min-width:720px;">
+                        <thead>
+                            <tr style="background:#eff6ff; color:#1d4ed8;">
+                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">게임</th>
+                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">진입 비용</th>
+                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">보상 구조</th>
+                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">리스크</th>
+                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">메모</th>
+                            </tr>
+                        </thead>
+                        <tbody style="background:#fff;">
+                            ${renderBalanceRows()}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
 
             <section style="margin-bottom:1.2rem;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
@@ -133,14 +185,27 @@ export function renderArcade() {
                             <div style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.65rem; margin-bottom:1rem;">
                                 <div style="padding:0.95rem; border-radius:18px; background:#eef2ff; text-align:center;">
                                     <div style="font-size:0.73rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">획득 범위</div>
-                                    <div style="font-size:1.2rem; font-weight:950; color:#312e81;">5~15P</div>
+                                    <div style="font-size:1.2rem; font-weight:950; color:#312e81;">4~10P</div>
                                 </div>
                                 <div style="padding:0.95rem; border-radius:18px; background:#eef2ff; text-align:center;">
-                                    <div style="font-size:0.73rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">체감 난이도</div>
-                                    <div style="font-size:1.2rem; font-weight:950; color:#312e81;">아주 낮음</div>
+                                    <div style="font-size:0.73rem; color:#4f46e5; font-weight:900; margin-bottom:0.2rem;">재사용 대기</div>
+                                    <div style="font-size:1.2rem; font-weight:950; color:#312e81;">2.2초</div>
                                 </div>
                             </div>
                             <button id="click-game-btn" class="btn-primary" style="width:100%; height:55px; background:linear-gradient(90deg, var(--accent-color), #8b5cf6); border:none; font-weight:900;">채굴기 가동 시작</button>
+                        `
+                    })}
+
+                    ${renderArcadeCardShell({
+                        title: '행운 캡슐',
+                        icon: '🎁',
+                        badge: 'FREE',
+                        tone: 'mint',
+                        badgeStyle: 'background: rgba(16,185,129,0.12); color:#059669; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '5분마다 한 번 열 수 있는 가벼운 무료 캡슐입니다.',
+                        body: `
+                            <div id="lucky-draw-result" style="min-height:88px; display:flex; align-items:center; justify-content:center; margin-bottom:1rem; border:2px dashed rgba(16,185,129,0.18); border-radius:18px; text-align:center; font-size:0.88rem; background:rgba(16,185,129,0.04); font-weight:700; padding:12px;">보상 범위 12~50P · 5분 쿨타임</div>
+                            <button id="lucky-draw-btn" class="btn-primary" style="width:100%; background:#0f766e; box-shadow:0 4px 14px rgba(15,118,110,0.24); height:55px; border:none; font-weight:900;">행운 캡슐 열기</button>
                         `
                     })}
                 </div>
@@ -156,6 +221,25 @@ export function renderArcade() {
                 </div>
                 <div class="arcade-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">
                     ${renderArcadeCardShell({
+                        title: '코인 플립',
+                        icon: '🪙',
+                        badge: '50:50',
+                        tone: 'indigo',
+                        badgeStyle: 'background: rgba(79,70,229,0.1); color:#4f46e5; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '앞면과 뒷면 중 하나를 고르는 가장 직관적인 반반 베팅입니다.',
+                        body: `
+                            <div style="display:grid; place-items:center; min-height:114px; margin-bottom:1rem; border:2px solid rgba(99,102,241,0.16); border-radius:18px; background:linear-gradient(145deg, rgba(238,242,255,0.8), rgba(255,255,255,0.95));">
+                                <div id="coin-flip-coin" style="font-size:3rem; line-height:1; margin-bottom:0.35rem;">🪙</div>
+                                <div id="coin-flip-status" style="font-size:0.82rem; font-weight:800; color:#475569;">150P 베팅 · 맞히면 280P 지급</div>
+                            </div>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.65rem;">
+                                <button id="coin-heads-btn" class="btn-primary" style="background:#2563eb; height:55px; border:none; font-weight:900;">앞면 베팅</button>
+                                <button id="coin-tails-btn" class="btn-primary" style="background:#7c3aed; height:55px; border:none; font-weight:900;">뒷면 베팅</button>
+                            </div>
+                        `
+                    })}
+
+                    ${renderArcadeCardShell({
                         title: '이모지 슬롯',
                         icon: '🎰',
                         badge: 'JACKPOT',
@@ -170,8 +254,8 @@ export function renderArcade() {
                             </div>
                             <div style="display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:0.55rem; margin-bottom:1rem;">
                                 <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">비용</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">300P</div></div>
-                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">2개 일치</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">600P</div></div>
-                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">잭팟</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">5000P</div></div>
+                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">2개 일치</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">450P</div></div>
+                                <div style="padding:0.7rem; border-radius:14px; background:#fff7ed; text-align:center;"><div style="font-size:0.7rem; color:#c2410c; font-weight:900;">잭팟</div><div style="font-size:1rem; font-weight:950; color:#9a3412;">4000P</div></div>
                             </div>
                             <button id="slot-spin-btn" class="btn-primary" style="width:100%; background:#fda085; box-shadow: 0 4px 14px rgba(253, 160, 133, 0.3); height:55px; font-weight: 900; border:none;">슬롯 돌리기 (300P)</button>
                         `
@@ -231,15 +315,15 @@ export function renderArcade() {
                             </div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:0.6rem;">
                                 <div style="position:relative;">
-                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#10b981; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배</span>
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#10b981; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.2배</span>
                                     <button class="bet-btn btn-primary" style="background:#10b981; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:14px;" data-game="dice3" data-choice="small">소(3~8)</button>
                                 </div>
                                 <div style="position:relative;">
-                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">2배</span>
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#3b82f6; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">1.9배</span>
                                     <button class="bet-btn btn-primary" style="background:#3b82f6; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:14px;" data-game="dice3" data-choice="middle">중(9~12)</button>
                                 </div>
                                 <div style="position:relative;">
-                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f59e0b; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.5배</span>
+                                    <span style="position:absolute; top:-12px; left:50%; transform:translateX(-50%); background:#f59e0b; color:#fff; font-size:0.6rem; padding:2px 6px; border-radius:4px; font-weight:900; white-space:nowrap; border:1px solid rgba(255,255,255,0.3); z-index:1;">3.2배</span>
                                     <button class="bet-btn btn-primary" style="background:#f59e0b; font-weight: 900; width:100%; height:60px; padding-top:5px; border:none; border-radius:14px;" data-game="dice3" data-choice="big">대(13~18)</button>
                                 </div>
                             </div>
@@ -262,10 +346,47 @@ export function renderArcade() {
                                 <button class="wire-btn" data-wire="3" style="height:60px; background:#f59e0b; border:none; border-radius:12px;"></button>
                                 <button class="wire-btn" data-wire="4" style="height:60px; background:#8b5cf6; border:none; border-radius:12px;"></button>
                             </div>
+                            <div style="display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:0.4rem; margin-bottom:1rem;">
+                                <div style="padding:0.55rem; border-radius:12px; background:#fff1f2; text-align:center;"><div style="font-size:0.68rem; color:#be123c; font-weight:900;">1선 성공</div><div style="font-size:0.9rem; font-weight:950; color:#9f1239;">80P</div></div>
+                                <div style="padding:0.55rem; border-radius:12px; background:#fff1f2; text-align:center;"><div style="font-size:0.68rem; color:#be123c; font-weight:900;">2선 성공</div><div style="font-size:0.9rem; font-weight:950; color:#9f1239;">220P</div></div>
+                                <div style="padding:0.55rem; border-radius:12px; background:#fff1f2; text-align:center;"><div style="font-size:0.68rem; color:#be123c; font-weight:900;">3선 성공</div><div style="font-size:0.9rem; font-weight:950; color:#9f1239;">500P</div></div>
+                                <div style="padding:0.55rem; border-radius:12px; background:#fff1f2; text-align:center;"><div style="font-size:0.68rem; color:#be123c; font-weight:900;">4선 성공</div><div style="font-size:0.9rem; font-weight:950; color:#9f1239;">1000P</div></div>
+                            </div>
                             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:0.6rem;">
                                 <button id="bomb-start-btn" class="btn-primary" style="background:#f43f5e; font-size:0.84rem; height:52px; border:none; font-weight:900;">게임 시작 (300P)</button>
                                 <button id="bomb-claim-btn" class="btn-secondary" style="font-size:0.84rem; height:52px; border-color:#f43f5e; color:#f43f5e; font-weight:900;" disabled>포인트 챙기기</button>
                             </div>
+                        `
+                    })}
+                </div>
+            </section>
+
+            <section style="margin-bottom:1.2rem;">
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
+                    <div>
+                        <div style="font-size:0.76rem; color:#7c3aed; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">REFLEX / TIMING</div>
+                        <h3 style="font-size:1.45rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0;">순발력으로 포인트 챙기는 집중 존</h3>
+                    </div>
+                    <div style="font-size:0.86rem; color:#64748b; font-weight:700;">짧게 켜고 집중력으로 보상 차이를 만드는 구간</div>
+                </div>
+                <div class="arcade-grid" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:1rem;">
+                    ${renderArcadeCardShell({
+                        title: '타이밍 챌린지',
+                        icon: '🎯',
+                        badge: 'SKILL',
+                        tone: 'violet',
+                        badgeStyle: 'background: rgba(139,92,246,0.12); color:#7c3aed; padding:5px 12px; border-radius:999px; font-size:0.72rem; font-weight:900; white-space:nowrap;',
+                        desc: '80P 참가비를 내고, 목표 구간에 얼마나 가깝게 멈추는지로 보상이 갈리는 순발력 게임입니다.',
+                        body: `
+                            <div style="padding:1rem; border-radius:20px; background:rgba(139,92,246,0.06); border:1px solid rgba(139,92,246,0.14); margin-bottom:1rem;">
+                                <div style="position:relative; height:18px; border-radius:999px; background:#ede9fe; overflow:hidden; margin-bottom:0.9rem;">
+                                    <div style="position:absolute; left:66%; width:12%; top:0; bottom:0; background:rgba(168,85,247,0.32);"></div>
+                                    <div id="timing-rush-fill" style="width:0%; height:100%; background:linear-gradient(90deg,#6366f1,#8b5cf6); border-radius:999px;"></div>
+                                    <div id="timing-rush-marker" style="position:absolute; left:72%; top:50%; transform:translate(-50%,-50%); font-size:0.85rem;">🎯</div>
+                                </div>
+                                <div id="timing-rush-status" style="font-size:0.82rem; color:#475569; font-weight:700; min-height:40px; text-align:center;">참가비 80P · 목표 구간 근접 시 최대 220P</div>
+                            </div>
+                            <button id="timing-rush-btn" class="btn-primary" style="width:100%; background:#7c3aed; height:55px; border:none; font-weight:900;">타이밍 챌린지 시작</button>
                         `
                     })}
                 </div>
