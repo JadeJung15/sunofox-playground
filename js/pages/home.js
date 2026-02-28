@@ -28,6 +28,10 @@ export async function fetchAllLikes() {
 }
 window.fetchAllLikes = fetchAllLikes;
 
+function getLatestTests() {
+    return [...TESTS].reverse();
+}
+
 async function handleLike(testId) {
     console.log("handleLike called for:", testId);
     if (!UserState.user) {
@@ -133,11 +137,12 @@ export function renderCategorySelection() {
 export async function renderHome(hash) {
     const app = document.getElementById('app');
     await fetchAllLikes();
+    const latestTests = getLatestTests();
 
     if (hash === '#home' || !hash) {
         const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
         const userName = UserState.user ? UserState.data?.nickname || '사용자' : '방문자';
-        const heroTest = TESTS[Math.floor(Math.random() * TESTS.length)];
+        const heroTest = latestTests[Math.floor(Math.random() * latestTests.length)];
 
         app.innerHTML = `
             <div class="dashboard fade-in home-renewal" style="width: 100%; max-width: 1120px; margin: 0 auto; padding: 1.2rem 1.1rem 5.5rem; box-sizing: border-box;">
@@ -208,7 +213,7 @@ export async function renderHome(hash) {
                     <span onclick="location.hash='#7check'" style="font-size:0.84rem; font-weight:800; color:#6366f1; cursor:pointer;">전체 보기</span>
                 </section>
                 <div id="test-list-grid" class="test-grid home-renewal-test-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:0.95rem; width:100%;">
-                    ${TESTS.slice(0, 6).map(t => renderTestCard(t)).join('')}
+                    ${latestTests.slice(0, 6).map(t => renderTestCard(t)).join('')}
                 </div>
             </div>
         `;
@@ -217,7 +222,7 @@ export async function renderHome(hash) {
         if (searchInput) {
             searchInput.oninput = (e) => {
                 const term = e.target.value.toLowerCase().trim();
-                const filtered = TESTS.filter(t => t.title.toLowerCase().includes(term) || t.category.toLowerCase().includes(term));
+                const filtered = latestTests.filter(t => t.title.toLowerCase().includes(term) || t.category.toLowerCase().includes(term));
                 const grid = document.getElementById('test-list-grid');
                 if (grid) {
                     grid.innerHTML = filtered.length > 0
@@ -227,7 +232,7 @@ export async function renderHome(hash) {
             };
         }
     } else {
-        const filtered = TESTS.filter(t => t.category === window._currentFilter);
+        const filtered = latestTests.filter(t => t.category === window._currentFilter);
         app.innerHTML = `
             <div class="category-page fade-in">
                 <div class="section-header" style="margin-bottom: 2rem;">
