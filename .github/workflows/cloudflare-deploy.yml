@@ -19,6 +19,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Check Secrets (Debug)
+        run: |
+          if [ -z "${{ secrets.CF_API_TOKEN }}" ]; then echo "CF_API_TOKEN is MISSING"; else echo "CF_API_TOKEN is present"; fi
+          if [ -z "${{ secrets.CF_ACCOUNT_ID }}" ]; then echo "CF_ACCOUNT_ID is MISSING"; else echo "CF_ACCOUNT_ID is present"; fi
+
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
         with:
