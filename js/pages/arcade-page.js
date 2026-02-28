@@ -46,6 +46,22 @@ function renderBalanceRows() {
     `).join('');
 }
 
+function renderBalanceHighlights() {
+    const highlights = [
+        { label: '무료 루프', value: '출석 + 채굴 + 캡슐', desc: '리스크 없이 하루 기본 포인트를 모으는 구간', tone: 'rgba(16,185,129,0.1)', color: '#047857' },
+        { label: '중간 승부', value: '코인 플립 / 타이밍', desc: '손실과 보상이 모두 있는 반복형 구간', tone: 'rgba(79,70,229,0.1)', color: '#4338ca' },
+        { label: '고위험 한방', value: '슬롯 / 폭탄 / 주사위', desc: '기대값보다 연출과 긴장감이 큰 구간', tone: 'rgba(244,114,182,0.1)', color: '#be185d' }
+    ];
+
+    return highlights.map((item) => `
+        <div style="padding:0.95rem 1rem; border-radius:20px; background:${item.tone}; border:1px solid rgba(148,163,184,0.14);">
+            <div style="font-size:0.72rem; font-weight:900; letter-spacing:0.08em; color:${item.color}; margin-bottom:0.28rem;">${item.label}</div>
+            <div style="font-size:1rem; font-weight:950; color:#0f172a; margin-bottom:0.24rem;">${item.value}</div>
+            <div style="font-size:0.82rem; line-height:1.55; color:#475569; font-weight:650;">${item.desc}</div>
+        </div>
+    `).join('');
+}
+
 export function renderArcade() {
     const app = document.getElementById('app');
     const isLoggedIn = !!UserState.user;
@@ -122,31 +138,46 @@ export function renderArcade() {
                 </details>
             ` : ''}
 
-            <section class="card arcade-balance-card" style="margin-bottom:1.2rem; border-radius:28px; padding:1.2rem; border:1px solid rgba(226,232,240,0.95); background:linear-gradient(180deg,#ffffff,#f8fafc);">
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
-                    <div>
-                        <div style="font-size:0.76rem; color:#2563eb; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">BALANCE SHEET</div>
-                        <h3 style="font-size:1.35rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0;">게임별 수익 / 손실 기준표</h3>
+            <details class="card arcade-balance-card" style="margin-bottom:1.2rem; border-radius:28px; padding:0; border:1px solid rgba(226,232,240,0.95); background:linear-gradient(180deg,#ffffff,#f8fafc); overflow:hidden;">
+                <summary style="list-style:none; cursor:pointer; padding:1.2rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+                        <div style="min-width:0;">
+                            <div style="font-size:0.76rem; color:#2563eb; font-weight:900; letter-spacing:0.14em; margin-bottom:0.22rem;">BALANCE SHEET</div>
+                            <h3 style="font-size:1.35rem; font-weight:950; letter-spacing:-0.03em; color:#0f172a; margin:0 0 0.35rem;">게임별 수익 / 손실 기준표</h3>
+                            <div style="font-size:0.84rem; color:#475569; line-height:1.6; font-weight:650;">자주 돌릴 게임과 한방용 게임의 성격만 빠르게 확인하고, 필요할 때만 상세 표를 펼쳐보는 구조로 바꿨습니다.</div>
+                        </div>
+                        <div style="display:flex; align-items:center; gap:0.55rem; flex-wrap:wrap;">
+                            <span style="padding:0.46rem 0.78rem; border-radius:999px; background:#dbeafe; color:#1d4ed8; font-size:0.74rem; font-weight:900;">기본 접힘</span>
+                            <span style="padding:0.46rem 0.78rem; border-radius:999px; background:#ecfeff; color:#0f766e; font-size:0.74rem; font-weight:900;">펼치면 상세 표</span>
+                        </div>
                     </div>
-                    <div style="font-size:0.82rem; color:#64748b; font-weight:700;">무료 루프와 고위험 게임의 기대값을 다시 조정한 기준표</div>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:0.75rem; margin-top:0.95rem;">
+                        ${renderBalanceHighlights()}
+                    </div>
+                    <div style="display:flex; justify-content:flex-end; margin-top:0.9rem;">
+                        <span style="font-size:0.8rem; color:#64748b; font-weight:800;">눌러서 상세 기준표 펼치기</span>
+                    </div>
+                </summary>
+                <div style="padding:0 1.2rem 1.2rem; border-top:1px solid rgba(226,232,240,0.95);">
+                    <div style="font-size:0.8rem; color:#64748b; font-weight:700; margin:0.95rem 0 0.85rem;">무료 루프와 고위험 게임의 기대값을 다시 조정한 상세 기준표</div>
+                    <div style="overflow-x:auto;">
+                        <table style="width:100%; border-collapse:separate; border-spacing:0; min-width:720px;">
+                            <thead>
+                                <tr style="background:#eff6ff; color:#1d4ed8;">
+                                    <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">게임</th>
+                                    <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">진입 비용</th>
+                                    <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">보상 구조</th>
+                                    <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">리스크</th>
+                                    <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">메모</th>
+                                </tr>
+                            </thead>
+                            <tbody style="background:#fff;">
+                                ${renderBalanceRows()}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                <div style="overflow-x:auto;">
-                    <table style="width:100%; border-collapse:separate; border-spacing:0; min-width:720px;">
-                        <thead>
-                            <tr style="background:#eff6ff; color:#1d4ed8;">
-                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">게임</th>
-                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">진입 비용</th>
-                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">보상 구조</th>
-                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">리스크</th>
-                                <th style="text-align:left; padding:0.8rem 0.9rem; font-size:0.78rem; font-weight:900;">메모</th>
-                            </tr>
-                        </thead>
-                        <tbody style="background:#fff;">
-                            ${renderBalanceRows()}
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            </details>
 
             <section style="margin-bottom:1.2rem;">
                 <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:0.9rem; flex-wrap:wrap;">
