@@ -701,6 +701,22 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
 .profile-tier-pill {
   margin-bottom: 0.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0.62rem 1rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 1px rgba(15, 23, 42, 0.18);
+}
+
+.profile-tier-pill.tier-gold {
+  text-shadow: none;
 }
 
 .profile-progress-panel {
@@ -721,10 +737,10 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 
 .profile-partner-mini {
-  padding: 1rem;
+  padding: 1.08rem;
   border-radius: 24px;
   border: 1px solid rgba(226,232,240,0.95);
-  background: rgba(255,255,255,0.96);
+  background: rgba(255,255,255,0.98);
 }
 
 .profile-partner-mini-top {
@@ -733,26 +749,37 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   align-items: center;
   font-size: 0.7rem;
   font-weight: 900;
-  color: #64748b;
-  margin-bottom: 0.55rem;
+  color: #475569;
+  margin-bottom: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .profile-partner-mini-emoji {
-  font-size: 3.2rem;
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 0.7rem;
+  border-radius: 50%;
+  font-size: 3rem;
   line-height: 1;
-  margin-bottom: 0.45rem;
+  background: rgba(255,255,255,0.78);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 12px 26px rgba(15,23,42,0.08);
 }
 
 .profile-partner-mini h3 {
-  font-size: 1.1rem;
-  font-weight: 900;
-  margin-bottom: 0.25rem;
+  font-size: 1.18rem;
+  font-weight: 950;
+  margin-bottom: 0.38rem;
+  letter-spacing: -0.03em;
 }
 
 .profile-partner-mini p {
-  color: #334155;
-  font-size: 0.8rem;
-  font-weight: 700;
+  color: #1e293b;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  font-weight: 800;
 }
 
 .profile-summary-stack {
@@ -765,22 +792,26 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   align-items: center;
   justify-content: space-between;
   gap: 0.8rem;
-  padding: 0.95rem 1rem;
-  border-radius: 18px;
-  background: rgba(255,255,255,0.94);
+  padding: 1rem 1.05rem;
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.96));
   border: 1px solid rgba(226,232,240,0.95);
+  box-shadow: 0 10px 22px rgba(15,23,42,0.05);
 }
 
 .profile-quick-stat strong {
-  font-size: 1.05rem;
-  font-weight: 900;
+  font-size: 1.28rem;
+  font-weight: 950;
   color: #0f172a;
+  letter-spacing: -0.04em;
 }
 
 .profile-quick-stat span {
-  font-size: 0.78rem;
-  font-weight: 800;
-  color: #475569;
+  font-size: 0.8rem;
+  font-weight: 850;
+  color: #334155;
+  text-align: right;
+  line-height: 1.35;
 }
 
 .profile-detail-grid {
@@ -862,7 +893,24 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .profile-hero-shell.bg-s-space .profile-partner-mini p,
 .profile-hero-shell.bg-s-neon .profile-quick-stat span,
 .profile-hero-shell.bg-s-space .profile-quick-stat span {
-  color: #cbd5e1;
+  color: #f8fafc;
+}
+
+.profile-hero-shell.bg-s-neon .profile-partner-mini,
+.profile-hero-shell.bg-s-space .profile-partner-mini,
+.profile-hero-shell.bg-s-neon .profile-quick-stat,
+.profile-hero-shell.bg-s-space .profile-quick-stat {
+  background: rgba(15, 23, 42, 0.58);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.profile-hero-shell.bg-s-neon .profile-quick-stat strong,
+.profile-hero-shell.bg-s-space .profile-quick-stat strong,
+.profile-hero-shell.bg-s-neon .profile-partner-mini h3,
+.profile-hero-shell.bg-s-space .profile-partner-mini h3,
+.profile-hero-shell.bg-s-neon .profile-partner-mini-top,
+.profile-hero-shell.bg-s-space .profile-partner-mini-top {
+  color: #ffffff;
 }
 
 .profile-hero-shell.bg-s-neon .profile-ghost-card,

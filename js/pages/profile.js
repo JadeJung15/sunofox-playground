@@ -34,6 +34,48 @@ function getPetTheme(grade) {
     return themes[grade] || themes.NORMAL;
 }
 
+function getTierTheme(tierClass) {
+    const themes = {
+        'tier-bronze': {
+            bg: 'linear-gradient(135deg, #7c4a2d, #c08457)',
+            glow: 'rgba(192,132,87,0.35)',
+            border: 'rgba(146,90,52,0.45)',
+            text: '#fff7ed'
+        },
+        'tier-silver': {
+            bg: 'linear-gradient(135deg, #64748b, #cbd5e1)',
+            glow: 'rgba(148,163,184,0.35)',
+            border: 'rgba(100,116,139,0.35)',
+            text: '#f8fafc'
+        },
+        'tier-gold': {
+            bg: 'linear-gradient(135deg, #ca8a04, #facc15)',
+            glow: 'rgba(250,204,21,0.35)',
+            border: 'rgba(202,138,4,0.35)',
+            text: '#422006'
+        },
+        'tier-platinum': {
+            bg: 'linear-gradient(135deg, #0f766e, #5eead4)',
+            glow: 'rgba(45,212,191,0.35)',
+            border: 'rgba(13,148,136,0.35)',
+            text: '#ecfeff'
+        },
+        'tier-diamond': {
+            bg: 'linear-gradient(135deg, #2563eb, #93c5fd)',
+            glow: 'rgba(96,165,250,0.35)',
+            border: 'rgba(37,99,235,0.35)',
+            text: '#eff6ff'
+        },
+        'tier-master': {
+            bg: 'linear-gradient(135deg, #7c3aed, #f472b6)',
+            glow: 'rgba(236,72,153,0.35)',
+            border: 'rgba(147,51,234,0.35)',
+            text: '#fff7fb'
+        }
+    };
+    return themes[tierClass] || themes['tier-bronze'];
+}
+
 function showProfileToast(message, tone = 'var(--accent-color)') {
     const toast = document.createElement('div');
     toast.className = 'profile-floating-toast';
@@ -138,6 +180,7 @@ export function renderProfile() {
     const inventoryCount = inv.length;
     const totalPets = Object.keys(PET_SHOP).length;
     const progressTarget = nextTier.min || currentScore;
+    const tierTheme = getTierTheme(tier.class);
 
     app.innerHTML = `
         <div class="profile-page fade-in">
@@ -149,7 +192,7 @@ export function renderProfile() {
                         <div class="profile-hero-avatar-row">
                             <div id="user-emoji" class="author-emoji-circle profile-hero-avatar ${activeBorderClass} ${activeAuraClass}">👤</div>
                             <div class="profile-hero-copy">
-                                <div class="tier-badge profile-tier-pill">${tier.name}</div>
+                                <div class="tier-badge profile-tier-pill ${tier.class}" style="background:${tierTheme.bg}; border-color:${tierTheme.border}; color:${tierTheme.text}; box-shadow:0 14px 28px ${tierTheme.glow};">${tier.name}</div>
                                 <h2 id="user-name">닉네임</h2>
                                 <p>${UserState.data.points?.toLocaleString() || '0'}P 보유 · ${currentScore.toLocaleString()} 누적 점수 · 발견 아이템 ${discoveredCount}종</p>
                             </div>
@@ -166,10 +209,10 @@ export function renderProfile() {
                     </div>
 
                     <div class="profile-hero-side">
-                        <div class="profile-partner-mini" style="background:${activePetTheme.bg}; border-color:${activePetTheme.ring};">
+                        <div class="profile-partner-mini" style="background:${activePetTheme.bg}; border-color:${activePetTheme.ring}; box-shadow:0 18px 36px ${activePetTheme.ring};">
                             <div class="profile-partner-mini-top">
                                 <span>MY PARTNER</span>
-                                <strong>${activePet.grade || 'NORMAL'}</strong>
+                                <strong style="color:${activePetTheme.tone};">${activePet.grade || 'NORMAL'}</strong>
                             </div>
                             <div class="profile-partner-mini-emoji">${activePet.emoji}</div>
                             <h3 style="color:${activePetTheme.tone};">${activePet.name}</h3>
