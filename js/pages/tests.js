@@ -120,7 +120,7 @@ export async function renderResult(testId, traitScores) {
             <div class="aura-sphere" style="background: ${themeColor}; top: -100px; left: -100px; opacity: 0.2;"></div>
             <div class="aura-sphere" style="background: ${themeColor}; bottom: -100px; right: -100px; opacity: 0.1; animation-delay: -5s;"></div>
         </div>
-        <div class="result-page fade-in" style="min-height: 100vh; padding: 1.5rem 0.75rem;">
+        <div class="result-page fade-in result-page-shell" style="min-height: 100vh; padding: 1.5rem 0.75rem;">
             <div class="result-card" id="capture-target" style="max-width: 600px; margin: 0 auto; background: var(--card-bg); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow-lg); border: 1px solid ${themeColor}22; backdrop-filter: blur(10px);">
                 <div style="padding: 2.5rem 1.25rem 1.5rem; text-align: center; background: linear-gradient(180deg, ${themeColor}15 0%, transparent 100%);">
                     <div style="width: 100px; height: 100px; margin: 0 auto 1.5rem; border-radius: 50%; background: ${themeColor}22; display: flex; align-items: center; justify-content: center; font-size: 3.5rem; box-shadow: 0 8px 24px ${themeColor}33; border: 4px solid #fff;">
@@ -223,7 +223,7 @@ export async function renderResult(testId, traitScores) {
                 </div>
             </div>
 
-            <div id="story-capture-area" style="position: absolute; top: 0; left: 0; z-index: -100; opacity: 0; pointer-events: none; width: 600px; height: 600px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', -apple-system, sans-serif; box-sizing: border-box;">
+            <div id="story-capture-area" style="position: fixed; top: 0; left: -9999px; z-index: -100; opacity: 0; pointer-events: none; width: 600px; height: 600px; background: ${themeColor}; color: #fff; overflow: hidden; font-family: 'Pretendard', -apple-system, sans-serif; box-sizing: border-box;">
                 <div style="width: 100%; height: 100%; position: relative; overflow: hidden; display: flex; flex-direction: column; box-shadow: inset 0 0 100px rgba(0,0,0,0.15);">
                     <!-- Decorative patterns -->
                     <div style="position: absolute; top: -60px; right: -60px; width: 250px; height: 250px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>

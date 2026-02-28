@@ -262,6 +262,13 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;
 }
 
+.result-page-shell {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-x: clip;
+}
+
 .test-card {
   background: var(--card-bg); border-radius: var(--radius-lg); overflow: hidden;
   box-shadow: var(--shadow-sm); text-decoration: none; color: inherit;
@@ -862,6 +869,10 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .beta-badge { font-size: 0.55rem; padding: 1px 4px; }
   .card { padding: 1.25rem; }
   .result-card { padding: 0; } /* Internal padding is handled by inline styles in JS */
+  .result-page-shell {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
   
   /* Result Page Mobile Font Sizes */
   .result-card h2 { font-size: 1.6rem !important; }
