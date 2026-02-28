@@ -995,13 +995,13 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
 /* Mobile Dropdown Fix */
 @media (max-width: 768px) {
-  .nav-tabs { 
+  .nav-tabs {
     overflow-x: auto !important;
+    overflow-y: visible !important; /* 드롭다운이 잘리지 않도록 추가 */
     justify-content: flex-start;
     padding: 0.3rem !important;
   }
 }
-
 /* =================================================================
    Category Selection Page Styling
    ================================================================= */

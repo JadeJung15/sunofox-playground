@@ -217,6 +217,8 @@ const initDropdown = () => {
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
+    let isHandlingTouch = false;
+
     // 모바일 클릭/터치 이벤트 처리를 위한 함수
     const toggleDropdown = (e) => {
         if (window.innerWidth <= 768) {
@@ -236,9 +238,17 @@ const initDropdown = () => {
         }
     };
 
-    // 모바일 환경 클릭 및 터치 이벤트
-    newBtn.addEventListener('click', toggleDropdown);
-    newBtn.addEventListener('touchstart', toggleDropdown, { passive: false });
+    // 모바일 환경 클릭 및 터치 이벤트 (고스트 클릭 방지)
+    newBtn.addEventListener('touchstart', (e) => {
+        isHandlingTouch = true;
+        toggleDropdown(e);
+        setTimeout(() => { isHandlingTouch = false; }, 300);
+    }, { passive: false });
+
+    newBtn.addEventListener('click', (e) => {
+        if (isHandlingTouch) return; // 터치가 발생했다면 클릭 무시 (중복 실행 방지)
+        toggleDropdown(e);
+    });
 
     // PC 호버 이벤트 (JS로 한 번 더 확실하게 처리)
     dropdown.addEventListener('mouseenter', () => {
