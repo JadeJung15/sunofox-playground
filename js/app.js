@@ -213,6 +213,32 @@ const initDropdown = () => {
 
     if (!dropbtn || !dropdownContent || !dropdown) return;
 
+    const isMobileViewport = () => window.matchMedia('(max-width: 768px)').matches;
+
+    const positionDropdown = () => {
+        if (!isMobileViewport()) {
+            dropdownContent.classList.remove('mobile-overlay');
+            dropdownContent.style.removeProperty('top');
+            dropdownContent.style.removeProperty('left');
+            dropdownContent.style.removeProperty('width');
+            return;
+        }
+
+        const rect = newBtn.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const overlayWidth = Math.min(Math.max(rect.width, 200), viewportWidth - 24);
+        const left = Math.min(Math.max(12, rect.left), viewportWidth - overlayWidth - 12);
+
+        dropdownContent.classList.add('mobile-overlay');
+        dropdownContent.style.top = `${rect.bottom + 10}px`;
+        dropdownContent.style.left = `${left}px`;
+        dropdownContent.style.width = `${overlayWidth}px`;
+    };
+
+    const closeDropdown = () => {
+        dropdownContent.classList.remove('is-active');
+    };
+
     // 기존 이벤트가 중복 등록되지 않도록 버튼을 복제하여 교체
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
@@ -230,9 +256,10 @@ const initDropdown = () => {
 
         // 토글 동작
         if (!isOpened) {
+            positionDropdown();
             dropdownContent.classList.add('is-active');
         } else {
-            dropdownContent.classList.remove('is-active');
+            closeDropdown();
         }
     });
 
@@ -245,14 +272,14 @@ const initDropdown = () => {
 
     dropdown.addEventListener('mouseleave', () => {
         if (window.innerWidth > 768) {
-            dropdownContent.classList.remove('is-active');
+            closeDropdown();
         }
     });
 
     // 드롭다운 내부 링크 클릭 시 메뉴 닫기
     dropdownContent.querySelectorAll('a').forEach(link => {
         link.addEventListener('click', () => {
-            dropdownContent.classList.remove('is-active');
+            closeDropdown();
         });
     });
 
@@ -260,9 +287,21 @@ const initDropdown = () => {
     document.addEventListener('click', (e) => {
         // 클릭한 대상이 드롭다운 내부가 아닐 때만 닫기
         if (!dropdown.contains(e.target)) {
-            dropdownContent.classList.remove('is-active');
+            closeDropdown();
         }
     });
+
+    window.addEventListener('resize', () => {
+        if (!dropdownContent.classList.contains('is-active')) return;
+        positionDropdown();
+    });
+
+    window.addEventListener('scroll', () => {
+        if (!dropdownContent.classList.contains('is-active')) return;
+        positionDropdown();
+    }, { passive: true });
+
+    window.addEventListener('hashchange', closeDropdown);
 };
 // DOM 로드 완료 후 실행
 if (document.readyState === 'loading') {
