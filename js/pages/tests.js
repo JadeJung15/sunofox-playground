@@ -132,6 +132,23 @@ export async function renderResult(testId, traitScores) {
                     <h2 style="font-size: 2.2rem; font-weight: 900; color: ${themeColor}; margin-bottom: 0; letter-spacing: -0.04em; line-height: 1.2; word-break: keep-all;">${result.title}</h2>
                 </div>
                 <div style="padding: 0 1.25rem 2rem; text-align: center;">
+                    <div data-html2canvas-ignore="true" style="margin:-0.2rem 0 1.5rem; padding:0.95rem; border-radius:22px; background:linear-gradient(145deg,#ffffff 0%, ${themeColor}10 100%); border:1px solid ${themeColor}22; box-shadow:0 16px 28px rgba(15,23,42,0.06);">
+                        <div style="font-size:0.72rem; font-weight:900; letter-spacing:0.12em; color:${themeColor}; margin-bottom:0.8rem;">RESULT ACTIONS</div>
+                        <div class="result-top-action-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.72rem;">
+                            <button id="result-share-btn" class="btn-primary" style="background:${themeColor}; border:none; min-height:64px; font-weight:900; font-size:0.94rem; border-radius:18px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.18rem; width:100%; box-shadow:0 12px 22px ${themeColor}33;">
+                                <span style="font-size:1.18rem;">🔗</span>
+                                <span>테스트 공유</span>
+                            </button>
+                            <button id="save-story-btn" class="btn-secondary" style="min-height:64px; font-weight:900; font-size:0.94rem; border-radius:18px; border-color:${themeColor}; color:${themeColor}; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.18rem; width:100%; background:#fff;">
+                                <span style="font-size:1.18rem;">📸</span>
+                                <span>이미지 저장</span>
+                            </button>
+                            <button id="result-random-test-btn" class="btn-primary" style="min-height:64px; border:none; border-radius:18px; background:linear-gradient(135deg,#111827 0%, #334155 50%, ${themeColor} 100%); color:#fff; font-size:0.94rem; font-weight:900; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.18rem; width:100%; box-shadow:0 14px 26px rgba(15,23,42,0.14);">
+                                <span style="font-size:1.18rem;">🎲</span>
+                                <span>다른 추천 보기</span>
+                            </button>
+                        </div>
+                    </div>
 
                     <div style="min-height: 6rem; margin-bottom: 2rem; background: rgba(var(--accent-rgb), 0.03); padding: 1.5rem; border-radius: 16px; border: 1px solid rgba(0,0,0,0.03); box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);">
                         <p id="typing-desc" style="font-size: 1.05rem; line-height: 1.8; color: var(--text-main); word-break: keep-all; font-weight: 600; text-align: center;"></p>
@@ -194,17 +211,6 @@ export async function renderResult(testId, traitScores) {
                                             <span style="font-size: 0.7rem; font-weight: 800; opacity: 0.8; display: block; margin-bottom: 0.5rem; letter-spacing: 0.05em;">🎁 당신만을 위한 전용 보상</span>
                         <div style="font-size: 1.5rem; font-weight: 900; color: #fbbf24; margin-bottom: 0.3rem; text-shadow: 0 0 12px rgba(251, 191, 36, 0.3);">${rewardedItem || '20P 획득'}</div>
                         <p style="opacity: 0.7; font-size: 0.75rem; font-weight: 600;">아이템 도감에 기록되었습니다.</p>
-                    </div>
-
-                    <div class="result-button-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;" data-html2canvas-ignore="true">
-                        <button id="result-share-btn" class="btn-primary" style="background: ${themeColor}; border: none; height: 55px; font-weight: 800; font-size: 1rem; border-radius: 18px; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;"><span>🔗</span> 테스트 공유</button>
-                        <button id="save-story-btn" class="btn-secondary" style="height: 55px; font-weight: 800; font-size: 1rem; border-radius: 18px; border-color: ${themeColor}; color: ${themeColor}; display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;"><span>📸</span> 이미지 저장</button>
-                    </div>
-
-                    <div style="margin-top: 1rem;" data-html2canvas-ignore="true">
-                        <button id="result-random-test-btn" class="btn-primary" style="width:100%; height:56px; border:none; border-radius:18px; background:linear-gradient(135deg,#111827 0%, #334155 50%, ${themeColor} 100%); color:#fff; font-size:0.98rem; font-weight:850; display:flex; align-items:center; justify-content:center; gap:0.55rem; box-shadow:0 14px 28px rgba(15,23,42,0.16);">
-                            <span>🎲</span> 나를 위한 다른 추천 보기
-                        </button>
                     </div>
 
                     <div style="margin-top: 0.85rem;" data-html2canvas-ignore="true">
