@@ -18,6 +18,24 @@ export async function renderAdmin() {
 
     app.innerHTML = `
         <div class="admin-page fade-in">
+            <style>
+                .admin-asset-actions {
+                    display: grid;
+                    grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr));
+                    gap: 0.75rem;
+                    align-items: stretch;
+                }
+
+                .admin-asset-actions > * {
+                    min-width: 0;
+                }
+
+                @media (max-width: 768px) {
+                    .admin-asset-actions {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            </style>
             <div class="card admin-header" style="background: linear-gradient(135deg, var(--accent-color), #4f46e5); color:#fff; border:none; padding:3rem 1.5rem; text-align:center; border-radius: var(--radius-lg); margin-bottom:2rem;">
                 <h2 style="font-size:2.2rem; font-weight:900; margin-bottom:0.5rem;">🛡️ MASTER CONSOLE</h2>
                 <p style="opacity:0.9; font-weight:600;">사용자 관리 및 시스템 자산 조정 시스템</p>
@@ -43,14 +61,14 @@ export async function renderAdmin() {
                 <div style="display: grid; gap: 1.5rem;">
                     <div class="input-group">
                         <label style="display:block; font-size:0.85rem; font-weight:800; margin-bottom:0.5rem; color:var(--text-sub);">관리 대상 UID (사용자 목록에서 '선택' 클릭)</label>
-                        <input type="text" id="admin-target-uid" style="width:100%; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); font-family: monospace;" placeholder="대상 UID">
+                        <input type="text" id="admin-target-uid" style="width:100%; min-width:0; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); font-family: monospace; box-sizing:border-box;" placeholder="대상 UID">
                     </div>
                     <div class="input-group">
                         <label style="display:block; font-size:0.85rem; font-weight:800; margin-bottom:0.5rem; color:var(--text-sub);">조정 수량 (+ 또는 -)</label>
-                        <div style="display: flex; gap: 0.75rem;">
-                            <input type="number" id="admin-amount" style="flex: 1; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); font-size: 1.2rem; font-weight: 900;" placeholder="0">
-                            <button id="admin-charge-points-btn" class="btn-primary" style="background: var(--accent-secondary); flex: 1;">포인트 집행</button>
-                            <button id="admin-charge-score-btn" class="btn-primary" style="background: var(--accent-color); flex: 1;">점수 집행</button>
+                        <div class="admin-asset-actions">
+                            <input type="number" id="admin-amount" style="width:100%; min-width:0; padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color); font-size: 1.2rem; font-weight: 900; box-sizing:border-box;" placeholder="0">
+                            <button id="admin-charge-points-btn" class="btn-primary" style="background: var(--accent-secondary); width:100%;">포인트 집행</button>
+                            <button id="admin-charge-score-btn" class="btn-primary" style="background: var(--accent-color); width:100%;">점수 집행</button>
                         </div>
                     </div>
                 </div>
