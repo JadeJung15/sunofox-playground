@@ -1402,7 +1402,7 @@ export const TESTS = [
         category: '재미',
         title: '🍀30대 반말방에서 나는 무슨 캐릭터?',
         desc: '순하고 귀여운 사람들 놀러오라더니 왜 이렇게 정신없지? 방 제목과 실전 대화를 합쳐 당신의 단톡방 생존 캐릭터를 판정합니다.',
-        thumb: 'https://raw.githubusercontent.com/JadeJung15/sunofox-test/332a748a076c8a5a463a4f118aa9d453616f4747/image.png?v=332a748',
+        thumb: '/image.png?v=20260228',
         customTraits: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12', 'T13', 'T14', 'T15'],
         questions: [
             {

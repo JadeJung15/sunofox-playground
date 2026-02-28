@@ -1,10 +1,15 @@
-import { UserState, addPoints } from '../auth.js?v=8.3.1';
+import { UserState, addPoints } from '../auth.js?v=8.3.2';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=8.3.1';
+import { db } from '../firebase-init.js?v=8.3.2';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=8.3.1';
+import { TESTS } from '../tests-data.js?v=8.3.2';
 import { renderTestCard } from './home.js';
+
+function getShareUrl(testId) {
+    if (testId === 'p39') return `${window.location.origin}/share/p39`;
+    return `${window.location.origin}/?test=${testId}`;
+}
 
 export async function renderResult(testId, traitScores) {
     const app = document.getElementById('app');
@@ -64,7 +69,7 @@ export async function renderResult(testId, traitScores) {
     const soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
     const rpgStats = weaponPool[poolTrait];
 
-    const { getPetBuff } = await import('../auth.js?v=8.3.1');
+    const { getPetBuff } = await import('../auth.js?v=8.3.2');
     const petBuff = getPetBuff();
 
     let basePointReward = 10 + petBuff.testBonus;
@@ -284,7 +289,7 @@ export async function renderResult(testId, traitScores) {
     const resultShareBtn = document.getElementById('result-share-btn');
     if (resultShareBtn) {
         resultShareBtn.onclick = async () => {
-            const testUrl = `${window.location.origin}/?test=${testId}`;
+            const testUrl = getShareUrl(testId);
             const shareText = `[${test.title}] 당신도 한번 도전해보세요! 딱 7번의 질문으로 찾는 나의 본모습 ✨`;
 
             if (navigator.share) {
@@ -368,7 +373,7 @@ export function renderTestExecution(testId) {
         const shareBtn = document.getElementById('test-share-btn');
         if (shareBtn) {
             shareBtn.onclick = async () => {
-                const siteUrl = `${window.location.origin}/?test=${testId}`;
+                const siteUrl = getShareUrl(testId);
                 if (navigator.share) {
                     try {
                         await navigator.share({ title: `7Check - ${test.title}`, text: test.desc, url: siteUrl });
