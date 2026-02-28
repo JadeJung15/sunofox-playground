@@ -81,19 +81,13 @@ export const SUNO_PRESETS = [
   }
 ];
 
-export const SUNO_VOCAL_OPTIONS = [
-  { value: "female", label: "여성 보컬" },
-  { value: "instrumental", label: "무보컬" }
+export const SUNO_LANGUAGE_MODE_OPTIONS = [
+  { value: "KR_ONLY", label: "한국어만" },
+  { value: "KR_EN_MIX", label: "한영 혼합" }
 ];
 
-export const SUNO_MOOD_OPTIONS = [
-  { value: "감성", label: "감성" },
-  { value: "비장", label: "비장" },
-  { value: "몽환", label: "몽환" },
-  { value: "전투", label: "전투" }
-];
-
-export const SUNO_LENGTH_OPTIONS = [
-  { value: "짧게", label: "짧게" },
-  { value: "보통", label: "보통" }
+export const SUNO_INTENSITY_OPTIONS = [
+  { value: "CALM", label: "차분함" },
+  { value: "EMOTIONAL", label: "감정선" },
+  { value: "HYPE", label: "고조감" }
 ];

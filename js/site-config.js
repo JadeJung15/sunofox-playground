@@ -1,6 +1,7 @@
 window.__SEVENCHECK_CONFIG__ = window.__SEVENCHECK_CONFIG__ || {};
 
 window.__SEVENCHECK_CONFIG__.sunoGenerator = {
+  // Example: "http://localhost:8787/api/suno-draft"
   endpointUrl: "",
   requestTimeoutMs: 15000,
   access: {

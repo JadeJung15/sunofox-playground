@@ -1,9 +1,8 @@
 import { UserState } from "../auth.js?v=8.0.0";
 import {
     SUNO_PRESETS,
-    SUNO_VOCAL_OPTIONS,
-    SUNO_MOOD_OPTIONS,
-    SUNO_LENGTH_OPTIONS
+    SUNO_LANGUAGE_MODE_OPTIONS,
+    SUNO_INTENSITY_OPTIONS
 } from "../suno/presets.js?v=8.1.0";
 import {
     consumeSunoGateRequest,
@@ -17,9 +16,11 @@ import { generateSunoDraft, saveSunoDraft } from "../suno/service.js?v=8.1.0";
 const state = {
     presetId: SUNO_PRESETS[0].id,
     options: {
-        vocal: "female",
-        mood: "감성",
-        length: "보통"
+        languageMode: "KR_ONLY",
+        vocalGender: "FEMALE",
+        bpmHint: "",
+        themeHint: "",
+        intensity: "EMOTIONAL"
     },
     draft: {
         title: "",
@@ -52,11 +53,11 @@ function copyText(value, label) {
 }
 
 function getBundledDraftText() {
-    return [
-        `Title\n${state.draft.title.trim()}`,
-        `Style\n${state.draft.style.trim()}`,
-        `Lyrics\n${state.draft.lyrics.trim()}`
-    ].join("\n\n");
+    return JSON.stringify({
+        title: state.draft.title.trim(),
+        style: state.draft.style.trim(),
+        lyrics: state.draft.lyrics.trim()
+    }, null, 2);
 }
 
 async function handleGenerate(variation = false) {
@@ -193,7 +194,7 @@ function bindPageEvents() {
     });
 
     app.querySelector("#suno-copy-bundle-btn")?.addEventListener("click", () => {
-        copyText(getBundledDraftText(), "3종 묶음");
+        copyText(getBundledDraftText(), "JSON");
     });
 
     app.querySelector("#suno-passcode-submit")?.addEventListener("click", async () => {
@@ -270,7 +271,7 @@ export function renderSunoGenerator() {
                     <div class="suno-panel-head">
                         <div>
                             <h2>장르 프리셋</h2>
-                            <p>${preset.genres.join(" / ")} 기반 초안 생성</p>
+                            <p>${preset.genres.join(" / ")} 기반, 18~19세 여성 보컬 톤 기준</p>
                         </div>
                     </div>
                     <div class="suno-chip-grid">
@@ -282,27 +283,43 @@ export function renderSunoGenerator() {
                     <div class="suno-panel-head">
                         <div>
                             <h2>옵션</h2>
-                            <p>보컬, 분위기, 길이를 빠르게 조정합니다.</p>
+                            <p>languageMode, bpmHint, themeHint, intensity를 반영합니다.</p>
                         </div>
                     </div>
                     <div class="suno-option-grid">
                         <label class="suno-field">
-                            <span>보컬</span>
-                            <select data-suno-option="vocal" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_VOCAL_OPTIONS, state.options.vocal)}
+                            <span>언어 모드</span>
+                            <select data-suno-option="languageMode" ${!unlocked ? "disabled" : ""}>
+                                ${renderSelectOptions(SUNO_LANGUAGE_MODE_OPTIONS, state.options.languageMode)}
                             </select>
                         </label>
                         <label class="suno-field">
-                            <span>분위기</span>
-                            <select data-suno-option="mood" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_MOOD_OPTIONS, state.options.mood)}
+                            <span>강도</span>
+                            <select data-suno-option="intensity" ${!unlocked ? "disabled" : ""}>
+                                ${renderSelectOptions(SUNO_INTENSITY_OPTIONS, state.options.intensity)}
                             </select>
                         </label>
                         <label class="suno-field">
-                            <span>길이</span>
-                            <select data-suno-option="length" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_LENGTH_OPTIONS, state.options.length)}
-                            </select>
+                            <span>BPM 힌트</span>
+                            <input
+                                data-suno-option="bpmHint"
+                                type="number"
+                                min="60"
+                                max="220"
+                                value="${state.options.bpmHint}"
+                                ${!unlocked ? "disabled" : ""}
+                                placeholder="${preset.bpm}"
+                            >
+                        </label>
+                        <label class="suno-field">
+                            <span>테마 힌트</span>
+                            <input
+                                data-suno-option="themeHint"
+                                type="text"
+                                value="${state.options.themeHint}"
+                                ${!unlocked ? "disabled" : ""}
+                                placeholder="예: 빗속 재회, 새벽 차선, 별빛 약속"
+                            >
                         </label>
                     </div>
                     <div class="suno-action-row">
@@ -340,33 +357,33 @@ export function renderSunoGenerator() {
                     <div class="suno-result-head">
                         <div>
                             <h3>제목</h3>
-                            <p>짧고 강한 타이틀 우선</p>
+                            <p>🦊 한국어 제목 — English Title 형식</p>
                         </div>
                         <button class="btn-secondary" data-copy-field="title">복사</button>
                     </div>
-                    <textarea class="suno-textarea suno-title-textarea" data-suno-field="title" ${!unlocked ? "disabled" : ""} placeholder="생성 결과 제목이 여기에 채워집니다.">${state.draft.title}</textarea>
+                    <textarea class="suno-textarea suno-title-textarea" data-suno-field="title" ${!unlocked ? "disabled" : ""} placeholder="🦊 새벽의 숲길 — Path of Dawn">${state.draft.title}</textarea>
                 </div>
 
                 <div class="card suno-panel">
                     <div class="suno-result-head">
                         <div>
                             <h3>스타일</h3>
-                            <p>장르 | BPM | 편성 | 보컬 | 감정/에너지</p>
+                            <p>영문 한 줄 설계도만 유지</p>
                         </div>
                         <button class="btn-secondary" data-copy-field="style">복사</button>
                     </div>
-                    <textarea class="suno-textarea" data-suno-field="style" ${!unlocked ? "disabled" : ""} placeholder="예: Symphonic DnB, Cinematic Bass | 174 BPM | strings, breakbeats, synth bass, choir | 여성 보컬 airy lead | 비장, full arc, anime energy">${state.draft.style}</textarea>
+                    <textarea class="suno-textarea" data-suno-field="style" ${!unlocked ? "disabled" : ""} placeholder="Symphonic DnB, Cinematic Bass | 174 BPM | strings, breakbeats, synth bass, choir | female vocal + clear emotional tone | restrained verses, swelling ache, explosive chorus, lingering storm afterglow">${state.draft.style}</textarea>
                 </div>
 
                 <div class="card suno-panel">
                     <div class="suno-result-head">
                         <div>
                             <h3>가사</h3>
-                            <p>[Verse] [Chorus] [Bridge] [Outro] 섹션 태그만 사용</p>
+                            <p>영문 섹션 태그만 사용, 본문은 실제 가사만 작성</p>
                         </div>
                         <div class="suno-result-actions">
                             <button class="btn-secondary" data-copy-field="lyrics">복사</button>
-                            <button id="suno-copy-bundle-btn" class="btn-primary">3종 묶음 복사</button>
+                            <button id="suno-copy-bundle-btn" class="btn-primary">JSON 복사</button>
                         </div>
                     </div>
                     <textarea class="suno-textarea suno-lyrics-textarea" data-suno-field="lyrics" ${!unlocked ? "disabled" : ""} placeholder="[Verse]&#10;...&#10;&#10;[Chorus]&#10;...">${state.draft.lyrics}</textarea>
