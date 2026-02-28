@@ -266,12 +266,12 @@ export function renderProfile() {
                             </div>
                         </details>
 
-                        <details class="profile-details" open>
+                        <details class="profile-details">
                             <summary>🎒 내 인벤토리</summary>
                             <div class="content-area"><div class="inventory-grid">${invHTML}</div></div>
                         </details>
 
-                        <details class="profile-details" open>
+                        <details class="profile-details">
                             <summary>🏪 아이콘 상점 (변경 시 500P)</summary>
                             <div class="content-area shop-wrapper">
                                 ${Object.entries(EMOJI_SHOP).map(([cat, emojis]) => `
@@ -335,7 +335,7 @@ export function renderProfile() {
                             </div>
                         </details>
 
-                        <details class="profile-details" open>
+                        <details class="profile-details">
                             <summary>📊 오락실 이용 통계</summary>
                             <div class="content-area">
                                 <div class="profile-stats-grid">

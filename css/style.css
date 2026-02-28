@@ -590,7 +590,7 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 
 .profile-guest-hero p {
-  color: #475569;
+  color: #334155;
   font-size: 0.96rem;
   font-weight: 600;
   max-width: 560px;
@@ -632,9 +632,9 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .profile-ghost-card span,
 .profile-summary-card span {
   display: block;
-  color: #64748b;
+  color: #475569;
   font-size: 0.82rem;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .profile-summary-card small {
@@ -694,9 +694,9 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 
 .profile-hero-copy p {
-  color: #475569;
+  color: #334155;
   font-size: 0.9rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .profile-tier-pill {
@@ -750,9 +750,9 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 
 .profile-partner-mini p {
-  color: #475569;
+  color: #334155;
   font-size: 0.8rem;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .profile-summary-stack {
@@ -779,8 +779,8 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
 .profile-quick-stat span {
   font-size: 0.78rem;
-  font-weight: 700;
-  color: #64748b;
+  font-weight: 800;
+  color: #475569;
 }
 
 .profile-detail-grid {
@@ -813,7 +813,7 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .profile-bonus-card div,
 .profile-stat-card small {
   display: block;
-  color: #64748b;
+  color: #475569;
   font-size: 0.72rem;
   font-weight: 900;
   margin-bottom: 0.35rem;
@@ -829,7 +829,7 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .profile-section-mini-title {
   font-size: 0.9rem;
   margin-bottom: 1rem;
-  color: var(--text-main);
+  color: #0f172a;
   font-weight: 800;
 }
 
@@ -845,38 +845,160 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   gap: 0.75rem;
 }
 
+.profile-hero-shell.bg-s-neon .profile-hero-kicker,
+.profile-hero-shell.bg-s-space .profile-hero-kicker {
+  color: #c7d2fe;
+}
+
+.profile-hero-shell.bg-s-neon .profile-hero-main,
+.profile-hero-shell.bg-s-space .profile-hero-main {
+  background: rgba(15, 23, 42, 0.72);
+  border-color: rgba(148, 163, 184, 0.22);
+}
+
+.profile-hero-shell.bg-s-neon .profile-hero-copy p,
+.profile-hero-shell.bg-s-space .profile-hero-copy p,
+.profile-hero-shell.bg-s-neon .profile-partner-mini p,
+.profile-hero-shell.bg-s-space .profile-partner-mini p,
+.profile-hero-shell.bg-s-neon .profile-quick-stat span,
+.profile-hero-shell.bg-s-space .profile-quick-stat span {
+  color: #cbd5e1;
+}
+
+.profile-hero-shell.bg-s-neon .profile-ghost-card,
+.profile-hero-shell.bg-s-space .profile-ghost-card,
+.profile-hero-shell.bg-s-neon .profile-summary-card,
+.profile-hero-shell.bg-s-space .profile-summary-card {
+  background: rgba(255,255,255,0.92);
+}
+
 @media (max-width: 900px) {
   .profile-hero-shell,
   .profile-detail-grid,
-  .profile-guest-grid,
-  .profile-summary-grid {
+  .profile-guest-grid {
     grid-template-columns: 1fr;
+  }
+
+  .profile-summary-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 @media (max-width: 640px) {
   .profile-stage {
-    padding: 0.75rem 0.75rem 4.6rem;
+    padding: 0.65rem 0.65rem 4.2rem;
   }
 
   .profile-guest-hero,
   .profile-hero-shell,
   .profile-ghost-card,
   .profile-summary-card {
-    border-radius: 24px;
+    border-radius: 22px;
   }
 
   .profile-hero-avatar-row {
     flex-direction: column;
     text-align: center;
+    gap: 0.7rem;
   }
 
   .profile-progress-copy {
     flex-direction: column;
+    gap: 0.25rem;
   }
 
   .profile-stats-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .profile-guest-hero {
+    padding: 1.35rem 1rem;
+  }
+
+  .profile-hero-shell {
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .profile-hero-main {
+    padding: 1rem;
+  }
+
+  .profile-hero-copy h2 {
+    font-size: 1.55rem;
+  }
+
+  .profile-hero-copy p {
+    font-size: 0.82rem;
+  }
+
+  .profile-progress-panel {
+    margin-top: 0.9rem;
+    padding: 0.8rem;
+  }
+
+  .profile-summary-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 0.65rem;
+  }
+
+  .profile-summary-card {
+    padding: 0.8rem;
+  }
+
+  .profile-summary-card strong {
+    font-size: 1.15rem;
+  }
+
+  .profile-summary-card span {
+    font-size: 0.74rem;
+  }
+
+  .profile-detail-grid {
+    gap: 0.75rem;
+  }
+
+  .profile-details summary {
+    padding: 0.95rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .content-area {
+    padding: 1rem;
+  }
+
+  .pet-active-hero {
+    padding: 1rem;
+    gap: 0.8rem;
+  }
+
+  .pet-active-avatar {
+    width: 76px;
+    height: 76px;
+    font-size: 2.8rem;
+  }
+
+  .profile-bonus-grid,
+  .profile-pet-grid,
+  .inventory-grid {
+    gap: 0.65rem;
+  }
+
+  .profile-pet-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .inventory-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .emoji-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.55rem;
+  }
+
+  .emoji-btn {
+    padding: 0.8rem 0.4rem;
   }
 }
 
