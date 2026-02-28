@@ -217,22 +217,20 @@ const initDropdown = () => {
     const newBtn = dropbtn.cloneNode(true);
     dropbtn.parentNode.replaceChild(newBtn, dropbtn);
 
-    // 모바일 클릭/터치 이벤트
+    // 모바일 클릭 이벤트 (가장 단순하고 확실한 형태)
     newBtn.addEventListener('click', (e) => {
-        if (window.innerWidth <= 768) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const isActive = dropdownContent.classList.contains('is-active');
-            
-            // 다른 열려있는 드롭다운 닫기
-            document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
-            
-            if (!isActive) {
-                dropdownContent.classList.add('is-active');
-            } else {
-                dropdownContent.classList.remove('is-active');
-            }
+        // e.preventDefault() 제거: 브라우저 기본 터치/클릭을 막지 않음
+        e.stopPropagation(); // 바깥 영역 클릭 이벤트로 전파되는 것만 막음
+        
+        const isActive = dropdownContent.classList.contains('is-active');
+        
+        // 다른 열려있는 드롭다운 닫기
+        document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('is-active'));
+        
+        if (!isActive) {
+            dropdownContent.classList.add('is-active');
+        } else {
+            dropdownContent.classList.remove('is-active');
         }
     });
 
