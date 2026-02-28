@@ -2,7 +2,8 @@ import { UserState } from "../auth.js?v=8.0.0";
 import {
     SUNO_PRESETS,
     SUNO_LANGUAGE_MODE_OPTIONS,
-    SUNO_INTENSITY_OPTIONS
+    SUNO_ENERGY_MODE_OPTIONS,
+    SUNO_THEME_PRESET_OPTIONS
 } from "../suno/presets.js?v=8.1.0";
 import {
     consumeSunoGateRequest,
@@ -16,11 +17,11 @@ import { generateSunoDraft, saveSunoDraft } from "../suno/service.js?v=8.1.0";
 const state = {
     presetId: SUNO_PRESETS[0].id,
     options: {
+        genrePreset: SUNO_PRESETS[0].name,
+        themePreset: "Reunion Promise",
         languageMode: "KR_ONLY",
-        vocalGender: "FEMALE",
-        bpmHint: "",
-        themeHint: "",
-        intensity: "EMOTIONAL"
+        energyMode: "Emotional",
+        youtubeMode: true
     },
     draft: {
         title: "",
@@ -165,12 +166,17 @@ function bindPageEvents() {
     app.querySelectorAll("[data-suno-preset]").forEach(button => {
         button.addEventListener("click", () => {
             state.presetId = button.dataset.sunoPreset;
+            state.options.genrePreset = getSelectedPreset().name;
             renderSunoGenerator();
         });
     });
 
     app.querySelectorAll("[data-suno-option]").forEach(input => {
         input.addEventListener("change", () => {
+            if (input.type === "checkbox") {
+                state.options[input.dataset.sunoOption] = input.checked;
+                return;
+            }
             state.options[input.dataset.sunoOption] = input.value;
         });
     });
@@ -283,10 +289,16 @@ export function renderSunoGenerator() {
                     <div class="suno-panel-head">
                         <div>
                             <h2>옵션</h2>
-                            <p>languageMode, bpmHint, themeHint, intensity를 반영합니다.</p>
+                            <p>genrePreset, themePreset, languageMode, energyMode, youtubeMode를 반영합니다.</p>
                         </div>
                     </div>
                     <div class="suno-option-grid">
+                        <label class="suno-field">
+                            <span>테마 프리셋</span>
+                            <select data-suno-option="themePreset" ${!unlocked ? "disabled" : ""}>
+                                ${renderSelectOptions(SUNO_THEME_PRESET_OPTIONS, state.options.themePreset)}
+                            </select>
+                        </label>
                         <label class="suno-field">
                             <span>언어 모드</span>
                             <select data-suno-option="languageMode" ${!unlocked ? "disabled" : ""}>
@@ -294,32 +306,17 @@ export function renderSunoGenerator() {
                             </select>
                         </label>
                         <label class="suno-field">
-                            <span>강도</span>
-                            <select data-suno-option="intensity" ${!unlocked ? "disabled" : ""}>
-                                ${renderSelectOptions(SUNO_INTENSITY_OPTIONS, state.options.intensity)}
+                            <span>에너지 모드</span>
+                            <select data-suno-option="energyMode" ${!unlocked ? "disabled" : ""}>
+                                ${renderSelectOptions(SUNO_ENERGY_MODE_OPTIONS, state.options.energyMode)}
                             </select>
                         </label>
                         <label class="suno-field">
-                            <span>BPM 힌트</span>
-                            <input
-                                data-suno-option="bpmHint"
-                                type="number"
-                                min="60"
-                                max="220"
-                                value="${state.options.bpmHint}"
-                                ${!unlocked ? "disabled" : ""}
-                                placeholder="${preset.bpm}"
-                            >
-                        </label>
-                        <label class="suno-field">
-                            <span>테마 힌트</span>
-                            <input
-                                data-suno-option="themeHint"
-                                type="text"
-                                value="${state.options.themeHint}"
-                                ${!unlocked ? "disabled" : ""}
-                                placeholder="예: 빗속 재회, 새벽 차선, 별빛 약속"
-                            >
+                            <span>YouTube 모드</span>
+                            <label style="display:flex; align-items:center; gap:0.7rem; min-height:52px; padding:0.95rem 1rem; border:1px solid #dbe3ef; border-radius:16px; background:#fff;">
+                                <input type="checkbox" data-suno-option="youtubeMode" ${state.options.youtubeMode ? "checked" : ""} ${!unlocked ? "disabled" : ""}>
+                                <span style="font-size:0.92rem; font-weight:700; color:#0f172a; letter-spacing:0;">초반 훅/최종 후렴 강화</span>
+                            </label>
                         </label>
                     </div>
                     <div class="suno-action-row">
@@ -372,7 +369,7 @@ export function renderSunoGenerator() {
                         </div>
                         <button class="btn-secondary" data-copy-field="style">복사</button>
                     </div>
-                    <textarea class="suno-textarea" data-suno-field="style" ${!unlocked ? "disabled" : ""} placeholder="Symphonic DnB, Cinematic Bass | 174 BPM | strings, breakbeats, synth bass, choir | female vocal + clear emotional tone | restrained verses, swelling ache, explosive chorus, lingering storm afterglow">${state.draft.style}</textarea>
+                    <textarea class="suno-textarea" data-suno-field="style" ${!unlocked ? "disabled" : ""} placeholder="Symphonic Drum & Bass, Ethereal Pop | 170 BPM | piano, strings, breakbeat drums, sub bass | female vocal soft airy emotional | cinematic build, anime climax energy">${state.draft.style}</textarea>
                 </div>
 
                 <div class="card suno-panel">

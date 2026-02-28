@@ -2,82 +2,98 @@ export const SUNO_PRESETS = [
   {
     id: "symphonic-dnb",
     name: "Symphonic DnB",
-    genres: ["Symphonic DnB", "Cinematic Bass"],
-    bpm: 174,
-    instruments: ["strings", "breakbeats", "synth bass", "choir"],
-    moodFocus: "비장"
+    genres: ["Symphonic Drum & Bass", "Ethereal Pop"],
+    bpm: 170,
+    instruments: ["piano", "strings", "breakbeat drums", "sub bass"],
+    moodFocus: "emotional"
   },
   {
     id: "emotional-glitch-pop",
     name: "Emotional Glitch Pop",
-    genres: ["Glitch Pop", "Emotional Electronica"],
-    bpm: 146,
-    instruments: ["glitch synth", "soft pads", "sub bass", "vocal chops"],
-    moodFocus: "감성"
+    genres: ["Emotional Electronic", "Glitch Pop"],
+    bpm: 168,
+    instruments: ["piano", "glitch synth", "pads", "breakbeat drums"],
+    moodFocus: "fragile"
   },
   {
-    id: "fantasy-ost",
-    name: "Fantasy OST",
-    genres: ["Fantasy OST", "Orchestral Pop"],
-    bpm: 132,
-    instruments: ["harp", "strings", "woodwinds", "taiko"],
-    moodFocus: "몽환"
+    id: "city-pop-anime",
+    name: "City Pop Anime",
+    genres: ["City Pop", "Anime Soundtrack"],
+    bpm: 126,
+    instruments: ["electric piano", "clean guitar", "bass guitar", "drum machine"],
+    moodFocus: "bright"
   },
   {
-    id: "battle-theme",
-    name: "Battle Theme",
-    genres: ["Battle Theme", "Hybrid Trailer"],
-    bpm: 160,
-    instruments: ["brass", "cinematic drums", "low strings", "synth pulses"],
-    moodFocus: "전투"
+    id: "synthwave-opening",
+    name: "Synthwave Opening",
+    genres: ["Synthwave", "Anime Opening"],
+    bpm: 172,
+    instruments: ["analog synth", "arp lead", "gated drums", "bass synth"],
+    moodFocus: "driving"
   },
   {
-    id: "ending-theme",
-    name: "Ending Theme",
-    genres: ["Ending Theme", "Ambient Pop"],
-    bpm: 118,
-    instruments: ["piano", "strings", "soft drums", "ambient textures"],
-    moodFocus: "감성"
+    id: "rock-dnb",
+    name: "Rock x DnB",
+    genres: ["Anime Rock", "Drum & Bass"],
+    bpm: 174,
+    instruments: ["electric guitar", "breakbeat drums", "bass", "strings"],
+    moodFocus: "epic"
   },
   {
-    id: "dreamwave-anime",
-    name: "Dreamwave Anime",
-    genres: ["Dreamwave", "Anime Pop"],
-    bpm: 128,
-    instruments: ["analog synth", "airy guitar", "retro drums", "pads"],
-    moodFocus: "몽환"
+    id: "orchestral-dubstep",
+    name: "Orchestral Dubstep",
+    genres: ["Orchestral Bass", "Dubstep"],
+    bpm: 150,
+    instruments: ["brass", "cinematic drums", "bass synth", "choir"],
+    moodFocus: "heavy"
   },
   {
-    id: "idol-rock",
-    name: "Idol Rock Anthem",
-    genres: ["Anime Rock", "Idol Anthem"],
-    bpm: 154,
-    instruments: ["electric guitar", "live drums", "bass", "crowd claps"],
-    moodFocus: "비장"
+    id: "future-garage-ost",
+    name: "Future Garage OST",
+    genres: ["Future Garage", "Ethereal Pop"],
+    bpm: 138,
+    instruments: ["pads", "soft breakbeats", "sub bass", "piano"],
+    moodFocus: "night"
   },
   {
-    id: "night-drive-city-pop",
-    name: "Night Drive City Pop",
-    genres: ["City Pop", "Neon Funk"],
-    bpm: 122,
-    instruments: ["electric piano", "slap bass", "guitar", "drum machine"],
-    moodFocus: "감성"
+    id: "lofi-ending",
+    name: "Lo-fi Ending",
+    genres: ["Lo-fi Pop", "Ending Theme"],
+    bpm: 92,
+    instruments: ["piano", "soft drums", "warm bass", "guitar"],
+    moodFocus: "healing"
   },
   {
-    id: "celestial-ballad",
-    name: "Celestial Ballad",
-    genres: ["Celestial Ballad", "Cinematic Ambient"],
-    bpm: 96,
-    instruments: ["piano", "choir", "strings", "soft percussion"],
-    moodFocus: "몽환"
+    id: "japanese-band-opening",
+    name: "Japanese Band Opening",
+    genres: ["J-Rock", "Anime Opening"],
+    bpm: 166,
+    instruments: ["electric guitar", "live drums", "bass", "synth"],
+    moodFocus: "youth"
   },
   {
-    id: "boss-rush",
-    name: "Boss Rush",
-    genres: ["Boss Battle", "Electro Orchestral"],
-    bpm: 178,
-    instruments: ["distorted synth", "choir", "percussion", "brass"],
-    moodFocus: "전투"
+    id: "dark-fantasy-industrial",
+    name: "Dark Fantasy Industrial",
+    genres: ["Dark Fantasy", "Industrial Electronic"],
+    bpm: 162,
+    instruments: ["industrial drums", "distorted bass", "low choir", "bells"],
+    moodFocus: "dark"
+  },
+  {
+    id: "celtic-fantasy",
+    name: "Celtic Fantasy",
+    genres: ["Celtic Fantasy", "Adventure OST"],
+    bpm: 144,
+    instruments: ["whistle", "fiddle", "bodhran", "strings"],
+    moodFocus: "adventure"
+  },
+  {
+    id: "piano-ending",
+    name: "Piano Ending",
+    genres: ["Piano Ballad", "Anime Ending"],
+    bpm: 84,
+    instruments: ["piano", "strings", "soft ambience"],
+    moodFocus: "farewell"
   }
 ];
 
@@ -86,8 +102,25 @@ export const SUNO_LANGUAGE_MODE_OPTIONS = [
   { value: "KR_EN_MIX", label: "한영 혼합" }
 ];
 
-export const SUNO_INTENSITY_OPTIONS = [
-  { value: "CALM", label: "차분함" },
-  { value: "EMOTIONAL", label: "감정선" },
-  { value: "HYPE", label: "고조감" }
+export const SUNO_ENERGY_MODE_OPTIONS = [
+  { value: "Calm", label: "차분함" },
+  { value: "Emotional", label: "감정선" },
+  { value: "Epic", label: "장대한 느낌" },
+  { value: "Bright", label: "밝은 톤" },
+  { value: "Dark", label: "어두운 톤" }
+];
+
+export const SUNO_THEME_PRESET_OPTIONS = [
+  { value: "Adventure Start", label: "모험 시작" },
+  { value: "Reunion Promise", label: "재회의 약속" },
+  { value: "Night Journey", label: "밤의 여정" },
+  { value: "Lost Memory", label: "잃어버린 기억" },
+  { value: "Final Battle", label: "최종 결전" },
+  { value: "Victory Scene", label: "승리 장면" },
+  { value: "Training Montage", label: "훈련 몽타주" },
+  { value: "School Youth", label: "학교 청춘" },
+  { value: "Summer Festival", label: "여름 축제" },
+  { value: "Ocean Voyage", label: "바다 항해" },
+  { value: "Sci-Fi Exploration", label: "SF 탐사" },
+  { value: "Time Loop Story", label: "시간 루프" }
 ];

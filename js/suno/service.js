@@ -1,154 +1,141 @@
 import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { db } from "../firebase-init.js?v=8.0.0";
 
-const SUNO_OUTPUT_RULES_PROMPT = `너는 SunoFox 프로젝트를 위한 Suno 입력 3종을 생성한다.
-반드시 JSON만 출력한다.
-형식:
+const SUNO_OUTPUT_RULES_PROMPT = `You are an AI that generates Suno-ready music inputs for the SunoFox project.
+Return ONLY valid JSON.
 {
   "title": "",
   "style": "",
   "lyrics": ""
 }
-입력값:
+Project style:
+- Anime OST inspired emotional electronic music
+- Symphonic Drum & Bass, Ethereal Pop, Cinematic Electronic
+- Female anime vocal, clear late-teen tone
+- Emotional build, final chorus explosion
+Input variables:
 - genrePreset
-- languageMode: KR_ONLY | KR_EN_MIX
-- vocalGender: FEMALE
-- bpmHint
-- themeHint
-- intensity: CALM | EMOTIONAL | HYPE
-핵심 규칙:
-- title/style/lyrics 외 다른 텍스트 금지
-- title은 "🦊 [한국어 제목] — [English Title]"
-- style은 영어 한 줄, "Genre1, Genre2(, Genre3) | BPM | instruments | female vocal + tone | emotion/energy"
-- lyrics는 실제 가사만 작성
-- 섹션 태그는 영어로만 작성
-- KR_ONLY는 한국어 가사만, KR_EN_MIX는 한국어 중심 자연 혼합
-- 애니 OST 감정 곡선: 절제 -> 상승 -> 폭발 -> 여운
-- 과한 반복, 설명문, 연출문 금지`;
-
-const PRESET_THEME_MAP = {
-    "symphonic-dnb": "storm",
-    "emotional-glitch-pop": "glass",
-    "fantasy-ost": "dawn",
-    "battle-theme": "flame",
-    "ending-theme": "afterglow",
-    "dreamwave-anime": "dream",
-    "idol-rock": "runway",
-    "night-drive-city-pop": "night",
-    "celestial-ballad": "starlight",
-    "boss-rush": "gate"
-};
+- themePreset
+- languageMode
+- energyMode
+- youtubeMode
+Rules:
+- Title format: 🦊 Korean Title — English Title
+- Style in English only, one line
+- Lyrics must contain only singable lines with allowed tags
+- KR_ONLY = Korean only
+- KR_EN_MIX = mostly Korean with some emotional English hooks
+- Favor imagery, avoid commentary about music
+- If youtubeMode is true, start immediately and make the final chorus biggest`;
 
 const THEME_LIBRARY = {
-    storm: {
-        krTitle: "폭우 끝의 맹세",
-        krAltTitle: "빗속의 약속",
-        enTitle: "Stormbound Oath",
-        enAltTitle: "Promise in the Rain",
-        image: "젖은 하늘",
-        trace: "번진 불빛",
-        vow: "끝내 지킬 이름",
-        hookKr: "넘어져도 너를 향해 달려",
-        hookEn: "Run through the rain"
+    "Adventure Start": {
+        krTitle: "새벽의 출발선",
+        enTitle: "First Light Departure",
+        imageA: "낯선 길목",
+        imageB: "가벼운 바람",
+        promise: "멀리 열린 길",
+        hookKr: "두려움 너머로 먼저 달려가",
+        hookEn: "Run into the light"
     },
-    glass: {
-        krTitle: "유리빛 새벽",
-        krAltTitle: "흩어진 빛의 끝",
-        enTitle: "Glass Dawn",
-        enAltTitle: "Shards of Light",
-        image: "얇은 새벽빛",
-        trace: "깨질 듯한 숨",
-        vow: "다시 모아 든 마음",
-        hookKr: "흩어진 빛도 우리를 비춰",
-        hookEn: "Hold the broken light"
+    "Reunion Promise": {
+        krTitle: "다시 만나는 약속",
+        enTitle: "Promise to Meet Again",
+        imageA: "젖은 골목 끝",
+        imageB: "늦게 번진 불빛",
+        promise: "놓지 않던 이름",
+        hookKr: "멀어졌던 손끝 다시 닿아 와",
+        hookEn: "Stay with me tonight"
     },
-    dawn: {
-        krTitle: "새벽의 숲길",
-        krAltTitle: "빛을 건너는 노래",
-        enTitle: "Path of Dawn",
-        enAltTitle: "Crossing into Light",
-        image: "고요한 숲길",
-        trace: "엷게 번진 안개",
-        vow: "멀리 남은 약속",
-        hookKr: "먼 빛 끝까지 나는 가",
-        hookEn: "Follow the dawn"
+    "Night Journey": {
+        krTitle: "밤을 건너는 숨",
+        enTitle: "Breath Across the Night",
+        imageA: "긴 그림자",
+        imageB: "희미한 차선",
+        promise: "아직 꺼지지 않은 방향",
+        hookKr: "깊은 어둠 너머 별이 열려 와",
+        hookEn: "Follow the fading blue"
     },
-    flame: {
-        krTitle: "불꽃의 경계",
-        krAltTitle: "타오르는 선",
-        enTitle: "Edge of Flame",
-        enAltTitle: "Burning Line",
-        image: "붉은 하늘",
-        trace: "들끓는 숨결",
-        vow: "끝까지 놓지 않을 뜻",
-        hookKr: "타는 밤을 넘어 내가 선다",
+    "Lost Memory": {
+        krTitle: "잊힌 장면의 끝",
+        enTitle: "At the Edge of Memory",
+        imageA: "빈 창가",
+        imageB: "흐린 사진",
+        promise: "남겨진 한 조각",
+        hookKr: "지워진 시간 속 너를 다시 불러",
+        hookEn: "Bring it back to me"
+    },
+    "Final Battle": {
+        krTitle: "마지막 불꽃 앞에서",
+        enTitle: "Before the Last Flame",
+        imageA: "갈라진 대지",
+        imageB: "붉은 하늘",
+        promise: "끝내 지킬 뜻",
+        hookKr: "무너진 밤 위로 내가 다시 선다",
         hookEn: "Stand through the fire"
     },
-    afterglow: {
-        krTitle: "마지막 빛의 곁",
-        krAltTitle: "남겨진 장면",
-        enTitle: "Beside the Last Light",
-        enAltTitle: "Left in the Last Scene",
-        image: "늦은 저녁빛",
-        trace: "가만한 발자국",
-        vow: "조용히 남아 준 온기",
-        hookKr: "끝난 줄 알았던 마음이 또 피어",
-        hookEn: "Stay in the afterglow"
+    "Victory Scene": {
+        krTitle: "빛으로 남는 순간",
+        enTitle: "The Moment We Remain",
+        imageA: "들뜬 숨결",
+        imageB: "쏟아진 햇빛",
+        promise: "끝까지 붙든 꿈",
+        hookKr: "멈춘 줄 알았던 하늘이 열려 와",
+        hookEn: "We made it alive"
     },
-    dream: {
-        krTitle: "푸른 꿈의 잔광",
-        krAltTitle: "잠들지 않는 파문",
-        enTitle: "Blue Dream Afterglow",
-        enAltTitle: "Waking Ripple",
-        image: "푸른 잔광",
-        trace: "느리게 번지는 파문",
-        vow: "사라지지 않을 떨림",
-        hookKr: "흔들려도 이 꿈을 안아",
-        hookEn: "Keep the dream alive"
+    "Training Montage": {
+        krTitle: "넘어선 발자국",
+        enTitle: "Steps Beyond the Limit",
+        imageA: "거친 숨",
+        imageB: "이른 아침빛",
+        promise: "쌓여 가는 의지",
+        hookKr: "흔들린 어제보다 더 멀리 올라",
+        hookEn: "Rise above again"
     },
-    runway: {
-        krTitle: "심장 점화",
-        krAltTitle: "빛나는 출발선",
-        enTitle: "Heart Ignition",
-        enAltTitle: "Shining Start Line",
-        image: "눈부신 무대 끝",
-        trace: "떨리는 첫 박자",
-        vow: "멈추지 않을 선언",
-        hookKr: "지금 이 순간 더 높이 올라",
-        hookEn: "Raise it up tonight"
+    "School Youth": {
+        krTitle: "교정 끝의 바람",
+        enTitle: "Wind at the School Gate",
+        imageA: "환한 복도",
+        imageB: "늦은 종소리",
+        promise: "아직 말하지 못한 마음",
+        hookKr: "서툰 하루 끝에 웃음이 번져 와",
+        hookEn: "Stay in this moment"
     },
-    night: {
-        krTitle: "새벽 차선 위에서",
-        krAltTitle: "도시의 잔불",
-        enTitle: "On the Midnight Lane",
-        enAltTitle: "City Afterglow",
-        image: "비어 있는 차선",
-        trace: "흐린 가로등",
-        vow: "천천히 깨어난 마음",
-        hookKr: "멀어진 밤도 우리를 못 멈춰",
-        hookEn: "Drive into the blue"
+    "Summer Festival": {
+        krTitle: "불꽃 아래 여름",
+        enTitle: "Summer Under Fireworks",
+        imageA: "붉은 등불",
+        imageB: "흔들린 유카타 끝",
+        promise: "짧고 선명한 계절",
+        hookKr: "스쳐 간 한순간 오래 남아 있어",
+        hookEn: "Hold the summer night"
     },
-    starlight: {
-        krTitle: "별 내린 숨결",
-        krAltTitle: "은하의 조용한 말",
-        enTitle: "Starlit Breath",
-        enAltTitle: "Quiet Words of the Sky",
-        image: "낮게 내린 별빛",
-        trace: "가벼운 숨의 떨림",
-        vow: "조용히 이어진 기도",
-        hookKr: "아득한 빛도 내 안에 닿아",
-        hookEn: "Breathe in the starlight"
+    "Ocean Voyage": {
+        krTitle: "푸른 항로의 끝",
+        enTitle: "Beyond the Blue Route",
+        imageA: "젖은 갑판",
+        imageB: "먼 수평선",
+        promise: "끝없이 열린 바다",
+        hookKr: "부서진 파도 너머 내일이 밀려와",
+        hookEn: "Sail into the sky"
     },
-    gate: {
-        krTitle: "최후의 문 앞에서",
-        krAltTitle: "닫히지 않는 결의",
-        enTitle: "Before the Final Gate",
-        enAltTitle: "Unbroken Resolve",
-        image: "거대한 문 앞",
-        trace: "무겁게 고인 침묵",
-        vow: "끝까지 밀어 올릴 의지",
-        hookKr: "무너져도 다시 문을 연다",
-        hookEn: "Break the final gate"
+    "Sci-Fi Exploration": {
+        krTitle: "별 사이의 좌표",
+        enTitle: "Coordinates Between Stars",
+        imageA: "낮은 엔진빛",
+        imageB: "푸른 궤도선",
+        promise: "아직 읽히지 않은 신호",
+        hookKr: "먼 우주 끝에도 우리의 길이 있어",
+        hookEn: "Find the next horizon"
+    },
+    "Time Loop Story": {
+        krTitle: "되돌아오는 새벽",
+        enTitle: "Dawn That Comes Again",
+        imageA: "멈춘 시계",
+        imageB: "낯익은 창문",
+        promise: "같은 하루 속 다른 선택",
+        hookKr: "반복된 시간 너머 결국 널 만나",
+        hookEn: "Break the same sunrise"
     }
 };
 
@@ -161,303 +148,192 @@ function cleanText(value) {
 }
 
 function normalizeOptions(preset, options = {}) {
-    const bpmHint = Number.parseInt(options.bpmHint, 10);
     return {
-        genrePreset: cleanText(options.genrePreset) || `${preset.genres.join(", ")} | ${preset.instruments.join(", ")}`,
+        genrePreset: cleanText(options.genrePreset) || preset.name,
+        themePreset: THEME_LIBRARY[options.themePreset] ? options.themePreset : "Reunion Promise",
         languageMode: options.languageMode === "KR_EN_MIX" ? "KR_EN_MIX" : "KR_ONLY",
-        vocalGender: "FEMALE",
-        bpmHint: Number.isFinite(bpmHint) ? Math.max(60, Math.min(220, bpmHint)) : preset.bpm,
-        themeHint: cleanText(options.themeHint),
-        intensity: ["CALM", "EMOTIONAL", "HYPE"].includes(options.intensity) ? options.intensity : "EMOTIONAL"
+        energyMode: ["Calm", "Emotional", "Epic", "Bright", "Dark"].includes(options.energyMode) ? options.energyMode : "Emotional",
+        youtubeMode: options.youtubeMode !== false
     };
 }
 
-function inferThemeKey(preset, themeHint) {
-    const hint = themeHint.toLowerCase();
-
-    if (/(비|rain|storm|폭우|소나기)/.test(hint)) return "storm";
-    if (/(유리|glass|조각|빛조각)/.test(hint)) return "glass";
-    if (/(새벽|dawn|아침|해뜰)/.test(hint)) return "dawn";
-    if (/(불|fire|flame|화염|열기)/.test(hint)) return "flame";
-    if (/(엔딩|ending|여운|잔광|afterglow)/.test(hint)) return "afterglow";
-    if (/(꿈|dream|환상|파문)/.test(hint)) return "dream";
-    if (/(무대|stage|idol|출발선|run)/.test(hint)) return "runway";
-    if (/(밤|night|도시|drive|차선)/.test(hint)) return "night";
-    if (/(별|star|moon|우주|은하)/.test(hint)) return "starlight";
-    if (/(문|gate|boss|최후|결전)/.test(hint)) return "gate";
-
-    return PRESET_THEME_MAP[preset.id] || "dawn";
+function getTheme(themePreset) {
+    return THEME_LIBRARY[themePreset] || THEME_LIBRARY["Reunion Promise"];
 }
 
-function getThemeData(preset, options, variation) {
-    const themeKey = inferThemeKey(preset, options.themeHint);
-    const theme = THEME_LIBRARY[themeKey] || THEME_LIBRARY.dawn;
-
-    return {
-        themeKey,
-        krTitle: variation ? theme.krAltTitle : theme.krTitle,
-        enTitle: variation ? theme.enAltTitle : theme.enTitle,
-        image: theme.image,
-        trace: theme.trace,
-        vow: theme.vow,
-        hookKr: theme.hookKr,
-        hookEn: theme.hookEn
-    };
+function buildTitle(options, variation = false) {
+    const theme = getTheme(options.themePreset);
+    if (!variation) return `🦊 ${theme.krTitle} — ${theme.enTitle}`;
+    return `🦊 ${theme.krTitle}의 끝 — ${theme.enTitle} Finale`;
 }
 
-function buildTitle(preset, options, variation = false) {
-    const theme = getThemeData(preset, options, variation);
-    return `🦊 ${theme.krTitle} — ${theme.enTitle}`;
-}
-
-function buildStyleBlueprint(preset, options, variation = false) {
-    const theme = getThemeData(preset, options, variation);
+function buildStyleBlueprint(preset, options) {
     const genres = preset.genres.slice(0, 3).join(", ");
     const instruments = preset.instruments.slice(0, 5).join(", ");
-
     const vocalTone = {
-        CALM: "female vocal + clear soft tone",
-        EMOTIONAL: "female vocal + clear emotional tone",
-        HYPE: "female vocal + bright urgent tone"
-    }[options.intensity];
+        Calm: "female vocal soft airy sincere",
+        Emotional: "female vocal airy emotional sincere",
+        Epic: "female vocal bright powerful sincere",
+        Bright: "female vocal light clear hopeful",
+        Dark: "female vocal soft tense shadowed"
+    }[options.energyMode];
+    const direction = options.youtubeMode
+        ? {
+            Calm: "immediate melody, gentle rise, bridge contrast, final chorus bloom",
+            Emotional: "early hook, cinematic build, bridge contrast, final chorus peak",
+            Epic: "immediate hook, strong build, dramatic bridge, final chorus explosion",
+            Bright: "instant vocal lift, opening energy, contrast bridge, final chorus shine",
+            Dark: "immediate tension, dark build, sharp bridge contrast, final chorus surge"
+        }[options.energyMode]
+        : {
+            Calm: "cinematic build, intimate verses, final chorus bloom",
+            Emotional: "cinematic build, anime opening energy, final chorus peak",
+            Epic: "heroic build, anime climax energy, final chorus explosion",
+            Bright: "hopeful build, opening theme energy, final chorus shine",
+            Dark: "tense build, story-driven intensity, final chorus release"
+        }[options.energyMode];
 
-    const energyLine = {
-        CALM: `restrained verses, tender rise, luminous chorus, lingering ${theme.themeKey} afterglow`,
-        EMOTIONAL: `restrained verses, swelling ache, explosive chorus, lingering ${theme.themeKey} afterglow`,
-        HYPE: `restrained verses, fast lift, explosive chorus, lingering ${theme.themeKey} afterglow`
-    }[options.intensity];
-
-    return [
-        genres,
-        `${options.bpmHint} BPM`,
-        instruments,
-        vocalTone,
-        energyLine
-    ].join(" | ");
+    return `${genres} | ${preset.bpm} BPM | ${instruments} | ${vocalTone} | ${direction}`;
 }
 
-function buildThemeHintLine(themeHint, fallback, suffix) {
-    if (!themeHint) return `${fallback}${suffix}`;
-    return `${themeHint} ${suffix}`;
+function introLines(theme, options) {
+    if (options.languageMode === "KR_ONLY") {
+        return options.youtubeMode
+            ? [`${theme.imageA} 끝에 네가 먼저 스며와`, `${theme.imageB} 사이로 숨이 다시 깨어나`]
+            : [`${theme.imageA} 위에 조용히 손을 얹고`, `${theme.imageB} 사이로 잊힌 숨을 모아`];
+    }
+
+    return options.youtubeMode
+        ? [`${theme.imageA} 끝에 네가 먼저 스며와`, `You pull me into the light`]
+        : [`${theme.imageA} 위에 조용히 손을 얹고`, `I can hear your distant breath`];
+}
+
+function chorusLines(theme, options) {
+    if (options.languageMode === "KR_ONLY") {
+        return {
+            Calm: [`${theme.hookKr}`, `늦은 하늘 아래 마음이 천천히 열려`, `멀어진 계절 끝에 다시 웃을 수 있어`, `지금의 떨림도 결국 빛이 돼`],
+            Emotional: [`${theme.hookKr}`, `흩어진 장면 끝에 네가 선명해져`, `떨리던 하루 끝에 다시 숨을 쉬어`, `지금의 눈물도 결국 빛이 돼`],
+            Epic: [`${theme.hookKr}`, `무너진 세계 끝에 내가 더 크게 외쳐`, `붙잡은 약속 하나 끝까지 밀어 올려`, `지금의 심장으로 내일을 깨워 내`],
+            Bright: [`${theme.hookKr}`, `반짝인 하늘 아래 웃음이 먼저 번져`, `쏟아진 햇빛처럼 하루가 가벼워져`, `지금의 설렘으로 문을 열어 가`],
+            Dark: [`${theme.hookKr}`, `낮게 젖은 그림자마저 뒤로 흘러가`, `닫혀 있던 마음도 끝내 금을 내고`, `지금의 침묵도 결국 깨어나`]
+        }[options.energyMode];
+    }
+
+    return {
+        Calm: [`${theme.hookKr}`, `${theme.hookEn}`, `늦은 하늘 아래 slowly we begin again`, `지금의 떨림도 turns into light`],
+        Emotional: [`${theme.hookKr}`, `${theme.hookEn}`, `흩어진 장면 끝에 we are not too late`, `지금의 눈물도 turns into light`],
+        Epic: [`${theme.hookKr}`, `${theme.hookEn}`, `무너진 세계 끝에 we rise again tonight`, `붙잡은 약속으로 break the darkest line`],
+        Bright: [`${theme.hookKr}`, `${theme.hookEn}`, `반짝인 하늘 아래 we can run so high`, `지금의 설렘으로 open up the sky`],
+        Dark: [`${theme.hookKr}`, `${theme.hookEn}`, `낮게 젖은 그림자 through the closing night`, `지금의 침묵도 burns into light`]
+    }[options.energyMode];
 }
 
 function buildKrOnlyLyrics(theme, options) {
-    const themeLine = buildThemeHintLine(options.themeHint, theme.image, "아래 숨을 모아");
-    const secondThemeLine = buildThemeHintLine(options.themeHint, theme.trace, "곁에서 떨린 마음도");
-
-    const intro = [
-        themeLine,
-        `${theme.trace} 끝에 아직 이름을 안아`
-    ];
-
-    const verse1 = [
-        `늦은 바람이 어깨를 스쳐도`,
-        `나는 오늘의 떨림을 숨기지 않아`,
-        secondThemeLine,
-        `조용한 발끝으로 다시 너를 향해 가`
-    ];
-
-    const preChorus1 = options.intensity === "CALM"
-        ? [
-            `접어 둔 두려움이 천천히 풀리고`,
-            `가슴 안 작은 불빛이 길을 밝혀`,
-            `${theme.vow} 점점 더 선명해져`
-        ]
-        : [
-            `접어 둔 두려움이 한순간 깨어나`,
-            `가슴 안 작은 불빛이 위로 치솟아`,
-            `${theme.vow} 점점 더 선명해져`
-        ];
-
-    const chorus = options.intensity === "HYPE"
-        ? [
-            `${theme.hookKr}`,
-            `거센 밤 끝에서도 나는 더 크게 빛나`,
-            `멈춘 듯한 세상을 밀어 올려`,
-            `우리의 내일은 지금 여기서 시작돼`
-        ]
-        : [
-            `${theme.hookKr}`,
-            `흔들린 밤 끝에서도 나는 너를 비춰`,
-            `울어도 좋아 다시 피어날 테니`,
-            `우리의 내일은 지금 여기서 시작돼`
-        ];
-
-    const verse2 = [
-        `멀어진 시간은 뒤로 흘러가도`,
-        `내 안의 목소리는 더욱 또렷해져`,
-        `작게 접어 둔 바람 하나까지`,
-        `이번엔 놓치지 않고 두 손에 쥘 거야`
-    ];
-
-    const preChorus2 = options.intensity === "CALM"
-        ? [
-            `조용히 닫힌 문들도 결국 열리고`,
-            `멈춘 줄 알았던 계절이 돌아와`,
-            `${theme.vow} 이제는 피하지 않아`
-        ]
-        : [
-            `조용히 닫힌 문들도 끝내 열리고`,
-            `멈춘 줄 알았던 심장이 다시 뛰어`,
-            `${theme.vow} 이제는 피하지 않아`
-        ];
-
-    const bridge = options.intensity === "HYPE"
-        ? [
-            `가장 어두운 순간에 더 크게 외쳐`,
-            `부서진 장면 위로 새 길을 그려`,
-            `끝까지 남을 이름을 내 안에 새겨`
-        ]
-        : [
-            `가장 깊은 숨 끝에서 너를 부르면`,
-            `멈춰 있던 장면들도 빛으로 열려`,
-            `끝까지 남을 이름을 내 안에 새겨`
-        ];
-
-    const outro = [
-        `사라진 뒤에도 온기는 남아`,
-        `조용한 여운처럼 오래 번져 가`
-    ];
+    const firstChorus = chorusLines(theme, options);
+    const finalChorus = [...firstChorus];
+    finalChorus[1] = options.energyMode === "Epic"
+        ? `갈라진 운명 끝에 내가 가장 크게 선다`
+        : options.energyMode === "Bright"
+            ? `쏟아진 빛 한가운데 우리가 더 높이 선다`
+            : `${firstChorus[1]}`;
 
     return [
         "[Intro]",
-        ...intro,
+        ...introLines(theme, options),
         "",
         "[Verse]",
-        ...verse1,
+        `${theme.promise} 하나 가슴 안에 접어 두고`,
+        `${theme.imageB} 뒤로 흐른 시간들을 넘어가`,
+        `멀어진 거리마다 네 흔적이 남아서`,
+        `나는 오늘의 끝을 다시 고쳐 써`,
         "",
         "[Pre-Chorus]",
-        ...preChorus1,
+        `멈춘 줄 알았던 계절이 눈앞에 번져`,
+        `가만한 두 손 위로 새로운 숨이 올라`,
+        `${theme.promise} 이제는 놓치지 않아`,
         "",
         "[Chorus]",
-        ...chorus,
+        ...firstChorus,
         "",
         "[Verse]",
-        ...verse2,
-        "",
-        "[Pre-Chorus]",
-        ...preChorus2,
+        `작게 금이 간 하루도 결국 나를 밀어`,
+        `${theme.imageA} 너머로 더 멀리 시선을 던져`,
+        `서툰 망설임까지 모두 안고 나면`,
+        `흔들린 발끝도 조금씩 단단해져`,
         "",
         "[Chorus]",
-        ...chorus,
+        ...firstChorus,
         "",
         "[Bridge]",
-        ...bridge,
+        options.youtubeMode
+            ? `모든 불빛이 꺼진 듯한 그 순간에도`
+            : `아무 말 없는 하늘 아래 서 있어도`,
+        `${theme.imageB} 사이로 다른 문이 열려`,
+        `끝까지 남을 이름을 다시 불러`,
         "",
         "[Chorus]",
-        ...chorus,
+        ...finalChorus,
         "",
         "[Outro]",
-        ...outro
+        `사라진 뒤에도 온기는 남아`,
+        `늦은 여운처럼 오래 번져 가`
     ].join("\n");
 }
 
 function buildMixedLyrics(theme, options) {
-    const hintKorean = buildThemeHintLine(options.themeHint, theme.image, "아래 숨을 모아");
-
-    const intro = [
-        hintKorean,
-        `I keep your light with me`
-    ];
-
-    const verse1 = [
-        `늦은 바람이 스쳐도 나는 멈추지 않아`,
-        `${theme.trace} 끝에서 더 선명해진 너를 봐`,
-        `작게 흔들리던 마음까지 안고서`,
-        `I take one more step tonight`
-    ];
-
-    const preChorus1 = options.intensity === "CALM"
-        ? [
-            `조용히 닫아 둔 문이 조금씩 열려`,
-            `${theme.vow} 더 가까워져`,
-            `Hold on, I can hear it now`
-        ]
-        : [
-            `조용히 닫아 둔 문이 한순간 열려`,
-            `${theme.vow} 더 가까워져`,
-            `Hold on, I can hear it now`
-        ];
-
-    const chorus = options.intensity === "HYPE"
-        ? [
-            `${theme.hookKr}, never let it fall`,
-            `거센 밤 끝에서도 we are still alive`,
-            `밀어 올려 지금 이 장면 위로`,
-            `Stay with me, our story starts tonight`
-        ]
-        : [
-            `${theme.hookKr}, never let it fade`,
-            `흔들린 밤 끝에서도 we are still alive`,
-            `울어도 돼 여기서 다시 피어나`,
-            `Stay with me, our story starts tonight`
-        ];
-
-    const verse2 = [
-        `멀어진 시간도 이제는 두렵지 않아`,
-        `작게 남은 떨림까지 품에 안아`,
-        `무너진 장면 위에 숨을 맞추고`,
-        `I can see the way we go`
-    ];
-
-    const preChorus2 = [
-        `멈춘 줄 알았던 계절이 다시 돌아와`,
-        `${theme.vow} 더 크게 번져`,
-        `This is where I call your name`
-    ];
-
-    const bridge = options.intensity === "HYPE"
-        ? [
-            `가장 어두운 순간에도 나를 깨워`,
-            `Break the silence, light the road`,
-            `끝까지 남을 진심만 안고 가`
-        ]
-        : [
-            `가장 깊은 숨 끝에서 너를 부르면`,
-            `Break the silence, light the road`,
-            `끝까지 남을 진심만 안고 가`
-        ];
-
-    const outro = [
-        `사라진 뒤에도 온기는 남아`,
-        `Softly, your light stays with me`
-    ];
+    const firstChorus = chorusLines(theme, options);
+    const finalChorus = [...firstChorus];
+    finalChorus[2] = options.energyMode === "Epic"
+        ? `무너진 경계 너머 we rise again tonight`
+        : options.energyMode === "Bright"
+            ? `눈부신 장면 위로 we can run so high`
+            : finalChorus[2];
 
     return [
         "[Intro]",
-        ...intro,
+        ...introLines(theme, options),
         "",
         "[Verse]",
-        ...verse1,
+        `${theme.promise} 하나 가슴 안에 접어 두고`,
+        `${theme.imageB} 뒤로 흐른 시간들을 넘어가`,
+        `멀어진 거리마다 네 흔적이 남아서`,
+        `I rewrite the end again`,
         "",
         "[Pre-Chorus]",
-        ...preChorus1,
+        `멈춘 줄 알았던 계절이 눈앞에 번져`,
+        `가만한 두 손 위로 새로운 숨이 올라`,
+        `I will not let it go`,
         "",
         "[Chorus]",
-        ...chorus,
+        ...firstChorus,
         "",
         "[Verse]",
-        ...verse2,
-        "",
-        "[Pre-Chorus]",
-        ...preChorus2,
+        `작게 금이 간 하루도 결국 나를 밀어`,
+        `${theme.imageA} 너머로 더 멀리 시선을 던져`,
+        `서툰 망설임까지 모두 안고 나면`,
+        `I can see the road ahead`,
         "",
         "[Chorus]",
-        ...chorus,
+        ...firstChorus,
         "",
         "[Bridge]",
-        ...bridge,
+        options.youtubeMode
+            ? `모든 불빛이 꺼진 듯한 그 순간에도`
+            : `아무 말 없는 하늘 아래 서 있어도`,
+        `Everything turns and breaks apart`,
+        `끝까지 남을 이름을 다시 불러`,
         "",
         "[Chorus]",
-        ...chorus,
+        ...finalChorus,
         "",
         "[Outro]",
-        ...outro
+        `사라진 뒤에도 온기는 남아`,
+        `Your afterglow stays with me`
     ].join("\n");
 }
 
-function buildLyrics(preset, options, variation = false) {
-    const theme = getThemeData(preset, options, variation);
+function buildLyrics(preset, options) {
+    const theme = getTheme(options.themePreset);
     return options.languageMode === "KR_EN_MIX"
         ? buildMixedLyrics(theme, options)
         : buildKrOnlyLyrics(theme, options);
@@ -486,11 +362,10 @@ async function requestRemoteDraft(preset, options, variation) {
                 promptTemplate: SUNO_OUTPUT_RULES_PROMPT,
                 input: {
                     genrePreset: options.genrePreset,
+                    themePreset: options.themePreset,
                     languageMode: options.languageMode,
-                    vocalGender: options.vocalGender,
-                    bpmHint: options.bpmHint,
-                    themeHint: options.themeHint || null,
-                    intensity: options.intensity
+                    energyMode: options.energyMode,
+                    youtubeMode: options.youtubeMode
                 },
                 preset: {
                     id: preset.id,
@@ -522,9 +397,9 @@ async function requestRemoteDraft(preset, options, variation) {
 function buildDummyDraft(preset, rawOptions, variation = false) {
     const options = normalizeOptions(preset, rawOptions);
     return {
-        title: buildTitle(preset, options, variation),
-        style: buildStyleBlueprint(preset, options, variation),
-        lyrics: buildLyrics(preset, options, variation)
+        title: buildTitle(options, variation),
+        style: buildStyleBlueprint(preset, options),
+        lyrics: buildLyrics(preset, options)
     };
 }
 
