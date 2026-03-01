@@ -4097,12 +4097,20 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 12px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --font-display: 'Manrope', 'Pretendard', sans-serif;
+  --font-body: 'Manrope', 'Pretendard', sans-serif;
 }
 
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Manrope', 'Pretendard', sans-serif;
+  font-family: var(--font-body);
   background: var(--bg-color);
   color: var(--text-main);
 }
@@ -4122,11 +4130,21 @@ header {
 }
 
 .logo {
-  font-family: 'Manrope', 'Pretendard', sans-serif;
+  font-family: var(--font-display);
   font-size: 1.45rem;
   font-weight: 800;
   letter-spacing: -0.05em;
   color: var(--text-main);
+}
+
+.site-logo-image {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.site-logo-text {
+  margin-left: 8px;
 }
 
 .logo span {
@@ -4171,6 +4189,26 @@ header {
   color: #ffffff !important;
   border: 1px solid rgba(17, 17, 17, 0.08) !important;
   box-shadow: none !important;
+}
+
+.site-login-btn {
+  height: 38px;
+  padding: 0 1.2rem;
+  font-size: 0.85rem;
+}
+
+.site-notif-bell {
+  position: relative;
+  cursor: pointer;
+  font-size: 1.3rem;
+  margin-right: 5px;
+  margin-left: 5px;
+}
+
+.site-points-suffix {
+  font-size: 0.7rem;
+  font-weight: 800;
+  margin-left: 1px;
 }
 
 .dropdown-content {
@@ -4249,6 +4287,51 @@ main {
 
 .footer-content { max-width: 1280px; }
 
+.site-footer-title {
+  margin-bottom: 1px;
+  line-height: 1.2;
+}
+
+.site-footer-brand {
+  color: #f97316;
+  font-weight: 800;
+  font-size: 0.75rem;
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  line-height: 1.2;
+  opacity: 0.9;
+}
+
+.site-footer-admin {
+  color: var(--accent-color);
+  font-weight: 800;
+}
+
+.site-version-badge {
+  font-weight: 800;
+  color: var(--accent-color);
+  margin-left: 10px;
+  font-size: 0.75rem;
+}
+
+.site-visitor-stats {
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--text-sub);
+  margin-top: 8px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  opacity: 0.8;
+}
+
+.site-visitor-value {
+  color: var(--accent-color);
+}
+
+.site-visitor-value-spaced {
+  margin-right: 10px;
+}
+
 .footer-info h3,
 .footer-links a:hover,
 .copyright { color: var(--text-main); }
@@ -4303,7 +4386,7 @@ main {
 .minimal-hero-copy h1,
 .minimal-feature-card h2,
 .minimal-section-head h2 {
-  font-family: 'Manrope', 'Pretendard', sans-serif;
+  font-family: var(--font-display);
   font-weight: 800;
   letter-spacing: -0.07em;
   line-height: 0.96;
@@ -4451,6 +4534,10 @@ main {
   align-items: end;
   gap: 1rem;
   margin-bottom: 1rem;
+}
+
+.ui-section-head {
+  margin-bottom: var(--space-4);
 }
 
 .minimal-section-head h2 {
@@ -4836,6 +4923,32 @@ main {
   justify-items: start;
   gap: 0.5rem;
   padding: 1.1rem;
+}
+
+.ui-empty-state {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  padding: 1.1rem;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.ui-empty-state strong {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.ui-empty-state span {
+  color: var(--text-sub);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.ui-empty-action {
+  margin-top: 0.2rem;
 }
 
 .emoji-btn,

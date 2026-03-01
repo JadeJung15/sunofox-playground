@@ -1,6 +1,7 @@
-import { UserState, updateUI } from '../auth.js?v=8.5.7';
-import { db } from '../firebase-init.js?v=8.5.7';
+import { UserState, updateUI } from '../auth.js?v=8.5.8';
+import { db } from '../firebase-init.js?v=8.5.8';
 import { collection, getDocs, limit, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { renderEmptyState } from '../ui/primitives.js?v=8.5.8';
 
 function escapeHTML(value) {
     if (value == null) return '';
@@ -37,13 +38,12 @@ async function loadOwnPosts() {
 
 function renderOwnPostList(posts) {
     if (!posts.length) {
-        return `
-            <div class="profile-simple-empty">
-                <strong>작성한 글이 없습니다.</strong>
-                <span>게시판에서 첫 글을 작성해 보세요.</span>
-                <button class="btn-secondary" onclick="location.hash='#board'">게시판 가기</button>
-            </div>
-        `;
+        return renderEmptyState({
+            title: '작성한 글이 없습니다.',
+            description: '게시판에서 첫 글을 작성해 보세요.',
+            actionLabel: '게시판 가기',
+            actionHash: '#board'
+        });
     }
 
     return `
@@ -171,12 +171,10 @@ export async function renderProfile() {
         if (postsPanel) postsPanel.innerHTML = renderOwnPostList(posts);
     } catch (error) {
         if (postsPanel) {
-            postsPanel.innerHTML = `
-                <div class="profile-simple-empty">
-                    <strong>내 글을 불러오지 못했습니다.</strong>
-                    <span>잠시 후 다시 시도해 주세요.</span>
-                </div>
-            `;
+            postsPanel.innerHTML = renderEmptyState({
+                title: '내 글을 불러오지 못했습니다.',
+                description: '잠시 후 다시 시도해 주세요.'
+            });
         }
     }
 
