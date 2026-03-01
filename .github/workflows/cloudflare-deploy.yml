@@ -42,7 +42,7 @@ jobs:
       - name: Build
         run: |
           mkdir -p dist
-          cp -r index.html css js *.png sitemap.xml ads.txt dist/ 2>/dev/null || true
+          cp -r index.html css js *.png sitemap.xml robots.txt ads.txt dist/ 2>/dev/null || true
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/pages-action@v1
