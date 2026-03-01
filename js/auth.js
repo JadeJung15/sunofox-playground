@@ -366,12 +366,15 @@ export async function changeNameColor(color) {
     isColorChanging = false;
 }
 
+let isNicknameChanging = false;
 export async function changeNickname() {
     const input = document.getElementById('nickname-input');
-    if (!UserState.user || !input?.value.trim()) return;
+    if (isNicknameChanging || !UserState.user || !input?.value.trim()) return;
     const newName = input.value.trim();
     if (newName.length < 2 || newName.length > 10) return alert("닉네임은 2~10자 사이여야 합니다.");
+    if (UserState.data?.nickname === newName) return alert("현재 사용 중인 닉네임입니다.");
     
+    isNicknameChanging = true;
     try {
         const result = await postEconomyAction('changeNickname', { nickname: newName });
         UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
@@ -384,7 +387,9 @@ export async function changeNickname() {
             renderProfile();
         }
     } catch (e) {
-        alert("닉네임 변경 중 오류가 발생했습니다.");
+        alert(e.message || "닉네임 변경 중 오류가 발생했습니다.");
+    } finally {
+        isNicknameChanging = false;
     }
 }
 

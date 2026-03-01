@@ -484,33 +484,6 @@ export function renderProfile() {
         };
     });
 
-    // 닉네임 색상 변경 리스너 직접 등록
-    app.querySelectorAll('.color-btn').forEach(btn => {
-        btn.onclick = async () => {
-            const color = btn.dataset.color;
-            const { changeNameColor } = await import('../auth.js?v=8.5.0');
-            await changeNameColor(color);
-        };
-    });
-
-    // 아이콘 변경 리스너 직접 등록
-    app.querySelectorAll('.emoji-btn').forEach(btn => {
-        btn.onclick = async () => {
-            const emoji = btn.dataset.emoji;
-            const { handleEmojiExchange } = await import('../auth.js?v=8.5.0');
-            await handleEmojiExchange(emoji);
-        };
-    });
-
-    // 닉네임 저장 리스너 직접 등록
-    const nickSaveBtn = document.getElementById('nickname-save');
-    if (nickSaveBtn) {
-        nickSaveBtn.onclick = async () => {
-            const { changeNickname } = await import('../auth.js?v=8.5.0');
-            await changeNickname();
-        };
-    }
-
     // 로그아웃 리스너 직접 등록
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {

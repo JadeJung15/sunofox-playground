@@ -699,6 +699,7 @@ exports.economy = onRequest({ cors: true, region: 'asia-northeast3' }, async (re
         const userSnap = await tx.get(userRef);
         if (!userSnap.exists) throw new HttpError(404, '사용자를 찾을 수 없습니다.');
         const data = userSnap.data() || {};
+        if (data.nickname === nickname) throw new HttpError(400, '현재 사용 중인 닉네임입니다.');
         const cost = data.nicknameChanged ? 5000 : 0;
         if (Number(data.points || 0) < cost) throw new HttpError(400, '포인트가 부족합니다.');
 
