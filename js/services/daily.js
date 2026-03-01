@@ -271,7 +271,8 @@ export async function requestDailyResult(slug) {
 
   try {
     const token = await user.getIdToken();
-    const response = await fetch('/api/daily-result', {
+    const apiBaseUrl = window.__SEVENCHECK_CONFIG__?.apiBaseUrl || '';
+    const response = await fetch(`${apiBaseUrl}/dailyResult`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -102,7 +102,9 @@ export async function postEconomyAction(action, payload = {}) {
     if (!user) throw new Error('로그인이 필요합니다.');
 
     const token = await user.getIdToken();
-    const response = await fetch('/api/economy', {
+    const apiBaseUrl = window.__SEVENCHECK_CONFIG__?.apiBaseUrl || '';
+    const economyUrl = `${apiBaseUrl}/economy`;
+    const response = await fetch(economyUrl, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
