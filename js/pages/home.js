@@ -1,8 +1,44 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.8';
-import { db } from '../firebase-init.js?v=8.5.8';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.6';
+import { db } from '../firebase-init.js?v=8.5.6';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.5.8';
-import { renderSectionHead } from '../ui/primitives.js?v=8.5.8';
+import { TESTS } from '../tests-data.js?v=8.5.6';
+
+const FOX_ADVICE = [
+    "오늘 하루도 당신은 충분히 빛나요! ✨",
+    "오른쪽으로 걸어가면 뜻밖의 행운이 있을지도? 🍀",
+    "지금 테스트를 하면 마음이 한결 가벼워질 거예요. 🧠",
+    "지칠 땐 오락실에서 한 판 쉬어가는 건 어때요? 🎰",
+    "당신의 아우라는 오늘 '열정의 레드'만큼 뜨겁네요! 🔥",
+    "맛있는 걸 먹으면 운세가 2배로 좋아질 거예요! 🍰",
+    "누군가 당신을 생각하고 있는 따뜻한 날이네요. 💌",
+    "오늘은 새로운 도전을 시작하기에 완벽한 날입니다! 🚀",
+    "가끔은 아무것도 하지 않는 게 최고의 휴식이에요. 💤",
+    "당신이 몰랐던 매력을 곧 발견하게 될 거예요! 💎"
+];
+
+const HOME_UPDATES = [
+    {
+        badge: 'NEW',
+        title: '오늘의 테스트 오픈',
+        desc: '10초 안에 끝나는 초단기 결과형 테스트가 새 카테고리로 붙었습니다.',
+        accent: '#0ea5e9',
+        gradient: 'linear-gradient(145deg,#eff6ff 0%,#dbeafe 100%)'
+    },
+    {
+        badge: 'UPDATED',
+        title: '오락실 보상 흐름 정리',
+        desc: '게임별 수익 구조와 주간 보너스를 다시 다듬어서 재방문 동선을 보강했습니다.',
+        accent: '#d97706',
+        gradient: 'linear-gradient(145deg,#fff7ed 0%,#ffedd5 100%)'
+    },
+    {
+        badge: 'POLISHED',
+        title: '프로필 · 게시판 개선',
+        desc: '프로필 가독성과 게시판 피드백을 손봐서 전체 사용감이 더 자연스러워졌습니다.',
+        accent: '#7c3aed',
+        gradient: 'linear-gradient(145deg,#f5f3ff 0%,#ede9fe 100%)'
+    }
+];
 
 const DAILY_CATEGORY_META = {
     hash: '/daily/',
@@ -192,7 +228,12 @@ export function renderCategorySelection() {
             </section>
 
             <section class="minimal-section reveal">
-                ${renderSectionHead({ kicker: 'Category Grid', title: '원하는 방식으로 시작하기' })}
+                <div class="minimal-section-head">
+                    <div>
+                        <span class="minimal-kicker">Category Grid</span>
+                        <h2>원하는 방식으로 시작하기</h2>
+                    </div>
+                </div>
                 <div class="minimal-card-grid minimal-card-grid-3">
                     ${categoryCards.map((card) => `
                         <article class="minimal-pane minimal-pane-interactive" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">
@@ -245,7 +286,12 @@ export async function renderHome(hash) {
                 </section>
 
                 <section class="minimal-section reveal">
-                    ${renderSectionHead({ kicker: 'Browse', title: '카테고리' })}
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Browse</span>
+                            <h2>카테고리</h2>
+                        </div>
+                    </div>
                     <div class="minimal-card-grid minimal-card-grid-3">
                         ${categoryCards.map((card) => `
                             <article class="minimal-pane minimal-pane-interactive minimal-pane-compact" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">
@@ -261,7 +307,12 @@ export async function renderHome(hash) {
                 </section>
 
                 <section class="minimal-section reveal">
-                    ${renderSectionHead({ kicker: 'Recommended', title: '지금 많이 보는 테스트' })}
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Recommended</span>
+                            <h2>지금 많이 보는 테스트</h2>
+                        </div>
+                    </div>
                     <div class="test-grid minimal-test-grid">
                         ${curatedTests.map((t) => renderTestCard(t)).join('')}
                     </div>
@@ -273,8 +324,12 @@ export async function renderHome(hash) {
         const filtered = latestTests.filter(t => t.category === window._currentFilter);
         app.innerHTML = `
             <div class="minimal-page minimal-page-narrow fade-in">
-                <div class="reveal">
-                    ${renderSectionHead({ kicker: window._currentFilter, title: `${window._currentFilter} 테스트`, meta: `총 ${filtered.length}개` })}
+                <div class="minimal-section-head reveal">
+                    <div>
+                        <span class="minimal-kicker">${window._currentFilter}</span>
+                        <h2>${window._currentFilter} 테스트</h2>
+                    </div>
+                    <span class="minimal-text-meta">총 ${filtered.length}개</span>
                 </div>
                 <div class="test-grid minimal-test-grid reveal">
                     ${filtered.map(t => renderTestCard(t)).join('')}
