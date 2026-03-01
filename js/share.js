@@ -1,4 +1,4 @@
-import { addPoints } from './auth.js?v=8.5.5';
+import { addPoints } from './auth.js?v=8.5.6';
 
 let lastShareTime = 0;
 
