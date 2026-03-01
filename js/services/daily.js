@@ -304,5 +304,5 @@ export async function requestDailyResult(slug) {
 }
 
 export function getDailyPath(slug = '') {
-  return slug ? `/daily/${encodeURIComponent(slug)}` : '/daily';
+  return slug ? `/daily/${encodeURIComponent(slug)}` : '/daily/';
 }

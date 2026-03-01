@@ -41,7 +41,7 @@ const HOME_UPDATES = [
 ];
 
 const DAILY_CATEGORY_META = {
-    hash: '/daily',
+    hash: '/daily/',
     category: 'daily',
     icon: '☀️',
     label: "TODAY'S TEST",
@@ -306,7 +306,7 @@ export async function renderHome(hash) {
         const userName = UserState.user ? UserState.data?.nickname || '사용자' : '방문자';
         const heroTest = latestTests[Math.floor(Math.random() * latestTests.length)];
         const homeCategories = [
-            { hash: '/daily', label: "TODAY'S TEST", title: '오늘의 테스트', category: 'daily', accent: '#0c4a6e', gradient: 'linear-gradient(145deg,#e0f2fe 0%,#bfdbfe 100%)', latestTitle: '오늘 회사 때려칠 확률 테스트', countText: '30개 테스트' },
+            { hash: '/daily/', label: "TODAY'S TEST", title: '오늘의 테스트', category: 'daily', accent: '#0c4a6e', gradient: 'linear-gradient(145deg,#e0f2fe 0%,#bfdbfe 100%)', latestTitle: '오늘 회사 때려칠 확률 테스트', countText: '30개 테스트' },
             { hash: '#personality', label: 'MENTAL LAB', title: '성격 분석', category: '성격', accent: '#4f46e5', gradient: 'linear-gradient(145deg,#eef2ff 0%,#c7d2fe 100%)' },
             { hash: '#face', label: 'VISUAL CODE', title: '비주얼/얼굴', category: '얼굴', accent: '#db2777', gradient: 'linear-gradient(145deg,#fff1f2 0%,#fecdd3 100%)' },
             { hash: '#fortune', label: 'FORTUNE FLOW', title: '오늘의 운세', category: '사주', accent: '#d97706', gradient: 'linear-gradient(145deg,#fffbeb 0%,#fde68a 100%)' },

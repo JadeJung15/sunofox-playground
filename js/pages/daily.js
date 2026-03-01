@@ -4,7 +4,7 @@ import { saveAsStoryImage } from '../share.js?v=8.5.0';
 function setDailyMeta(title, description, path) {
   document.title = title ? `${title} | 오늘의 테스트 | SevenCheck` : '오늘의 테스트 | SevenCheck';
   const desc = description || '10초 안에 끝나는 오늘의 테스트. 오늘 기분 그대로 바로 확인해보세요.';
-  const url = `${window.location.origin}${path || '/daily'}`;
+  const url = `${window.location.origin}${path || '/daily/'}`;
 
   const ensureMeta = (selector, key, value) => {
     let node = document.querySelector(selector);
@@ -40,7 +40,7 @@ function renderError(message) {
       <div class="daily-message-card" style="background:#fff; border:1px solid #fecaca; border-radius:28px; padding:2rem 1.2rem; text-align:center;">
         <div style="font-size:1.05rem; font-weight:900; color:#b91c1c; margin-bottom:0.6rem;">불러오지 못했습니다</div>
         <div style="color:#475569; font-weight:700; margin-bottom:1rem;">${message}</div>
-        <button onclick="window.goToDaily('/daily')" style="border:none; border-radius:14px; padding:0.8rem 1rem; background:#0f172a; color:#fff; font-weight:900; cursor:pointer;">목록으로</button>
+        <button onclick="window.goToDaily('/daily/')" style="border:none; border-radius:14px; padding:0.8rem 1rem; background:#0f172a; color:#fff; font-weight:900; cursor:pointer;">목록으로</button>
       </div>
     </div>
   `;
@@ -91,7 +91,7 @@ function renderResultSection(test, payload) {
         <div class="daily-result-actions" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:0.7rem; margin-bottom:0.55rem;">
           <button id="daily-copy-btn" class="daily-action-btn daily-action-btn--primary" style="border:none; border-radius:16px; min-height:58px; background:${result.accent}; color:#fff; font-weight:900; cursor:pointer;">결과 복사</button>
           <button id="daily-save-btn" class="daily-action-btn daily-action-btn--ghost" style="border:1px solid ${result.accent}; border-radius:16px; min-height:58px; background:#fff; color:${result.accent}; font-weight:900; cursor:pointer;">이미지 저장</button>
-          <button onclick="window.goToDaily('/daily')" class="daily-action-btn daily-action-btn--dark" style="border:none; border-radius:16px; min-height:58px; background:#0f172a; color:#fff; font-weight:900; cursor:pointer;">다른 테스트</button>
+          <button onclick="window.goToDaily('/daily/')" class="daily-action-btn daily-action-btn--dark" style="border:none; border-radius:16px; min-height:58px; background:#0f172a; color:#fff; font-weight:900; cursor:pointer;">다른 테스트</button>
         </div>
         <div id="daily-copy-status" style="min-height:1.1rem; color:#64748b; font-size:0.8rem; font-weight:700;"></div>
       </div>
@@ -100,7 +100,7 @@ function renderResultSection(test, payload) {
 }
 
 export async function renderDailyList() {
-  setDailyMeta('오늘의 테스트', '10초 안에 끝나는 오늘의 테스트 목록', '/daily');
+  setDailyMeta('오늘의 테스트', '10초 안에 끝나는 오늘의 테스트 목록', '/daily/');
   renderLoading('오늘의 테스트를 불러오는 중...');
 
   try {
@@ -189,7 +189,7 @@ export async function renderDailyDetail(slug) {
               <div style="font-size:0.74rem; font-weight:900; letter-spacing:0.12em; color:#2563eb; margin-bottom:0.28rem;">TODAY'S TEST</div>
               <h1 style="margin:0; font-size:clamp(1.8rem,5vw,2.4rem); line-height:1.16; letter-spacing:-0.04em; color:#0f172a; word-break:keep-all;">${test.title}</h1>
             </div>
-            <button class="daily-back-btn" onclick="window.goToDaily('/daily')" style="border:none; border-radius:14px; padding:0.75rem 0.95rem; background:#fff; color:#0f172a; font-weight:900; cursor:pointer; border:1px solid #cbd5e1;">목록 보기</button>
+            <button class="daily-back-btn" onclick="window.goToDaily('/daily/')" style="border:none; border-radius:14px; padding:0.75rem 0.95rem; background:#fff; color:#0f172a; font-weight:900; cursor:pointer; border:1px solid #cbd5e1;">목록 보기</button>
           </div>
 
           <div class="daily-detail-hero" style="background:#0f172a; color:#fff; border-radius:28px; padding:1.4rem 1.2rem; margin-bottom:1rem;">

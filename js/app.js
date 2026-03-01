@@ -58,7 +58,7 @@ function resolveRoute() {
 
     const { pathname } = window.location;
     if (pathname === '/daily' || pathname === '/daily/') {
-        return { kind: 'daily-list', value: '/daily' };
+        return { kind: 'daily-list', value: '/daily/' };
     }
     if (pathname.startsWith('/daily/')) {
         const slug = decodeURIComponent(pathname.replace(/^\/daily\//, '').replace(/\/+$/, ''));
@@ -67,7 +67,7 @@ function resolveRoute() {
     return { kind: 'hash', value: '#home' };
 }
 
-window.goToDaily = (path = '/daily') => {
+window.goToDaily = (path = '/daily/') => {
     window.history.pushState({}, '', path);
     router();
 };
