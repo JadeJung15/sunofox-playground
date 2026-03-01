@@ -1,8 +1,16 @@
 name: Deploy to Cloudflare Pages
 
 on:
-  push:
-    branches: ["staging", "production"]
+  workflow_dispatch:
+    inputs:
+      git_ref:
+        description: "배포할 Git ref"
+        required: true
+        default: "main"
+      pages_branch:
+        description: "Cloudflare Pages 브랜치"
+        required: true
+        default: "main"
 
 permissions:
   contents: read
@@ -37,10 +45,12 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     concurrency:
-      group: cloudflare-pages-${{ github.ref_name }}
+      group: cloudflare-pages-${{ inputs.pages_branch }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.git_ref }}
 
       - name: Build
         run: |
@@ -55,4 +65,4 @@ jobs:
           projectName: sunofox-playground
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref_name }}
+          branch: ${{ inputs.pages_branch }}
