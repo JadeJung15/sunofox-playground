@@ -103,7 +103,7 @@ export async function postEconomyAction(action, payload = {}) {
 
     const token = await user.getIdToken();
     const apiBaseUrl = window.__SEVENCHECK_CONFIG__?.apiBaseUrl || '';
-    const economyUrl = `${apiBaseUrl}/economy`;
+    const economyUrl = apiBaseUrl ? `${apiBaseUrl.replace(/\/$/, '')}/economy` : '/api/economy';
     const response = await fetch(economyUrl, {
         method: 'POST',
         headers: {
