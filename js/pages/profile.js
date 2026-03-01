@@ -1,4 +1,4 @@
-import { UserState, getPetBuff, postEconomyAction, updateUI, updateProfileCache } from '../auth.js?v=8.5.0';
+import { UserState, getPetBuff, postEconomyAction, updateUI, updateProfileCache } from '../auth.js?v=8.5.1';
 import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP, PET_SHOP } from '../constants/shops.js';
 import { soundManager } from '../sound.js';
 
@@ -421,7 +421,7 @@ export function renderProfile() {
     app.querySelectorAll('.btn-pet-equip').forEach(btn => {
         btn.onclick = async () => {
             const { id } = btn.dataset;
-            const { changePet } = await import('../auth.js?v=8.5.0');
+            const { changePet } = await import('../auth.js?v=8.5.1');
             if (await changePet(id)) {
                 soundManager.playSuccess();
                 renderProfile();
