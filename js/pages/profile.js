@@ -1,4 +1,4 @@
-import { UserState, updateUI, setProfileStyle } from '../auth.js?v=8.5.5';
+import { UserState, updateUI, setProfileStyle } from '../auth.js?v=8.5.4';
 import { getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from '../constants/shops.js';
 
 function getTierTheme(tierClass) {

@@ -1,7 +1,7 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.5';
-import { db } from '../firebase-init.js?v=8.5.5';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.4';
+import { db } from '../firebase-init.js?v=8.5.4';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.5.5';
+import { TESTS } from '../tests-data.js?v=8.5.4';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -58,23 +58,54 @@ const DAILY_CATEGORY_META = {
 
 function buildHomeCategoryCards(latestTests) {
     return [
+        DAILY_CATEGORY_META,
         {
             hash: '#personality',
             category: '성격',
             icon: '01',
-            label: 'PERSONALITY',
+            label: 'MENTAL LAB',
             title: '성격 분석',
-            desc: '관계 습관, 감정 패턴, 내면의 결을 읽는 심리테스트.',
+            desc: '관계 습관, 감정 패턴, 내면의 결을 긴 호흡으로 읽는 분석형 테스트.',
             accent: 'var(--tone-indigo)',
-            chips: ['자기이해', '심리 리포트', '관계 패턴']
+            chips: ['깊이 있는 질문', '심리 리포트', '자기이해']
+        },
+        {
+            hash: '#face',
+            category: '얼굴',
+            icon: '02',
+            label: 'VISUAL CODE',
+            title: '비주얼/얼굴',
+            desc: '첫인상과 분위기, 매력 포인트를 직관적으로 잡아내는 캐주얼 진단.',
+            accent: 'var(--tone-rose)',
+            chips: ['인상 분석', '매력 포인트', '분위기 판독']
+        },
+        {
+            hash: '#fortune',
+            category: '사주',
+            icon: '03',
+            label: 'FORTUNE FLOW',
+            title: '오늘의 운세',
+            desc: '오늘의 감정 흐름과 타이밍을 짧고 선명하게 읽는 데일리 포맷.',
+            accent: 'var(--tone-amber)',
+            chips: ['타이밍 체크', '행운 흐름', '일상 리듬']
         },
         {
             hash: '#fun',
             category: '재미',
-            icon: '02',
-            label: 'LIGHT PSYCHOLOGY',
+            icon: '04',
+            label: 'PLAY MIND',
+            title: '재미/심리',
+            desc: '밈과 캐릭터성을 섞은 라이트한 테스트. 친구에게 바로 보내기 좋습니다.',
+            accent: 'var(--tone-mint)',
+            chips: ['캐릭터 판정', '가벼운 몰입', '공유용']
+        },
+        {
+            hash: '#fun',
+            category: '재미',
+            icon: '05',
+            label: 'LIGHT TEST',
             title: '가벼운 심리',
-            desc: '짧고 직관적이지만 여전히 심리 흐름을 읽는 테스트.',
+            desc: '짧고 바로 공유하기 좋은 라이트 테스트.',
             accent: 'var(--tone-ink)',
             chips: ['짧은 질문', '가벼운 몰입', '공유용']
         }
@@ -188,20 +219,25 @@ export function renderCategorySelection() {
         <div class="minimal-page minimal-category-page fade-in">
             <section class="minimal-hero minimal-category-hero reveal">
                 <div class="minimal-hero-copy">
-                    <span class="minimal-kicker">SevenCheck Categories</span>
-                    <h1>심리테스트만,<br>간단하게.</h1>
-                    <p>불필요한 분기를 걷어내고 핵심 심리테스트 카테고리만 남겼습니다.</p>
+                    <span class="minimal-kicker">SevenCheck Index</span>
+                    <h1>Choose a lane.<br>Keep it simple.</h1>
+                    <p>지금 기분과 집중도에 맞춰 가장 적합한 테스트 라인을 바로 고를 수 있게 카테고리를 다시 정리했습니다.</p>
                 </div>
                 <div class="minimal-stat-row">
                     <div class="minimal-stat-card">
                         <small>Total</small>
-                        <strong>${categoryCards.reduce((acc, card) => acc + (card.count || 0), 0)}</strong>
-                        <span>심리테스트 수</span>
+                        <strong>${TESTS.length + DAILY_CATEGORY_META.count}</strong>
+                        <span>전체 테스트 수</span>
                     </div>
                     <div class="minimal-stat-card">
-                        <small>Categories</small>
-                        <strong>${categoryCards.length}</strong>
-                        <span>핵심 분류</span>
+                        <small>Mode</small>
+                        <strong>5</strong>
+                        <span>핵심 카테고리</span>
+                    </div>
+                    <div class="minimal-stat-card">
+                        <small>Daily</small>
+                        <strong>${DAILY_CATEGORY_META.count}</strong>
+                        <span>오늘의 테스트</span>
                     </div>
                 </div>
             </section>
@@ -210,10 +246,10 @@ export function renderCategorySelection() {
                 <div class="minimal-section-head">
                     <div>
                         <span class="minimal-kicker">Category Grid</span>
-                        <h2>지금 필요한 두 가지</h2>
+                        <h2>콘텐츠 중심으로 다시 정리된 구조</h2>
                     </div>
                 </div>
-                <div class="minimal-card-grid minimal-card-grid-2">
+                <div class="minimal-card-grid minimal-card-grid-3">
                     ${categoryCards.map((card) => `
                         <article class="minimal-pane minimal-pane-interactive" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">
                             <div class="minimal-pane-top">
@@ -245,18 +281,17 @@ export async function renderHome(hash) {
     const curatedTests = getRandomTests(6);
 
     if (hash === '#home' || !hash) {
+        const userName = UserState.user ? UserState.data?.nickname || '사용자' : '방문자';
+
         app.innerHTML = `
             <div class="minimal-page minimal-home fade-in">
                 <section class="minimal-hero reveal">
                     <div class="minimal-hero-copy">
-                        <span class="minimal-kicker">SevenCheck</span>
-                        <h1>심리테스트만<br>남겼습니다.</h1>
-                        <p>불필요한 요소를 지우고, 바로 시작하는 흐름만 남겼습니다.</p>
+                        <span class="minimal-kicker">SevenCheck Minimal</span>
+                        <h1>심리테스트,<br>바로 시작.</h1>
+                        <p>${userName}님이 지금 눌러야 하는 건 하나면 충분합니다. 핵심만 남기고, 시작 경험만 가장 먼저 오도록 다시 정리했습니다.</p>
                         <div class="minimal-hero-actions minimal-hero-actions-center">
                             <button class="btn-primary minimal-start-button" onclick="location.hash='#7check'">테스트 시작하기</button>
-                        </div>
-                        <div class="minimal-home-links">
-                            <button class="minimal-text-link" onclick="location.hash='#7check'">카테고리 보기</button>
                         </div>
                     </div>
                 </section>

@@ -1,6 +1,6 @@
-import { addPoints, postEconomyAction, usePoints, UserState, updateUI } from './auth.js?v=8.5.5';
+import { addPoints, postEconomyAction, usePoints, UserState, updateUI } from './auth.js?v=8.5.4';
 import { ITEM_VALUES, ITEM_GRADES, getGrade } from './constants/shops.js';
-import { db } from './firebase-init.js?v=8.5.5';
+import { db } from './firebase-init.js?v=8.5.4';
 import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { soundManager } from './sound.js';
 
@@ -349,7 +349,7 @@ async function playClickGame() {
     await updateArcadeStat('mining');
     
     // 펫 보너스 적용
-    const { getPetBuff } = await import('./auth.js?v=8.5.5');
+    const { getPetBuff } = await import('./auth.js?v=8.5.4');
     const petBuff = getPetBuff();
     const baseEarn = Math.floor(Math.random() * 7) + 4;
     const earn = Math.floor(baseEarn * petBuff.multiplier) + petBuff.mineBonus;
@@ -972,7 +972,7 @@ async function playDailyCheckin() {
     if (!UserState.user) return;
     const today = new Date().toISOString().split('T')[0];
     if (localStorage.getItem(`last_checkin_${UserState.user.uid}`) === today) return alert("이미 완료!");
-    const { getPetBuff } = await import('./auth.js?v=8.5.5');
+    const { getPetBuff } = await import('./auth.js?v=8.5.4');
     const petBuff = getPetBuff();
     const reward = Math.floor(100 * petBuff.multiplier) + petBuff.checkinBonus;
 
