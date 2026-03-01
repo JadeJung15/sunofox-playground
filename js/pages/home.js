@@ -276,6 +276,13 @@ export async function renderHome(hash) {
         });
         const latestDrop = latestTests.slice(0, 4);
         const spotlightTests = getRandomTests(3);
+        const todayCategoryPicks = [
+            { hash: '#personality', title: '성격 분석', accent: '#4f46e5', icon: '🧠' },
+            { hash: '#face', title: '비주얼', accent: '#db2777', icon: '✨' },
+            { hash: '#fun', title: '재미 / 심리', accent: '#059669', icon: '🎲' },
+            { hash: '#fortune', title: '오늘의 운세', accent: '#d97706', icon: '🔮' },
+            { hash: '#salary', title: '월급 루팡', accent: '#0f766e', icon: '🖥️' }
+        ];
 
         app.innerHTML = `
             <div class="dashboard fade-in home-renewal" style="width: 100%; max-width: 1120px; margin: 0 auto; padding: 1.2rem 1.1rem 5.5rem; box-sizing: border-box;">
@@ -340,6 +347,23 @@ export async function renderHome(hash) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                <section class="home-today-band" style="margin-bottom:1.3rem; border-radius:28px; padding:1rem 1.05rem; background:linear-gradient(145deg,#ffffff 0%,#f8fafc 55%,#eef2ff 100%); border:1px solid #e2e8f0; box-shadow:0 16px 34px rgba(15,23,42,0.05);">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:0.8rem; flex-wrap:wrap; margin-bottom:0.8rem;">
+                        <div>
+                            <div style="font-size:0.72rem; color:#2563eb; letter-spacing:0.14em; font-weight:900; margin-bottom:0.18rem;">TODAY'S TEST</div>
+                            <h3 style="font-size:1.22rem; font-weight:950; color:#0f172a; letter-spacing:-0.03em; margin:0;">오늘 바로 눌러보기 좋은 카테고리</h3>
+                        </div>
+                    </div>
+                    <div class="home-today-pill-row" style="display:flex; flex-wrap:wrap; gap:0.62rem;">
+                        ${todayCategoryPicks.map((item) => `
+                            <button onclick="location.hash='${item.hash}'" style="border:none; border-radius:999px; padding:0.82rem 1rem; background:#fff; color:#0f172a; font-weight:900; font-size:0.9rem; cursor:pointer; box-shadow:0 10px 20px rgba(15,23,42,0.06); border:1px solid rgba(148,163,184,0.2); display:flex; align-items:center; gap:0.48rem;">
+                                <span style="width:1.6rem; height:1.6rem; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; background:${item.accent}18; color:${item.accent}; font-size:0.95rem;">${item.icon}</span>
+                                <span>${item.title}</span>
+                            </button>
+                        `).join('')}
                     </div>
                 </section>
 
