@@ -16,6 +16,30 @@ const FOX_ADVICE = [
     "당신이 몰랐던 매력을 곧 발견하게 될 거예요! 💎"
 ];
 
+const HOME_UPDATES = [
+    {
+        badge: 'NEW',
+        title: '오늘의 테스트 오픈',
+        desc: '10초 안에 끝나는 초단기 결과형 테스트가 새 카테고리로 붙었습니다.',
+        accent: '#0ea5e9',
+        gradient: 'linear-gradient(145deg,#eff6ff 0%,#dbeafe 100%)'
+    },
+    {
+        badge: 'UPDATED',
+        title: '오락실 보상 흐름 정리',
+        desc: '게임별 수익 구조와 주간 보너스를 다시 다듬어서 재방문 동선을 보강했습니다.',
+        accent: '#d97706',
+        gradient: 'linear-gradient(145deg,#fff7ed 0%,#ffedd5 100%)'
+    },
+    {
+        badge: 'POLISHED',
+        title: '프로필 · 게시판 개선',
+        desc: '프로필 가독성과 게시판 피드백을 손봐서 전체 사용감이 더 자연스러워졌습니다.',
+        accent: '#7c3aed',
+        gradient: 'linear-gradient(145deg,#f5f3ff 0%,#ede9fe 100%)'
+    }
+];
+
 const DAILY_CATEGORY_META = {
     hash: '/daily',
     category: 'daily',
@@ -364,6 +388,28 @@ export async function renderHome(hash) {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
+
+                <section class="home-ops-strip" style="margin-bottom:1.35rem; border-radius:30px; padding:1.05rem; background:linear-gradient(145deg,#ffffff 0%,#f8fafc 50%,#eef2ff 100%); border:1px solid #e2e8f0; box-shadow:0 18px 34px rgba(15,23,42,0.05);">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:0.9rem; flex-wrap:wrap; margin-bottom:0.82rem;">
+                        <div>
+                            <div style="font-size:0.74rem; color:#4f46e5; letter-spacing:0.14em; font-weight:900; margin-bottom:0.2rem;">LIVE OPS</div>
+                            <h3 style="font-size:1.26rem; font-weight:950; color:#0f172a; letter-spacing:-0.03em; margin:0;">최근 손본 기능과 운영 흐름</h3>
+                        </div>
+                        <span onclick="location.hash='#guide'" style="font-size:0.82rem; font-weight:900; color:#4f46e5; cursor:pointer;">이용 가이드 →</span>
+                    </div>
+                    <div class="home-ops-grid" style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.72rem;">
+                        ${HOME_UPDATES.map((item) => `
+                            <article style="border-radius:22px; padding:0.95rem; background:${item.gradient}; border:1px solid rgba(255,255,255,0.7); box-shadow:0 10px 22px rgba(15,23,42,0.04);">
+                                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.6rem; margin-bottom:0.55rem;">
+                                    <span style="padding:0.28rem 0.52rem; border-radius:999px; background:#fff; color:${item.accent}; font-size:0.68rem; font-weight:900; letter-spacing:0.08em;">${item.badge}</span>
+                                    <span style="width:9px; height:9px; border-radius:999px; background:${item.accent}; box-shadow:0 0 0 5px ${item.accent}18;"></span>
+                                </div>
+                                <div style="font-size:0.98rem; color:#0f172a; font-weight:900; line-height:1.38; margin-bottom:0.38rem; word-break:keep-all;">${item.title}</div>
+                                <div style="font-size:0.8rem; color:#475569; font-weight:700; line-height:1.55; word-break:keep-all;">${item.desc}</div>
+                            </article>
+                        `).join('')}
                     </div>
                 </section>
 
