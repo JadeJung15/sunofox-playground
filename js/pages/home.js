@@ -283,7 +283,6 @@ export async function renderHome(hash) {
         const heroTest = latestTests[Math.floor(Math.random() * latestTests.length)];
         const homeCategories = [
             { hash: '/daily', label: "TODAY'S TEST", title: '오늘의 테스트', category: 'daily', accent: '#0c4a6e', gradient: 'linear-gradient(145deg,#e0f2fe 0%,#bfdbfe 100%)', latestTitle: '오늘 회사 때려칠 확률 테스트', countText: '30개 테스트' },
-            { hash: `#test/${heroTest.id}`, label: "TODAY'S TEST", title: '오늘의 테스트', category: null, accent: '#0ea5e9', gradient: 'linear-gradient(145deg,#ecfeff 0%,#dbeafe 100%)', latestTitle: heroTest.title, countText: '오늘 추천 1개' },
             { hash: '#personality', label: 'MENTAL LAB', title: '성격 분석', category: '성격', accent: '#4f46e5', gradient: 'linear-gradient(145deg,#eef2ff 0%,#c7d2fe 100%)' },
             { hash: '#face', label: 'VISUAL CODE', title: '비주얼/얼굴', category: '얼굴', accent: '#db2777', gradient: 'linear-gradient(145deg,#fff1f2 0%,#fecdd3 100%)' },
             { hash: '#fortune', label: 'FORTUNE FLOW', title: '오늘의 운세', category: '사주', accent: '#d97706', gradient: 'linear-gradient(145deg,#fffbeb 0%,#fde68a 100%)' },
@@ -291,9 +290,6 @@ export async function renderHome(hash) {
             { hash: '#salary', label: 'OFFICE ESCAPE', title: '월급 루팡', category: '월급 루팡', accent: '#0f766e', gradient: 'linear-gradient(145deg,#f0fdfa 0%,#99f6e4 100%)' }
         ].map((item) => {
             if (item.category === 'daily') return item;
-            if (!item.category) {
-                return item;
-            }
             const categoryTests = latestTests.filter((test) => test.category === item.category);
             return {
                 ...item,
