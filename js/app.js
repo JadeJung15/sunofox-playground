@@ -1,19 +1,19 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.5.7';
-import { copyLink } from './share.js?v=8.5.7';
-import { renderBoard } from './board.js?v=8.5.7';
-import { renderRanking } from './ranking.js?v=8.5.7';
-import { db } from './firebase-init.js?v=8.5.7';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.5.6';
+import { copyLink } from './share.js?v=8.5.6';
+import { renderBoard } from './board.js?v=8.5.6';
+import { renderRanking } from './ranking.js?v=8.5.6';
+import { db } from './firebase-init.js?v=8.5.6';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.5.7';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.5.7';
-import { renderProfile } from './pages/profile.js?v=8.5.7';
-import { renderAdmin } from './pages/admin.js?v=8.5.7';
-import { renderArcade } from './pages/arcade-page.js?v=8.5.7';
-import { renderTestExecution, renderResult } from './pages/tests.js?v=8.5.7';
-import { renderSalaryGame } from './pages/salary.js?v=8.5.7';
-import { renderAbout, renderPrivacy, renderTerms, renderContact, renderEncyclopedia } from './pages/info.js?v=8.5.7';
-import { renderDailyList, renderDailyDetail } from './pages/daily.js?v=8.5.7';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.5.6';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.5.6';
+import { renderProfile } from './pages/profile.js?v=8.5.6';
+import { renderAdmin } from './pages/admin.js?v=8.5.6';
+import { renderArcade } from './pages/arcade-page.js?v=8.5.6';
+import { renderTestExecution, renderResult } from './pages/tests.js?v=8.5.6';
+import { renderSalaryGame } from './pages/salary.js?v=8.5.6';
+import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.5.6';
+import { renderDailyList, renderDailyDetail } from './pages/daily.js?v=8.5.6';
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80";
 
@@ -45,7 +45,7 @@ async function addPoints(amount, reason) {
 
 const categoryMap = {
     '#daily': '오늘의 테스트', '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', '#salary': '월급 루팡',
-    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#news': '공지'
+    '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드', '#news': '공지'
 };
 let currentFilter = '전체';
 let isRouting = false;
@@ -117,7 +117,7 @@ async function router() {
         });
 
         // 즉시 렌더링 가능한 페이지 (비회원 접근 허용)
-        const instantPages = ['#home', '#7check', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board', '#salary-tab-shift', '#daily'];
+        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board', '#salary-tab-shift', '#daily'];
         if (route.kind !== 'daily-list' && route.kind !== 'daily-detail' && !instantPages.includes(hash) && !hash.startsWith('#test/')) {
             await authReady;
         }
@@ -132,9 +132,9 @@ async function router() {
         else if (hash === '#arcade') renderArcade();
         else if (hash === '#board') await renderBoard(container);
         else if (hash === '#ranking') await renderRanking(container);
-        else if (hash === '#guide') location.hash = '#home';
+        else if (hash === '#guide') renderGuide();
         else if (hash === '#book') await renderEncyclopedia();
-        else if (hash === '#profile') await renderProfile();
+        else if (hash === '#profile') renderProfile();
         else if (hash === '#admin') renderAdmin();
         else if (hash === '#7check') renderCategorySelection();
         else if (hash === '#salary-tab-shift') await renderSalaryGame();

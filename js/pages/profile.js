@@ -1,184 +1,237 @@
-import { UserState, updateUI } from '../auth.js?v=8.5.7';
-import { db } from '../firebase-init.js?v=8.5.7';
-import { collection, getDocs, limit, orderBy, query, where } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { UserState, updateUI, setProfileStyle } from '../auth.js?v=8.5.6';
+import { EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from '../constants/shops.js';
 
-function escapeHTML(value) {
-    if (value == null) return '';
-    return String(value).replace(/[&<>'"]/g, (char) => ({
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        "'": '&#39;',
-        '"': '&quot;'
-    }[char] || char));
+function showProfileToast(message, tone = 'var(--accent-color)') {
+    const toast = document.createElement('div');
+    toast.className = 'profile-floating-toast';
+    toast.textContent = message;
+    toast.style.borderColor = tone;
+    toast.style.color = tone;
+    document.body.appendChild(toast);
+    requestAnimationFrame(() => toast.classList.add('show'));
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 240);
+    }, 1500);
 }
 
-function formatDate(value) {
-    const millis = typeof value?.toMillis === 'function' ? value.toMillis() : Date.now();
-    return new Date(millis).toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-    });
+function getCurrentStyleSummary() {
+    const colorEntry = Object.entries(COLOR_SHOP).find(([, code]) => code === UserState.data?.nameColor);
+    return {
+        emoji: UserState.data?.emoji || '👤',
+        color: colorEntry?.[0] || '기본',
+        border: UserState.data?.activeBorder && UserState.data.activeBorder !== 'NONE' ? BORDER_SHOP[UserState.data.activeBorder]?.name || '선택됨' : '없음',
+        background: UserState.data?.activeBackground && UserState.data.activeBackground !== 'NONE' ? BACKGROUND_SHOP[UserState.data.activeBackground]?.name || '선택됨' : '없음'
+    };
 }
 
-async function loadOwnPosts() {
-    if (!UserState.user) return [];
-    const postsRef = collection(db, 'posts');
-    const postsQuery = query(
-        postsRef,
-        where('uid', '==', UserState.user.uid),
-        orderBy('createdAt', 'desc'),
-        limit(10)
-    );
-    const snapshot = await getDocs(postsQuery);
-    return snapshot.docs.map((post) => ({ id: post.id, ...post.data() }));
-}
-
-function renderOwnPostList(posts) {
-    if (!posts.length) {
-        return `
-            <div class="profile-simple-empty">
-                <strong>작성한 글이 없습니다.</strong>
-                <span>게시판에서 첫 글을 작성해 보세요.</span>
-                <button class="btn-secondary" onclick="location.hash='#board'">게시판 가기</button>
-            </div>
-        `;
-    }
-
-    return `
-        <div class="profile-post-list">
-            ${posts.map((post) => `
-                <article class="profile-post-item">
-                    <div class="profile-post-copy">
-                        <strong>${escapeHTML(post.content || '내용 없음').slice(0, 90)}</strong>
-                        <span>${formatDate(post.createdAt)}</span>
-                    </div>
-                    <div class="profile-post-actions">
-                        <button class="btn-secondary" onclick="location.hash='#board'">게시판</button>
-                        <button class="btn-secondary profile-danger-btn" onclick="window.deletePost && window.deletePost('${post.id}')">삭제</button>
-                    </div>
-                </article>
-            `).join('')}
-        </div>
-    `;
-}
-
-export async function renderProfile() {
+export function renderProfile() {
     const app = document.getElementById('app');
-
+    
+    // 비로그인 상태 UI 처리
     if (!UserState.user) {
         app.innerHTML = `
             <div class="profile-page fade-in">
-                <div class="profile-stage profile-stage-simple">
+                <div class="profile-stage">
                     <section class="profile-guest-hero">
                         <div class="profile-guest-icon">👤</div>
-                        <div class="profile-hero-kicker">Account</div>
+                        <div class="profile-hero-kicker">Profile</div>
                         <h2>프로필</h2>
-                        <p>로그인 후 닉네임과 내 글을 관리할 수 있습니다.</p>
-                        <button class="btn-primary profile-hero-login" onclick="document.getElementById('login-btn')?.click()">로그인</button>
+                        <p>닉네임과 스타일만 가볍게 관리할 수 있습니다.</p>
+                        <button class="btn-primary profile-hero-login" onclick="document.getElementById('login-btn')?.click()">지금 로그인하기</button>
                     </section>
+
+                    <div class="profile-guest-grid">
+                        <div class="profile-ghost-card">
+                            <strong>🎨 스타일</strong>
+                            <span>아이콘과 프로필 외형 설정</span>
+                        </div>
+                        <div class="profile-ghost-card">
+                            <strong>👤 닉네임</strong>
+                            <span>원하는 이름으로 바로 변경</span>
+                        </div>
+                        <div class="profile-ghost-card">
+                            <strong>⚙️ 계정</strong>
+                            <span>로그인 상태와 기본 설정 관리</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         return;
     }
 
+    const activeBorderClass = UserState.data.activeBorder !== 'NONE' ? BORDER_SHOP[UserState.data.activeBorder]?.class || '' : '';
+    const activeBackgroundClass = UserState.data.activeBackground !== 'NONE' ? BACKGROUND_SHOP[UserState.data.activeBackground]?.class || '' : '';
+    const activeAuraClass = UserState.data.activeAura !== 'NONE' ? AURA_SHOP[UserState.data.activeAura]?.class || '' : '';
+    const styleSummary = getCurrentStyleSummary();
+
     app.innerHTML = `
         <div class="profile-page fade-in">
-            <div class="profile-stage profile-stage-simple">
-                <section class="profile-hero-shell profile-simple-hero">
+            <div class="profile-stage">
+                <div id="profile-feedback" class="profile-inline-feedback" style="display:none;"></div>
+                <section class="profile-hero-shell ${activeBackgroundClass}">
                     <div class="profile-hero-main">
-                        <div class="profile-hero-kicker">Account</div>
+                        <div class="profile-hero-kicker">It's simple</div>
                         <div class="profile-hero-avatar-row">
-                            <div id="user-emoji" class="author-emoji-circle profile-hero-avatar">${UserState.data?.emoji || '👤'}</div>
+                            <div id="user-emoji" class="author-emoji-circle profile-hero-avatar ${activeBorderClass} ${activeAuraClass}">${styleSummary.emoji}</div>
                             <div class="profile-hero-copy">
-                                <h2 id="user-name">${escapeHTML(UserState.data?.nickname || '닉네임')}</h2>
-                                <p>${escapeHTML(UserState.user.email || '')}</p>
+                                <h2 id="user-name">닉네임</h2>
+                                <p>${UserState.user.email || 'SevenCheck user'}</p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="profile-hero-side">
+                        <div class="profile-summary-stack">
+                            <div class="profile-quick-stat"><strong>${styleSummary.color}</strong><span>닉네임 색상</span></div>
+                            <div class="profile-quick-stat"><strong>${styleSummary.border}</strong><span>테두리</span></div>
+                            <div class="profile-quick-stat"><strong>${styleSummary.background}</strong><span>배경</span></div>
                         </div>
                     </div>
                 </section>
 
-                <section class="profile-detail-grid profile-detail-grid-simple">
+                <section class="profile-detail-grid">
                     <div class="profile-main-column">
                         <details class="profile-details" open>
-                            <summary>닉네임</summary>
+                            <summary>🎨 프로필 스타일</summary>
                             <div class="content-area">
-                                <div class="setting-group profile-setting-group">
-                                    <label>닉네임 변경</label>
-                                    <p>지금 표시되는 이름을 새 닉네임으로 바꿉니다.</p>
-                                    <div class="profile-inline-form">
-                                        <input type="text" id="nickname-input" placeholder="새 닉네임 (2~10자)">
-                                        <button id="nickname-save" class="btn-primary">변경</button>
+                                <div style="display: grid; gap: 1.5rem;">
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🏪 아이콘 변경</h4>
+                                        <div class="emoji-grid" style="margin-top:0.8rem;">
+                                            ${Object.entries(EMOJI_SHOP).flatMap(([, emojis]) => Object.keys(emojis).map(e => `
+                                                <button class="emoji-btn ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
+                                                    <span class="e-icon">${e}</span>
+                                                    <span class="e-price">${Number(emojis[e] || 0).toLocaleString()}P</span>
+                                                </button>`)).join('')}
+                                        </div>
                                     </div>
-                                    <p id="nickname-msg" class="profile-form-message"></p>
-                                </div>
-                            </div>
-                        </details>
 
-                        <details class="profile-details" open>
-                            <summary>내 글</summary>
-                            <div class="content-area" id="profile-posts-panel">
-                                <div class="profile-simple-loading">불러오는 중...</div>
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-color);">🎨 닉네임 색상</h4>
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                            ${Object.entries(COLOR_SHOP).map(([name, code]) => {
+                                                const isDefault = name === '기본';
+                                                const displayColor = isDefault ? 'var(--text-main)' : code;
+                                                const isActive = UserState.data.nameColor === code;
+                                                return `
+                                                    <button class="color-btn ${isActive ? 'active' : ''}" data-color="${code}"
+                                                            style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px;
+                                                            border:2px solid ${isActive ? displayColor : 'var(--border-color)'};
+                                                            background:${isActive ? displayColor : 'rgba(255,255,255,0.05)'};
+                                                            color:${isActive ? (isDefault ? 'var(--card-bg)' : '#fff') : displayColor};
+                                                            font-weight:800; transition:all 0.2s;">
+                                                        ${name}
+                                                    </button>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🖼️ 테두리</h4>
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                            <button class="btn-equip-profile ${UserState.data.activeBorder === 'NONE' ? 'active' : ''}" data-type="Border" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
+                                            ${(UserState.data.unlockedBorders || []).filter(id => id !== 'NONE').map(id => `
+                                                <button class="btn-equip-profile ${UserState.data.activeBorder === id ? 'active' : ''}" data-type="Border" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBorder === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBorder === id ? '#fff' : 'inherit'}">${BORDER_SHOP[id]?.name || id}</button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <h4 style="font-size:0.9rem; margin-bottom:0.8rem; color:var(--accent-secondary);">🎨 배경</h4>
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                                            <button class="btn-equip-profile ${UserState.data.activeBackground === 'NONE' ? 'active' : ''}" data-type="Background" data-id="NONE" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--border-color); background:none;">해제</button>
+                                            ${(UserState.data.unlockedBackgrounds || []).filter(id => id !== 'NONE').map(id => `
+                                                <button class="btn-equip-profile ${UserState.data.activeBackground === id ? 'active' : ''}" data-type="Background" data-id="${id}" style="padding:0.5rem 1rem; font-size:0.8rem; border-radius:8px; border:1px solid var(--accent-color); background:${UserState.data.activeBackground === id ? 'var(--accent-color)' : 'none'}; color:${UserState.data.activeBackground === id ? '#fff' : 'inherit'}">${BACKGROUND_SHOP[id]?.name || id}</button>
+                                            `).join('')}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </details>
                     </div>
 
                     <div class="profile-side-column">
                         <details class="profile-details" open>
+                            <summary>미리보기</summary>
+                            <div class="content-area">
+                                <div class="profile-mini-preview ${activeBackgroundClass}">
+                                    <div class="author-emoji-circle profile-mini-avatar ${activeBorderClass} ${activeAuraClass}" style="color:${UserState.data.nameColor || 'var(--text-main)'}">${styleSummary.emoji}</div>
+                                    <strong style="color:${UserState.data.nameColor || 'var(--text-main)'}">${UserState.data.nickname || '닉네임'}</strong>
+                                    <span>${styleSummary.color} · ${styleSummary.border} · ${styleSummary.background}</span>
+                                </div>
+                            </div>
+                        </details>
+
+                        <details class="profile-details" open>
                             <summary>계정</summary>
                             <div class="content-area">
-                                <div class="profile-account-box">
-                                    <strong>${escapeHTML(UserState.data?.nickname || '닉네임')}</strong>
-                                    <span>${escapeHTML(UserState.user.email || '')}</span>
+                                <div class="setting-group" style="background: var(--bg-color); padding: 1.5rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: 1rem;">
+                                    <label style="display: block; font-size: 0.9rem; font-weight: 800; margin-bottom: 0.25rem;">닉네임 변경</label>
+                                    <p style="font-size: 0.75rem; color: var(--text-sub); margin-bottom: 0.75rem;">지금 표시되는 이름을 원하는 닉네임으로 바꿀 수 있습니다.</p>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <input type="text" id="nickname-input" style="flex: 1; padding: 0.8rem 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.95rem;" placeholder="새 닉네임 (2~10자)">
+                                        <button id="nickname-save" class="btn-primary" style="padding: 0 1.5rem; font-size: 0.9rem;">변경</button>
+                                    </div>
+                                    <p id="nickname-msg" style="margin-top: 0.75rem; font-size: 0.8rem; font-weight: 600;"></p>
                                 </div>
-                                <button id="logout-btn-top" class="btn-secondary profile-danger-btn profile-logout-btn">로그아웃</button>
+                                <button id="logout-btn-top" class="btn-secondary" style="width: 100%; padding: 1rem; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); font-weight: 700;">로그아웃</button>
                             </div>
                         </details>
                     </div>
                 </section>
             </div>
-        </div>
     `;
 
-    const logoutBtn = document.getElementById('logout-btn-top');
-    if (logoutBtn) {
+    const feedbackEl = document.getElementById('profile-feedback');
+    const setProfileFeedback = (message, type = 'info') => {
+        if (!feedbackEl) return;
+        feedbackEl.textContent = message;
+        feedbackEl.className = `profile-inline-feedback ${type}`;
+        feedbackEl.style.display = message ? 'block' : 'none';
+    };
+
+    app.querySelectorAll('.btn-equip-profile').forEach(btn => {
+        btn.onclick = async () => {
+            const { type, id } = btn.dataset;
+            try {
+                await setProfileStyle(type, id);
+                renderProfile();
+                updateUI();
+                showProfileToast("장착이 완료되었습니다!");
+            } catch (e) {
+                setProfileFeedback(e.message || "업데이트 중 오류가 발생했습니다.", 'error');
+            }
+        };
+    });
+
+    // 로그아웃 리스너 직접 등록
+    const logoutButtons = [document.getElementById('logout-btn'), document.getElementById('logout-btn-top')].filter(Boolean);
+    logoutButtons.forEach((logoutBtn) => {
         logoutBtn.onclick = () => {
+            const defaultLabel = logoutBtn.id === 'logout-btn-top' ? '로그아웃' : '로그아웃';
             if (logoutBtn.dataset.confirming !== 'true') {
                 logoutBtn.dataset.confirming = 'true';
                 logoutBtn.textContent = '한 번 더 누르면 로그아웃';
+                setProfileFeedback("로그아웃하려면 버튼을 한 번 더 눌러주세요.", 'warning');
                 setTimeout(() => {
-                    if (logoutBtn.dataset.confirming === 'true') {
+                    if (logoutBtn && logoutBtn.dataset.confirming === 'true') {
                         logoutBtn.dataset.confirming = 'false';
-                        logoutBtn.textContent = '로그아웃';
+                        logoutBtn.textContent = defaultLabel;
                     }
                 }, 2500);
                 return;
             }
 
-            const proxyBtn = document.createElement('button');
-            proxyBtn.id = 'logout-btn';
-            document.body.appendChild(proxyBtn);
-            proxyBtn.click();
-            proxyBtn.remove();
+            const logoutBtnInAuth = document.createElement('button');
+            logoutBtnInAuth.id = 'logout-btn';
+            document.body.appendChild(logoutBtnInAuth);
+            logoutBtnInAuth.click();
+            logoutBtnInAuth.remove();
         };
-    }
-
-    const postsPanel = document.getElementById('profile-posts-panel');
-    try {
-        const posts = await loadOwnPosts();
-        if (postsPanel) postsPanel.innerHTML = renderOwnPostList(posts);
-    } catch (error) {
-        if (postsPanel) {
-            postsPanel.innerHTML = `
-                <div class="profile-simple-empty">
-                    <strong>내 글을 불러오지 못했습니다.</strong>
-                    <span>잠시 후 다시 시도해 주세요.</span>
-                </div>
-            `;
-        }
-    }
+    });
 
     updateUI();
 }
