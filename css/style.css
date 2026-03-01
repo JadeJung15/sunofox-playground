@@ -4075,25 +4075,25 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
    Minimal Reset 8.5.2+
    ================================================================= */
 :root {
-  --bg-color: #f3f1eb;
-  --header-bg: rgba(243, 241, 235, 0.82);
+  --bg-color: #ffffff;
+  --header-bg: rgba(255, 255, 255, 0.92);
   --text-main: #111111;
-  --text-sub: #5f5a52;
-  --accent-color: #111111;
-  --accent-soft: rgba(17, 17, 17, 0.08);
-  --accent-secondary: #6d665d;
-  --border-color: rgba(17, 17, 17, 0.1);
-  --card-bg: #fbfaf7;
-  --surface-subtle: #f0ede7;
-  --surface-strong: #161616;
-  --tone-indigo: #5561ff;
-  --tone-rose: #ef7d61;
-  --tone-amber: #b58a4b;
-  --tone-mint: #3d8771;
-  --tone-ink: #232323;
-  --shadow-sm: 0 12px 30px rgba(17, 17, 17, 0.04);
-  --shadow-md: 0 24px 60px rgba(17, 17, 17, 0.06);
-  --shadow-lg: 0 32px 80px rgba(17, 17, 17, 0.08);
+  --text-sub: #6b7280;
+  --accent-color: #1a73e8;
+  --accent-soft: rgba(26, 115, 232, 0.1);
+  --accent-secondary: #5f6368;
+  --border-color: rgba(17, 17, 17, 0.08);
+  --card-bg: #ffffff;
+  --surface-subtle: #f8f9fa;
+  --surface-strong: #111111;
+  --tone-indigo: #1a73e8;
+  --tone-rose: #ea4335;
+  --tone-amber: #fbbc04;
+  --tone-mint: #34a853;
+  --tone-ink: #111111;
+  --shadow-sm: 0 8px 24px rgba(17, 17, 17, 0.04);
+  --shadow-md: 0 18px 48px rgba(17, 17, 17, 0.05);
+  --shadow-lg: 0 28px 72px rgba(17, 17, 17, 0.06);
   --radius-lg: 28px;
   --radius-md: 18px;
   --radius-sm: 12px;
@@ -4103,18 +4103,16 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Manrope', 'Pretendard', sans-serif;
-  background:
-    radial-gradient(circle at top left, rgba(85, 97, 255, 0.06), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(239, 125, 97, 0.06), transparent 22%),
-    var(--bg-color);
+  background: var(--bg-color);
   color: var(--text-main);
 }
 
 header {
   background: var(--header-bg);
-  border-bottom: 1px solid rgba(17, 17, 17, 0.08);
+  border-bottom: 1px solid rgba(17, 17, 17, 0.06);
   box-shadow: none;
-  padding: 0.9rem 0 0.75rem;
+  padding: 0.75rem 0 0.65rem;
+  backdrop-filter: blur(16px);
 }
 
 .nav-container {
@@ -4138,11 +4136,11 @@ header {
 }
 
 .nav-tabs {
-  padding: 0.2rem;
-  gap: 0.25rem;
-  background: rgba(251, 250, 247, 0.9);
+  padding: 0.15rem;
+  gap: 0.15rem;
+  background: #ffffff;
   border-radius: 999px;
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  border: 1px solid rgba(17, 17, 17, 0.06);
   box-shadow: none;
 }
 
@@ -4153,7 +4151,7 @@ header {
   letter-spacing: -0.02em;
 }
 
-.nav-link { color: rgba(17, 17, 17, 0.62); }
+.nav-link { color: rgba(17, 17, 17, 0.6); }
 
 .nav-link:hover {
   background: rgba(17, 17, 17, 0.05);
@@ -4162,28 +4160,28 @@ header {
 }
 
 .nav-link.active {
-  background: var(--surface-strong);
-  color: #f8f5ef;
+  background: var(--surface-subtle);
+  color: var(--text-main);
   box-shadow: none;
 }
 
 .nav-dropbtn,
 #login-btn {
   background: var(--surface-strong) !important;
-  color: #f8f5ef !important;
+  color: #ffffff !important;
   border: 1px solid rgba(17, 17, 17, 0.08) !important;
   box-shadow: none !important;
 }
 
 .dropdown-content {
-  background: rgba(251, 250, 247, 0.96);
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid rgba(17, 17, 17, 0.06);
   box-shadow: var(--shadow-md);
 }
 
 .header-profile {
-  background: rgba(251, 250, 247, 0.94);
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(17, 17, 17, 0.06);
   box-shadow: none;
 }
 
@@ -4209,7 +4207,7 @@ main {
 
 .btn-primary {
   background: var(--surface-strong);
-  color: #f8f5ef;
+  color: #ffffff;
 }
 
 .btn-secondary {
@@ -4230,8 +4228,8 @@ main {
 .profile-summary-card,
 .profile-ghost-card {
   border-radius: 24px;
-  border-color: rgba(17, 17, 17, 0.08);
-  box-shadow: var(--shadow-sm);
+  border-color: rgba(17, 17, 17, 0.06);
+  box-shadow: none;
 }
 
 .profile-details summary,
@@ -4239,14 +4237,14 @@ main {
 .test-info,
 .post-item,
 .comment-item {
-  background: rgba(251, 250, 247, 0.92);
+  background: #ffffff;
 }
 
 .footer {
   margin-top: 5rem;
-  padding: 3rem 1.4rem 2rem;
+  padding: 2.2rem 1.4rem 1.8rem;
   background: transparent;
-  border-top: 1px solid rgba(17, 17, 17, 0.08);
+  border-top: 1px solid rgba(17, 17, 17, 0.06);
 }
 
 .footer-content { max-width: 1280px; }
@@ -4295,11 +4293,11 @@ main {
   display: grid;
   grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.9fr);
   gap: 1.2rem;
-  padding: 2rem;
+  padding: 2.4rem;
   margin-bottom: 1.2rem;
-  background: linear-gradient(180deg, rgba(251, 250, 247, 0.9), rgba(247, 244, 238, 0.88));
-  border: 1px solid rgba(17, 17, 17, 0.08);
-  box-shadow: var(--shadow-md);
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  box-shadow: none;
 }
 
 .minimal-hero-copy h1,
@@ -4333,7 +4331,7 @@ main {
   font-weight: 800;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(17, 17, 17, 0.52);
+  color: rgba(17, 17, 17, 0.42);
 }
 
 .minimal-hero-actions {
@@ -4348,7 +4346,7 @@ main {
 }
 
 .minimal-home .minimal-hero {
-  min-height: calc(100vh - 220px);
+  min-height: calc(100vh - 180px);
   place-items: center;
   grid-template-columns: 1fr;
   text-align: center;
@@ -4360,9 +4358,34 @@ main {
 }
 
 .minimal-start-button {
-  min-width: 220px;
-  min-height: 56px;
+  min-width: 228px;
+  min-height: 58px;
+  padding: 0 1.6rem;
   font-size: 1rem;
+}
+
+.minimal-home-links {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.9rem;
+}
+
+.minimal-text-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  padding: 0 0.35rem;
+  border: none;
+  background: transparent;
+  color: var(--text-sub);
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.minimal-text-link:hover {
+  color: var(--text-main);
 }
 
 .minimal-hero-aside,
@@ -4378,8 +4401,8 @@ main {
 .minimal-note-card,
 .minimal-spotlight-card {
   padding: 1.2rem;
-  background: rgba(251, 250, 247, 0.92);
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: #ffffff;
+  border: 1px solid rgba(17, 17, 17, 0.06);
 }
 
 .minimal-metric-block small,
@@ -4436,6 +4459,7 @@ main {
   gap: 0.9rem;
 }
 
+.minimal-card-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .minimal-card-grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 
 .minimal-pane {
@@ -4455,8 +4479,8 @@ main {
 .minimal-pane-interactive:hover,
 .minimal-spotlight-card:hover,
 .minimal-test-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(17, 17, 17, 0.18);
+  transform: translateY(-2px);
+  border-color: rgba(17, 17, 17, 0.14);
 }
 
 .minimal-pane-top,
@@ -4488,9 +4512,9 @@ main {
   min-height: 34px;
   padding: 0.45rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  border: 1px solid rgba(17, 17, 17, 0.06);
   color: var(--text-sub);
-  background: rgba(17, 17, 17, 0.03);
+  background: var(--surface-subtle);
   font-size: 0.78rem;
   font-weight: 700;
 }
@@ -4558,7 +4582,7 @@ main {
 
 .minimal-test-card {
   border-radius: 24px;
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  border: 1px solid rgba(17, 17, 17, 0.06);
   box-shadow: none;
 }
 
@@ -4598,8 +4622,8 @@ main {
   gap: 0.4rem;
   min-height: 38px;
   padding: 0 0.8rem;
-  background: rgba(17, 17, 17, 0.04);
-  border: 1px solid rgba(17, 17, 17, 0.08);
+  background: var(--surface-subtle);
+  border: 1px solid rgba(17, 17, 17, 0.06);
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 700;
@@ -4612,8 +4636,8 @@ main {
   padding: 2rem;
   text-align: center;
   border-radius: 24px;
-  border: 1px solid rgba(17, 17, 17, 0.08);
-  background: rgba(251, 250, 247, 0.92);
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  background: #ffffff;
   color: var(--text-sub);
   font-weight: 700;
 }
@@ -4640,8 +4664,8 @@ main {
 .profile-stat-card,
 .profile-quick-stat,
 .profile-partner-mini {
-  background: rgba(251, 250, 247, 0.92) !important;
-  border-color: rgba(17, 17, 17, 0.08) !important;
+  background: #ffffff !important;
+  border-color: rgba(17, 17, 17, 0.06) !important;
   box-shadow: none !important;
 }
 
@@ -4684,6 +4708,7 @@ main {
     grid-template-columns: 1fr;
   }
 
+  .minimal-card-grid-2,
   .minimal-card-grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
@@ -4704,6 +4729,7 @@ main {
   .minimal-hero { padding: 1.2rem; }
 
   .minimal-card-grid,
+  .minimal-card-grid-2,
   .minimal-card-grid-3,
   .minimal-feature-grid,
   .profile-summary-grid,

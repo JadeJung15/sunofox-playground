@@ -1,8 +1,8 @@
-import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.5.4';
+import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.5.5';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=8.5.4';
+import { db } from '../firebase-init.js?v=8.5.5';
 import { copyLink, saveAsStoryImage } from '../share.js';
-import { TESTS } from '../tests-data.js?v=8.5.4';
+import { TESTS } from '../tests-data.js?v=8.5.5';
 import { renderTestCard } from './home.js';
 
 function getShareUrl(testId) {
@@ -72,7 +72,7 @@ export async function renderResult(testId, traitScores) {
     const soulIngredients = { main: mainIngredient, sub1: sub1Ingredient, sub2: sub2Ingredient };
     const rpgStats = weaponPool[poolTrait];
 
-    const { getPetBuff } = await import('../auth.js?v=8.5.4');
+    const { getPetBuff } = await import('../auth.js?v=8.5.5');
     const petBuff = getPetBuff();
 
     let basePointReward = 10 + petBuff.testBonus;
