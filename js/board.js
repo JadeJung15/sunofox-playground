@@ -78,7 +78,7 @@ async function getPostsSnapshotWithFallback(isLoadMore = false) {
         primaryConstraints.push(orderBy("createdAt", "desc"));
     }
 
-    primaryConstraints.push(limit(isLoadMore ? 40 : 80));
+    primaryConstraints.push(limit(isLoadMore ? 24 : 36));
     if (isLoadMore && lastVisiblePost) primaryConstraints.push(startAfter(lastVisiblePost));
 
     try {
@@ -86,7 +86,7 @@ async function getPostsSnapshotWithFallback(isLoadMore = false) {
     } catch (primaryError) {
         console.warn('Primary board query failed, falling back:', primaryError);
 
-        const fallbackConstraints = [limit(isLoadMore ? 40 : 80)];
+        const fallbackConstraints = [limit(isLoadMore ? 24 : 36)];
         if (isLoadMore && lastVisiblePost) fallbackConstraints.push(startAfter(lastVisiblePost));
         return withTimeout(getDocs(query(postsRef, ...fallbackConstraints)), 8000);
     }
@@ -603,12 +603,17 @@ async function loadPosts(container, isLoadMore = false) {
 
         let displayCount = 0;
         
-        // 프로필을 비동기로 가져올 때 순서가 뒤섞이는 것을 방지하기 위해 모두 병렬로 미리 가져옵니다.
-        const profiles = await Promise.all(docs.map(d => fetchUserProfile(d.uid)));
+        // 전체 탭에서 프로필 조회가 길어져 첫 화면이 멈추는 문제를 막기 위해
+        // 각 프로필 조회에 짧은 타임아웃을 두고 실패 시 기본 프로필로 폴백합니다.
+        const profileResults = await Promise.allSettled(
+            docs.map((d) => withTimeout(fetchUserProfile(d.uid), 1500))
+        );
         
         for (let i = 0; i < docs.length; i++) {
             const docData = docs[i];
-            const profile = profiles[i];
+            const profile = profileResults[i]?.status === 'fulfilled'
+                ? profileResults[i].value
+                : { nickname: "익명", emoji: "👤" };
             renderSinglePostSync(container, docData.id, docData, profile);
             displayCount++;
         }
