@@ -60,6 +60,38 @@ let boardObserver = null; // 메모리 누수 방지용
 let boardFlashMessage = '';
 let boardFlashType = 'info';
 
+function withTimeout(promise, ms = 8000) {
+    let timerId;
+    const timeoutPromise = new Promise((_, reject) => {
+        timerId = setTimeout(() => reject(new Error('timeout')), ms);
+    });
+    return Promise.race([promise, timeoutPromise]).finally(() => clearTimeout(timerId));
+}
+
+async function getPostsSnapshotWithFallback(isLoadMore = false) {
+    const postsRef = collection(db, "posts");
+    const primaryConstraints = [];
+
+    if (currentSort === 'popular') {
+        primaryConstraints.push(orderBy("likeCount", "desc"));
+    } else {
+        primaryConstraints.push(orderBy("createdAt", "desc"));
+    }
+
+    primaryConstraints.push(limit(isLoadMore ? 40 : 80));
+    if (isLoadMore && lastVisiblePost) primaryConstraints.push(startAfter(lastVisiblePost));
+
+    try {
+        return await withTimeout(getDocs(query(postsRef, ...primaryConstraints)), 8000);
+    } catch (primaryError) {
+        console.warn('Primary board query failed, falling back:', primaryError);
+
+        const fallbackConstraints = [limit(isLoadMore ? 40 : 80)];
+        if (isLoadMore && lastVisiblePost) fallbackConstraints.push(startAfter(lastVisiblePost));
+        return withTimeout(getDocs(query(postsRef, ...fallbackConstraints)), 8000);
+    }
+}
+
 export async function renderBoard(container) {
     // [상태 초기화] 홈에서 진입하거나 페이지 이동 시 항상 최신순/전체 카테고리로 시작
     currentSort = 'desc';
@@ -485,7 +517,7 @@ async function loadBestPosts() {
     if(!bestList) return;
     try {
         const q = query(collection(db, "posts"), orderBy("likeCount", "desc"), limit(5));
-        const snap = await getDocs(q);
+        const snap = await withTimeout(getDocs(q), 8000);
         if(snap.empty) return;
         section.style.display = 'block';
         bestList.innerHTML = '';
@@ -507,7 +539,9 @@ async function loadBestPosts() {
             `;
             bestList.appendChild(div);
         }
-    } catch(e) {}
+    } catch(e) {
+        console.warn('Best posts skipped:', e);
+    }
 }
 
 async function loadPosts(container, isLoadMore = false) {
@@ -519,24 +553,7 @@ async function loadPosts(container, isLoadMore = false) {
     isLoadingMore = true;
 
     try {
-        let postsRef = collection(db, "posts");
-        let qConstraints = [];
-        
-        // Firestore에서는 기본적인 정렬만 수행 (복합 인덱스 오류 방지)
-        if (currentSort === 'popular') {
-            qConstraints.push(orderBy("likeCount", "desc"));
-        } else {
-            // 'createdAt'으로 정렬하면 필드가 없는(null) 문서는 제외되므로 주의가 필요하지만, 
-            // 최신순 정렬을 위해 서버에서 1차적으로 수행합니다.
-            qConstraints.push(orderBy("createdAt", "desc"));
-        }
-        
-        // 클라이언트 필터링(검색, 카테고리)을 고려해 서버에서 넉넉하게 가져옵니다.
-        qConstraints.push(limit(isLoadMore ? 40 : 80)); 
-        if (isLoadMore && lastVisiblePost) qConstraints.push(startAfter(lastVisiblePost));
-
-        const q = query(postsRef, ...qConstraints);
-        const snap = await getDocs(q);
+        const snap = await getPostsSnapshotWithFallback(isLoadMore);
         
         if (snap.empty) { 
             if (!isLoadMore) container.innerHTML = `<p class="text-sub" style="text-align:center; padding:3rem;">게시글이 없습니다.</p>`; 
@@ -601,7 +618,9 @@ async function loadPosts(container, isLoadMore = false) {
         }
     } catch (e) { 
         console.error("게시물 로드 에러:", e);
-        if (!isLoadMore) container.innerHTML = `<p style="text-align:center; padding:2rem; color:#ef4444;">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
+        if (!isLoadMore) {
+            container.innerHTML = `<p style="text-align:center; padding:2rem; color:#ef4444;">데이터를 불러오는 중 오류가 발생했습니다.</p>`;
+        }
     }
     finally { isLoadingMore = false; }
 }
