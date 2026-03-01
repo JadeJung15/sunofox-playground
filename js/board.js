@@ -1,5 +1,5 @@
 import { db, storage } from './firebase-init.js?v=8.5.0';
-import { UserState, usePoints, addPoints, fetchUserProfile, updateProfileCache, fetchUserRank } from './auth.js?v=8.5.0';
+import { UserState, usePoints, addPoints, fetchUserProfile, postEconomyAction, updateProfileCache, fetchUserRank } from './auth.js?v=8.5.0';
 import { getTier, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './constants/shops.js';
 import { 
     collection, 
@@ -48,6 +48,11 @@ function escapeHTML(str) {
         "'": '&#39;',
         '"': '&quot;'
     }[tag] || tag));
+}
+
+function safeCssColor(value) {
+    const color = String(value || '').trim();
+    return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(color) ? color : 'inherit';
 }
 
 let lastVisiblePost = null;
@@ -404,20 +409,22 @@ export async function renderBoard(container) {
             if (UserState.data.totalScore < info.minScore) {
                 return setBoardGlobalFeedback(`아이템 점수가 부족합니다. 필요 점수: ${info.minScore.toLocaleString()}점`, 'error');
             }
-            if (await usePoints(info.price, `${type} 구매: ${info.name}`)) {
-                await updateDoc(doc(db, "users", UserState.user.uid), { [`unlocked${type}s`]: arrayUnion(id), [`active${type}`]: id });
-                UserState.data[`unlocked${type}s`].push(id); UserState.data[`active${type}`] = id;
+            try {
+                await postEconomyAction('purchaseProfileStyle', { styleType: type, itemId: id });
+                UserState.data.points = (UserState.data.points || 0) - info.price;
+                UserState.data[`unlocked${type}s`] = [...new Set([...(UserState.data[`unlocked${type}s`] || []), id])];
+                UserState.data[`active${type}`] = id;
                 updateProfileCache(UserState.user.uid, { [`active${type}`]: id });
                 boardFlashMessage = `${info.name} 구매 및 장착 완료`;
                 boardFlashType = 'success';
                 renderBoard(container);
-            } else {
+            } catch (e) {
                 setBoardGlobalFeedback(`포인트가 부족해 ${info.name} 구매에 실패했습니다.`, 'error');
             }
         }
         if (equipBtn) {
             const { type, id } = equipBtn.dataset;
-            await updateDoc(doc(db, "users", UserState.user.uid), { [`active${type}`]: id });
+            await postEconomyAction('setProfileStyle', { styleType: type, itemId: id });
             UserState.data[`active${type}`] = id;
             updateProfileCache(UserState.user.uid, { [`active${type}`]: id });
             const info = (type === 'Aura' ? AURA_SHOP : (type === 'Border' ? BORDER_SHOP : BACKGROUND_SHOP))[id];
@@ -432,7 +439,7 @@ export async function renderBoard(container) {
         const btn = document.getElementById(`btn-unequip-${t}`);
         if(btn) btn.onclick = async () => {
             const type = t === 'bg' ? 'Background' : (t.charAt(0).toUpperCase() + t.slice(1));
-            await updateDoc(doc(db, "users", UserState.user.uid), { [`active${type}`]: 'NONE' });
+            await postEconomyAction('setProfileStyle', { styleType: type, itemId: 'NONE' });
             UserState.data[`active${type}`] = 'NONE';
             updateProfileCache(UserState.user.uid, { [`active${type}`]: 'NONE' });
             boardFlashMessage = `${type === 'Aura' ? '오라' : type === 'Border' ? '테두리' : '배경'}를 해제했습니다.`;
@@ -497,10 +504,7 @@ export async function renderBoard(container) {
                 createdAt: serverTimestamp()
             });
 
-            // 작성 글 횟수 추가
-            await updateDoc(doc(db, "users", UserState.user.uid), {
-                postCount: increment(1)
-            });
+            await postEconomyAction('incrementPostCount');
 
             sessionStorage.setItem('lastPostTime', now.toString());
             await addPoints(10, '게시글 작성 보상');
@@ -539,8 +543,8 @@ async function loadBestPosts() {
                 </div>
                 <div class="best-post-copy">${escapeHTML(data.content || '')}</div>
                 <div class="best-post-meta">
-                    <span>${profile.nickname}</span>
-                    <span>${profile.emoji || '👤'}</span>
+                    <span>${escapeHTML(profile.nickname || '익명')}</span>
+                    <span>${escapeHTML(profile.emoji || '👤')}</span>
                 </div>
             `;
             bestList.appendChild(div);
@@ -657,7 +661,7 @@ function renderSinglePostSync(container, postId, data, profile) {
             <div class="post-author-info" style="cursor:pointer;" onclick="showProfileModal('${data.uid}')">
                 <div class="author-emoji-circle ${borderClass}">${profile.emoji || '👤'}</div>
                 <div style="display:flex; flex-direction:column;">
-                    <span class="post-author" style="color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
+                    <span class="post-author" style="color:${safeCssColor(profile.nameColor)}">${escapeHTML(profile.nickname || '익명')}</span>
                     <span class="post-date">${date}</span>
                 </div>
             </div>
@@ -805,7 +809,7 @@ window.showProfileModal = async (uid) => {
             try {
                 bioSaveBtn.disabled = true;
                 setModalFeedback("자기소개를 저장하고 있습니다...", 'info');
-                await updateDoc(doc(db, "users", uid), { bio: newBio });
+                await postEconomyAction('setBio', { bio: newBio });
                 profile.bio = newBio;
                 if (UserState.user.uid === uid) UserState.data.bio = newBio;
                 updateProfileCache(uid, { bio: newBio });
@@ -844,10 +848,7 @@ window.handlePostReaction = async (postId, emoji) => {
     } else {
         if (!(await usePoints(5, "반응 남기기"))) return setPostFeedback(postId, "포인트가 부족해 반응을 남길 수 없습니다.", 'error');
         await updateDoc(postRef, { [`reactions.${emoji}`]: arrayUnion(UserState.user.uid) });
-        // Award 1P to author (자기 자신에게는 보상하지 않음)
-        if (data.uid !== UserState.user.uid) {
-            await updateDoc(doc(db, "users", data.uid), { points: increment(1) });
-        }
+        await postEconomyAction('awardReactionAuthor', { postId, emoji });
         setPostFeedback(postId, `${emoji} 반응을 남겼습니다. -5P`, 'success');
     }
     
@@ -935,7 +936,7 @@ async function loadComments(postId) {
         const cDate = ms ? new Date(ms).toLocaleString('ko-KR', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : "방금 전";
         div.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:800; font-size:0.75rem; color:${profile.nameColor || 'inherit'}">${profile.nickname}</span>
+                <span style="font-weight:800; font-size:0.75rem; color:${safeCssColor(profile.nameColor)}">${escapeHTML(profile.nickname || '익명')}</span>
                 <span style="font-size:0.6rem; color:var(--text-sub);">${cDate}</span>
             </div>
             <p style="font-size:0.8rem; margin-top:2px;">${escapeHTML(c.content)}</p>

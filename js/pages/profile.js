@@ -1,7 +1,5 @@
-import { UserState, getPetBuff, updateUI, updateProfileCache } from '../auth.js?v=8.5.0';
+import { UserState, getPetBuff, postEconomyAction, updateUI, updateProfileCache } from '../auth.js?v=8.5.0';
 import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP, PET_SHOP } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=8.5.0';
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { soundManager } from '../sound.js';
 
 function getPetTheme(grade) {
@@ -438,7 +436,6 @@ export function renderProfile() {
         btn.onclick = async () => {
             const { id } = btn.dataset;
             const info = PET_SHOP[id];
-            const { usePoints, updateUI } = await import('../auth.js?v=8.5.0');
 
             if (btn.dataset.confirming !== 'true') {
                 btn.dataset.confirming = 'true';
@@ -454,23 +451,17 @@ export function renderProfile() {
                 return;
             }
 
-            if (await usePoints(info.price, `펫 ${info.name} 입양`)) {
-                try {
-                    const unlocked = [...(UserState.data.unlockedPets || []), id];
-                    await updateDoc(doc(db, "users", UserState.user.uid), { 
-                        unlockedPets: unlocked,
-                        activePet: id 
-                    });
-                    UserState.data.unlockedPets = unlocked;
-                    UserState.data.activePet = id;
-                    soundManager.playSuccess();
-                    renderProfile();
-                    updateUI();
-                    showPetUnlockOverlay(info);
-                } catch (e) {
-                    setProfileFeedback("입양 처리 중 오류가 발생했습니다.", 'error');
-                }
-            } else {
+            try {
+                await postEconomyAction('adoptPet', { petId: id });
+                const unlocked = [...(UserState.data.unlockedPets || []), id];
+                UserState.data.points = (UserState.data.points || 0) - info.price;
+                UserState.data.unlockedPets = unlocked;
+                UserState.data.activePet = id;
+                soundManager.playSuccess();
+                renderProfile();
+                updateUI();
+                showPetUnlockOverlay(info);
+            } catch (e) {
                 setProfileFeedback("포인트가 부족합니다.", 'error');
             }
         };
@@ -481,7 +472,7 @@ export function renderProfile() {
             const { type, id } = btn.dataset;
             const activeKey = `active${type}`;
             try {
-                await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: id });
+                await postEconomyAction('setProfileStyle', { styleType: type, itemId: id });
                 UserState.data[activeKey] = id;
                 updateProfileCache(UserState.user.uid, { [activeKey]: id });
                 renderProfile();

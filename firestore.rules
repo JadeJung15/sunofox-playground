@@ -9,6 +9,69 @@ service cloud.firestore {
       return isSignedIn() && request.auth.token.admin == true;
     }
 
+    function userOwnsDoc(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function validSiteStatsCreate() {
+      return (
+        request.resource.data.keys().hasOnly(['total']) && request.resource.data.total == 1
+      ) || (
+        request.resource.data.keys().hasOnly(['count']) && request.resource.data.count == 1
+      );
+    }
+
+    function validSiteStatsUpdate() {
+      return (
+        resource.data.keys().hasOnly(['total']) &&
+        request.resource.data.keys().hasOnly(['total']) &&
+        request.resource.data.total == resource.data.total + 1
+      ) || (
+        resource.data.keys().hasOnly(['count']) &&
+        request.resource.data.keys().hasOnly(['count']) &&
+        request.resource.data.count == resource.data.count + 1
+      );
+    }
+
+    function validTestStatsCreate() {
+      return request.resource.data.keys().hasOnly(['likes']) &&
+        request.resource.data.likes == 1;
+    }
+
+    function validTestStatsUpdate() {
+      return resource.data.keys().hasOnly(['likes']) &&
+        request.resource.data.keys().hasOnly(['likes']) &&
+        request.resource.data.likes == resource.data.likes + 1;
+    }
+
+    function validUserCreate(userId) {
+      return userOwnsDoc(userId)
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.points == 1000
+        && request.resource.data.totalScore == 0
+        && request.resource.data.keys().hasOnly([
+          'uid',
+          'nickname',
+          'originalName',
+          'originalEmail',
+          'emoji',
+          'unlockedEmojis',
+          'points',
+          'inventory',
+          'totalScore',
+          'discoveredItems',
+          'activePet',
+          'unlockedPets',
+          'nicknameChanged',
+          'lastNicknameChange',
+          'nameColor',
+          'arcadeStats',
+          'arcadeWeekly',
+          'quests',
+          'createdAt'
+        ]);
+    }
+
     match /posts/{postId} {
       allow read: if true;
       allow create: if isSignedIn() 
@@ -27,20 +90,22 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if true;
-      allow create, update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if validUserCreate(userId) || isAdmin();
+      allow update: if isAdmin();
       allow delete: if isAdmin();
     }
 
     // 테스트 통계(좋아요) 규칙
     match /testStats/{testId} {
       allow read: if true;
-      allow create, update: if isSignedIn(); 
+      allow create: if isSignedIn() && validTestStatsCreate();
+      allow update: if isSignedIn() && validTestStatsUpdate();
     }
 
     // 활동 이력(로그) 규칙
     match /pointLogs/{logId} {
       allow read: if isAdmin();
-      allow create: if isSignedIn();
+      allow create: if false;
     }
 
     // 공지사항 규칙
@@ -51,7 +116,9 @@ service cloud.firestore {
 
     // 방문자 통계 규칙
     match /siteStats/{statsId} {
-      allow read, write: if true;
+      allow read: if true;
+      allow create: if validSiteStatsCreate();
+      allow update: if validSiteStatsUpdate();
     }
 
     match /songDrafts/{draftId} {
@@ -65,14 +132,13 @@ service cloud.firestore {
     }
 
     match /results/{resultId} {
-      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
-      allow read, update: if isSignedIn() && resource.data.uid == request.auth.uid;
-      allow delete: if isAdmin();
+      allow read: if isSignedIn() && resource.data.uid == request.auth.uid;
+      allow create, update, delete: if false;
     }
 
     match /stats/{statId} {
       allow read: if true;
-      allow write: if isAdmin();
+      allow write: if false;
     }
   }
 }

@@ -1,4 +1,4 @@
-import { UserState, addPoints, updateUI } from '../auth.js?v=8.5.0';
+import { UserState, postEconomyAction, updateUI } from '../auth.js?v=8.5.0';
 import { db } from '../firebase-init.js?v=8.5.0';
 import { collection, doc, getDocs, limit, orderBy, query, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { TESTS } from '../tests-data.js?v=8.5.0';
@@ -113,18 +113,11 @@ async function persistSalaryScore(gameKey, score, extraStats = {}) {
     const isNewBest = nextBest > previousBest;
     const reward = getRewardForScore(score);
 
-    const payload = {
-        [`${config.field}.bestScore`]: nextBest,
-        [`${config.field}.lastScore`]: score,
-        [`${config.field}.plays`]: increment(1),
-        [`${config.field}.totalScore`]: increment(score)
-    };
-
-    Object.entries(extraStats).forEach(([key, value]) => {
-        payload[`${config.field}.${key}`] = increment(value);
+    const result = await postEconomyAction('saveSalaryScore', {
+        gameKey,
+        score,
+        extraStats
     });
-
-    await updateDoc(doc(db, 'users', UserState.user.uid), payload);
 
     if (!UserState.data.salaryGames) UserState.data.salaryGames = {};
     if (!UserState.data.salaryGames[gameKey]) {
@@ -140,10 +133,10 @@ async function persistSalaryScore(gameKey, score, extraStats = {}) {
         local[key] = (local[key] || 0) + value;
     });
 
-    await addPoints(reward, '월급 루팡 게임 보상');
+    UserState.data.points = (UserState.data.points || 0) + result.reward;
     updateUI();
 
-    return { reward, bestScore: nextBest, isNewBest };
+    return { reward: result.reward, bestScore: result.bestScore, isNewBest: result.isNewBest };
 }
 
 export async function renderSalaryGame() {

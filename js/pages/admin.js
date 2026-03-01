@@ -2,6 +2,17 @@ import { UserState, chargeUserPoints, chargeUserScore } from '../auth.js?v=8.5.0
 import { db } from '../firebase-init.js?v=8.5.0';
 import { collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
+function escapeHTML(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>'"]/g, (tag) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag] || tag));
+}
+
 export async function renderAdmin() {
     const app = document.getElementById('app');
     
@@ -114,12 +125,12 @@ export async function renderAdmin() {
                         <div class="card user-admin-card" style="padding: 1.25rem; margin-bottom:0; display:flex; flex-direction:column; gap:1rem; border: 1px solid var(--border-color);">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div style="overflow:hidden;">
-                                    <h4 style="font-size:1rem; font-weight:900; margin-bottom:0.2rem;">${data.nickname || '익명'}</h4>
-                                    <p style="font-size:0.75rem; color:var(--accent-color); font-weight:600; margin-bottom:0.4rem;">${data.originalEmail ? `(${data.originalEmail})` : '<span style="color:var(--text-sub); font-weight:normal;">(미접속: 정보 업데이트 대기)</span>'}</p>
+                                    <h4 style="font-size:1rem; font-weight:900; margin-bottom:0.2rem;">${escapeHTML(data.nickname || '익명')}</h4>
+                                    <p style="font-size:0.75rem; color:var(--accent-color); font-weight:600; margin-bottom:0.4rem;">${data.originalEmail ? `(${escapeHTML(data.originalEmail)})` : '<span style="color:var(--text-sub); font-weight:normal;">(미접속: 정보 업데이트 대기)</span>'}</p>
                                     <small style="font-size:0.65rem; color:var(--text-sub); font-family:monospace;">${d.id}</small>
                                 </div>
                                 <div style="display:flex; gap:0.4rem; flex-shrink:0;">
-                                    <button class="admin-view-log-btn btn-secondary" data-uid="${d.id}" data-name="${data.nickname}" style="padding: 4px 8px; font-size: 0.7rem; border-color:var(--accent-color); color:var(--accent-color);">로그</button>
+                                    <button class="admin-view-log-btn btn-secondary" data-uid="${d.id}" data-name="${escapeHTML(data.nickname || '익명')}" style="padding: 4px 8px; font-size: 0.7rem; border-color:var(--accent-color); color:var(--accent-color);">로그</button>
                                     <button class="admin-select-user-btn btn-secondary" data-uid="${d.id}" style="padding: 4px 8px; font-size: 0.7rem;">선택</button>
                                 </div>
                             </div>

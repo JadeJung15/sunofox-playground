@@ -1,6 +1,4 @@
-import { db } from './firebase-init.js?v=8.5.0';
-import { UserState, addPoints as authAddPoints, usePoints as authUsePoints } from './auth.js?v=8.5.0';
-import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { UserState, addPoints as authAddPoints, postEconomyAction, usePoints as authUsePoints } from './auth.js?v=8.5.0';
 
 /**
  * SevenCheck 통합 데이터 관리자 (The Store)
@@ -45,17 +43,13 @@ export const Store = {
     async gainItem(itemName, itemValue = 500) {
         if (!UserState.user) return false;
         try {
-            const userRef = doc(db, "users", UserState.user.uid);
-            await updateDoc(userRef, {
-                inventory: arrayUnion(itemName),
-                totalScore: increment(itemValue),
-                discoveredItems: arrayUnion(itemName)
-            });
+            await postEconomyAction('grantItems', { items: [itemName] });
             
             // 로컬 데이터 즉시 갱신 (사용자 경험 향상)
             if (UserState.data) {
                 UserState.data.inventory.push(itemName);
                 UserState.data.totalScore += itemValue;
+                UserState.data.discoveredItems = [...new Set([...(UserState.data.discoveredItems || []), itemName])];
             }
             return true;
         } catch (e) {

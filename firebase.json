@@ -23,6 +23,10 @@
     ],
     "rewrites": [
       {
+        "source": "/api/economy",
+        "function": "economy"
+      },
+      {
         "source": "/api/daily-result",
         "function": "dailyResult"
       },

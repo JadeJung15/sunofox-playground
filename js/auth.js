@@ -13,7 +13,7 @@ import {
 export async function changePet(petId) {
     if (!UserState.user || !UserState.data.unlockedPets?.includes(petId)) return false;
     try {
-        await updateDoc(doc(db, "users", UserState.user.uid), { activePet: petId });
+        await postEconomyAction('setActivePet', { petId });
         UserState.data.activePet = petId;
         updateUI();
         return true;
@@ -77,6 +77,17 @@ let isManualLogout = false;
 const ADJECTIVES = ['용감한', '신비로운', '행복한', '빛나는', '똑똑한', '우아한', '재빠른', '포근한', '화려한', '은은한', '날렵한', '든든한'];
 const NOUNS = ['여우', '사자', '호랑이', '고양이', '팬더', '독수리', '돌고래', '토끼', '유니콘', '피닉스', '강아지', '늑대'];
 
+function escapeHTML(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>'"]/g, (tag) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag] || tag));
+}
+
 function generateRandomNickname() {
     const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
     const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
@@ -85,6 +96,27 @@ function generateRandomNickname() {
 }
 
 let authInitialized = false;
+
+export async function postEconomyAction(action, payload = {}) {
+    const user = auth.currentUser || UserState.user;
+    if (!user) throw new Error('로그인이 필요합니다.');
+
+    const token = await user.getIdToken();
+    const response = await fetch('/api/economy', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ action, payload })
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+        throw new Error(data.error || '요청 처리에 실패했습니다.');
+    }
+    return data;
+}
 
 export async function initAuth() {
     if (authInitialized) return;
@@ -206,7 +238,7 @@ export function updateUI(isLoggedIn = !!UserState.user) {
         document.querySelectorAll('#user-name').forEach(el => {
             let prefix = UserState.isMaster ? '💎 ' : (UserState.isAdmin ? '👑 ' : '');
             const petEmoji = data.activePet && PET_SHOP[data.activePet] ? PET_SHOP[data.activePet].emoji : '';
-            el.innerHTML = `${prefix}${data.nickname || UserState.user?.displayName || '사용자'} <span style="font-size: 0.8em; margin-left: 4px;">${petEmoji}</span>`;
+            el.innerHTML = `${escapeHTML(prefix)}${escapeHTML(data.nickname || UserState.user?.displayName || '사용자')} <span style="font-size: 0.8em; margin-left: 4px;">${escapeHTML(petEmoji)}</span>`;
             el.style.color = data.nameColor || 'var(--text-main)';
         });
         document.querySelectorAll('#user-points').forEach(el => el.textContent = (data.points || 0).toLocaleString());
@@ -299,8 +331,9 @@ export async function fetchUserRank(uid) {
 
 export async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji || UserState.data.emoji === emoji) return;
-    if (await usePoints(500, `아이콘 변경`)) {
-        await updateDoc(doc(db, "users", UserState.user.uid), { emoji: emoji });
+    try {
+        const result = await postEconomyAction('changeEmoji', { emoji });
+        UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
         UserState.data.emoji = emoji; 
         alert("아이콘이 변경되었습니다!");
         updateUI();
@@ -308,6 +341,8 @@ export async function handleEmojiExchange(emoji) {
             const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
             renderProfile();
         }
+    } catch (e) {
+        alert("아이콘 변경 중 오류가 발생했습니다.");
     }
 }
 
@@ -315,21 +350,18 @@ let isColorChanging = false;
 export async function changeNameColor(color) {
     if (isColorChanging || !UserState.user || !color || UserState.data.nameColor === color) return;
     isColorChanging = true;
-    if (await usePoints(1000, `닉네임 색상 변경`)) {
-        try {
-            await updateDoc(doc(db, "users", UserState.user.uid), { nameColor: color });
-            UserState.data.nameColor = color; 
-            alert("닉네임 색상이 변경되었습니다!");
-            updateUI();
-            if (location.hash === '#profile') {
-                const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
-                renderProfile();
-            }
-        } catch (e) {
-            alert("색상 변경 중 오류가 발생했습니다.");
+    try {
+        const result = await postEconomyAction('changeNameColor', { color });
+        UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
+        UserState.data.nameColor = color; 
+        alert("닉네임 색상이 변경되었습니다!");
+        updateUI();
+        if (location.hash === '#profile') {
+            const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
+            renderProfile();
         }
-    } else {
-        alert("포인트가 부족합니다 (1,000P 필요)");
+    } catch (e) {
+        alert("색상 변경 중 오류가 발생했습니다.");
     }
     isColorChanging = false;
 }
@@ -340,30 +372,26 @@ export async function changeNickname() {
     const newName = input.value.trim();
     if (newName.length < 2 || newName.length > 10) return alert("닉네임은 2~10자 사이여야 합니다.");
     
-    const cost = UserState.data.nicknameChanged ? 5000 : 0;
-    if (cost === 0 || await usePoints(cost, `닉네임 변경`)) {
-        try {
-            await updateDoc(doc(db, "users", UserState.user.uid), { nickname: newName, nicknameChanged: true });
-            UserState.data.nickname = newName; UserState.data.nicknameChanged = true; 
-            alert("닉네임이 변경되었습니다!");
-            updateUI();
-            if (location.hash === '#profile') {
-                const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
-                renderProfile();
-            }
-        } catch (e) {
-            alert("닉네임 변경 중 오류가 발생했습니다.");
+    try {
+        const result = await postEconomyAction('changeNickname', { nickname: newName });
+        UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
+        UserState.data.nickname = newName;
+        UserState.data.nicknameChanged = true; 
+        alert("닉네임이 변경되었습니다!");
+        updateUI();
+        if (location.hash === '#profile') {
+            const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
+            renderProfile();
         }
-    } else {
-        alert("포인트가 부족합니다 (5,000P 필요)");
+    } catch (e) {
+        alert("닉네임 변경 중 오류가 발생했습니다.");
     }
 }
 
 export async function addPoints(amount, reason = "보상") {
     if (!UserState.user) return false;
     try {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { points: increment(amount) });
+        await postEconomyAction('adjustBalances', { pointsDelta: amount, reason });
         UserState.data.points = (UserState.data.points || 0) + amount;
         updateUI();
         return true;
@@ -373,8 +401,7 @@ export async function addPoints(amount, reason = "보상") {
 export async function usePoints(amount, reason = "소모") {
     if (!UserState.user || (UserState.data.points || 0) < amount) return false;
     try {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, { points: increment(-amount) });
+        await postEconomyAction('adjustBalances', { pointsDelta: -amount, reason });
         UserState.data.points -= amount;
         updateUI();
         return true;
@@ -384,15 +411,7 @@ export async function usePoints(amount, reason = "소모") {
 export async function chargeUserPoints(uid, amount) {
     if (!UserState.isMaster || !uid || !Number.isFinite(amount)) return false;
     try {
-        const userRef = doc(db, "users", uid);
-        await updateDoc(userRef, { points: increment(amount) });
-        await addDoc(collection(db, "pointLogs"), {
-            uid,
-            type: "points",
-            amount,
-            reason: "관리자 집행",
-            timestamp: serverTimestamp()
-        });
+        await postEconomyAction('adjustBalances', { targetUid: uid, pointsDelta: amount, reason: '관리자 집행' });
         if (UserState.user?.uid === uid) {
             UserState.data.points = (UserState.data.points || 0) + amount;
             updateUI();
@@ -404,15 +423,7 @@ export async function chargeUserPoints(uid, amount) {
 export async function chargeUserScore(uid, amount) {
     if (!UserState.isMaster || !uid || !Number.isFinite(amount)) return false;
     try {
-        const userRef = doc(db, "users", uid);
-        await updateDoc(userRef, { totalScore: increment(amount) });
-        await addDoc(collection(db, "pointLogs"), {
-            uid,
-            type: "score",
-            amount,
-            reason: "관리자 집행",
-            timestamp: serverTimestamp()
-        });
+        await postEconomyAction('adjustBalances', { targetUid: uid, totalScoreDelta: amount, reason: '관리자 점수 집행' });
         if (UserState.user?.uid === uid) {
             UserState.data.totalScore = (UserState.data.totalScore || 0) + amount;
             updateUI();

@@ -1,9 +1,9 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=8.5.0';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.5.0';
 import { copyLink } from './share.js?v=8.5.0';
 import { renderBoard } from './board.js?v=8.5.0';
 import { renderRanking } from './ranking.js?v=8.5.0';
 import { db } from './firebase-init.js?v=8.5.0';
-import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.5.0';
 import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.5.0';
@@ -176,18 +176,11 @@ async function router() {
 window.checkDailyQuests = async function(type) {
     if (!UserState.user || !UserState.data) return;
     try {
-        const today = new Intl.DateTimeFormat('en-CA', {timeZone: 'Asia/Seoul'}).format(new Date());
-        const userRef = doc(db, "users", UserState.user.uid);
-        if (!UserState.data.quests || UserState.data.quests.date !== today) {
-            const newQuests = { date: today, list: { login: true, test: false, board: false } };
-            await updateDoc(userRef, { quests: newQuests });
-            UserState.data.quests = newQuests;
-            if (type === 'login') return;
-        }
-        if (UserState.data.quests.list && UserState.data.quests.list[type] === false) {
-            await updateDoc(userRef, { [`quests.list.${type}`]: true });
-            UserState.data.quests.list[type] = true;
-            await addPoints(50, `일일 퀘스트 완료: ${type}`);
+        const result = await postEconomyAction('completeQuest', { questType: type });
+        UserState.data.quests = result.quests;
+        if (result.reward) {
+            UserState.data.points = (UserState.data.points || 0) + result.reward;
+            updateUI();
         }
     } catch (e) { console.error("Quest error:", e); }
 };

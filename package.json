@@ -3,7 +3,13 @@
     "build": "mkdir -p dist && cp -r index.html css js *.png sitemap.xml ads.txt dist/ 2>/dev/null || true",
     "lint": "node scripts/check-syntax.cjs",
     "test": "node scripts/check-syntax.cjs",
+    "test:rules": "firebase emulators:exec --only firestore \"node --test tests/firestore.rules.test.mjs\"",
     "seed:daily": "node scripts/seed-daily-tests.cjs"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "firebase": "^12.10.0",
+    "firebase-tools": "^15.8.0"
   },
   "dependencies": {
     "firebase-admin": "^13.6.1"

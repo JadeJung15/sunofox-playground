@@ -1,6 +1,17 @@
 import { db } from './firebase-init.js?v=8.5.0';
 import { collection, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
+function escapeHTML(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>'"]/g, (tag) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag] || tag));
+}
+
 export async function renderRanking(container) {
     let currentTab = 'score'; // 'score', 'points', 'activity', 'salary'
     let currentSalaryGame = 'tabShift';
@@ -94,7 +105,7 @@ export async function renderRanking(container) {
                             </div>
                             <div class="rank-info" style="flex: 1;">
                                 <div style="display: flex; align-items: center; gap: 8px;">
-                                    <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="margin-left:4px;">${salaryBadges[idx] || ''}</span></h4>
+                                    <h4 style="font-size: 1.1rem; font-weight: 800;">${escapeHTML(data.nickname || '익명')} <span style="margin-left:4px;">${escapeHTML(salaryBadges[idx] || '')}</span></h4>
                                 </div>
                                 <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
                                     ${salaryTitle}: <strong style="color:${salaryAccent}; font-size: 1rem;">${(gameStats.bestScore || 0).toLocaleString()}</strong>
@@ -187,7 +198,7 @@ export async function renderRanking(container) {
                         </div>
                         <div class="rank-info" style="flex: 1;">
                             <div style="display: flex; align-items: center; gap: 8px;">
-                                <h4 style="font-size: 1.1rem; font-weight: 800;">${data.nickname || '익명'} <span style="margin-left:4px; display:inline-flex; gap:2px;">${userBadges}</span></h4>
+                                <h4 style="font-size: 1.1rem; font-weight: 800;">${escapeHTML(data.nickname || '익명')} <span style="margin-left:4px; display:inline-flex; gap:2px;">${userBadges}</span></h4>
                             </div>
                             <div style="font-size: 0.85rem; color: var(--text-sub); margin-top: 4px;">
                                 ${displayLabel}: <strong style="color: ${accentColor}; font-size: 1rem;">${displayValue}</strong>

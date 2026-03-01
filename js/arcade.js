@@ -1,7 +1,7 @@
-import { addPoints, usePoints, UserState, updateUI } from './auth.js?v=8.5.0';
+import { addPoints, postEconomyAction, usePoints, UserState, updateUI } from './auth.js?v=8.5.0';
 import { ITEM_VALUES, ITEM_GRADES, getGrade } from './constants/shops.js';
 import { db } from './firebase-init.js?v=8.5.0';
-import { doc, updateDoc, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
+import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { soundManager } from './sound.js';
 
 let arcadeInitialized = false;
@@ -94,12 +94,10 @@ async function updateArcadeStat(statKey) {
     if (!UserState.user) return;
     try {
         const weeklyState = getWeeklyArcadeState();
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, {
-            [`arcadeStats.${statKey}`]: increment(1),
-            'arcadeWeekly.weekKey': weeklyState.weekKey,
-            'arcadeWeekly.plays': increment(1),
-            'arcadeWeekly.claimedMilestones': weeklyState.claimedMilestones
+        await postEconomyAction('recordArcadePlay', {
+            statKey,
+            weekKey: weeklyState.weekKey,
+            claimedMilestones: weeklyState.claimedMilestones
         });
         if (!UserState.data.arcadeStats) UserState.data.arcadeStats = {};
         UserState.data.arcadeStats[statKey] = (UserState.data.arcadeStats[statKey] || 0) + 1;
@@ -223,18 +221,12 @@ async function claimWeeklyArcadeReward(goal) {
 
     const nextClaimed = [...weeklyState.claimedMilestones, goal].sort((a, b) => a - b);
     try {
-        const userRef = doc(db, "users", UserState.user.uid);
-        await updateDoc(userRef, {
-            points: increment(milestone.reward),
-            'arcadeWeekly.weekKey': weeklyState.weekKey,
-            'arcadeWeekly.plays': weeklyState.plays,
-            'arcadeWeekly.claimedMilestones': nextClaimed
-        });
-        UserState.data.points = (UserState.data.points || 0) + milestone.reward;
+        const result = await postEconomyAction('claimWeeklyArcadeReward', { goal });
+        UserState.data.points = (UserState.data.points || 0) + result.reward;
         UserState.data.arcadeWeekly = {
-            weekKey: weeklyState.weekKey,
-            plays: weeklyState.plays,
-            claimedMilestones: nextClaimed
+            weekKey: result.weekKey,
+            plays: result.plays,
+            claimedMilestones: result.claimedMilestones
         };
         soundManager.playSuccess();
         updateUI();
@@ -285,12 +277,7 @@ async function playGacha(count, cost) {
                     totalAddedScore += (ITEM_VALUES[item] || 0);
                 }
 
-                const userRef = doc(db, "users", UserState.user.uid);
-                await updateDoc(userRef, {
-                    inventory: arrayUnion(...drawnItems),
-                    totalScore: increment(totalAddedScore),
-                    discoveredItems: arrayUnion(...drawnItems)
-                });
+                await postEconomyAction('grantItems', { items: drawnItems });
 
                 UserState.data.inventory = [...(UserState.data.inventory || []), ...drawnItems];
                 UserState.data.totalScore = (UserState.data.totalScore || 0) + totalAddedScore;
@@ -733,7 +720,6 @@ async function playAlchemy(count) {
         setTimeout(async () => {
             try {
                 soundManager.playSuccess(); // 연성 성공 소리
-                const userRef = doc(db, "users", UserState.user.uid);
                 let currentInv = [...UserState.data.inventory];
                 const sacrificed = [];
                 let scoreLost = 0;
@@ -765,9 +751,14 @@ async function playAlchemy(count) {
 
                 currentInv.push(...results);
                 const recalcScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
-                await updateDoc(userRef, { inventory: currentInv, totalScore: recalcScore, discoveredItems: arrayUnion(...results) });
+                const discoveredItems = [...new Set([...(UserState.data.discoveredItems || []), ...results])];
+                await postEconomyAction('replaceInventory', {
+                    inventory: currentInv,
+                    discoveredItems
+                });
                 UserState.data.inventory = currentInv;
                 UserState.data.totalScore = recalcScore;
+                UserState.data.discoveredItems = discoveredItems;
 
                 if (window.location.hash === '#arcade') {
                     window._preventScroll = true; 
@@ -964,8 +955,14 @@ async function playBulkSell(sellList, totalRefund) {
     sellList.forEach(sell => { for (let i = 0; i < sell.qty; i++) { const idx = currentInv.indexOf(sell.name); if (idx > -1) currentInv.splice(idx, 1); } });
     const newScore = currentInv.reduce((acc, item) => acc + (ITEM_VALUES[item] || 0), 0);
     try {
-        await updateDoc(userRef, { inventory: currentInv, points: increment(totalRefund), totalScore: newScore });
-        UserState.data.inventory = currentInv; UserState.data.points += totalRefund; UserState.data.totalScore = newScore;
+        await postEconomyAction('replaceInventory', {
+            inventory: currentInv,
+            discoveredItems: UserState.data.discoveredItems || currentInv
+        });
+        if (!(await addPoints(totalRefund, '아이템 판매 환급'))) {
+            throw new Error('refund_failed');
+        }
+        UserState.data.inventory = currentInv; UserState.data.totalScore = newScore;
         alert(`💰 판매 완료! ${totalRefund.toLocaleString()}P가 지급되었습니다.`);
         window._preventScroll = true; window.dispatchEvent(new HashChangeEvent('hashchange')); updateUI();
     } catch (e) { console.error(e); alert("판매 중 오류가 발생했습니다."); }
@@ -1007,14 +1004,9 @@ async function buyBoosterPack() {
     button.textContent = '충전 중...';
 
     try {
-        const spent = await usePoints(cost, '슈퍼 부스터 충전');
-        if (!spent) {
-            alert("부스터 충전에 실패했습니다.");
-            return;
-        }
-
-        await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(20) });
-        UserState.data.boosterCount = (UserState.data.boosterCount || 0) + 20;
+        const result = await postEconomyAction('buyBoosterPack');
+        UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
+        UserState.data.boosterCount = (UserState.data.boosterCount || 0) + result.boosterDelta;
         soundManager.playSuccess();
         updateUI();
 

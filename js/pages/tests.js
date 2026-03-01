@@ -1,7 +1,6 @@
-import { UserState, addPoints } from '../auth.js?v=8.5.0';
+import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.5.0';
 import { ITEM_VALUES } from '../constants/shops.js';
 import { db } from '../firebase-init.js?v=8.5.0';
-import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { copyLink, saveAsStoryImage } from '../share.js';
 import { TESTS } from '../tests-data.js?v=8.5.0';
 import { renderTestCard } from './home.js';
@@ -79,7 +78,7 @@ export async function renderResult(testId, traitScores) {
     let basePointReward = 10 + petBuff.testBonus;
     if (UserState.user && UserState.data.boosterCount > 0) {
         basePointReward = (10 * 2) + petBuff.testBonus; // 부스터는 기본 보상에만 적용
-        await updateDoc(doc(db, "users", UserState.user.uid), { boosterCount: increment(-1) });
+        await postEconomyAction('consumeBooster', { amount: 1 });
         UserState.data.boosterCount -= 1;
     }
     
@@ -97,14 +96,10 @@ export async function renderResult(testId, traitScores) {
         const commonItems = ['⚡ 번개 병', '🧪 현자의 돌', '🌱 묘목', '🌌 은하수 가루', '🦊 여우 꼬리'];
         rewardedItem = traitItems[dominantTrait] || commonItems[Math.floor(Math.random() * commonItems.length)];
         const itemVal = ITEM_VALUES[rewardedItem] || 500;
-
-        await updateDoc(doc(db, "users", UserState.user.uid), {
-            inventory: arrayUnion(rewardedItem),
-            totalScore: increment(itemVal),
-            discoveredItems: arrayUnion(rewardedItem)
-        });
+        await postEconomyAction('grantItems', { items: [rewardedItem] });
         UserState.data.inventory.push(rewardedItem);
         UserState.data.totalScore = (UserState.data.totalScore || 0) + itemVal;
+        UserState.data.discoveredItems = [...new Set([...(UserState.data.discoveredItems || []), rewardedItem])];
         await addPoints(basePointReward, '분석 완료 보상');
         window.checkDailyQuests?.('test');
     }
