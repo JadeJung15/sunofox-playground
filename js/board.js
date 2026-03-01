@@ -120,6 +120,12 @@ export async function renderBoard(container) {
                         <strong>탐색 모드</strong>
                         <span>${currentCategory === 'ALL' ? '전체 게시글 탐색 중' : `${CATEGORIES[currentCategory]?.name || '전체'} 집중 탐색 중`}</span>
                     </div>
+                    <a href="https://open.kakao.com/o/g1PIRRii" target="_blank" rel="noopener noreferrer" class="board-openchat-card">
+                        <div class="board-openchat-kicker">OFFICIAL OPEN CHAT</div>
+                        <strong>신생 2030 심테하고 수다ㄱ</strong>
+                        <span>테스트 끝나고 잡담, 반응 공유, 보룸 합류까지 바로 이어지는 공식 오픈채팅방</span>
+                        <em>#심리테스트 #MBTI #연애테스트 #서울 #경기 #인천 #전국OK</em>
+                    </a>
                     <div class="board-shop-pills">
                         <button id="btn-aura-shop" class="board-action-pill">✨ 오라 상점</button>
                         <button id="btn-border-shop" class="board-action-pill">🖼️ 테두리 상점</button>

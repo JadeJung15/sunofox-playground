@@ -413,6 +413,22 @@ export async function renderHome(hash) {
                     </div>
                 </section>
 
+                <section class="home-chat-strip" style="margin-bottom:1.35rem; border-radius:30px; padding:1.1rem; background:linear-gradient(145deg,#fff7ed 0%,#fffbeb 45%,#f0fdf4 100%); border:1px solid #fed7aa; box-shadow:0 18px 34px rgba(15,23,42,0.05);">
+                    <div class="home-chat-strip-head" style="display:flex; justify-content:space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap;">
+                        <div>
+                            <div style="font-size:0.74rem; color:#ea580c; letter-spacing:0.14em; font-weight:900; margin-bottom:0.2rem;">OFFICIAL OPEN CHAT</div>
+                            <h3 style="font-size:1.22rem; font-weight:950; color:#0f172a; letter-spacing:-0.03em; margin:0 0 0.38rem;">심테 끝나고 바로 떠들 공식 오픈채팅방</h3>
+                            <p style="margin:0; color:#475569; font-size:0.9rem; font-weight:700; line-height:1.6; max-width:720px;">신생 2030 심테하고 수다ㄱ. 수도권 중심으로 모이되 전국도 편하게 섞이고, 보이스룸이랑 잡담까지 자연스럽게 이어지는 흐름으로 붙였습니다.</p>
+                        </div>
+                        <a href="https://open.kakao.com/o/g1PIRRii" target="_blank" rel="noopener noreferrer" class="home-chat-cta" style="display:inline-flex; align-items:center; justify-content:center; text-decoration:none; border:none; border-radius:16px; padding:0.88rem 1.12rem; background:linear-gradient(135deg,#f97316,#ea580c); color:#fff; font-weight:950; font-size:0.88rem; box-shadow:0 14px 24px rgba(234,88,12,0.24);">카카오 오픈채팅 들어가기</a>
+                    </div>
+                    <div class="home-chat-tags" style="display:flex; gap:0.48rem; flex-wrap:wrap; margin-top:0.9rem;">
+                        ${['#심리테스트', '#MBTI', '#연애테스트', '#궁합', '#보이스룸', '#서울·경기·인천', '#전국OK', '#2030'].map((tag) => `
+                            <span style="padding:0.42rem 0.7rem; border-radius:999px; background:rgba(255,255,255,0.72); border:1px solid rgba(251,146,60,0.22); color:#9a3412; font-size:0.78rem; font-weight:850;">${tag}</span>
+                        `).join('')}
+                    </div>
+                </section>
+
                 <section style="display:grid; grid-template-columns:minmax(0,1.2fr) minmax(280px,0.8fr); gap:1rem; margin-bottom:1.75rem;" class="home-feature-stack">
                     <div style="background:#fff; border-radius:30px; border:1px solid #e2e8f0; padding:1.2rem; box-shadow:0 18px 36px rgba(15,23,42,0.05);">
                         <div style="display:flex; justify-content:space-between; align-items:flex-end; gap:0.8rem; flex-wrap:wrap; margin-bottom:0.95rem;">

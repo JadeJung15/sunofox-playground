@@ -1517,6 +1517,26 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 .footer-content { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2rem; }
 .footer-info h3 { font-size: 1.25rem; font-weight: 800; color: var(--accent-color); margin-bottom: 1rem; }
 .footer-info p { color: var(--text-sub); font-size: 0.9rem; max-width: 300px; }
+.footer-openchat-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+  padding: 0.62rem 0.88rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+  border: 1px solid #fdba74;
+  color: #c2410c;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 800;
+  transition: transform 0.18s ease, box-shadow 0.2s ease, color 0.2s ease;
+}
+.footer-openchat-link:hover {
+  color: #9a3412;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(234, 88, 12, 0.12);
+}
 .footer-links { display: flex; gap: 1rem; flex-wrap: wrap; }
 .footer-links a { text-decoration: none; color: var(--text-sub); font-size: 0.85rem; font-weight: 600; }
 .footer-links a:hover { color: var(--accent-color); }
@@ -2554,6 +2574,57 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   background: linear-gradient(160deg, rgba(15,23,42,0.96), rgba(30,41,59,0.94));
 }
 
+.board-openchat-card {
+  display: block;
+  text-decoration: none;
+  padding: 1rem;
+  border-radius: 20px;
+  background: linear-gradient(145deg, #fff7ed 0%, #fffbeb 55%, #f0fdf4 100%);
+  border: 1px solid rgba(253, 186, 116, 0.9);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.12);
+  transition: transform 0.18s ease, box-shadow 0.2s ease;
+}
+
+.board-openchat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 32px rgba(15, 23, 42, 0.18);
+}
+
+.board-openchat-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  font-weight: 900;
+  color: #ea580c;
+  margin-bottom: 0.35rem;
+}
+
+.board-openchat-card strong {
+  display: block;
+  font-size: 1rem;
+  color: #0f172a;
+  font-weight: 950;
+  line-height: 1.35;
+  margin-bottom: 0.35rem;
+}
+
+.board-openchat-card span {
+  display: block;
+  font-size: 0.83rem;
+  line-height: 1.58;
+  color: #475569;
+  font-weight: 700;
+  margin-bottom: 0.45rem;
+}
+
+.board-openchat-card em {
+  display: block;
+  font-style: normal;
+  font-size: 0.74rem;
+  line-height: 1.55;
+  color: #9a3412;
+  font-weight: 850;
+}
+
 .board-stat-card {
   border-radius: 20px;
   padding: 1rem;
@@ -3131,6 +3202,11 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     width: 100%;
     margin-left: 0;
   }
+
+  .board-openchat-card {
+    padding: 0.88rem;
+    border-radius: 18px;
+  }
 }
 
 /* Test UI - Poomang Style */
@@ -3316,6 +3392,23 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     border-radius: 22px !important;
   }
 
+  .home-chat-strip {
+    padding: 0.92rem !important;
+    border-radius: 22px !important;
+  }
+
+  .home-chat-strip-head {
+    align-items: stretch !important;
+  }
+
+  .home-chat-cta {
+    width: 100%;
+  }
+
+  .home-chat-tags {
+    gap: 0.42rem !important;
+  }
+
   .home-ops-grid {
     gap: 0.58rem !important;
   }
@@ -3400,6 +3493,29 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .home-ops-strip {
     padding: 0.72rem !important;
     border-radius: 18px !important;
+  }
+
+  .home-chat-strip {
+    border-radius: 18px !important;
+  }
+
+  .home-chat-strip h3 {
+    font-size: 1.03rem !important;
+  }
+
+  .home-chat-strip p {
+    font-size: 0.83rem !important;
+  }
+
+  .home-chat-tags span {
+    font-size: 0.72rem !important;
+    padding: 0.36rem 0.58rem !important;
+  }
+
+  .footer-openchat-link {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
   }
 }
 
