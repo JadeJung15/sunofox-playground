@@ -4343,28 +4343,6 @@ main {
   margin-top: 1.2rem;
 }
 
-.minimal-hero-actions-center {
-  justify-content: center;
-}
-
-.minimal-home .minimal-hero {
-  min-height: calc(100vh - 220px);
-  place-items: center;
-  grid-template-columns: 1fr;
-  text-align: center;
-}
-
-.minimal-home .minimal-hero-copy p {
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.minimal-start-button {
-  min-width: 220px;
-  min-height: 56px;
-  font-size: 1rem;
-}
-
 .minimal-hero-aside,
 .minimal-metric-row {
   display: grid;

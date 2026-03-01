@@ -1,7 +1,7 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.4';
-import { db } from '../firebase-init.js?v=8.5.4';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.3';
+import { db } from '../firebase-init.js?v=8.5.3';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.5.4';
+import { TESTS } from '../tests-data.js?v=8.5.3';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -100,14 +100,14 @@ function buildHomeCategoryCards(latestTests) {
             chips: ['캐릭터 판정', '가벼운 몰입', '공유용']
         },
         {
-            hash: '#fun',
-            category: '재미',
+            hash: '#salary',
+            category: '월급 루팡',
             icon: '05',
-            label: 'LIGHT TEST',
-            title: '가벼운 심리',
-            desc: '짧고 바로 공유하기 좋은 라이트 테스트.',
+            label: 'OFFICE ESCAPE',
+            title: '월급 루팡',
+            desc: '짧은 플레이와 조용한 몰입에 맞춘 직장인 전용 콘텐츠 라인.',
             accent: 'var(--tone-ink)',
-            chips: ['짧은 질문', '가벼운 몰입', '공유용']
+            chips: ['PC 최적화', '짧은 세션', '직장인 밈']
         }
     ].map((item) => {
         if (item.category === 'daily') {
@@ -281,25 +281,186 @@ export async function renderHome(hash) {
     const curatedTests = getRandomTests(6);
 
     if (hash === '#home' || !hash) {
+        const randomAdvice = FOX_ADVICE[Math.floor(Math.random() * FOX_ADVICE.length)];
         const userName = UserState.user ? UserState.data?.nickname || '사용자' : '방문자';
+        const heroTest = latestTests[Math.floor(Math.random() * latestTests.length)];
+        const homeCategories = buildHomeCategoryCards(latestTests);
+        const latestDrop = latestTests.slice(0, 4);
+        const spotlightTests = getRandomTests(3);
 
         app.innerHTML = `
             <div class="minimal-page minimal-home fade-in">
                 <section class="minimal-hero reveal">
                     <div class="minimal-hero-copy">
                         <span class="minimal-kicker">SevenCheck Minimal</span>
-                        <h1>심리테스트,<br>바로 시작.</h1>
-                        <p>${userName}님이 지금 눌러야 하는 건 하나면 충분합니다. 핵심만 남기고, 시작 경험만 가장 먼저 오도록 다시 정리했습니다.</p>
-                        <div class="minimal-hero-actions minimal-hero-actions-center">
-                            <button class="btn-primary minimal-start-button" onclick="location.hash='#7check'">테스트 시작하기</button>
+                        <h1>${userName}님에게<br>지금 필요한 건<br>복잡하지 않은 테스트.</h1>
+                        <p>심리 분석, 운세, 캐주얼 테스트까지 한 화면에서 빠르게 고르고 바로 시작할 수 있는 미니멀 웹앱 구조로 재정리했습니다.</p>
+                        <div class="minimal-hero-actions">
+                            <button class="btn-primary" onclick="location.hash='#test/${heroTest.id}'">랜덤 추천 시작</button>
+                            <button class="btn-secondary" onclick="location.hash='#7check'">카테고리 보기</button>
                         </div>
+                    </div>
+                    <div class="minimal-hero-aside">
+                        <div class="minimal-metric-block">
+                            <small>Today Insight</small>
+                            <strong>${randomAdvice}</strong>
+                        </div>
+                        <div class="minimal-metric-row">
+                            <div class="minimal-metric-card">
+                                <small>Tests</small>
+                                <strong>${TESTS.length + DAILY_CATEGORY_META.count}</strong>
+                            </div>
+                            <div class="minimal-metric-card">
+                                <small>Hot Pick</small>
+                                <strong>${heroTest.category}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Category Grid</span>
+                            <h2>지금 들어가기 좋은 라인</h2>
+                        </div>
+                        <button class="minimal-text-link" onclick="location.hash='#7check'">전체 보기</button>
+                    </div>
+                    <div class="minimal-card-grid minimal-card-grid-3">
+                        ${homeCategories.map((card) => `
+                            <article class="minimal-pane minimal-pane-interactive" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">
+                                <div class="minimal-pane-top">
+                                    <span class="minimal-pane-index" style="color:${card.accent || 'var(--accent-color)'}">${card.icon || '00'}</span>
+                                    <span class="minimal-pane-label">${card.label}</span>
+                                </div>
+                                <h3>${card.title}</h3>
+                                <p>${card.desc || card.latestTitle}</p>
+                                <div class="minimal-pane-bottom">
+                                    <strong>${card.countText}</strong>
+                                    <span>${card.latestTitle}</span>
+                                </div>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-feature-grid">
+                        <article class="minimal-feature-card minimal-feature-card-dark">
+                            <span class="minimal-kicker">Spotlight Test</span>
+                            <h2>${heroTest.title}</h2>
+                            <p>${heroTest.desc}</p>
+                            <button class="btn-primary" onclick="location.hash='#test/${heroTest.id}'">이 테스트 시작</button>
+                        </article>
+                        <article class="minimal-feature-card">
+                            <span class="minimal-kicker">Search</span>
+                            <h2>원하는 테스트를 바로 찾기</h2>
+                            <p>제목이나 카테고리로 즉시 필터링합니다.</p>
+                            <div class="minimal-search-shell">
+                                <input type="text" id="home-search" placeholder="테스트 제목 / 카테고리 검색">
+                            </div>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Live Notes</span>
+                            <h2>최근 업데이트</h2>
+                        </div>
+                    </div>
+                    <div class="minimal-card-grid">
+                        ${HOME_UPDATES.map((item) => `
+                            <article class="minimal-note-card">
+                                <small>${item.badge}</small>
+                                <h3>${item.title}</h3>
+                                <p>${item.desc}</p>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Curated Tests</span>
+                            <h2>바로 눌러도 좋은 큐레이션</h2>
+                        </div>
+                    </div>
+                    <div class="minimal-card-grid">
+                        ${spotlightTests.map((test) => `
+                            <article class="minimal-spotlight-card" onclick="location.hash='#test/${test.id}'">
+                                <small>${test.category}</small>
+                                <h3>${test.title}</h3>
+                                <span>Open test</span>
+                            </article>
+                        `).join('')}
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Open Chat</span>
+                            <h2>결과 얘기까지 이어지는 공식 채팅방</h2>
+                        </div>
+                        <a href="https://open.kakao.com/o/g1PIRRii" target="_blank" rel="noopener noreferrer" class="minimal-text-link">입장하기</a>
+                    </div>
+                    <div class="minimal-chip-row minimal-chip-row-wide">
+                        ${['#심리테스트', '#MBTI', '#연애테스트', '#궁합', '#보이스룸', '#2030'].map((tag) => `<span>${tag}</span>`).join('')}
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Browse</span>
+                            <h2>콘텐츠 카드</h2>
+                        </div>
+                    </div>
+                    <div id="test-list-grid" class="test-grid minimal-test-grid">
+                        ${curatedTests.map((t) => renderTestCard(t)).join('')}
+                    </div>
+                </section>
+
+                <section class="minimal-section reveal">
+                    <div class="minimal-section-head">
+                        <div>
+                            <span class="minimal-kicker">Latest</span>
+                            <h2>최근 추가된 테스트</h2>
+                        </div>
+                    </div>
+                    <div class="minimal-card-grid">
+                        ${latestDrop.map((test, index) => `
+                            <article class="minimal-note-card" onclick="location.hash='#test/${test.id}'">
+                                <small>NEW ${index + 1}</small>
+                                <h3>${test.title}</h3>
+                                <p>${test.category}</p>
+                            </article>
+                        `).join('')}
                     </div>
                 </section>
             </div>
         `;
+
+        const searchInput = document.getElementById('home-search');
+        if (searchInput) {
+            searchInput.oninput = (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                const filtered = latestTests.filter(t => t.title.toLowerCase().includes(term) || t.category.toLowerCase().includes(term));
+                const grid = document.getElementById('test-list-grid');
+                if (grid) {
+                    grid.innerHTML = filtered.length > 0
+                        ? filtered.slice(0, 12).map(t => renderTestCard(t)).join('')
+                        : `<div class="minimal-empty-state">검색 결과가 없습니다.</div>`;
+                }
+            };
+        }
         initRevealMotion(app);
     } else {
         const filtered = latestTests.filter(t => t.category === window._currentFilter);
+        const isSalaryCategory = window._currentFilter === '월급 루팡';
         app.innerHTML = `
             <div class="minimal-page minimal-page-narrow fade-in">
                 <div class="minimal-section-head reveal">
@@ -309,6 +470,14 @@ export async function renderHome(hash) {
                     </div>
                     <span class="minimal-text-meta">총 ${filtered.length}개</span>
                 </div>
+                ${isSalaryCategory ? `
+                    <section class="minimal-feature-card minimal-feature-card-dark reveal" style="margin-bottom:1.5rem;">
+                        <span class="minimal-kicker">Featured Mini Game</span>
+                        <h2>상사 오기 전 업무창 위장하기</h2>
+                        <p>회사 PC에서 조용히 즐기는 30초 생존 게임입니다. 비회원은 바로 체험, 회원은 최고점 저장과 포인트 획득이 가능합니다.</p>
+                        <button class="btn-primary" onclick="location.hash='#salary-tab-shift'">월급 루팡 게임 시작</button>
+                    </section>
+                ` : ''}
                 <div class="test-grid minimal-test-grid reveal">
                     ${filtered.map(t => renderTestCard(t)).join('')}
                 </div>
