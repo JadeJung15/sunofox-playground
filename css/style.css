@@ -4716,6 +4716,128 @@ main {
   font-weight: 700;
 }
 
+.profile-stage-simple {
+  max-width: 1100px;
+}
+
+.profile-simple-hero {
+  grid-template-columns: 1fr;
+}
+
+.profile-detail-grid-simple {
+  grid-template-columns: minmax(0, 1.4fr) minmax(280px, 0.8fr);
+}
+
+.profile-setting-group {
+  display: grid;
+  gap: 0.7rem;
+  padding: 1.4rem;
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.profile-setting-group label {
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.profile-setting-group p,
+.profile-account-box span,
+.profile-post-copy span,
+.profile-simple-empty span,
+.profile-simple-loading {
+  color: var(--text-sub);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.profile-inline-form {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.profile-inline-form input {
+  flex: 1;
+  min-height: 48px;
+  padding: 0 1rem;
+  border: 1px solid rgba(17, 17, 17, 0.08);
+  border-radius: 14px;
+  font-size: 0.95rem;
+  background: #ffffff;
+}
+
+.profile-form-message {
+  min-height: 1.2rem;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.profile-account-box,
+.profile-simple-empty,
+.profile-post-item {
+  border: 1px solid rgba(17, 17, 17, 0.06);
+  border-radius: 20px;
+  background: #ffffff;
+}
+
+.profile-account-box {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1.2rem;
+  margin-bottom: 0.9rem;
+}
+
+.profile-account-box strong,
+.profile-post-copy strong,
+.profile-simple-empty strong {
+  font-size: 0.98rem;
+  font-weight: 800;
+  line-height: 1.45;
+}
+
+.profile-logout-btn {
+  width: 100%;
+}
+
+.profile-danger-btn {
+  color: #dc2626;
+  border-color: rgba(220, 38, 38, 0.16);
+}
+
+.profile-post-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.profile-post-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem 1.1rem;
+}
+
+.profile-post-copy {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.profile-post-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.profile-simple-empty,
+.profile-simple-loading {
+  display: grid;
+  justify-items: start;
+  gap: 0.5rem;
+  padding: 1.1rem;
+}
+
 .emoji-btn,
 .inv-card,
 .pet-card,
@@ -4766,6 +4888,7 @@ main {
   .minimal-feature-grid,
   .profile-summary-grid,
   .profile-detail-grid,
+  .profile-detail-grid-simple,
   .profile-guest-grid {
     grid-template-columns: 1fr;
   }
@@ -4780,6 +4903,13 @@ main {
   }
 
   .minimal-metric-row { grid-template-columns: 1fr 1fr; }
+
+  .profile-inline-form,
+  .profile-post-item,
+  .profile-post-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
   .minimal-test-grid,
   .test-grid { grid-template-columns: 1fr; }
