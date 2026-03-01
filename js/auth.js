@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-init.js?v=8.5.1';
+import { auth, db } from './firebase-init.js?v=8.5.2';
 import { 
     EMOJI_SHOP, 
     ITEM_VALUES, 
@@ -7,17 +7,102 @@ import {
     TIERS, 
     getTier, 
     COLOR_SHOP,
-    PET_SHOP 
+    PET_SHOP,
+    AURA_SHOP,
+    BORDER_SHOP,
+    BACKGROUND_SHOP
 } from './constants/shops.js';
+
+const PROFILE_STYLE_CONFIG = {
+    Aura: { activeKey: 'activeAura', unlockedKey: 'unlockedAuras', noneValue: 'NONE', items: AURA_SHOP },
+    Border: { activeKey: 'activeBorder', unlockedKey: 'unlockedBorders', noneValue: 'NONE', items: BORDER_SHOP },
+    Background: { activeKey: 'activeBackground', unlockedKey: 'unlockedBackgrounds', noneValue: 'NONE', items: BACKGROUND_SHOP }
+};
+
+function isFallbackableEconomyError(error) {
+    return !error?.message ||
+        error.message === '요청 처리에 실패했습니다.' ||
+        /Failed to fetch/i.test(error.message);
+}
+
+function getEmojiPrice(emoji) {
+    for (const group of Object.values(EMOJI_SHOP)) {
+        if (group?.[emoji]) return group[emoji];
+    }
+    return 0;
+}
 
 export async function changePet(petId) {
     if (!UserState.user || !UserState.data.unlockedPets?.includes(petId)) return false;
     try {
-        await postEconomyAction('setActivePet', { petId });
+        try {
+            await postEconomyAction('setActivePet', { petId });
+        } catch (apiError) {
+            if (!isFallbackableEconomyError(apiError)) throw apiError;
+            await updateDoc(doc(db, "users", UserState.user.uid), { activePet: petId });
+        }
         UserState.data.activePet = petId;
         updateUI();
         return true;
     } catch (e) { return false; }
+}
+
+export async function adoptPet(petId) {
+    if (!UserState.user || !PET_SHOP[petId]) return false;
+    const info = PET_SHOP[petId];
+    const unlockedPets = UserState.data.unlockedPets || [];
+    if (unlockedPets.includes(petId)) return true;
+
+    try {
+        try {
+            await postEconomyAction('adoptPet', { petId });
+        } catch (apiError) {
+            if (!isFallbackableEconomyError(apiError)) throw apiError;
+            if ((UserState.data?.points || 0) < info.price) {
+                throw new Error('포인트가 부족합니다.');
+            }
+            await updateDoc(doc(db, "users", UserState.user.uid), {
+                points: (UserState.data?.points || 0) - info.price,
+                unlockedPets: [...new Set([...(UserState.data.unlockedPets || []), petId])],
+                activePet: petId
+            });
+        }
+
+        UserState.data.points = (UserState.data.points || 0) - info.price;
+        UserState.data.unlockedPets = [...new Set([...(UserState.data.unlockedPets || []), petId])];
+        UserState.data.activePet = petId;
+        updateUI();
+        return true;
+    } catch (e) {
+        throw e;
+    }
+}
+
+export async function setProfileStyle(styleType, itemId) {
+    const config = PROFILE_STYLE_CONFIG[styleType];
+    if (!UserState.user || !config) return false;
+    const { activeKey, unlockedKey, noneValue, items } = config;
+    if (itemId !== noneValue && !items[itemId]) return false;
+
+    try {
+        try {
+            await postEconomyAction('setProfileStyle', { styleType, itemId });
+        } catch (apiError) {
+            if (!isFallbackableEconomyError(apiError)) throw apiError;
+            const unlocked = Array.isArray(UserState.data?.[unlockedKey]) ? UserState.data[unlockedKey] : [];
+            if (itemId !== noneValue && !unlocked.includes(itemId)) {
+                throw new Error('보유하지 않은 장식입니다.');
+            }
+            await updateDoc(doc(db, "users", UserState.user.uid), { [activeKey]: itemId });
+        }
+
+        UserState.data[activeKey] = itemId;
+        updateProfileCache(UserState.user.uid, { [activeKey]: itemId });
+        updateUI();
+        return true;
+    } catch (e) {
+        throw e;
+    }
 }
 
 export function getPetBuff() {
@@ -334,17 +419,37 @@ export async function fetchUserRank(uid) {
 export async function handleEmojiExchange(emoji) {
     if (!UserState.user || !emoji || UserState.data.emoji === emoji) return;
     try {
-        const result = await postEconomyAction('changeEmoji', { emoji });
+        let result;
+        try {
+            result = await postEconomyAction('changeEmoji', { emoji });
+        } catch (apiError) {
+            if (!isFallbackableEconomyError(apiError)) throw apiError;
+
+            const price = getEmojiPrice(emoji);
+            if (!price) throw new Error("유효하지 않은 이모지입니다.");
+            if ((UserState.data?.points || 0) < price) throw new Error("포인트가 부족합니다.");
+
+            const unlocked = [...new Set([...(UserState.data.unlockedEmojis || []), emoji])];
+            await updateDoc(doc(db, "users", UserState.user.uid), {
+                points: (UserState.data?.points || 0) - price,
+                emoji,
+                unlockedEmojis: unlocked
+            });
+            result = { emoji, pointsDelta: -price };
+        }
+
         UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
-        UserState.data.emoji = emoji; 
+        UserState.data.emoji = emoji;
+        UserState.data.unlockedEmojis = [...new Set([...(UserState.data.unlockedEmojis || []), emoji])];
+        updateProfileCache(UserState.user.uid, { emoji });
         alert("아이콘이 변경되었습니다!");
         updateUI();
         if (location.hash === '#profile') {
-            const { renderProfile } = await import('./pages/profile.js?v=8.5.1');
+            const { renderProfile } = await import('./pages/profile.js?v=8.5.2');
             renderProfile();
         }
     } catch (e) {
-        alert("아이콘 변경 중 오류가 발생했습니다.");
+        alert(e.message || "아이콘 변경 중 오류가 발생했습니다.");
     }
 }
 
@@ -357,10 +462,7 @@ export async function changeNameColor(color) {
         try {
             result = await postEconomyAction('changeNameColor', { color });
         } catch (apiError) {
-            const fallbackable = !apiError?.message ||
-                apiError.message === '요청 처리에 실패했습니다.' ||
-                /Failed to fetch/i.test(apiError.message);
-            if (!fallbackable) throw apiError;
+            if (!isFallbackableEconomyError(apiError)) throw apiError;
 
             if ((UserState.data?.points || 0) < 1000) {
                 throw new Error("포인트가 부족합니다.");
@@ -378,7 +480,7 @@ export async function changeNameColor(color) {
         alert("닉네임 색상이 변경되었습니다!");
         updateUI();
         if (location.hash === '#profile') {
-            const { renderProfile } = await import('./pages/profile.js?v=8.5.1');
+            const { renderProfile } = await import('./pages/profile.js?v=8.5.2');
             renderProfile();
         }
     } catch (e) {
@@ -402,10 +504,7 @@ export async function changeNickname() {
         try {
             result = await postEconomyAction('changeNickname', { nickname: newName });
         } catch (apiError) {
-            const fallbackable = !apiError?.message ||
-                apiError.message === '요청 처리에 실패했습니다.' ||
-                /Failed to fetch/i.test(apiError.message);
-            if (!fallbackable) throw apiError;
+            if (!isFallbackableEconomyError(apiError)) throw apiError;
 
             const cost = UserState.data?.nicknameChanged ? 5000 : 0;
             if ((UserState.data?.points || 0) < cost) {
@@ -425,7 +524,7 @@ export async function changeNickname() {
         alert("닉네임이 변경되었습니다!");
         updateUI();
         if (location.hash === '#profile') {
-            const { renderProfile } = await import('./pages/profile.js?v=8.5.1');
+            const { renderProfile } = await import('./pages/profile.js?v=8.5.2');
             renderProfile();
         }
     } catch (e) {

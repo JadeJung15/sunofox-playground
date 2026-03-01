@@ -1,4 +1,4 @@
-import { UserState, getPetBuff, postEconomyAction, updateUI, updateProfileCache } from '../auth.js?v=8.5.1';
+import { UserState, getPetBuff, updateUI, updateProfileCache, adoptPet, setProfileStyle } from '../auth.js?v=8.5.2';
 import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP, PET_SHOP } from '../constants/shops.js';
 import { soundManager } from '../sound.js';
 
@@ -321,7 +321,7 @@ export function renderProfile() {
                                         ${Object.keys(emojis).map(e => `
                                             <button class="emoji-btn ${UserState.data.emoji === e ? 'active' : ''}" data-emoji="${e}">
                                                 <span class="e-icon">${e}</span>
-                                                <span class="e-price">500P</span>
+                                                <span class="e-price">${Number(emojis[e] || 0).toLocaleString()}P</span>
                                             </button>`).join('')}
                                     </div>
                                 `).join('')}
@@ -421,7 +421,7 @@ export function renderProfile() {
     app.querySelectorAll('.btn-pet-equip').forEach(btn => {
         btn.onclick = async () => {
             const { id } = btn.dataset;
-            const { changePet } = await import('../auth.js?v=8.5.1');
+            const { changePet } = await import('../auth.js?v=8.5.2');
             if (await changePet(id)) {
                 soundManager.playSuccess();
                 renderProfile();
@@ -452,17 +452,13 @@ export function renderProfile() {
             }
 
             try {
-                await postEconomyAction('adoptPet', { petId: id });
-                const unlocked = [...(UserState.data.unlockedPets || []), id];
-                UserState.data.points = (UserState.data.points || 0) - info.price;
-                UserState.data.unlockedPets = unlocked;
-                UserState.data.activePet = id;
+                await adoptPet(id);
                 soundManager.playSuccess();
                 renderProfile();
                 updateUI();
                 showPetUnlockOverlay(info);
             } catch (e) {
-                setProfileFeedback("포인트가 부족합니다.", 'error');
+                setProfileFeedback(e.message || "펫 입양 중 오류가 발생했습니다.", 'error');
             }
         };
     });
@@ -472,14 +468,12 @@ export function renderProfile() {
             const { type, id } = btn.dataset;
             const activeKey = `active${type}`;
             try {
-                await postEconomyAction('setProfileStyle', { styleType: type, itemId: id });
-                UserState.data[activeKey] = id;
-                updateProfileCache(UserState.user.uid, { [activeKey]: id });
+                await setProfileStyle(type, id);
                 renderProfile();
                 updateUI();
                 showProfileToast("장착이 완료되었습니다!");
             } catch (e) {
-                setProfileFeedback("업데이트 중 오류가 발생했습니다.", 'error');
+                setProfileFeedback(e.message || "업데이트 중 오류가 발생했습니다.", 'error');
             }
         };
     });
