@@ -1,6 +1,6 @@
-import { UserState, getPetBuff, updateUI, updateProfileCache } from '../auth.js?v=8.4.0';
+import { UserState, getPetBuff, updateUI, updateProfileCache } from '../auth.js?v=8.5.0';
 import { getGrade, getTier, TIERS, EMOJI_SHOP, COLOR_SHOP, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP, PET_SHOP } from '../constants/shops.js';
-import { db } from '../firebase-init.js?v=8.4.0';
+import { db } from '../firebase-init.js?v=8.5.0';
 import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 import { soundManager } from '../sound.js';
 
@@ -423,7 +423,7 @@ export function renderProfile() {
     app.querySelectorAll('.btn-pet-equip').forEach(btn => {
         btn.onclick = async () => {
             const { id } = btn.dataset;
-            const { changePet } = await import('../auth.js?v=8.4.0');
+            const { changePet } = await import('../auth.js?v=8.5.0');
             if (await changePet(id)) {
                 soundManager.playSuccess();
                 renderProfile();
@@ -438,7 +438,7 @@ export function renderProfile() {
         btn.onclick = async () => {
             const { id } = btn.dataset;
             const info = PET_SHOP[id];
-            const { usePoints, updateUI } = await import('../auth.js?v=8.4.0');
+            const { usePoints, updateUI } = await import('../auth.js?v=8.5.0');
 
             if (btn.dataset.confirming !== 'true') {
                 btn.dataset.confirming = 'true';
@@ -497,7 +497,7 @@ export function renderProfile() {
     app.querySelectorAll('.color-btn').forEach(btn => {
         btn.onclick = async () => {
             const color = btn.dataset.color;
-            const { changeNameColor } = await import('../auth.js?v=8.4.0');
+            const { changeNameColor } = await import('../auth.js?v=8.5.0');
             await changeNameColor(color);
         };
     });
@@ -506,7 +506,7 @@ export function renderProfile() {
     app.querySelectorAll('.emoji-btn').forEach(btn => {
         btn.onclick = async () => {
             const emoji = btn.dataset.emoji;
-            const { handleEmojiExchange } = await import('../auth.js?v=8.4.0');
+            const { handleEmojiExchange } = await import('../auth.js?v=8.5.0');
             await handleEmojiExchange(emoji);
         };
     });
@@ -515,7 +515,7 @@ export function renderProfile() {
     const nickSaveBtn = document.getElementById('nickname-save');
     if (nickSaveBtn) {
         nickSaveBtn.onclick = async () => {
-            const { changeNickname } = await import('../auth.js?v=8.4.0');
+            const { changeNickname } = await import('../auth.js?v=8.5.0');
             await changeNickname();
         };
     }

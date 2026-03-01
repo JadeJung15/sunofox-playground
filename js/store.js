@@ -1,5 +1,5 @@
-import { db } from './firebase-init.js?v=8.4.0';
-import { UserState, addPoints as authAddPoints, usePoints as authUsePoints } from './auth.js?v=8.4.0';
+import { db } from './firebase-init.js?v=8.5.0';
+import { UserState, addPoints as authAddPoints, usePoints as authUsePoints } from './auth.js?v=8.5.0';
 import { doc, updateDoc, increment, arrayUnion } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 /**
