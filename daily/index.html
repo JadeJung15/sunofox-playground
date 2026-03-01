@@ -46,7 +46,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link rel="stylesheet" href="/css/style.css?v=8.5.3">
+    <link rel="stylesheet" href="/css/style.css?v=8.5.4">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script>
         (function() {
@@ -97,20 +97,10 @@
                 </div>
             </div>
             <nav class="nav-tabs">
-                <div class="nav-dropdown">
-                    <button class="nav-dropbtn">✨ 7Check</button>
-                    <div class="dropdown-content">
-                        <a href="/daily/" class="nav-link" data-filter="오늘의 테스트" data-path="/daily/" onclick="event.preventDefault(); window.goToDaily('/daily/');">☀️ 오늘의 테스트</a>
-                        <a href="/#personality" class="nav-link" data-filter="성격">🧠 성격 분석</a>
-                        <a href="/#face" class="nav-link" data-filter="얼굴">✨ 비주얼</a>
-                        <a href="/#fortune" class="nav-link" data-filter="사주">🔮 오늘의 운세</a>
-                        <a href="/#fun" class="nav-link" data-filter="재미">🎨 재미/심리</a>
-                        <a href="/#salary" class="nav-link" data-filter="월급 루팡">🖥️ 월급 루팡</a>
-                    </div>
-                </div>
-                <a href="/#board" class="nav-link" data-filter="게시판">💬 게시판</a>
-                <a href="/#arcade" class="nav-link" data-filter="오락실">🎰 오락실</a>
-                <a href="/#profile" class="nav-link" data-filter="프로필">👤 프로필</a>
+                <a href="/#home" class="nav-link" data-filter="홈">Home</a>
+                <a href="/#7check" class="nav-link" data-filter="카테고리">Categories</a>
+                <a href="/daily/" class="nav-link" data-filter="오늘의 테스트" data-path="/daily/" onclick="event.preventDefault(); window.goToDaily('/daily/');">Daily</a>
+                <a href="/#profile" class="nav-link" data-filter="프로필">Profile</a>
             </nav>
         </div>
     </header>
@@ -136,15 +126,15 @@
                 <span id="footer-admin-link" class="hidden"> | <a href="/#admin" style="color:var(--accent-color); font-weight:800;">🛡️ 관리자 콘솔</a></span>
             </div>
         </div>
-        <p class="copyright">&copy; 2026 SevenCheck Studio. All rights reserved. <span id="site-version" style="font-weight: 800; color: var(--accent-color); margin-left: 10px; font-size: 0.75rem;">v8.5.3</span></p>
+        <p class="copyright">&copy; 2026 SevenCheck Studio. All rights reserved. <span id="site-version" style="font-weight: 800; color: var(--accent-color); margin-left: 10px; font-size: 0.75rem;">v8.5.4</span></p>
         <div id="visitor-stats" style="text-align:center; font-size:0.7rem; color:var(--text-sub); margin-top:8px; font-weight:600; letter-spacing:0.05em; opacity:0.8;">
             TODAY <span id="today-visitors" style="color:var(--accent-color); margin-right:10px;">0</span> TOTAL <span id="total-visitors" style="color:var(--accent-color);">0</span>
         </div>
     </footer>
 
-    <script src="/js/site-config.js?v=8.5.3"></script>
-    <script type="module" src="/js/firebase-init.js?v=8.5.3"></script>
-    <script type="module" src="/js/sound.js?v=8.5.3"></script>
-    <script type="module" src="/js/app.js?v=8.5.3"></script>
+    <script src="/js/site-config.js?v=8.5.4"></script>
+    <script type="module" src="/js/firebase-init.js?v=8.5.4"></script>
+    <script type="module" src="/js/sound.js?v=8.5.4"></script>
+    <script type="module" src="/js/app.js?v=8.5.4"></script>
 </body>
 </html>

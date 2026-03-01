@@ -1,5 +1,5 @@
-import { db, storage } from './firebase-init.js?v=8.5.3';
-import { UserState, usePoints, addPoints, fetchUserProfile, postEconomyAction, updateProfileCache, fetchUserRank } from './auth.js?v=8.5.3';
+import { db, storage } from './firebase-init.js?v=8.5.4';
+import { UserState, usePoints, addPoints, fetchUserProfile, postEconomyAction, updateProfileCache, fetchUserRank } from './auth.js?v=8.5.4';
 import { getTier, AURA_SHOP, BORDER_SHOP, BACKGROUND_SHOP } from './constants/shops.js';
 import { 
     collection, 

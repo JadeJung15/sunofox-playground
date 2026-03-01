@@ -1,5 +1,5 @@
-import { UserState, chargeUserPoints, chargeUserScore } from '../auth.js?v=8.5.3';
-import { db } from '../firebase-init.js?v=8.5.3';
+import { UserState, chargeUserPoints, chargeUserScore } from '../auth.js?v=8.5.4';
+import { db } from '../firebase-init.js?v=8.5.4';
 import { collection, getDocs, query, where, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 function escapeHTML(str) {
