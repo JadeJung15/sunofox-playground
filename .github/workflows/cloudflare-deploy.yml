@@ -2,7 +2,7 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: ["main", "master"]
+    branches: ["staging", "production"]
 
 permissions:
   contents: read
@@ -36,6 +36,9 @@ jobs:
   build-and-deploy:
     needs: validate
     runs-on: ubuntu-latest
+    concurrency:
+      group: cloudflare-pages-${{ github.ref_name }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
 
@@ -52,4 +55,4 @@ jobs:
           projectName: sunofox-playground
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-          branch: main
+          branch: ${{ github.ref_name }}
