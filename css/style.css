@@ -3133,6 +3133,25 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 }
 
 @media (max-width: 900px) {
+  .home-renewal {
+    padding: 0.95rem 0.9rem 4.8rem !important;
+  }
+
+  .home-hero-shell {
+    border-radius: 30px !important;
+    padding: 1rem !important;
+  }
+
+  .home-hero-grid,
+  .home-feature-stack,
+  .home-spotlight-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .home-hero-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
   .home-primary-hero {
     min-height: 270px !important;
     padding: 1.35rem !important;
@@ -3141,56 +3160,153 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .home-hero-side {
     grid-template-rows: auto auto auto !important;
   }
+
+  .home-category-lanes {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 @media (max-width: 640px) {
   .home-renewal {
-    padding: 0.75rem 0.75rem 4.4rem !important;
+    padding: 0.72rem 0.72rem 4.2rem !important;
   }
 
   .home-hero-shell {
     border-radius: 24px !important;
-    padding: 0.8rem !important;
+    padding: 0.7rem !important;
   }
 
   .home-hero-grid {
-    gap: 0.7rem !important;
+    gap: 0.62rem !important;
     grid-template-columns: 1fr !important;
   }
 
   .home-primary-hero {
     border-radius: 22px !important;
+    min-height: auto !important;
+    padding: 1.1rem !important;
   }
 
   .home-primary-hero h1 {
-    font-size: clamp(1.55rem, 8.6vw, 2.05rem) !important;
+    font-size: clamp(1.4rem, 7.8vw, 1.95rem) !important;
   }
 
   .home-primary-hero p {
-    font-size: 0.86rem !important;
+    font-size: 0.82rem !important;
+    line-height: 1.58 !important;
+    max-width: 100% !important;
   }
 
   .home-primary-hero button,
   .home-quick-grid button,
   .home-pill-grid > div {
-    min-height: 42px;
+    min-height: 38px !important;
+  }
+
+  .home-primary-hero button,
+  .home-quick-grid button {
+    padding: 0.68rem 0.82rem !important;
+    border-radius: 12px !important;
+    font-size: 0.79rem !important;
+  }
+
+  .home-primary-hero > div,
+  .home-hero-side > div,
+  .home-feature-stack > div,
+  .home-spotlight-grid > article,
+  .home-category-lanes > article {
+    border-radius: 20px !important;
+  }
+
+  .home-hero-stats {
+    grid-template-columns: 1fr !important;
+    gap: 0.5rem !important;
+  }
+
+  .home-hero-stats > div {
+    padding: 0.74rem !important;
+    border-radius: 16px !important;
   }
 
   .home-quick-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 0.45rem !important;
+    gap: 0.42rem !important;
+  }
+
+  .home-feature-stack {
+    gap: 0.78rem !important;
+    margin-bottom: 1.1rem !important;
+  }
+
+  .home-feature-stack > div,
+  .home-feature-stack > section,
+  .home-feature-stack article,
+  .home-category-lanes > article,
+  .home-spotlight-grid > article,
+  .home-renewal-test-grid .test-card {
+    padding: 0.88rem !important;
+  }
+
+  .home-category-lanes {
+    grid-template-columns: 1fr !important;
+    gap: 0.62rem !important;
+  }
+
+  .home-category-lanes > article {
+    min-height: 132px !important;
+  }
+
+  .home-spotlight-grid {
+    gap: 0.62rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .home-spotlight-grid > article {
+    min-height: 118px !important;
   }
 
   .home-pill-grid {
     grid-template-columns: 1fr 1fr !important;
-    gap: 0.55rem !important;
+    gap: 0.5rem !important;
   }
 
   .home-pill-grid > div {
-    padding: 0.72rem 0.74rem !important;
+    padding: 0.68rem 0.7rem !important;
   }
 
   .home-renewal-test-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.75rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-renewal {
+    padding: 0.6rem 0.6rem 4rem !important;
+  }
+
+  .home-hero-shell {
+    padding: 0.58rem !important;
+    border-radius: 20px !important;
+  }
+
+  .home-primary-hero {
+    padding: 0.95rem !important;
+    border-radius: 18px !important;
+  }
+
+  .home-primary-hero h1 {
+    font-size: clamp(1.28rem, 7.2vw, 1.72rem) !important;
+  }
+
+  .home-primary-hero button,
+  .home-quick-grid button {
+    font-size: 0.75rem !important;
+    padding: 0.62rem 0.72rem !important;
+  }
+
+  .home-quick-grid,
+  .home-pill-grid {
     grid-template-columns: 1fr !important;
   }
 }
