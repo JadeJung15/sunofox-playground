@@ -185,6 +185,42 @@ test('사용자는 닉네임 재변경 시 5000포인트만 차감할 수 있다
   }));
 });
 
+test('사용자는 닉네임 색상을 1000포인트 차감으로 직접 변경할 수 있다', async () => {
+  await withAdminSeed(async (context) => {
+    await setDoc(doc(context.firestore(), 'users', 'user-8'), {
+      uid: 'user-8',
+      nickname: '색상유저',
+      originalName: 'tester',
+      originalEmail: 'tester@example.com',
+      emoji: '👤',
+      unlockedEmojis: ['👤'],
+      points: 3000,
+      inventory: [],
+      totalScore: 0,
+      discoveredItems: [],
+      activePet: 'F_NORMAL',
+      unlockedPets: ['F_NORMAL'],
+      nicknameChanged: false,
+      lastNicknameChange: null,
+      nameColor: '#333333',
+      arcadeStats: {},
+      arcadeWeekly: { weekKey: null, plays: 0, claimedMilestones: [] },
+      quests: { date: null, list: {} },
+      createdAt: new Date()
+    });
+  });
+
+  const userDb = testEnv.authenticatedContext('user-8').firestore();
+  await assertSucceeds(updateDoc(doc(userDb, 'users', 'user-8'), {
+    nameColor: '#3b82f6',
+    points: 2000
+  }));
+  await assertFails(updateDoc(doc(userDb, 'users', 'user-8'), {
+    nameColor: '#3b82f6',
+    points: 2999
+  }));
+});
+
 test('사용자는 자기 daily result만 읽을 수 있고 생성은 불가하다', async () => {
   await withAdminSeed(async (context) => {
     await setDoc(doc(context.firestore(), 'results', 'user-3__2026-03-01__sample'), {

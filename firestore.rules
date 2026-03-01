@@ -92,6 +92,23 @@ service cloud.firestore {
         );
     }
 
+    function validNameColorUpdate(userId) {
+      let changedKeys = request.resource.data.diff(resource.data).affectedKeys();
+      let nextColor = request.resource.data.nameColor;
+      let nextPoints = request.resource.data.points;
+      let currentPoints = resource.data.points;
+
+      return userOwnsDoc(userId)
+        && changedKeys.hasOnly(['nameColor', 'points'])
+        && nextColor is string
+        && nextColor in [
+          '#333333', '#1e293b', '#3b82f6', '#8b5cf6', '#10b981',
+          '#f59e0b', '#f97316', '#f43f5e', '#ec4899', '#0ea5e9'
+        ]
+        && nextPoints is int
+        && nextPoints == currentPoints - 1000;
+    }
+
     match /posts/{postId} {
       allow read: if true;
       allow create: if isSignedIn() 
@@ -111,7 +128,7 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if true;
       allow create: if validUserCreate(userId) || isAdmin();
-      allow update: if isAdmin() || validNicknameUpdate(userId);
+      allow update: if isAdmin() || validNicknameUpdate(userId) || validNameColorUpdate(userId);
       allow delete: if isAdmin();
     }
 

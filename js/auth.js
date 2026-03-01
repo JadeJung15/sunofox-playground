@@ -353,7 +353,26 @@ export async function changeNameColor(color) {
     if (isColorChanging || !UserState.user || !color || UserState.data.nameColor === color) return;
     isColorChanging = true;
     try {
-        const result = await postEconomyAction('changeNameColor', { color });
+        let result;
+        try {
+            result = await postEconomyAction('changeNameColor', { color });
+        } catch (apiError) {
+            const fallbackable = !apiError?.message ||
+                apiError.message === '요청 처리에 실패했습니다.' ||
+                /Failed to fetch/i.test(apiError.message);
+            if (!fallbackable) throw apiError;
+
+            if ((UserState.data?.points || 0) < 1000) {
+                throw new Error("포인트가 부족합니다.");
+            }
+
+            await updateDoc(doc(db, "users", UserState.user.uid), {
+                nameColor: color,
+                points: (UserState.data?.points || 0) - 1000
+            });
+            result = { color, pointsDelta: -1000 };
+        }
+
         UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
         UserState.data.nameColor = color; 
         alert("닉네임 색상이 변경되었습니다!");
@@ -363,9 +382,10 @@ export async function changeNameColor(color) {
             renderProfile();
         }
     } catch (e) {
-        alert("색상 변경 중 오류가 발생했습니다.");
+        alert(e.message || "색상 변경 중 오류가 발생했습니다.");
+    } finally {
+        isColorChanging = false;
     }
-    isColorChanging = false;
 }
 
 let isNicknameChanging = false;
