@@ -1,7 +1,7 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.4.0';
-import { db } from '../firebase-init.js?v=8.4.0';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.0';
+import { db } from '../firebase-init.js?v=8.5.0';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.4.0';
+import { TESTS } from '../tests-data.js?v=8.5.0';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -15,6 +15,22 @@ const FOX_ADVICE = [
     "가끔은 아무것도 하지 않는 게 최고의 휴식이에요. 💤",
     "당신이 몰랐던 매력을 곧 발견하게 될 거예요! 💎"
 ];
+
+const DAILY_CATEGORY_META = {
+    hash: '/daily',
+    category: 'daily',
+    icon: '☀️',
+    label: "TODAY'S TEST",
+    title: '오늘의 테스트',
+    desc: '오늘 기분으로 바로 찍고 끝내는 초단기 테스트 모음입니다. 질문 길게 안 가고, 하루 한 번 같은 결과로 고정됩니다.',
+    gradient: 'linear-gradient(145deg, #e0f2fe 0%, #bfdbfe 52%, #f0f9ff 100%)',
+    accent: '#0c4a6e',
+    chips: ['10초 컷', '하루 1회 고정', '캡처 공유용'],
+    count: 30,
+    latestTitle: '오늘 회사 때려칠 확률 테스트',
+    sampleTitles: ['오늘 회사 때려칠 확률 테스트', '오늘 멘탈 남은 배터리 테스트', '오늘 인생 버그 발생률'],
+    countText: '30개 테스트'
+};
 
 export const testLikesData = {};
 
@@ -91,6 +107,7 @@ export function renderCategorySelection() {
 
     const latestTests = getLatestTests();
     const categoryCards = [
+        DAILY_CATEGORY_META,
         {
             hash: '#personality',
             category: '성격',
@@ -147,6 +164,9 @@ export function renderCategorySelection() {
             chips: ['직장인 밈', 'PC 최적화', '조용한 시간순삭']
         }
     ].map((card) => {
+        if (card.category === 'daily') {
+            return card;
+        }
         const tests = latestTests.filter((test) => test.category === card.category);
         return {
             ...card,
@@ -158,7 +178,7 @@ export function renderCategorySelection() {
 
     const featuredCards = categoryCards
         .map((card) => `
-            <article class="cat-large-card" onclick="location.hash='${card.hash}'" style="background:${card.gradient}; border-radius:32px; padding:1.55rem; cursor:pointer; border:1px solid rgba(255,255,255,0.72); box-shadow:0 18px 34px rgba(15,23,42,0.07); position:relative; overflow:hidden; display:flex; flex-direction:column; min-height:355px;">
+            <article class="cat-large-card" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}" style="background:${card.gradient}; border-radius:32px; padding:1.55rem; cursor:pointer; border:1px solid rgba(255,255,255,0.72); box-shadow:0 18px 34px rgba(15,23,42,0.07); position:relative; overflow:hidden; display:flex; flex-direction:column; min-height:355px;">
                 <div style="position:absolute; inset:auto -24px -28px auto; font-size:8rem; opacity:0.09; transform:rotate(14deg); pointer-events:none;">${card.icon}</div>
                 <div style="margin-bottom:1rem;">
                     <div style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; margin-bottom:0.8rem;">
@@ -219,7 +239,7 @@ export function renderCategorySelection() {
                             <p class="text-sub" style="font-weight:650; font-size:1rem; color:rgba(226,232,240,0.92); line-height:1.7; margin:0;">지금 기분에 맞는 테스트를 한 번에 고를 수 있게, 카테고리별 성격과 최신 흐름을 한 화면에 정리했습니다. 새로 추가된 월급 루팡 카테고리도 여기서 바로 들어갈 수 있습니다.</p>
                         </div>
                         <div style="display:flex; gap:0.55rem; flex-wrap:wrap; margin-top:1.2rem;">
-                            <span style="padding:0.5rem 0.78rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); font-size:0.78rem; font-weight:850;">총 ${TESTS.length}개 테스트</span>
+                            <span style="padding:0.5rem 0.78rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); font-size:0.78rem; font-weight:850;">총 ${TESTS.length + DAILY_CATEGORY_META.count}개 테스트</span>
                             <span style="padding:0.5rem 0.78rem; border-radius:999px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.14); font-size:0.78rem; font-weight:850;">최신순 정렬 반영</span>
                         </div>
                     </div>
@@ -228,8 +248,9 @@ export function renderCategorySelection() {
                         <div style="background:rgba(255,255,255,0.72); border-radius:24px; padding:1.15rem; border:1px solid rgba(255,255,255,0.85); box-shadow:0 12px 24px rgba(15,23,42,0.05);">
                             <div style="font-size:0.78rem; font-weight:900; color:#ea580c; letter-spacing:0.13em; margin-bottom:0.55rem;">HOW TO PICK</div>
                             <div style="display:grid; gap:0.55rem;">
-                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">지금 나를 깊게 보고 싶으면 성격 분석</div>
-                                <div style="font-size:0.92rem; color:#334155; font-weight:750;">가볍게 매력 포인트 보고 싶으면 비주얼/얼굴</div>
+                            <div style="font-size:0.92rem; color:#334155; font-weight:750;">지금 나를 깊게 보고 싶으면 성격 분석</div>
+                            <div style="font-size:0.92rem; color:#334155; font-weight:750;">오늘 상태만 빠르게 찍고 싶으면 오늘의 테스트</div>
+                            <div style="font-size:0.92rem; color:#334155; font-weight:750;">가볍게 매력 포인트 보고 싶으면 비주얼/얼굴</div>
                                 <div style="font-size:0.92rem; color:#334155; font-weight:750;">타이밍과 흐름이 궁금하면 오늘의 운세</div>
                                 <div style="font-size:0.92rem; color:#334155; font-weight:750;">친구랑 웃으면서 하기엔 재미/심리</div>
                                 <div style="font-size:0.92rem; color:#334155; font-weight:750;">회사에서 조용히 시간 보내려면 월급 루팡</div>
@@ -261,6 +282,7 @@ export async function renderHome(hash) {
         const userName = UserState.user ? UserState.data?.nickname || '사용자' : '방문자';
         const heroTest = latestTests[Math.floor(Math.random() * latestTests.length)];
         const homeCategories = [
+            { hash: '/daily', label: "TODAY'S TEST", title: '오늘의 테스트', category: 'daily', accent: '#0c4a6e', gradient: 'linear-gradient(145deg,#e0f2fe 0%,#bfdbfe 100%)', latestTitle: '오늘 회사 때려칠 확률 테스트', countText: '30개 테스트' },
             { hash: `#test/${heroTest.id}`, label: "TODAY'S TEST", title: '오늘의 테스트', category: null, accent: '#0ea5e9', gradient: 'linear-gradient(145deg,#ecfeff 0%,#dbeafe 100%)', latestTitle: heroTest.title, countText: '오늘 추천 1개' },
             { hash: '#personality', label: 'MENTAL LAB', title: '성격 분석', category: '성격', accent: '#4f46e5', gradient: 'linear-gradient(145deg,#eef2ff 0%,#c7d2fe 100%)' },
             { hash: '#face', label: 'VISUAL CODE', title: '비주얼/얼굴', category: '얼굴', accent: '#db2777', gradient: 'linear-gradient(145deg,#fff1f2 0%,#fecdd3 100%)' },
@@ -268,6 +290,7 @@ export async function renderHome(hash) {
             { hash: '#fun', label: 'PLAY MIND', title: '재미/심리', category: '재미', accent: '#059669', gradient: 'linear-gradient(145deg,#ecfdf5 0%,#a7f3d0 100%)' },
             { hash: '#salary', label: 'OFFICE ESCAPE', title: '월급 루팡', category: '월급 루팡', accent: '#0f766e', gradient: 'linear-gradient(145deg,#f0fdfa 0%,#99f6e4 100%)' }
         ].map((item) => {
+            if (item.category === 'daily') return item;
             if (!item.category) {
                 return item;
             }
@@ -304,7 +327,7 @@ export async function renderHome(hash) {
                                 <div style="display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0.7rem;" class="home-hero-stats">
                                     <div style="padding:0.9rem; border-radius:18px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.12);">
                                         <div style="font-size:0.7rem; letter-spacing:0.08em; font-weight:900; color:rgba(255,255,255,0.7); margin-bottom:0.2rem;">TOTAL TESTS</div>
-                                        <div style="font-size:1.24rem; font-weight:950;">${TESTS.length}</div>
+                                        <div style="font-size:1.24rem; font-weight:950;">${TESTS.length + DAILY_CATEGORY_META.count}</div>
                                     </div>
                                     <div style="padding:0.9rem; border-radius:18px; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.12);">
                                         <div style="font-size:0.7rem; letter-spacing:0.08em; font-weight:900; color:rgba(255,255,255,0.7); margin-bottom:0.2rem;">TODAY MOOD</div>
@@ -359,7 +382,7 @@ export async function renderHome(hash) {
                         </div>
                         <div class="home-category-lanes" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:0.8rem;">
                             ${homeCategories.map((card) => `
-                                <article onclick="location.hash='${card.hash}'" style="cursor:pointer; border-radius:24px; padding:1rem; background:${card.gradient}; border:1px solid rgba(255,255,255,0.7); min-height:170px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 12px 24px rgba(15,23,42,0.05);">
+                                <article onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}" style="cursor:pointer; border-radius:24px; padding:1rem; background:${card.gradient}; border:1px solid rgba(255,255,255,0.7); min-height:170px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 12px 24px rgba(15,23,42,0.05);">
                                     <div>
                                         <div style="font-size:0.72rem; color:${card.accent}; font-weight:900; letter-spacing:0.11em; margin-bottom:0.28rem;">${card.label}</div>
                                         <div style="font-size:1.08rem; color:#0f172a; font-weight:950; letter-spacing:-0.02em; margin-bottom:0.35rem;">${card.title}</div>

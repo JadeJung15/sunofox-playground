@@ -1,4 +1,7 @@
 {
+  "functions": {
+    "source": "functions"
+  },
   "hosting": {
     "public": ".",
     "cleanUrls": true,
@@ -19,6 +22,10 @@
       }
     ],
     "rewrites": [
+      {
+        "source": "/api/daily-result",
+        "function": "dailyResult"
+      },
       {
         "source": "**",
         "destination": "/index.html"

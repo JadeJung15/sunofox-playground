@@ -1,4 +1,4 @@
-import { auth, db } from './firebase-init.js?v=8.4.0';
+import { auth, db } from './firebase-init.js?v=8.5.0';
 import { 
     EMOJI_SHOP, 
     ITEM_VALUES, 
@@ -39,6 +39,7 @@ import {
     onAuthStateChanged,
     signInWithPopup,
     signInWithRedirect,
+    signInAnonymously,
     GoogleAuthProvider,
     signOut,
     setPersistence,
@@ -166,6 +167,22 @@ export async function initAuth() {
     });
 }
 
+export async function ensureAnonymousUser() {
+    if (UserState.user && UserState.data) return UserState.user;
+
+    const credential = await signInAnonymously(auth);
+    UserState.user = credential.user;
+
+    try {
+        await loadUserData(credential.user);
+        updateUI(true);
+    } catch (e) {
+        console.error("Anonymous bootstrap error:", e);
+    }
+
+    return credential.user;
+}
+
 function handleAuthError(error) {
     let msg = "로그인 오류: " + error.code;
     if (error.code === 'auth/unauthorized-domain') msg = "승인되지 않은 도메인입니다.";
@@ -288,7 +305,7 @@ export async function handleEmojiExchange(emoji) {
         alert("아이콘이 변경되었습니다!");
         updateUI();
         if (location.hash === '#profile') {
-            const { renderProfile } = await import('./pages/profile.js?v=8.4.0');
+            const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
             renderProfile();
         }
     }
@@ -305,7 +322,7 @@ export async function changeNameColor(color) {
             alert("닉네임 색상이 변경되었습니다!");
             updateUI();
             if (location.hash === '#profile') {
-                const { renderProfile } = await import('./pages/profile.js?v=8.4.0');
+                const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
                 renderProfile();
             }
         } catch (e) {
@@ -331,7 +348,7 @@ export async function changeNickname() {
             alert("닉네임이 변경되었습니다!");
             updateUI();
             if (location.hash === '#profile') {
-                const { renderProfile } = await import('./pages/profile.js?v=8.4.0');
+                const { renderProfile } = await import('./pages/profile.js?v=8.5.0');
                 renderProfile();
             }
         } catch (e) {

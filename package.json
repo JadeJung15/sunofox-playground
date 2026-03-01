@@ -2,7 +2,8 @@
   "scripts": {
     "build": "mkdir -p dist && cp -r index.html css js *.png sitemap.xml ads.txt dist/ 2>/dev/null || true",
     "lint": "node scripts/check-syntax.cjs",
-    "test": "node scripts/check-syntax.cjs"
+    "test": "node scripts/check-syntax.cjs",
+    "seed:daily": "node scripts/seed-daily-tests.cjs"
   },
   "dependencies": {
     "firebase-admin": "^13.6.1"

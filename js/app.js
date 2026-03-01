@@ -1,18 +1,19 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=8.4.0';
-import { copyLink } from './share.js?v=8.4.0';
-import { renderBoard } from './board.js?v=8.4.0';
-import { renderRanking } from './ranking.js?v=8.4.0';
-import { db } from './firebase-init.js?v=8.4.0';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady } from './auth.js?v=8.5.0';
+import { copyLink } from './share.js?v=8.5.0';
+import { renderBoard } from './board.js?v=8.5.0';
+import { renderRanking } from './ranking.js?v=8.5.0';
+import { db } from './firebase-init.js?v=8.5.0';
 import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.4.0';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.4.0';
-import { renderProfile } from './pages/profile.js?v=8.4.0';
-import { renderAdmin } from './pages/admin.js?v=8.4.0';
-import { renderArcade } from './pages/arcade-page.js?v=8.4.0';
-import { renderTestExecution, renderResult } from './pages/tests.js?v=8.4.0';
-import { renderSalaryGame } from './pages/salary.js?v=8.4.0';
-import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.4.0';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.5.0';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.5.0';
+import { renderProfile } from './pages/profile.js?v=8.5.0';
+import { renderAdmin } from './pages/admin.js?v=8.5.0';
+import { renderArcade } from './pages/arcade-page.js?v=8.5.0';
+import { renderTestExecution, renderResult } from './pages/tests.js?v=8.5.0';
+import { renderSalaryGame } from './pages/salary.js?v=8.5.0';
+import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.5.0';
+import { renderDailyList, renderDailyDetail } from './pages/daily.js?v=8.5.0';
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80";
 
@@ -43,11 +44,33 @@ async function addPoints(amount, reason) {
 // =================================================================
 
 const categoryMap = {
-    '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', '#salary': '월급 루팡',
+    '#daily': '오늘의 테스트', '#personality': '성격', '#face': '얼굴', '#fortune': '사주', '#fun': '재미', '#salary': '월급 루팡',
     '#arcade': '오락실', '#board': '게시판', '#profile': '프로필', '#ranking': '랭킹', '#guide': '가이드', '#news': '공지'
 };
 let currentFilter = '전체';
 let isRouting = false;
+
+function resolveRoute() {
+    const hash = window.location.hash || '';
+    if (hash) {
+        return { kind: 'hash', value: hash };
+    }
+
+    const { pathname } = window.location;
+    if (pathname === '/daily' || pathname === '/daily/') {
+        return { kind: 'daily-list', value: '/daily' };
+    }
+    if (pathname.startsWith('/daily/')) {
+        const slug = decodeURIComponent(pathname.replace(/^\/daily\//, '').replace(/\/+$/, ''));
+        return { kind: 'daily-detail', value: slug };
+    }
+    return { kind: 'hash', value: '#home' };
+}
+
+window.goToDaily = (path = '/daily') => {
+    window.history.pushState({}, '', path);
+    router();
+};
 
 // Cloudflare Workers 호환성을 위한 쿼리 파라미터 처리
 function handleQueryParams() {
@@ -66,7 +89,8 @@ async function router() {
     if (!container || isRouting) return;
 
     isRouting = true;
-    const hash = window.location.hash || '#home';
+    const route = resolveRoute();
+    const hash = route.kind === 'hash' ? route.value : '';
     const currentScrollY = window.scrollY;
 
     try {
@@ -84,19 +108,24 @@ async function router() {
         document.querySelectorAll('.nav-link').forEach(link => {
             const filter = link.dataset.filter;
             const href = link.getAttribute('href') || '';
+            const path = link.dataset.path || '';
+            const isDailyRoute = route.kind === 'daily-list' || route.kind === 'daily-detail';
             const isActive = (hash === '#home' && filter === '전체') ||
-                           (hash !== '#home' && href.length > 1 && hash.includes(href.substring(1)));
+                           (hash && hash !== '#home' && href.length > 1 && hash.includes(href.substring(1))) ||
+                           (isDailyRoute && path && route.kind.startsWith('daily') && path === '/daily');
             link.classList.toggle('active', isActive);
         });
 
         // 즉시 렌더링 가능한 페이지 (비회원 접근 허용)
-        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board', '#salary-tab-shift'];
-        if (!instantPages.includes(hash) && !hash.startsWith('#test/')) {
+        const instantPages = ['#home', '#7check', '#guide', '#about', '#privacy', '#terms', '#contact', '#arcade', '#profile', '#ranking', '#board', '#salary-tab-shift', '#daily'];
+        if (route.kind !== 'daily-list' && route.kind !== 'daily-detail' && !instantPages.includes(hash) && !hash.startsWith('#test/')) {
             await authReady;
         }
 
         container.innerHTML = '';
-        if (hash === '#privacy') renderPrivacy();
+        if (route.kind === 'daily-list' || hash === '#daily') await renderDailyList();
+        else if (route.kind === 'daily-detail') await renderDailyDetail(route.value);
+        else if (hash === '#privacy') renderPrivacy();
         else if (hash === '#about') renderAbout();
         else if (hash === '#terms') renderTerms();
         else if (hash === '#contact') renderContact();
@@ -198,6 +227,7 @@ window.globalShareSite = async () => {
 // =================================================================
 
 window.addEventListener('hashchange', router);
+window.addEventListener('popstate', router);
 window.addEventListener('load', router);
 
 // 초기화 시작
