@@ -3343,6 +3343,23 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   filter: brightness(1.03);
 }
 
+.daily-test-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.daily-test-card::after {
+  content: "";
+  position: absolute;
+  width: 130px;
+  height: 130px;
+  right: -50px;
+  bottom: -58px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, rgba(59,130,246,0) 72%);
+  pointer-events: none;
+}
+
 @media (max-width: 900px) {
   .daily-hero-grid {
     grid-template-columns: 1fr !important;
@@ -3376,6 +3393,12 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .daily-result-card,
   .daily-capture-card {
     border-radius: 20px !important;
+  }
+
+  .daily-hero-tags,
+  .daily-detail-tags,
+  .daily-result-meta {
+    gap: 0.42rem !important;
   }
 
   .daily-hero-primary {
@@ -3446,6 +3469,13 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
 
   .daily-result-card {
     padding: 0.92rem !important;
+  }
+
+  .daily-result-meta span,
+  .daily-hero-tags span,
+  .daily-detail-tags span,
+  .daily-test-card span {
+    font-size: 0.7rem !important;
   }
 }
 

@@ -60,6 +60,7 @@ async function copyResultText(test, result) {
 
 function renderResultSection(test, payload) {
   const result = payload.resultPayload;
+  const templateLabel = result.template === 'probability' ? '확률형 판정' : result.template === 'index' ? '지수형 판정' : '등급형 판정';
   return `
     <section class="daily-result-section" style="margin-top:1.15rem;">
       <div class="daily-result-card" style="background:#fff; border:1px solid ${result.accent}22; border-radius:30px; padding:1.15rem; box-shadow:0 20px 40px rgba(15,23,42,0.06);">
@@ -71,6 +72,12 @@ function renderResultSection(test, payload) {
           <div style="padding:0.45rem 0.72rem; border-radius:999px; background:${result.accent}12; color:${result.accent}; border:1px solid ${result.accent}28; font-size:0.76rem; font-weight:900;">
             ${payload.cached ? '오늘 결과 불러옴' : '오늘 결과 생성됨'}
           </div>
+        </div>
+
+        <div class="daily-result-meta" style="display:flex; flex-wrap:wrap; gap:0.55rem; margin-bottom:0.85rem;">
+          <span style="padding:0.38rem 0.68rem; border-radius:999px; background:${result.accent}12; color:${result.accent}; border:1px solid ${result.accent}22; font-size:0.74rem; font-weight:900;">${templateLabel}</span>
+          <span style="padding:0.38rem 0.68rem; border-radius:999px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; font-size:0.74rem; font-weight:900;">${payload.dateKey}</span>
+          <span style="padding:0.38rem 0.68rem; border-radius:999px; background:#f8fafc; color:#475569; border:1px solid #e2e8f0; font-size:0.74rem; font-weight:900;">오늘 1회 고정</span>
         </div>
 
         <div id="daily-capture-card" class="daily-capture-card" style="background:linear-gradient(145deg,#ffffff 0%, ${result.accent}12 100%); border:1px solid ${result.accent}22; border-radius:28px; padding:1.5rem 1.2rem; margin-bottom:1rem;">
@@ -108,6 +115,11 @@ export async function renderDailyList() {
               <div style="font-size:0.74rem; font-weight:900; letter-spacing:0.16em; color:rgba(255,255,255,0.76); margin-bottom:0.75rem;">TODAY'S TEST</div>
               <h1 style="font-size:clamp(1.8rem,5vw,2.6rem); line-height:1.04; letter-spacing:-0.05em; margin:0 0 0.8rem;">지금 기분으로<br>바로 찍는 테스트</h1>
               <p style="margin:0; max-width:92%; font-size:0.95rem; line-height:1.68; color:rgba(226,232,240,0.95); font-weight:650;">질문 길게 안 갑니다. 하나 누르고 오늘 상태만 바로 확인하는 초단기 결과 모음입니다.</p>
+              <div class="daily-hero-tags" style="display:flex; flex-wrap:wrap; gap:0.48rem; margin-top:1rem;">
+                <span style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.16); font-size:0.76rem; font-weight:850;">10초 컷</span>
+                <span style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.16); font-size:0.76rem; font-weight:850;">오늘 1회 고정</span>
+                <span style="padding:0.42rem 0.72rem; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.16); font-size:0.76rem; font-weight:850;">결과 캡처용</span>
+              </div>
             </div>
             <div class="daily-hero-side" style="display:grid; gap:0.8rem;">
               <div class="daily-info-card" style="background:#fff; border-radius:24px; border:1px solid #dbeafe; padding:1rem; box-shadow:0 14px 28px rgba(15,23,42,0.04);">
@@ -137,6 +149,10 @@ export async function renderDailyList() {
                   <span style="font-size:0.75rem; color:#64748b; font-weight:800;">${test.type === 'probability' ? '확률형' : test.type === 'index' ? '지수형' : '등급형'}</span>
                 </div>
                 <h3 style="margin:0; font-size:1.05rem; line-height:1.45; color:#0f172a; font-weight:900; letter-spacing:-0.02em; word-break:keep-all;">${test.title}</h3>
+                <div style="display:flex; flex-wrap:wrap; gap:0.42rem;">
+                  <span style="padding:0.34rem 0.56rem; border-radius:999px; background:#f8fafc; color:#475569; font-size:0.72rem; font-weight:850;">하루 1회 고정</span>
+                  <span style="padding:0.34rem 0.56rem; border-radius:999px; background:#f8fafc; color:#475569; font-size:0.72rem; font-weight:850;">캡처 공유용</span>
+                </div>
                 <div style="margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:0.7rem;">
                   <span style="font-size:0.8rem; color:#64748b; font-weight:800;">오늘 한 번 고정</span>
                   <button class="daily-start-btn" onclick="window.goToDaily('${getDailyPath(test.slug)}')" style="border:none; border-radius:14px; padding:0.75rem 0.95rem; background:linear-gradient(135deg,#2563eb,#0ea5e9); color:#fff; font-weight:900; cursor:pointer;">시작하기</button>
@@ -179,6 +195,11 @@ export async function renderDailyDetail(slug) {
           <div class="daily-detail-hero" style="background:#0f172a; color:#fff; border-radius:28px; padding:1.4rem 1.2rem; margin-bottom:1rem;">
             <div style="font-size:0.84rem; font-weight:900; color:rgba(255,255,255,0.7); margin-bottom:0.55rem;">오늘 기준으로 한 번 고정</div>
             <div style="font-size:1rem; line-height:1.68; color:rgba(226,232,240,0.94); font-weight:700;">질문 없이 바로 나옵니다. 오늘 같은 계정으로 다시 들어오면 같은 결과가 그대로 보입니다.</div>
+            <div class="daily-detail-tags" style="display:flex; flex-wrap:wrap; gap:0.45rem; margin-top:0.95rem;">
+              <span style="padding:0.38rem 0.68rem; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.14); font-size:0.74rem; font-weight:850;">${test.type === 'probability' ? '확률형' : test.type === 'index' ? '지수형' : '등급형'}</span>
+              <span style="padding:0.38rem 0.68rem; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.14); font-size:0.74rem; font-weight:850;">오늘 1회 고정</span>
+              <span style="padding:0.38rem 0.68rem; border-radius:999px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.14); font-size:0.74rem; font-weight:850;">즉시 결과</span>
+            </div>
           </div>
 
           <div class="daily-detail-stat-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:0.7rem; margin-bottom:1rem;">
