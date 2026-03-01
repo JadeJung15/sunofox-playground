@@ -1,7 +1,7 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.6';
-import { db } from '../firebase-init.js?v=8.5.6';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.5.5';
+import { db } from '../firebase-init.js?v=8.5.5';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.5.6';
+import { TESTS } from '../tests-data.js?v=8.5.5';
 
 const FOX_ADVICE = [
     "오늘 하루도 당신은 충분히 빛나요! ✨",
@@ -58,7 +58,6 @@ const DAILY_CATEGORY_META = {
 
 function buildHomeCategoryCards(latestTests) {
     return [
-        DAILY_CATEGORY_META,
         {
             hash: '#personality',
             category: '성격',
@@ -70,29 +69,9 @@ function buildHomeCategoryCards(latestTests) {
             chips: ['자기이해', '심리 리포트', '관계 패턴']
         },
         {
-            hash: '#face',
-            category: '얼굴',
-            icon: '02',
-            label: 'VISUAL',
-            title: '인상 분석',
-            desc: '첫인상, 분위기, 비주얼 무드를 읽는 테스트.',
-            accent: 'var(--tone-rose)',
-            chips: ['첫인상', '분위기', '매력 포인트']
-        },
-        {
-            hash: '#fortune',
-            category: '사주',
-            icon: '03',
-            label: 'FORTUNE',
-            title: '운세 흐름',
-            desc: '오늘의 기분과 타이밍을 가볍게 확인하는 테스트.',
-            accent: 'var(--tone-amber)',
-            chips: ['타이밍', '행운 흐름', '데일리 감각']
-        },
-        {
             hash: '#fun',
             category: '재미',
-            icon: '04',
+            icon: '02',
             label: 'LIGHT PSYCHOLOGY',
             title: '가벼운 심리',
             desc: '짧고 직관적이지만 여전히 심리 흐름을 읽는 테스트.',
@@ -210,8 +189,8 @@ export function renderCategorySelection() {
             <section class="minimal-hero minimal-category-hero reveal">
                 <div class="minimal-hero-copy">
                     <span class="minimal-kicker">SevenCheck Categories</span>
-                    <h1>모든 심리테스트를<br>한눈에.</h1>
-                    <p>성격, 인상, 운세, 재미, 오늘의 테스트까지 흐름대로 다시 배치했습니다.</p>
+                    <h1>심리테스트만,<br>간단하게.</h1>
+                    <p>불필요한 분기를 걷어내고 핵심 심리테스트 카테고리만 남겼습니다.</p>
                 </div>
                 <div class="minimal-stat-row">
                     <div class="minimal-stat-card">
@@ -231,10 +210,10 @@ export function renderCategorySelection() {
                 <div class="minimal-section-head">
                     <div>
                         <span class="minimal-kicker">Category Grid</span>
-                        <h2>원하는 방식으로 시작하기</h2>
+                        <h2>지금 필요한 두 가지</h2>
                     </div>
                 </div>
-                <div class="minimal-card-grid minimal-card-grid-3">
+                <div class="minimal-card-grid minimal-card-grid-2">
                     ${categoryCards.map((card) => `
                         <article class="minimal-pane minimal-pane-interactive" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">
                             <div class="minimal-pane-top">
@@ -263,58 +242,22 @@ export async function renderHome(hash) {
     const app = document.getElementById('app');
     await fetchAllLikes();
     const latestTests = getLatestTests();
-    const curatedTests = getRandomTests(4);
-    const categoryCards = buildHomeCategoryCards(latestTests);
+    const curatedTests = getRandomTests(6);
 
     if (hash === '#home' || !hash) {
         app.innerHTML = `
             <div class="minimal-page minimal-home fade-in">
                 <section class="minimal-hero reveal">
                     <div class="minimal-hero-copy">
-                        <span class="minimal-kicker">It's simple</span>
-                        <h1>심리테스트,<br>바로 시작.</h1>
-                        <p>원하는 결의 테스트를 고르고 바로 들어가면 됩니다.</p>
+                        <span class="minimal-kicker">SevenCheck</span>
+                        <h1>심리테스트만<br>남겼습니다.</h1>
+                        <p>불필요한 요소를 지우고, 바로 시작하는 흐름만 남겼습니다.</p>
                         <div class="minimal-hero-actions minimal-hero-actions-center">
                             <button class="btn-primary minimal-start-button" onclick="location.hash='#7check'">테스트 시작하기</button>
                         </div>
-                        <div class="minimal-home-links minimal-home-links-wide">
-                            ${categoryCards.map((card) => `
-                                <button class="minimal-text-link" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">${card.title}</button>
-                            `).join('')}
+                        <div class="minimal-home-links">
+                            <button class="minimal-text-link" onclick="location.hash='#7check'">카테고리 보기</button>
                         </div>
-                    </div>
-                </section>
-
-                <section class="minimal-section reveal">
-                    <div class="minimal-section-head">
-                        <div>
-                            <span class="minimal-kicker">Browse</span>
-                            <h2>카테고리</h2>
-                        </div>
-                    </div>
-                    <div class="minimal-card-grid minimal-card-grid-3">
-                        ${categoryCards.map((card) => `
-                            <article class="minimal-pane minimal-pane-interactive minimal-pane-compact" onclick="${card.hash.startsWith('/') ? `window.goToDaily('${card.hash}')` : `location.hash='${card.hash}'`}">
-                                <div class="minimal-pane-top">
-                                    <span class="minimal-pane-label">${card.label}</span>
-                                    <span class="minimal-pane-index" style="color:${card.accent || 'var(--accent-color)'}">${card.count || ''}</span>
-                                </div>
-                                <h3>${card.title}</h3>
-                                <p>${card.desc}</p>
-                            </article>
-                        `).join('')}
-                    </div>
-                </section>
-
-                <section class="minimal-section reveal">
-                    <div class="minimal-section-head">
-                        <div>
-                            <span class="minimal-kicker">Recommended</span>
-                            <h2>지금 많이 보는 테스트</h2>
-                        </div>
-                    </div>
-                    <div class="test-grid minimal-test-grid">
-                        ${curatedTests.map((t) => renderTestCard(t)).join('')}
                     </div>
                 </section>
             </div>

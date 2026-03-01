@@ -1,19 +1,19 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.5.6';
-import { copyLink } from './share.js?v=8.5.6';
-import { renderBoard } from './board.js?v=8.5.6';
-import { renderRanking } from './ranking.js?v=8.5.6';
-import { db } from './firebase-init.js?v=8.5.6';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.5.5';
+import { copyLink } from './share.js?v=8.5.5';
+import { renderBoard } from './board.js?v=8.5.5';
+import { renderRanking } from './ranking.js?v=8.5.5';
+import { db } from './firebase-init.js?v=8.5.5';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.5.6';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.5.6';
-import { renderProfile } from './pages/profile.js?v=8.5.6';
-import { renderAdmin } from './pages/admin.js?v=8.5.6';
-import { renderArcade } from './pages/arcade-page.js?v=8.5.6';
-import { renderTestExecution, renderResult } from './pages/tests.js?v=8.5.6';
-import { renderSalaryGame } from './pages/salary.js?v=8.5.6';
-import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.5.6';
-import { renderDailyList, renderDailyDetail } from './pages/daily.js?v=8.5.6';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.5.5';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.5.5';
+import { renderProfile } from './pages/profile.js?v=8.5.5';
+import { renderAdmin } from './pages/admin.js?v=8.5.5';
+import { renderArcade } from './pages/arcade-page.js?v=8.5.5';
+import { renderTestExecution, renderResult } from './pages/tests.js?v=8.5.5';
+import { renderSalaryGame } from './pages/salary.js?v=8.5.5';
+import { renderAbout, renderPrivacy, renderTerms, renderContact, renderGuide, renderEncyclopedia } from './pages/info.js?v=8.5.5';
+import { renderDailyList, renderDailyDetail } from './pages/daily.js?v=8.5.5';
 
 const DEFAULT_IMAGE = "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=800&q=80";
 

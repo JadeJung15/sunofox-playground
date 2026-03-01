@@ -1,4 +1,4 @@
-import { UserState, updateUI } from '../auth.js?v=8.5.6';
+import { UserState, updateUI } from '../auth.js?v=8.5.5';
 import { initArcade } from '../arcade.js';
 
 function renderArcadeCardShell({ title, icon, badge, badgeStyle, desc, body, tone = 'neutral' }) {

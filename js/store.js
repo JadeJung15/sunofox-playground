@@ -1,4 +1,4 @@
-import { UserState, addPoints as authAddPoints, postEconomyAction, usePoints as authUsePoints } from './auth.js?v=8.5.6';
+import { UserState, addPoints as authAddPoints, postEconomyAction, usePoints as authUsePoints } from './auth.js?v=8.5.5';
 
 /**
  * SevenCheck 통합 데이터 관리자 (The Store)

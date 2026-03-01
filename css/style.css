@@ -4370,11 +4370,6 @@ main {
   margin-top: 0.9rem;
 }
 
-.minimal-home-links-wide {
-  flex-wrap: wrap;
-  gap: 0.4rem 1rem;
-}
-
 .minimal-text-link {
   display: inline-flex;
   align-items: center;
@@ -4472,10 +4467,6 @@ main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-}
-
-.minimal-pane-compact {
-  min-height: 220px;
 }
 
 .minimal-pane-interactive,
@@ -4692,29 +4683,6 @@ main {
 .profile-progress-panel { background: var(--surface-strong); }
 
 .profile-details summary { font-weight: 800; }
-
-.profile-mini-preview {
-  display: grid;
-  justify-items: center;
-  gap: 0.7rem;
-  padding: 1.6rem 1rem;
-  border: 1px solid rgba(17, 17, 17, 0.06);
-  border-radius: 24px;
-  background: #ffffff;
-  text-align: center;
-}
-
-.profile-mini-avatar {
-  width: 84px;
-  height: 84px;
-  font-size: 2.2rem;
-}
-
-.profile-mini-preview span {
-  color: var(--text-sub);
-  font-size: 0.86rem;
-  font-weight: 700;
-}
 
 .emoji-btn,
 .inv-card,

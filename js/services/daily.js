@@ -1,5 +1,5 @@
-import { auth, db } from '../firebase-init.js?v=8.5.6';
-import { ensureAnonymousUser } from '../auth.js?v=8.5.6';
+import { auth, db } from '../firebase-init.js?v=8.5.5';
+import { ensureAnonymousUser } from '../auth.js?v=8.5.5';
 import { collection, doc, getDoc, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 const DAILY_TITLES = [
