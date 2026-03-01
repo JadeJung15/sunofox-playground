@@ -334,13 +334,13 @@ export async function renderHome(hash) {
                         <article class="home-primary-hero" style="background:linear-gradient(135deg,#111827 0%,#1e1b4b 50%,#0f766e 100%); border-radius:30px; padding:1.9rem; color:#fff; min-height:380px; display:flex; flex-direction:column; justify-content:space-between; box-shadow:0 28px 54px rgba(15,23,42,0.28); position:relative; overflow:hidden;">
                             <div style="position:absolute; inset:auto -70px -90px auto; width:230px; height:230px; border-radius:50%; background:radial-gradient(circle,rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%);"></div>
                             <div style="position:relative; z-index:1;">
-                                <div style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; margin-bottom:1rem; flex-wrap:wrap;">
+                                <div class="home-hero-meta" style="display:flex; justify-content:space-between; align-items:center; gap:0.8rem; margin-bottom:1rem; flex-wrap:wrap;">
                                     <span style="font-size:0.72rem; letter-spacing:0.16em; font-weight:900; color:rgba(255,255,255,0.74);">SEVEN CHECK PLAYGROUND</span>
                                     <span style="font-size:0.74rem; background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.18); border-radius:999px; padding:0.34rem 0.72rem; font-weight:900;">FRESH PICKS</span>
                                 </div>
                                 <h1 style="font-size:clamp(2rem,7vw,3.25rem); line-height:1.02; letter-spacing:-0.055em; margin:0 0 0.85rem;">${userName}님이<br>지금 바로 빠질<br>테스트 허브</h1>
                                 <p style="font-size:0.96rem; color:rgba(226,232,240,0.95); line-height:1.7; max-width:92%; font-weight:650; margin-bottom:1rem;">심리 분석부터 병맛 테스트, 운세, 월급 루팡용 콘텐츠까지 한 화면에서 고르고 바로 시작할 수 있게 흐름을 다시 정리했습니다.</p>
-                                <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.1rem;">
+                                <div class="home-hero-cta-row" style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-bottom:1.1rem;">
                                     <button class="home-cta-main" onclick="location.hash='#test/${heroTest.id}'" style="border:none; border-radius:16px; padding:0.82rem 1.08rem; background:linear-gradient(135deg,#22d3ee 0%,#6366f1 45%,#7c3aed 100%); color:#fff; font-weight:950; font-size:0.88rem; cursor:pointer; box-shadow:0 14px 26px rgba(99,102,241,0.34);">랜덤 추천 시작</button>
                                     <button onclick="location.hash='#7check'" style="border:1px solid rgba(255,255,255,0.24); border-radius:16px; padding:0.82rem 1.08rem; background:rgba(255,255,255,0.08); color:#fff; font-weight:850; font-size:0.88rem; cursor:pointer;">카테고리 허브 보기</button>
                                 </div>
@@ -362,24 +362,24 @@ export async function renderHome(hash) {
                         </article>
 
                         <div class="home-hero-side" style="display:grid; gap:0.85rem; grid-template-rows:auto auto auto 1fr;">
-                            <div style="background:#fff; border-radius:22px; border:1px solid #e2e8f0; padding:1rem 1rem; box-shadow:0 14px 28px rgba(15,23,42,0.05);">
+                            <div class="home-side-card" style="background:#fff; border-radius:22px; border:1px solid #e2e8f0; padding:1rem 1rem; box-shadow:0 14px 28px rgba(15,23,42,0.05);">
                                 <div style="font-size:0.72rem; font-weight:900; color:#7c3aed; letter-spacing:0.12em; margin-bottom:0.42rem;">TODAY INSIGHT</div>
                                 <div style="font-size:0.93rem; font-weight:750; color:#334155; line-height:1.58;">${randomAdvice}</div>
                             </div>
 
-                            <div style="background:linear-gradient(145deg,#ffffff 0%,#eff6ff 100%); border-radius:22px; border:1px solid #dbeafe; padding:1rem; box-shadow:0 14px 28px rgba(15,23,42,0.05);">
+                            <div class="home-side-card" style="background:linear-gradient(145deg,#ffffff 0%,#eff6ff 100%); border-radius:22px; border:1px solid #dbeafe; padding:1rem; box-shadow:0 14px 28px rgba(15,23,42,0.05);">
                                 <div style="font-size:0.72rem; font-weight:900; color:#2563eb; letter-spacing:0.12em; margin-bottom:0.42rem;">SPOTLIGHT TEST</div>
                                 <div style="font-size:1.02rem; font-weight:900; color:#0f172a; line-height:1.38; margin-bottom:0.4rem; word-break:keep-all;">${heroTest.title}</div>
                                 <div style="font-size:0.82rem; color:#475569; font-weight:700; line-height:1.55; margin-bottom:0.7rem;">${heroTest.desc}</div>
                                 <button onclick="location.hash='#test/${heroTest.id}'" style="width:100%; border:none; border-radius:14px; padding:0.78rem 0.9rem; background:linear-gradient(135deg,#60a5fa,#4338ca); color:#fff; font-weight:900; cursor:pointer;">이 테스트 바로 시작</button>
                             </div>
 
-                            <div style="position:relative;">
+                            <div class="home-search-shell" style="position:relative;">
                                 <input type="text" id="home-search" placeholder="테스트 제목/카테고리 검색" style="width:100%; padding:0.95rem 1rem 0.95rem 2.95rem; border-radius:18px; border:1px solid #dbe3ef; background:#ffffff; font-size:0.9rem; font-weight:750; color:#1e293b; outline:none; box-shadow:0 10px 20px rgba(15,23,42,0.04);">
                                 <span style="position:absolute; left:1rem; top:50%; transform:translateY(-50%); font-size:1.08rem; opacity:0.48;">⌕</span>
                             </div>
 
-                            <div style="background:#fff; border-radius:22px; border:1px solid #e2e8f0; padding:0.82rem; box-shadow:0 14px 28px rgba(15,23,42,0.05);">
+                            <div class="home-side-card" style="background:#fff; border-radius:22px; border:1px solid #e2e8f0; padding:0.82rem; box-shadow:0 14px 28px rgba(15,23,42,0.05);">
                                 <div class="home-quick-grid" style="display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:0.55rem;">
                                     <button onclick="location.hash='#arcade'" style="border:none; border-radius:14px; padding:0.68rem 0.72rem; background:linear-gradient(135deg,#34d399,#059669); color:#fff; font-size:0.82rem; font-weight:850; cursor:pointer;">🕹️ 오락실</button>
                                     <button onclick="location.hash='#ranking'" style="border:none; border-radius:14px; padding:0.68rem 0.72rem; background:linear-gradient(135deg,#facc15,#d97706); color:#fff; font-size:0.82rem; font-weight:850; cursor:pointer;">🏆 랭킹</button>
@@ -458,7 +458,7 @@ export async function renderHome(hash) {
                     <div style="background:linear-gradient(145deg,#fff7ed 0%,#ffffff 100%); border-radius:30px; border:1px solid #fed7aa; padding:1.2rem; box-shadow:0 18px 36px rgba(15,23,42,0.05);">
                         <div style="font-size:0.74rem; color:#ea580c; letter-spacing:0.14em; font-weight:900; margin-bottom:0.22rem;">LATEST DROP</div>
                         <h3 style="font-size:1.35rem; font-weight:950; color:#0f172a; letter-spacing:-0.03em; margin:0 0 0.9rem;">가장 최근 추가된 테스트</h3>
-                        <div style="display:grid; gap:0.72rem;">
+                        <div class="home-latest-drop" style="display:grid; gap:0.72rem;">
                             ${latestDrop.map((test, index) => `
                                 <button onclick="location.hash='#test/${test.id}'" style="text-align:left; border:none; border-radius:18px; padding:0.95rem; background:#fff; border:1px solid rgba(251,146,60,0.18); box-shadow:0 10px 18px rgba(15,23,42,0.04); cursor:pointer;">
                                     <div style="display:flex; justify-content:space-between; align-items:center; gap:0.65rem; margin-bottom:0.34rem;">

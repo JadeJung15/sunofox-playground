@@ -3340,10 +3340,27 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     font-size: clamp(1.4rem, 7.8vw, 1.95rem) !important;
   }
 
+  .home-hero-meta {
+    gap: 0.5rem !important;
+    margin-bottom: 0.78rem !important;
+  }
+
+  .home-hero-meta span:last-child {
+    font-size: 0.67rem !important;
+    padding: 0.28rem 0.56rem !important;
+  }
+
   .home-primary-hero p {
     font-size: 0.82rem !important;
     line-height: 1.58 !important;
     max-width: 100% !important;
+  }
+
+  .home-hero-cta-row {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.48rem !important;
+    margin-bottom: 0.82rem !important;
   }
 
   .home-primary-hero button,
@@ -3357,6 +3374,22 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     padding: 0.68rem 0.82rem !important;
     border-radius: 12px !important;
     font-size: 0.79rem !important;
+  }
+
+  .home-side-card,
+  .home-search-shell {
+    box-shadow: 0 10px 20px rgba(15,23,42,0.04) !important;
+  }
+
+  .home-search-shell input {
+    padding: 0.82rem 0.9rem 0.82rem 2.65rem !important;
+    border-radius: 14px !important;
+    font-size: 0.82rem !important;
+  }
+
+  .home-search-shell span {
+    left: 0.88rem !important;
+    font-size: 0.98rem !important;
   }
 
   .home-primary-hero > div,
@@ -3385,6 +3418,10 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .home-feature-stack {
     gap: 0.78rem !important;
     margin-bottom: 1.1rem !important;
+  }
+
+  .home-feature-stack h3 {
+    font-size: 1.14rem !important;
   }
 
   .home-ops-strip {
@@ -3427,6 +3464,15 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     padding: 0.88rem !important;
   }
 
+  .home-latest-drop {
+    gap: 0.58rem !important;
+  }
+
+  .home-latest-drop > button {
+    border-radius: 16px !important;
+    padding: 0.8rem !important;
+  }
+
   .home-category-lanes {
     grid-template-columns: 1fr !important;
     gap: 0.62rem !important;
@@ -3458,6 +3504,10 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     grid-template-columns: 1fr !important;
     gap: 0.75rem !important;
   }
+
+  #test-list-grid.test-grid {
+    gap: 0.72rem !important;
+  }
 }
 
 @media (max-width: 420px) {
@@ -3479,6 +3529,14 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     font-size: clamp(1.28rem, 7.2vw, 1.72rem) !important;
   }
 
+  .home-primary-hero p {
+    font-size: 0.78rem !important;
+  }
+
+  .home-hero-cta-row {
+    grid-template-columns: 1fr !important;
+  }
+
   .home-primary-hero button,
   .home-quick-grid button {
     font-size: 0.75rem !important;
@@ -3493,6 +3551,10 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   .home-ops-strip {
     padding: 0.72rem !important;
     border-radius: 18px !important;
+  }
+
+  .home-feature-stack h3 {
+    font-size: 1.02rem !important;
   }
 
   .home-chat-strip {
@@ -3516,6 +3578,10 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
     width: 100%;
     justify-content: center;
     text-align: center;
+  }
+
+  .home-latest-drop > button {
+    padding: 0.72rem !important;
   }
 }
 
