@@ -378,10 +378,30 @@ export async function changeNickname() {
     
     isNicknameChanging = true;
     try {
-        const result = await postEconomyAction('changeNickname', { nickname: newName });
+        let result;
+        try {
+            result = await postEconomyAction('changeNickname', { nickname: newName });
+        } catch (apiError) {
+            const fallbackable = !apiError?.message ||
+                apiError.message === '요청 처리에 실패했습니다.' ||
+                /Failed to fetch/i.test(apiError.message);
+            if (!fallbackable) throw apiError;
+
+            const cost = UserState.data?.nicknameChanged ? 5000 : 0;
+            if ((UserState.data?.points || 0) < cost) {
+                throw new Error("포인트가 부족합니다.");
+            }
+
+            const payload = { nickname: newName, nicknameChanged: true };
+            if (cost > 0) payload.points = (UserState.data?.points || 0) - cost;
+            await updateDoc(doc(db, "users", UserState.user.uid), payload);
+            result = { nickname: newName, pointsDelta: -cost, nicknameChanged: true };
+        }
+
         UserState.data.points = (UserState.data.points || 0) + result.pointsDelta;
         UserState.data.nickname = newName;
         UserState.data.nicknameChanged = true; 
+        updateProfileCache(UserState.user.uid, { nickname: newName });
         alert("닉네임이 변경되었습니다!");
         updateUI();
         if (location.hash === '#profile') {
