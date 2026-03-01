@@ -3311,6 +3311,174 @@ main { max-width: 1000px; margin: 2rem auto; padding: 0 1.25rem; min-height: 80v
   }
 }
 
+.daily-page-shell button {
+  transition: transform 0.18s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.daily-page-shell button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.03);
+}
+
+@media (max-width: 900px) {
+  .daily-hero-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .daily-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .daily-page-shell {
+    padding: 0.95rem 0.8rem 4.3rem !important;
+  }
+
+  .daily-hero-shell,
+  .daily-detail-card,
+  .daily-message-card {
+    border-radius: 24px !important;
+    padding: 0.88rem !important;
+  }
+
+  .daily-hero-grid,
+  .daily-detail-stat-grid,
+  .daily-result-actions {
+    grid-template-columns: 1fr !important;
+  }
+
+  .daily-hero-primary,
+  .daily-detail-hero,
+  .daily-result-card,
+  .daily-capture-card {
+    border-radius: 20px !important;
+  }
+
+  .daily-hero-primary {
+    padding: 1rem !important;
+  }
+
+  .daily-hero-primary h1,
+  .daily-detail-card h1 {
+    font-size: clamp(1.45rem, 7vw, 1.95rem) !important;
+  }
+
+  .daily-info-card,
+  .daily-stat-card,
+  .daily-detail-stat-card,
+  .daily-test-card {
+    border-radius: 18px !important;
+    padding: 0.82rem !important;
+  }
+
+  .daily-stat-grid {
+    gap: 0.55rem !important;
+  }
+
+  .daily-card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 0.72rem !important;
+  }
+
+  .daily-test-card h3 {
+    font-size: 0.96rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .daily-start-btn,
+  .daily-run-btn,
+  .daily-back-btn,
+  .daily-action-btn {
+    min-height: 48px !important;
+    font-size: 0.88rem !important;
+    padding: 0.78rem 0.88rem !important;
+    border-radius: 14px !important;
+  }
+
+  .daily-detail-header,
+  .daily-result-header {
+    gap: 0.65rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .daily-detail-hero {
+    padding: 1rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .daily-capture-card {
+    padding: 1.05rem 0.92rem !important;
+    margin-bottom: 0.8rem !important;
+  }
+
+  .daily-capture-headline {
+    font-size: 1.9rem !important;
+  }
+
+  .daily-capture-comment {
+    font-size: 0.94rem !important;
+    line-height: 1.5 !important;
+  }
+
+  .daily-result-card {
+    padding: 0.92rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .daily-page-shell {
+    padding: 0.72rem 0.62rem 4rem !important;
+  }
+
+  .daily-hero-shell,
+  .daily-detail-card,
+  .daily-message-card {
+    padding: 0.72rem !important;
+    border-radius: 20px !important;
+  }
+
+  .daily-hero-primary,
+  .daily-detail-hero,
+  .daily-result-card,
+  .daily-capture-card {
+    border-radius: 18px !important;
+  }
+
+  .daily-hero-primary {
+    padding: 0.88rem !important;
+  }
+
+  .daily-hero-primary h1,
+  .daily-detail-card h1 {
+    font-size: clamp(1.28rem, 6.8vw, 1.72rem) !important;
+  }
+
+  .daily-test-card,
+  .daily-info-card,
+  .daily-stat-card,
+  .daily-detail-stat-card {
+    padding: 0.74rem !important;
+  }
+
+  .daily-start-btn,
+  .daily-run-btn,
+  .daily-back-btn,
+  .daily-action-btn {
+    min-height: 44px !important;
+    font-size: 0.82rem !important;
+    padding: 0.7rem 0.8rem !important;
+  }
+
+  .daily-capture-headline {
+    font-size: 1.66rem !important;
+  }
+
+  .daily-capture-comment {
+    font-size: 0.9rem !important;
+  }
+}
+
 /* =================================================================
    Suno Generator
    ================================================================= */
