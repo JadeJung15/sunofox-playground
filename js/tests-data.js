@@ -1738,5 +1738,95 @@ export const TESTS = [
             empathy: { title: '미안함으로 승부 보는 공감러', desc: '당신은 논리보다 분위기와 관계를 먼저 봅니다. 그래서 변명을 하더라도 상대 기분이 덜 상하게 만들고, 결국 사람이 납득하게 만드는 힘이 있습니다. 엄밀히는 핑계보다 수습 커뮤니케이션에 가깝습니다.', img: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=800&q=80', color: '#14b8a6', tags: ['#수습대화', '#공감센스', '#미움안받기'] },
             creativity: { title: '핑계도 콘텐츠로 만드는 사람', desc: '당신은 평범한 해명보다 기억에 남는 한마디를 잘 만듭니다. 살짝 웃기고, 묘하게 공감되고, 디테일이 살아 있어 상대도 화를 오래 못 냅니다. 회사 생활이 힘들어도 이야깃거리는 제일 많이 남기는 타입입니다.', img: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=800&q=80', color: '#14b8a6', tags: ['#웃픈센스', '#기억남는한마디', '#콘텐츠형'] }
         }
+    },
+    {
+        id: 'p40', category: '재미', title: '단톡방에서 나는 무슨 포지션 캐릭터?', desc: '말 한마디 안 해도 맡은 역할이 있다. 우리 무리 안에서 당신이 차지하는 단톡 포지션을 판정합니다.', thumb: 'https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=800&q=80',
+        questions: [
+            { q: '알림 86개가 쌓여 있다. 당신의 첫 행동은?', options: [{ text: '마지막 3줄만 보고 감으로 낀다', scores: { logic: 2, creativity: 1 } }, { text: '누가 서운해할까 봐 반응 하나는 남긴다', scores: { empathy: 2, energy: 1 } }, { text: '웃긴 포인트 찾자마자 바로 드립 친다', scores: { creativity: 2, energy: 1 } }, { text: '지금 모이냐고 먼저 물어본다', scores: { energy: 2, empathy: 1 } }] },
+            { q: '누가 사진을 잔뜩 올렸다. 당신은?', options: [{ text: '하나씩 확대해서 평가한다', scores: { logic: 2, creativity: 1 } }, { text: '예쁘다 귀엽다 리액션부터 단다', scores: { empathy: 2, energy: 1 } }, { text: '한 장 골라 별명 붙여준다', scores: { creativity: 2, empathy: 1 } }, { text: '사진보다 언제 볼지부터 잡는다', scores: { energy: 2, logic: 1 } }] },
+            { q: '약속 얘기가 나오면 당신의 기본값은?', options: [{ text: '장소와 시간부터 현실 체크', scores: { logic: 2, empathy: 1 } }, { text: '사람들 텐션부터 살핀다', scores: { empathy: 2, logic: 1 } }, { text: '말 되는지 안 되는지보다 일단 웃기면 된다', scores: { creativity: 2, energy: 1 } }, { text: '그럼 언제 볼까로 바로 밀어붙인다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '대화가 잠깐 식었다. 당신은?', options: [{ text: '굳이 살리지 않고 조용히 둔다', scores: { logic: 2, empathy: 1 } }, { text: '리액션 하나 던져 분위기 안 죽게 한다', scores: { empathy: 2, energy: 1 } }, { text: '엉뚱한 짤이나 드립으로 판 엎는다', scores: { creativity: 2, logic: 1 } }, { text: '보이스룸 열자고 한다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '누가 삐진 것 같으면?', options: [{ text: '왜 그런지 조용히 관찰한다', scores: { logic: 2, empathy: 1 } }, { text: '개인적으로 먼저 괜찮냐고 묻는다', scores: { empathy: 2, logic: 1 } }, { text: '분위기 돌릴 농담을 찾는다', scores: { creativity: 2, empathy: 1 } }, { text: '다 같이 풀자며 판을 키운다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '새 멤버가 들어오면 당신은?', options: [{ text: '일단 방 분위기부터 읽게 둔다', scores: { logic: 2, creativity: 1 } }, { text: '안녕부터 챙기며 말 붙인다', scores: { empathy: 2, energy: 1 } }, { text: '별명 하나 지어준다', scores: { creativity: 2, energy: 1 } }, { text: '바로 보룸으로 끌고 온다', scores: { energy: 2, empathy: 1 } }] },
+            { q: '당신을 한 줄로 요약하면?', options: [{ text: '조용한데 흐름은 다 본다', scores: { logic: 2, empathy: 1 } }, { text: '정 붙으면 제일 오래 남는다', scores: { empathy: 2, logic: 1 } }, { text: '없는 말도 웃기게 만든다', scores: { creativity: 2, energy: 1 } }, { text: '없으면 방이 심심해진다', scores: { energy: 2, creativity: 1 } }] }
+        ],
+        results: {
+            logic: { title: '흐름 읽는 조용한 실세', desc: '겉으로 튀진 않는데 방 맥락은 제일 잘 파악하는 타입입니다. 괜히 나서지 않아도 중요한 순간엔 당신 쪽으로 시선이 모입니다.', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80', color: '#64748b', tags: ['#실세', '#맥락장인', '#조용한존재감'] },
+            empathy: { title: '분위기 지키는 다정한 완충재', desc: '누가 서운할지, 누가 외로울지 먼저 보는 타입입니다. 대화가 세게 가도 당신 같은 사람이 하나 있으면 방이 오래 갑니다.', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80', color: '#fb7185', tags: ['#다정함', '#완충재', '#정붙는사람'] },
+            creativity: { title: '드립으로 캐릭터 만드는 서사꾼', desc: '평범한 대화도 당신 손을 거치면 밈이 됩니다. 별명 붙이고 장면 만들고, 나중에 돌이켜보면 웃긴 기억의 절반은 당신 작품입니다.', img: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80', color: '#eab308', tags: ['#드립장인', '#밈제조기', '#서사추가'] },
+            energy: { title: '방 텐션 끌어올리는 점화 장치', desc: '조용한 방도 당신이 들어오면 속도가 붙습니다. 약속 잡고, 말 붙이고, 보룸 열고, 방을 살아 있게 만드는 추진력이 강한 타입입니다.', img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80', color: '#22c55e', tags: ['#점화장치', '#추진력', '#분위기메이커'] }
+        }
+    },
+    {
+        id: 'p41', category: '재미', title: '내가 단톡에서 제일 자주 하는 민폐 유형 테스트', desc: '친구들이 대놓고 말은 안 하지만 은근 기억하고 있는 당신의 단톡 민폐 포인트를 유쾌하게 폭로합니다.', thumb: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80',
+        questions: [
+            { q: '단톡이 한참 불탈 때 당신은?', options: [{ text: '다 지나간 뒤 와서 무슨 얘기냐고 묻는다', scores: { logic: 2, creativity: 1 } }, { text: '리액션은 잘하는데 결론은 안 읽는다', scores: { empathy: 2, creativity: 1 } }, { text: '쓸데없이 웃긴 말 하나로 흐름을 탈선시킨다', scores: { creativity: 2, energy: 1 } }, { text: '갑자기 만나자고 해서 사람들 체력을 시험한다', scores: { energy: 2, empathy: 1 } }] },
+            { q: '누가 진지한 얘기를 꺼냈다. 당신은?', options: [{ text: '정독 안 하고 핵심만 추측한다', scores: { logic: 2, energy: 1 } }, { text: '위로는 하는데 맥락을 살짝 놓친다', scores: { empathy: 2, logic: 1 } }, { text: '괜히 농담 던졌다가 분위기 이상해진다', scores: { creativity: 2, energy: 1 } }, { text: '해결해주겠다며 판을 크게 만든다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '사진 공유할 때 당신 스타일은?', options: [{ text: '설명 없이 던지고 사라진다', scores: { logic: 2, creativity: 1 } }, { text: '남들 반응 기다리며 눈치 본다', scores: { empathy: 2, logic: 1 } }, { text: '짤이랑 밈까지 붙여서 더 복잡하게 만든다', scores: { creativity: 2, empathy: 1 } }, { text: '한 번에 너무 많이 올린다', scores: { energy: 2, logic: 1 } }] },
+            { q: '보이스룸 열리면 당신은?', options: [{ text: '들어왔다가 말없이 나간다', scores: { logic: 2, empathy: 1 } }, { text: '듣기만 하다가 가끔 리액션한다', scores: { empathy: 2, creativity: 1 } }, { text: '웃기겠다고 무리수 던진다', scores: { creativity: 2, energy: 1 } }, { text: '열자마자 사람들 소환부터 한다', scores: { energy: 2, logic: 1 } }] },
+            { q: '약속 잡을 때 당신의 문제는?', options: [{ text: '확답을 너무 늦게 한다', scores: { logic: 2, empathy: 1 } }, { text: '사람 기분 보다가 결정을 못 내린다', scores: { empathy: 2, logic: 1 } }, { text: '뜬금없는 장소를 던진다', scores: { creativity: 2, energy: 1 } }, { text: '당일 번개를 사랑한다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '사람들이 속으로 제일 많이 할 말은?', options: [{ text: '얘는 꼭 늦게 와서 물어보더라', scores: { logic: 2, creativity: 1 } }, { text: '얘는 착한데 묘하게 답답해', scores: { empathy: 2, logic: 1 } }, { text: '얘 때문에 웃긴데 흐름이 망해', scores: { creativity: 2, empathy: 1 } }, { text: '얘 텐션 따라가면 기 다 빨림', scores: { energy: 2, creativity: 1 } }] },
+            { q: '하지만 사람들이 결국 당신을 안 끊는 이유는?', options: [{ text: '밉지 않게 귀찮게 한다', scores: { logic: 2, empathy: 1 } }, { text: '정이 많다', scores: { empathy: 2, creativity: 1 } }, { text: '웃기다', scores: { creativity: 2, energy: 1 } }, { text: '재밌다', scores: { energy: 2, empathy: 1 } }] }
+        ],
+        results: {
+            logic: { title: '늦게 와서 핵심 물어보는 요약 민폐형', desc: '다 끝난 다음 나타나서 "근데 무슨 일 있었어?"를 자연스럽게 던지는 타입입니다. 얄밉지만 이상하게 밉상까지는 안 가는 생활형 민폐입니다.', img: 'https://images.unsplash.com/photo-1516321310764-8d15c2f6a5f9?auto=format&fit=crop&w=800&q=80', color: '#64748b', tags: ['#늦참전문', '#요약요정', '#생활형민폐'] },
+            empathy: { title: '착한데 묘하게 흐름 끊는 눈치 과부하형', desc: '사람들 기분은 제일 잘 보는데 그래서 오히려 결론이 늦어집니다. 민폐도 말랑해서 결국 친구들이 그냥 품는 타입입니다.', img: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=800&q=80', color: '#fb7185', tags: ['#눈치과부하', '#말랑민폐', '#정은많음'] },
+            creativity: { title: '웃기려고 했다가 대화 산으로 보내는 드립 사고형', desc: '문제는 당신 드립이 종종 너무 재밌다는 겁니다. 흐름은 망쳐도 사람들 캡처에는 제일 많이 남는, 위험한 유머 사고형입니다.', img: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80', color: '#eab308', tags: ['#드립사고', '#흐름탈선', '#캡처당함'] },
+            energy: { title: '사람들 체력 시험하는 번개 소환형', desc: '당신은 재미를 위해 모두의 스케줄과 체력을 한 번씩 흔듭니다. 피곤한데도 사람들이 결국 말려드는 건 그만큼 판이 재밌어지기 때문입니다.', img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80', color: '#22c55e', tags: ['#번개중독', '#체력시험', '#따라가게됨'] }
+        }
+    },
+    {
+        id: 'p42', category: '재미', title: '보이스룸 켜지면 나는 어떤 인간이 되는가', desc: '채팅창과 보이스룸은 완전히 다른 세계다. 마이크가 켜지는 순간 드러나는 당신의 진짜 캐릭터를 판정합니다.', thumb: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?auto=format&fit=crop&w=800&q=80',
+        questions: [
+            { q: '보이스룸 알림이 뜨면 가장 먼저 드는 생각은?', options: [{ text: '누가 들어왔는지부터 본다', scores: { logic: 2, empathy: 1 } }, { text: '말은 안 해도 일단 들어가 본다', scores: { empathy: 2, logic: 1 } }, { text: '오늘은 무슨 말실수 나올까 기대된다', scores: { creativity: 2, energy: 1 } }, { text: '내가 분위기 띄워야 하나 싶다', scores: { energy: 2, empathy: 1 } }] },
+            { q: '입장 직후 당신은?', options: [{ text: '분위기 파악부터 한다', scores: { logic: 2, empathy: 1 } }, { text: '인사하고 조용히 듣는다', scores: { empathy: 2, logic: 1 } }, { text: '첫 멘트부터 웃겨보려 한다', scores: { creativity: 2, energy: 1 } }, { text: '누구야 누구야 하며 사람 모은다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '침묵이 길어지면?', options: [{ text: '괜히 끼어들지 않고 흐름 본다', scores: { logic: 2, creativity: 1 } }, { text: '맞장구로 숨통 틔운다', scores: { empathy: 2, energy: 1 } }, { text: '뜬금없는 비유 하나 던진다', scores: { creativity: 2, empathy: 1 } }, { text: '야 다들 잠들었냐고 흔든다', scores: { energy: 2, logic: 1 } }] },
+            { q: '내가 가장 자신 있는 건?', options: [{ text: '듣고 있다가 필요한 순간 한마디', scores: { logic: 2, empathy: 1 } }, { text: '상대 말 잘 받아주기', scores: { empathy: 2, creativity: 1 } }, { text: '이상한 드립으로 터뜨리기', scores: { creativity: 2, energy: 1 } }, { text: '방 텐션 살리기', scores: { energy: 2, empathy: 1 } }] },
+            { q: '가장 자주 듣는 말은?', options: [{ text: '오 생각보다 핵심 잘 짚네', scores: { logic: 2, energy: 1 } }, { text: '너 리액션 좋아서 편하다', scores: { empathy: 2, logic: 1 } }, { text: '도대체 어디서 그런 말이 나와', scores: { creativity: 2, empathy: 1 } }, { text: '너 들어오면 시끄러워져', scores: { energy: 2, creativity: 1 } }] },
+            { q: '보이스룸 끝나고 당신은?', options: [{ text: '오늘 누가 무슨 말 했는지 정리된다', scores: { logic: 2, creativity: 1 } }, { text: '괜히 정이 들어서 후기가 남는다', scores: { empathy: 2, logic: 1 } }, { text: '방금 나온 드립 다시 생각하며 혼자 웃는다', scores: { creativity: 2, energy: 1 } }, { text: '2차 보룸 열릴까 기다린다', scores: { energy: 2, empathy: 1 } }] },
+            { q: '당신의 보룸 본체는?', options: [{ text: '조용한 분석가', scores: { logic: 2, empathy: 1 } }, { text: '듣방계의 힐러', scores: { empathy: 2, logic: 1 } }, { text: '웃음 폭탄', scores: { creativity: 2, energy: 1 } }, { text: '텐션 엔진', scores: { energy: 2, creativity: 1 } }] }
+        ],
+        results: {
+            logic: { title: '가끔 툭 치는데 제일 정확한 듣방 분석가', desc: '말수는 적어도 이상하게 핵심은 당신이 제일 잘 짚습니다. 한참 듣다가 툭 던지는 한마디가 판을 정리하는 타입입니다.', img: 'https://images.unsplash.com/photo-1494059980473-813e73ee784b?auto=format&fit=crop&w=800&q=80', color: '#64748b', tags: ['#듣방분석가', '#한마디정리', '#조용한핵심'] },
+            empathy: { title: '리액션으로 방 숨 쉬게 하는 공감형 청취자', desc: '당신은 말 많이 안 해도 방이 민망해지지 않게 만드는 사람입니다. 맞장구와 웃음, 자연스러운 리액션으로 분위기를 오래 편하게 유지합니다.', img: 'https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=800&q=80', color: '#fb7185', tags: ['#공감청취자', '#리액션맛집', '#편한사람'] },
+            creativity: { title: '보룸용 광기 따로 있는 병맛 화력형', desc: '채팅보다 목소리에서 더 위험한 타입입니다. 생각 안 하고 내뱉은 말이 더 웃기고, 그래서 보룸 끝나고도 한참 회자됩니다.', img: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=800&q=80', color: '#eab308', tags: ['#병맛보컬', '#웃음사고', '#말실수도콘텐츠'] },
+            energy: { title: '입장만 해도 방을 깨우는 텐션 기관차', desc: '당신은 보이스룸 자체를 놀이판으로 만드는 타입입니다. 조용한 방도 당신이 오면 갑자기 라이브가 되고, 다들 정신 차리게 됩니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80', color: '#22c55e', tags: ['#텐션기관차', '#입장효과', '#보룸점화'] }
+        }
+    },
+    {
+        id: 'p43', category: '재미', title: '친구들이 보는 내 단톡 말투 온도 테스트', desc: '귀여운 척인지, 팩폭인지, 은근 다정한지. 친구들이 체감하는 당신의 단톡 말투 온도를 측정합니다.', thumb: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
+        questions: [
+            { q: '친구가 늦는다고 하면 당신의 기본 답장은?', options: [{ text: 'ㅇㅋ 조심히 와', scores: { logic: 2, empathy: 1 } }, { text: '괜찮아 천천히 와아', scores: { empathy: 2, energy: 1 } }, { text: '또? 역시 너답다', scores: { creativity: 2, logic: 1 } }, { text: '벌금이다 ㅋㅋ', scores: { energy: 2, creativity: 1 } }] },
+            { q: '누가 셀카를 올리면?', options: [{ text: '분위기 좋네', scores: { logic: 2, creativity: 1 } }, { text: '예쁘다 귀엽다 난리 난다', scores: { empathy: 2, energy: 1 } }, { text: '사진 보정 티 난다고 장난친다', scores: { creativity: 2, logic: 1 } }, { text: '유죄다 유죄', scores: { energy: 2, empathy: 1 } }] },
+            { q: '대화가 너무 길어지면 당신은?', options: [{ text: '핵심만 말하자고 한다', scores: { logic: 2, energy: 1 } }, { text: '다들 신났네 하고 웃어넘긴다', scores: { empathy: 2, creativity: 1 } }, { text: '한 줄 드립으로 분위기 정리한다', scores: { creativity: 2, empathy: 1 } }, { text: '더 키워서 밤샘 각을 본다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '친구가 삐졌을 때 말투는?', options: [{ text: '왜 그런지 말해봐', scores: { logic: 2, empathy: 1 } }, { text: '내가 미안해 풀자', scores: { empathy: 2, logic: 1 } }, { text: '또 혼자 영화 찍네~ 하며 달랜다', scores: { creativity: 2, energy: 1 } }, { text: '내가 간다 문 열어', scores: { energy: 2, empathy: 1 } }] },
+            { q: '가장 자주 쓰는 마침표는?', options: [{ text: 'ㅇㅋ / ㄱㄱ / 콜', scores: { logic: 2, energy: 1 } }, { text: 'ㅎㅎ / ㅠㅠ / 응응', scores: { empathy: 2, creativity: 1 } }, { text: ';; / ? / ㅋㅋㅋㅋ', scores: { creativity: 2, logic: 1 } }, { text: '이모티콘+ㅋㅋ 조합', scores: { energy: 2, empathy: 1 } }] },
+            { q: '누군가 흑역사를 꺼냈다. 당신은?', options: [{ text: '더 키우지 않고 묻어준다', scores: { logic: 2, empathy: 1 } }, { text: '민망하지 않게 웃어준다', scores: { empathy: 2, logic: 1 } }, { text: '한 줄 추가해서 레전드 만든다', scores: { creativity: 2, energy: 1 } }, { text: '아예 별명으로 고정해버린다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '친구들이 체감하는 당신 말투는?', options: [{ text: '짧고 단정하다', scores: { logic: 2, empathy: 1 } }, { text: '말랑하고 귀엽다', scores: { empathy: 2, creativity: 1 } }, { text: '웃긴데 약간 무섭다', scores: { creativity: 2, logic: 1 } }, { text: '시끄러운데 정감 있다', scores: { energy: 2, empathy: 1 } }] }
+        ],
+        results: {
+            logic: { title: '차가운 줄 알았는데 의외로 책임감 있는 저온 말투형', desc: '말수는 많지 않고 톤도 짧지만, 필요한 말은 제때 하는 타입입니다. 그래서 무뚝뚝해 보여도 신뢰는 높습니다.', img: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80', color: '#64748b', tags: ['#저온말투', '#짧고정확', '#은근신뢰'] },
+            empathy: { title: '사람 기분 녹이는 말랑 온도형', desc: '당신 말투에는 사람을 편하게 만드는 힘이 있습니다. 크게 튀지 않아도 오래 같이 있고 싶은 말투라서, 단톡방 체감 온도를 높여줍니다.', img: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80', color: '#fb7185', tags: ['#말랑말투', '#다정함', '#정붙는톤'] },
+            creativity: { title: '웃긴데 한 줄이 은근 세게 박히는 고온 팩폭형', desc: '농담처럼 말해도 사람들 머릿속엔 오래 남습니다. 웃기고 재밌는데 은근 정확해서, 친한 사람들 사이에서는 중독성 있는 말투입니다.', img: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80', color: '#eab308', tags: ['#팩폭유머', '#한줄타격', '#은근중독'] },
+            energy: { title: '시끄러운데 결국 다 따라 웃는 고열 말투형', desc: '조용한 단톡도 당신이 치면 금방 활기를 띱니다. 조금 부담스러울 때도 있지만, 당신 빠지면 제일 먼저 허전해지는 말투입니다.', img: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80', color: '#22c55e', tags: ['#고열말투', '#시끌벅적', '#활력제'] }
+        }
+    },
+    {
+        id: 'p44', category: '재미', title: '우리 무리에서 내가 빠지면 생기는 대참사 테스트', desc: '내가 없어도 잘 굴러갈까? 친구들은 아니라고 할지도 모른다. 당신이 빠졌을 때 벌어지는 단톡 재난 유형을 판정합니다.', thumb: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80',
+        questions: [
+            { q: '당신이 며칠 조용하면 가장 먼저 생길 일은?', options: [{ text: '누가 상황 정리를 안 해서 대화가 늘어진다', scores: { logic: 2, empathy: 1 } }, { text: '괜히 방이 휑해진다', scores: { empathy: 2, energy: 1 } }, { text: '드립 퀄리티가 급락한다', scores: { creativity: 2, logic: 1 } }, { text: '약속 추진력이 사라진다', scores: { energy: 2, creativity: 1 } }] },
+            { q: '친구들이 가장 자주 맡기는 역할은?', options: [{ text: '정리하고 결정해주기', scores: { logic: 2, empathy: 1 } }, { text: '중간에서 다독여주기', scores: { empathy: 2, logic: 1 } }, { text: '웃긴 말 한마디 던지기', scores: { creativity: 2, energy: 1 } }, { text: '모임 성사시키기', scores: { energy: 2, empathy: 1 } }] },
+            { q: '약속 잡을 때 당신 없으면?', options: [{ text: '계속 의견만 나오고 안 정해진다', scores: { logic: 2, creativity: 1 } }, { text: '누가 서운할지 몰라서 질질 끈다', scores: { empathy: 2, logic: 1 } }, { text: '재미는 없고 실무만 남는다', scores: { creativity: 2, empathy: 1 } }, { text: '아무도 총대 안 멘다', scores: { energy: 2, logic: 1 } }] },
+            { q: '대화가 루즈해지면 당신의 효과는?', options: [{ text: '핵심 잡아 다시 흐름 만든다', scores: { logic: 2, energy: 1 } }, { text: '사람들 감정선을 부드럽게 연결한다', scores: { empathy: 2, creativity: 1 } }, { text: '엉뚱한 비유로 웃겨서 살린다', scores: { creativity: 2, logic: 1 } }, { text: '판을 크게 벌려 다시 불붙인다', scores: { energy: 2, empathy: 1 } }] },
+            { q: '당신이 빠졌을 때 친구들이 제일 할 말은?', options: [{ text: '오늘 왜 이렇게 정리가 안 되냐', scores: { logic: 2, empathy: 1 } }, { text: '오늘 좀 삭막한데', scores: { empathy: 2, logic: 1 } }, { text: '왜 이렇게 안 웃기냐', scores: { creativity: 2, energy: 1 } }, { text: '그래서 오늘 누구 추진해?', scores: { energy: 2, creativity: 1 } }] },
+            { q: '반대로 당신이 제일 잘하는 건?', options: [{ text: '맥락 맞추기', scores: { logic: 2, creativity: 1 } }, { text: '사람 챙기기', scores: { empathy: 2, logic: 1 } }, { text: '장면 만들기', scores: { creativity: 2, energy: 1 } }, { text: '행동하게 만들기', scores: { energy: 2, empathy: 1 } }] },
+            { q: '친구들 눈에 당신은?', options: [{ text: '없으면 은근 불편한 질서 담당', scores: { logic: 2, empathy: 1 } }, { text: '없으면 공기가 달라지는 정서 담당', scores: { empathy: 2, creativity: 1 } }, { text: '없으면 너무 심심한 웃음 담당', scores: { creativity: 2, logic: 1 } }, { text: '없으면 아무도 안 움직이는 추진 담당', scores: { energy: 2, empathy: 1 } }] }
+        ],
+        results: {
+            logic: { title: '당신 빠지면 아무도 결론 못 내리는 정리 대참사', desc: '당신이 있을 땐 몰랐는데, 빠지고 나면 방이 이상하게 붕 뜹니다. 누군가는 말해야 할 핵심과 결론을 당신이 은근 다 잡고 있었던 겁니다.', img: 'https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=800&q=80', color: '#64748b', tags: ['#정리대참사', '#결론실종', '#질서담당'] },
+            empathy: { title: '당신 빠지면 방 공기 서늘해지는 감정 대참사', desc: '당신은 사람들 사이 온도를 은근히 맞춰주던 존재입니다. 빠지고 나면 다들 말은 하는데 묘하게 정이 덜 가고 공기가 차갑게 느껴집니다.', img: 'https://images.unsplash.com/photo-1511988617509-a57c8a288659?auto=format&fit=crop&w=800&q=80', color: '#fb7185', tags: ['#감정완충재', '#공기관리', '#정서담당'] },
+            creativity: { title: '당신 빠지면 웃음 농도 반토막 나는 드립 대참사', desc: '채팅은 굴러가도 재미가 안 납니다. 친구들이 뒤늦게 깨닫습니다. 그동안 방에 남는 명장면을 제일 많이 만든 사람이 바로 당신이었다는 걸요.', img: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?auto=format&fit=crop&w=800&q=80', color: '#eab308', tags: ['#웃음실종', '#명장면제조기', '#드립담당'] },
+            energy: { title: '당신 빠지면 약속 성사율 폭락하는 추진 대참사', desc: '사람은 남아 있는데 아무도 안 움직입니다. 당신이 분위기만 띄운 게 아니라 실제로 사람들을 행동하게 만든 추진 엔진이었다는 뜻입니다.', img: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80', color: '#22c55e', tags: ['#추진엔진', '#번개총대', '#성사율하락'] }
+        }
     }
 ];
