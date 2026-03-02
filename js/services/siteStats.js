@@ -1,4 +1,4 @@
-import { db } from '../firebase-init.js?v=8.6.3';
+import { db } from '../firebase-init.js?v=8.5.2';
 import { doc, setDoc, getDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
 
 export async function trackVisit() {
@@ -33,16 +33,7 @@ export async function renderVisitorStats() {
 
         const totalEl = document.getElementById('total-visitors');
         const todayEl = document.getElementById('today-visitors');
-        const homeTotalEl = document.getElementById('home-total-visitors');
-        const homeTodayEl = document.getElementById('home-today-visitors');
-        const homeProof = document.getElementById('home-social-proof');
-        const visible = total > 0 || today > 0;
-
         if (totalEl) totalEl.textContent = total.toLocaleString();
         if (todayEl) todayEl.textContent = today.toLocaleString();
-        if (homeTotalEl) homeTotalEl.textContent = total.toLocaleString();
-        if (homeTodayEl) homeTodayEl.textContent = today.toLocaleString();
-        el.classList.toggle('is-visible', visible);
-        if (homeProof) homeProof.classList.toggle('is-visible', visible);
     } catch (e) { console.error('Stats loading failed', e); }
 }

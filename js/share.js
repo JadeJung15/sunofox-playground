@@ -1,17 +1,11 @@
-import { addPoints } from './auth.js?v=8.6.3';
+import { addPoints } from './auth.js?v=8.5.2';
 
 let lastShareTime = 0;
 
 export async function copyLink(url = window.location.href, silent = false) {
     try {
         await navigator.clipboard.writeText(url);
-        if (!silent) {
-            if (window.showAppToast) {
-                window.showAppToast('링크가 복사되었습니다.');
-            } else {
-                alert("링크가 복사되었습니다! 친구들에게 공유해보세요.");
-            }
-        }
+        if (!silent) alert("링크가 복사되었습니다! 친구들에게 공유해보세요.");
         
         // Reward 30 points for sharing (throttle 10 seconds)
         const now = Date.now();
@@ -113,11 +107,7 @@ export async function saveAsStoryImage(elementId, fileName = '7Check_Result.png'
         return true;
     } catch (err) {
         console.error('Image save failed', err);
-        if (window.showAppToast) {
-            window.showAppToast('이미지 저장에 실패했습니다.');
-        } else {
-            alert('이미지 저장에 실패했습니다.');
-        }
+        alert('이미지 저장에 실패했습니다.');
         return false;
     } finally {
         // 캡처 성공 여부와 상관없이 무조건 원래 상태로 복구
