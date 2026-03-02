@@ -1,12 +1,8 @@
-name: Deploy Production to Cloudflare Pages
+name: Deploy Development to Cloudflare Pages
 
 on:
-  workflow_dispatch:
-    inputs:
-      git_ref:
-        description: "배포할 Git ref"
-        required: true
-        default: "main"
+  push:
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -18,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_ref }}
+          ref: ${{ github.sha }}
 
       - uses: actions/setup-node@v4
         with:
@@ -43,26 +39,26 @@ jobs:
     needs: validate
     runs-on: ubuntu-latest
     environment:
-      name: production
+      name: development
     concurrency:
-      group: cloudflare-pages-production
+      group: cloudflare-pages-development
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.git_ref }}
+          ref: ${{ github.sha }}
 
       - name: Build
         run: |
           mkdir -p dist
           cp -r index.html privacy.html daily css js *.png sitemap.xml robots.txt ads.txt dist/ 2>/dev/null || true
 
-      - name: Deploy to Production Pages
+      - name: Deploy to Development Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
           accountId: ${{ secrets.CF_ACCOUNT_ID }}
-          projectName: sunofox-playground
+          projectName: sunofox-test-g
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           branch: main
