@@ -2,6 +2,7 @@
 
 ## Deployment Rules
 
+- Repository: `JadeJung15/sunofox-playground`
 - `main` branch push deploys only to the development Cloudflare Pages project `sunofox-playground-test`.
 - Development site URL: `https://sunofox-playground-test.pages.dev/`
 - Production deploy must be triggered manually from GitHub Actions using `Deploy Production to Cloudflare Pages`.
