@@ -1,9 +1,9 @@
-import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.6.1';
+import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.6.2';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { copyLink, saveAsStoryImage } from '../share.js?v=8.6.1';
-import { TESTS } from '../tests-data.js?v=8.6.1';
-import { renderTestCard } from './home.js?v=8.6.1';
-import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.1';
+import { copyLink, saveAsStoryImage } from '../share.js?v=8.6.2';
+import { TESTS } from '../tests-data.js?v=8.6.2';
+import { renderTestCard } from './home.js?v=8.6.2';
+import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.2';
 
 function getShareUrl(testId) {
     if (testId === 'p39') return `${window.location.origin}/share/p39`;
@@ -25,7 +25,7 @@ function resolveResult(test, traitScores) {
 }
 
 async function rewardResult(dominantTrait) {
-    const { getPetBuff } = await import('../auth.js?v=8.6.1');
+    const { getPetBuff } = await import('../auth.js?v=8.6.2');
     const petBuff = getPetBuff();
     let pointReward = Math.floor((10 + petBuff.testBonus) * petBuff.multiplier);
 
@@ -84,7 +84,7 @@ export async function renderResult(testId, traitScores) {
                     <section class="panel">
                         ${renderSectionHead({
                             eyebrow: 'Summary',
-                            title: '결과',
+                            title: '당신의 핵심 결과',
                             description: result.desc
                         })}
                     </section>
@@ -171,7 +171,7 @@ export function renderTestExecution(testId) {
                         <p class="question-card__meta">${test.desc}</p>
                         <div class="chip-row">
                             ${renderChip(`${test.questions.length}문항`)}
-                            ${renderChip('읽기 쉬운 화면')}
+                            ${renderChip('간결한 진행')}
                             ${renderChip('결과 공유')}
                         </div>
                         <div class="hero__actions">
@@ -232,7 +232,7 @@ export function renderTestExecution(testId) {
                     <article class="question-card">
                         ${renderBadge(test.category)}
                         <h2>${question.q}</h2>
-                        <p class="question-card__meta">마음에 가까운 답 하나를 고르세요.</p>
+                        <p class="question-card__meta">가장 가까운 선택 하나만 누르면 됩니다.</p>
                         <div class="answer-list">
                             ${question.options.map((option, index) => `
                                 <button class="answer-button" data-index="${index}">
