@@ -6,8 +6,8 @@ This repository uses separate deployment flows for development and production.
 
 - Trigger: `git push` to `main`
 - GitHub Actions workflow: `.github/workflows/cloudflare-dev-deploy.yml`
-- Cloudflare Pages project: `sunofox-playground-dev`
-- URL: `https://sunofox-playground-dev.pages.dev/`
+- Cloudflare Pages project: `sunofox-playground-test`
+- URL: `https://sunofox-playground-test.pages.dev/`
 
 ## Production
 
