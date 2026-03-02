@@ -1,8 +1,8 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.6.0';
-import { copyLink } from './share.js?v=8.6.0';
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.6.0';
-import { renderTestExecution } from './pages/tests.js?v=8.6.0';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.6.0';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.6.1';
+import { copyLink } from './share.js?v=8.6.1';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.6.1';
+import { renderTestExecution } from './pages/tests.js?v=8.6.1';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.6.1';
 
 let isDataProcessing = false;
 let isRouting = false;

@@ -1,8 +1,8 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.6.0';
-import { db } from '../firebase-init.js?v=8.6.0';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.6.1';
+import { db } from '../firebase-init.js?v=8.6.1';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.6.0';
-import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.0';
+import { TESTS } from '../tests-data.js?v=8.6.1';
+import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.1';
 
 const CATEGORY_ORDER = ['성격', '얼굴', '사주', '재미', '월급 루팡'];
 
@@ -128,9 +128,9 @@ function renderHero(featured) {
     return `
         <section class="hero">
             <div class="hero__copy">
-                ${renderBadge('Psychology tests')}
-                <h1>전부 지우고<br>테스트만 남겼다</h1>
-                <p>선택, 진행, 결과. 그 흐름만 빠르게 타도록 다시 만들었습니다.</p>
+                ${renderBadge('Curated tests')}
+                <h1>가볍게 고르고<br>바로 끝낸다</h1>
+                <p>과한 장식 없이, 읽기 쉬운 화면과 빠른 흐름만 남긴 테스트 경험.</p>
                 <div class="hero__actions">
                     ${renderButton({ label: '바로 시작', attrs: `onclick="location.hash='#test/${featured.id}'"` })}
                     ${renderButton({ label: '카테고리', variant: 'ghost', attrs: 'onclick="window.openCategoryHub()"' })}
@@ -189,7 +189,7 @@ export async function renderHome(hash) {
             ${renderSectionHead({
                 eyebrow: hash === '#home' ? 'All tests' : filter,
                 title: hash === '#home' ? '테스트 고르기' : `${filter} 테스트`,
-                description: hash === '#home' ? '원하는 테스트를 바로 선택하면 됩니다.' : `${filtered.length}개 테스트`
+                description: hash === '#home' ? '스크롤해서 고르고 바로 시작하면 됩니다.' : `${filtered.length}개 테스트`
             })}
             <div id="test-list-grid" class="test-grid">${renderGrid(filtered)}</div>
         </section>
