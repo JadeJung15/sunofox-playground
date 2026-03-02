@@ -1,9 +1,9 @@
-import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.6.2';
+import { UserState, addPoints, postEconomyAction } from '../auth.js?v=8.6.3';
 import { ITEM_VALUES } from '../constants/shops.js';
-import { copyLink, saveAsStoryImage } from '../share.js?v=8.6.2';
-import { TESTS } from '../tests-data.js?v=8.6.2';
-import { renderTestCard } from './home.js?v=8.6.2';
-import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.2';
+import { copyLink, saveAsStoryImage } from '../share.js?v=8.6.3';
+import { TESTS } from '../tests-data.js?v=8.6.3';
+import { renderTestCard } from './home.js?v=8.6.3';
+import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.3';
 
 function getShareUrl(testId) {
     if (testId === 'p39') return `${window.location.origin}/share/p39`;
@@ -25,7 +25,7 @@ function resolveResult(test, traitScores) {
 }
 
 async function rewardResult(dominantTrait) {
-    const { getPetBuff } = await import('../auth.js?v=8.6.2');
+    const { getPetBuff } = await import('../auth.js?v=8.6.3');
     const petBuff = getPetBuff();
     let pointReward = Math.floor((10 + petBuff.testBonus) * petBuff.multiplier);
 
@@ -66,6 +66,7 @@ export async function renderResult(testId, traitScores) {
     const { dominantTrait, result } = resolveResult(test, traitScores);
     const { pointReward, rewardedItem } = await rewardResult(dominantTrait);
     const recommended = TESTS.filter((item) => item.id !== testId).sort(() => 0.5 - Math.random()).slice(0, 3);
+    const nextTest = recommended[0];
     const color = result.color || '#2f6fed';
 
     app.innerHTML = `
@@ -99,8 +100,8 @@ export async function renderResult(testId, traitScores) {
 
                 <div class="result-actions">
                     ${renderButton({ label: '결과 공유', attrs: 'id="result-share-btn"' })}
-                    ${renderButton({ label: '이미지 저장', variant: 'secondary', attrs: 'id="result-save-btn"' })}
-                    ${renderButton({ label: '다시 선택', variant: 'ghost', attrs: `onclick="location.hash='#home'"` })}
+                    ${renderButton({ label: '다음 테스트', variant: 'secondary', attrs: nextTest ? `onclick="location.hash='#test/${nextTest.id}'"` : `onclick="location.hash='#home'"` })}
+                    ${renderButton({ label: '이미지 저장', variant: 'ghost', attrs: 'id="result-save-btn"' })}
                 </div>
             </article>
 
@@ -171,10 +172,10 @@ export function renderTestExecution(testId) {
                         <p class="question-card__meta">${test.desc}</p>
                         <div class="chip-row">
                             ${renderChip(`${test.questions.length}문항`)}
-                            ${renderChip('간결한 진행')}
-                            ${renderChip('결과 공유')}
+                            ${renderChip('빠른 진행')}
+                            ${renderChip('공유 가능')}
                         </div>
-                        <div class="hero__actions">
+                        <div class="intro-actions">
                             ${renderButton({ label: '시작하기', attrs: 'id="test-start-btn"' })}
                             ${renderButton({ label: '공유하기', variant: 'secondary', attrs: 'id="test-share-btn"' })}
                         </div>

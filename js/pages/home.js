@@ -1,8 +1,8 @@
-import { updateUI, UserState, addPoints } from '../auth.js?v=8.6.2';
-import { db } from '../firebase-init.js?v=8.6.2';
+import { updateUI, UserState, addPoints } from '../auth.js?v=8.6.3';
+import { db } from '../firebase-init.js?v=8.6.3';
 import { doc, setDoc, increment, collection, getDocs } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.6.2';
-import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.2';
+import { TESTS } from '../tests-data.js?v=8.6.3';
+import { renderBadge, renderButton, renderChip, renderSectionHead } from '../ui/components.js?v=8.6.3';
 
 const CATEGORY_ORDER = ['성격', '얼굴', '사주', '재미', '월급 루팡'];
 
@@ -50,6 +50,25 @@ function getPopularity(testId) {
     };
 }
 
+function getTrendingTests(limit = 6) {
+    return getLatestTests()
+        .map((test) => {
+            const popularity = getPopularity(test.id);
+            return { test, score: popularity.playCount + popularity.likes * 4 };
+        })
+        .sort((a, b) => b.score - a.score)
+        .slice(0, limit)
+        .map((item) => item.test);
+}
+
+function getNewTests(limit = 4) {
+    return getLatestTests().slice(0, limit);
+}
+
+function getRandomTest() {
+    return TESTS[Math.floor(Math.random() * TESTS.length)];
+}
+
 async function handleLike(testId) {
     if (!UserState.user) {
         alert('로그인이 필요합니다.');
@@ -71,7 +90,7 @@ async function handleLike(testId) {
 
         const counter = document.getElementById(`like-count-${testId}`);
         if (counter) counter.textContent = formatCompact(getPopularity(testId).likes);
-        alert('추천을 반영했습니다.');
+        window.showAppToast?.('추천을 반영했습니다.');
     } catch (error) {
         console.error('Like operation failed:', error);
         alert('추천 처리 중 오류가 발생했습니다.');
@@ -79,6 +98,10 @@ async function handleLike(testId) {
 }
 
 window.handleLike = handleLike;
+window.startRandomTest = function startRandomTest() {
+    const next = getRandomTest();
+    if (next) location.hash = `#test/${next.id}`;
+};
 
 function getCategoryCards() {
     const latestTests = getLatestTests();
@@ -91,6 +114,115 @@ function getCategoryCards() {
             latestTitle: tests[0]?.title || '준비 중'
         };
     });
+}
+
+function renderHero(featured, trendingTest) {
+    return `
+        <section class="hero">
+            <p class="kicker">SevenCheck Studio · by SunoFox</p>
+            <h1>7개의 질문으로<br>지금의 나를 확인.</h1>
+            <p class="sub">짧게, 빠르게, 웃기게. 결과는 공유하기 좋게.</p>
+            <div class="cta-row">
+                ${renderButton({ label: '테스트 시작', attrs: `onclick="location.hash='#test/${featured.id}'"` })}
+                ${renderButton({ label: '인기 테스트', variant: 'ghost', attrs: `onclick="location.hash='#test/${trendingTest.id}'"` })}
+            </div>
+            <div class="hero-soft-cta">
+                ${renderButton({ label: '🎲 랜덤으로 바로 시작', variant: 'soft', attrs: 'onclick="window.startRandomTest()"' })}
+            </div>
+        </section>
+    `;
+}
+
+function renderSearchBox() {
+    return `
+        <section class="panel">
+            <input id="home-search" class="search-box" type="search" placeholder="테스트 제목 또는 카테고리 검색" autocomplete="off">
+        </section>
+    `;
+}
+
+function renderQuickStart() {
+    return `
+        <section class="block">
+            <div class="block-head">
+                <h2>Quick Start</h2>
+            </div>
+            <div class="panel">
+                ${renderButton({ label: '🎲 랜덤 시작', variant: 'soft', attrs: 'onclick="window.startRandomTest()"' })}
+            </div>
+        </section>
+    `;
+}
+
+function renderCategoryChips(activeCategory = '') {
+    return `
+        <section class="block" id="categories">
+            <div class="block-head">
+                <h2>카테고리</h2>
+            </div>
+            <div class="chips">
+                ${CATEGORY_ORDER.map((category) => `
+                    <button class="chip${activeCategory === category ? ' active' : ''}" onclick="location.hash='${getCategoryRoute(category)}'">${category}</button>
+                `).join('')}
+            </div>
+        </section>
+    `;
+}
+
+function renderSocialProof() {
+    return `
+        <section id="home-social-proof" class="social-proof">
+            <div>
+                <strong>지금도 참여가 이어지고 있어요</strong>
+                <p>오늘 <span id="home-today-visitors">0</span>명 참여 · 누적 <span id="home-total-visitors">0</span>회</p>
+            </div>
+            ${renderButton({ label: '인기 테스트 보기', variant: 'ghost', attrs: `onclick="location.hash='#categories'"` })}
+        </section>
+    `;
+}
+
+function renderGrid(tests) {
+    return tests.map((test, index) => renderTestCard(test, index < 3)).join('');
+}
+
+function renderHomeSections() {
+    const latestTests = getLatestTests();
+    const featured = latestTests[0];
+    const trending = getTrendingTests(6);
+    const newTests = getNewTests(4);
+
+    return `
+        ${renderHero(featured, trending[0] || featured)}
+        ${renderQuickStart()}
+        ${renderSearchBox()}
+        <section class="block">
+            <div class="block-head">
+                <h2>🔥 지금 뜨는 테스트</h2>
+                <a class="link" href="#categories">전체 보기</a>
+            </div>
+            <div id="trending-grid" class="test-grid">${renderGrid(trending)}</div>
+        </section>
+        <section class="block">
+            <div class="block-head">
+                <h2>🆕 새로 나온 테스트</h2>
+            </div>
+            <div class="test-grid">${renderGrid(newTests)}</div>
+        </section>
+        ${renderCategoryChips()}
+        ${renderSocialProof()}
+    `;
+}
+
+function renderFilteredSection(filter, tests) {
+    return `
+        ${renderCategoryChips(filter)}
+        ${renderSectionHead({
+            eyebrow: 'Category',
+            title: `${filter} 테스트`,
+            description: `${tests.length}개 테스트`
+        })}
+        <div id="test-list-grid" class="test-grid">${renderGrid(tests)}</div>
+    `;
 }
 
 export function renderCategorySelection() {
@@ -113,10 +245,11 @@ export function renderCategorySelection() {
     app.innerHTML = `
         <section class="page-shell">
             ${renderSectionHead({
-                eyebrow: 'Category',
-                title: '테스트 종류',
-                description: '복잡한 홈 대신 카테고리와 테스트 목록만 남겼습니다.'
+                eyebrow: 'Categories',
+                title: '카테고리로 바로 이동',
+                description: '원하는 결의 테스트만 빠르게 골라 들어갑니다.'
             })}
+            ${renderCategoryChips()}
             <div class="category-grid">${cards}</div>
         </section>
     `;
@@ -124,88 +257,29 @@ export function renderCategorySelection() {
     updateUI();
 }
 
-function renderHero(featured) {
-    return `
-        <section class="hero">
-            <div class="hero__copy">
-                ${renderBadge('Designed for focus')}
-                <h1>고르는 순간부터<br>결과까지 조용하게.</h1>
-                <p>정보 밀도를 낮추고, 읽기 쉬운 여백과 큰 타이포만 남긴 테스트 흐름.</p>
-                <div class="hero__actions">
-                    ${renderButton({ label: '바로 시작', attrs: `onclick="location.hash='#test/${featured.id}'"` })}
-                    ${renderButton({ label: '카테고리', variant: 'ghost', attrs: 'onclick="window.openCategoryHub()"' })}
-                </div>
-            </div>
-            <div class="hero__meta">
-                <div class="metric">
-                    <span>Featured</span>
-                    <strong>${featured.title}</strong>
-                </div>
-                <div class="metric">
-                    <span>Library</span>
-                    <strong>${TESTS.length} tests</strong>
-                </div>
-            </div>
-        </section>
-    `;
-}
-
-function renderCategoryChips() {
-    return `
-        <div class="panel">
-            <div class="chip-row">
-                ${CATEGORY_ORDER.map((category) => `
-                    <button class="chip" onclick="location.hash='${getCategoryRoute(category)}'">${category}</button>
-                `).join('')}
-            </div>
-        </div>
-    `;
-}
-
-function renderSearchBox() {
-    return `
-        <section class="panel">
-            <input id="home-search" class="search-box" type="search" placeholder="테스트 제목 또는 카테고리 검색" autocomplete="off">
-        </section>
-    `;
-}
-
-function renderGrid(tests) {
-    return tests.map((test) => renderTestCard(test)).join('');
-}
-
 export async function renderHome(hash) {
     const app = document.getElementById('app');
     const latestTests = getLatestTests();
-    const featured = latestTests[0];
     const filter = window._currentFilter;
     const filtered = hash === '#home' ? latestTests : latestTests.filter((test) => test.category === filter);
 
     app.innerHTML = `
         <section class="page-shell">
-            ${hash === '#home' ? renderHero(featured) : ''}
-            ${hash === '#home' ? renderSearchBox() : ''}
-            ${hash === '#home' ? renderCategoryChips() : ''}
-            ${renderSectionHead({
-                eyebrow: hash === '#home' ? 'All tests' : filter,
-                title: hash === '#home' ? '테스트 고르기' : `${filter} 테스트`,
-                description: hash === '#home' ? '원하는 테스트를 열고 바로 진행하세요.' : `${filtered.length}개 테스트`
-            })}
-            <div id="test-list-grid" class="test-grid">${renderGrid(filtered)}</div>
+            ${hash === '#home' ? renderHomeSections() : renderFilteredSection(filter, filtered)}
         </section>
     `;
 
     const searchInput = document.getElementById('home-search');
-    const grid = document.getElementById('test-list-grid');
-    if (searchInput && grid) {
+    const trendingGrid = document.getElementById('trending-grid');
+    if (searchInput && trendingGrid) {
         searchInput.addEventListener('input', (event) => {
             const term = event.target.value.toLowerCase().trim();
             const result = latestTests.filter((test) => {
                 return test.title.toLowerCase().includes(term) || test.category.toLowerCase().includes(term);
             });
 
-            grid.innerHTML = result.length
-                ? renderGrid(result.slice(0, 18))
+            trendingGrid.innerHTML = result.length
+                ? renderGrid(result.slice(0, 6))
                 : `
                     <div class="empty-state">
                         <strong>검색 결과가 없습니다.</strong>
@@ -218,21 +292,27 @@ export async function renderHome(hash) {
     updateUI();
 }
 
-export function renderTestCard(test) {
+export function renderTestCard(test, isHot = false) {
     const popularity = getPopularity(test.id);
+    const resultCount = Object.keys(test.results || {}).length || 0;
     return `
         <article class="test-card" onclick="location.hash='#test/${test.id}'">
             <div class="test-card__top">
-                ${renderBadge(test.category)}
+                <span>${test.category}</span>
                 <span>${formatCompact(popularity.playCount)} plays</span>
             </div>
             <h3>${test.title}</h3>
-            <p>${test.desc}</p>
+            <p>${test.questions?.length || 7}문항 · 결과 ${resultCount}종 · ${test.desc}</p>
+            <div class="badges">
+                ${renderBadge('7Q', 'q7')}
+                ${isHot ? renderBadge('TREND', 'hot') : ''}
+                ${renderBadge(test.category)}
+            </div>
             <div class="test-card__bottom">
                 <button class="like-button" onclick="event.stopPropagation(); handleLike('${test.id}')">
                     추천 <span id="like-count-${test.id}">${formatCompact(popularity.likes)}</span>
                 </button>
-                <span>Open</span>
+                <span>시작</span>
             </div>
         </article>
     `;

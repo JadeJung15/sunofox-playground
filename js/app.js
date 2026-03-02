@@ -1,8 +1,9 @@
-import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.6.2';
-import { copyLink } from './share.js?v=8.6.2';
-import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.6.2';
-import { renderTestExecution } from './pages/tests.js?v=8.6.2';
-import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.6.2';
+import { initAuth, updateUI, UserState, addPoints as authAddPoints, authReady, postEconomyAction } from './auth.js?v=8.6.3';
+import { copyLink } from './share.js?v=8.6.3';
+import { renderHome, renderCategorySelection, fetchAllLikes, testLikesData } from './pages/home.js?v=8.6.3';
+import { renderTestExecution } from './pages/tests.js?v=8.6.3';
+import { renderProfileShell } from './pages/profile-shell.js?v=8.6.3';
+import { trackVisit, renderVisitorStats } from './services/siteStats.js?v=8.6.3';
 
 let isDataProcessing = false;
 let isRouting = false;
@@ -12,8 +13,7 @@ const CATEGORY_ROUTE_MAP = {
     '#face': '얼굴',
     '#fortune': '사주',
     '#fun': '재미',
-    '#salary': '월급 루팡',
-    '#daily': '오늘의 테스트'
+    '#salary': '월급 루팡'
 };
 
 async function addPoints(amount, reason) {
@@ -43,17 +43,31 @@ function normalizeHash(hash) {
 }
 
 function setActiveNav(hash) {
-    document.querySelectorAll('.top-nav__link').forEach((link) => {
+    document.querySelectorAll('.tab').forEach((link) => {
         const target = link.dataset.route;
-        const isActive = target === '#home'
-            ? hash === '#home'
-            : hash === target;
-        link.classList.toggle('is-active', isActive);
+        const isHome = target === '#home' && (hash === '#home' || hash.startsWith('#test/'));
+        const isCategories = target === '#categories' && (hash === '#categories' || Object.prototype.hasOwnProperty.call(CATEGORY_ROUTE_MAP, hash));
+        const isProfile = target === '#profile' && hash === '#profile';
+        link.classList.toggle('active', isHome || isCategories || isProfile);
     });
 }
 
 window.goHome = function goHome() {
     window.location.hash = '#home';
+};
+
+window.showAppToast = function showAppToast(message) {
+    const root = document.getElementById('toast-root');
+    if (!root) return;
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    root.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 1800);
 };
 
 async function router() {
@@ -79,9 +93,11 @@ async function router() {
 
         if (hash.startsWith('#test/')) {
             renderTestExecution(hash.split('/')[1]);
+        } else if (hash === '#profile') {
+            renderProfileShell();
         } else if (hash === '#categories' || hash === '#7check') {
             renderCategorySelection();
-        } else if (CATEGORY_ROUTE_MAP[hash]) {
+        } else if (Object.prototype.hasOwnProperty.call(CATEGORY_ROUTE_MAP, hash)) {
             window._currentFilter = CATEGORY_ROUTE_MAP[hash];
             await renderHome(hash);
         } else {

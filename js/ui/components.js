@@ -2,12 +2,13 @@ export function renderButton({ label, variant = 'primary', attrs = '', tag = 'bu
     return `<${tag} class="button button--${variant}" ${attrs}>${label}</${tag}>`;
 }
 
-export function renderBadge(label) {
-    return `<span class="badge">${label}</span>`;
+export function renderBadge(label, variant = '') {
+    const variantClass = variant ? ` badge--${variant}` : '';
+    return `<span class="badge${variantClass}">${label}</span>`;
 }
 
-export function renderChip(label) {
-    return `<span class="chip">${label}</span>`;
+export function renderChip(label, active = false) {
+    return `<span class="chip${active ? ' active' : ''}">${label}</span>`;
 }
 
 export function renderSectionHead({ eyebrow, title, description = '', meta = '' }) {

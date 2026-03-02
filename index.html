@@ -16,7 +16,7 @@
     <meta property="og:description" content="테스트 선택, 진행, 결과만 남긴 심리테스트 앱">
     <meta property="og:image" content="https://7checkfox.com/%EC%88%98%EB%85%B8%ED%8F%AD%EC%8A%A4%20%EB%A1%9C%EA%B3%A0.png">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
-    <link rel="stylesheet" href="/css/style.css?v=8.6.2">
+    <link rel="stylesheet" href="/css/style.css?v=8.6.3">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
@@ -27,22 +27,13 @@
                     <img src="/수노폭스%20로고.png" alt="SunoFox" class="brand__logo">
                     <div class="brand__copy">
                         <strong>SevenCheck</strong>
-                        <span>Think. Tap. See.</span>
+                        <span>SevenCheck Studio · by SunoFox</span>
                     </div>
                 </a>
 
-                <nav class="top-nav" aria-label="주요 테스트 카테고리">
-                    <a href="#home" class="top-nav__link is-active" data-route="#home">전체</a>
-                    <a href="#personality" class="top-nav__link" data-route="#personality">성격</a>
-                    <a href="#face" class="top-nav__link" data-route="#face">얼굴</a>
-                    <a href="#fortune" class="top-nav__link" data-route="#fortune">사주</a>
-                    <a href="#fun" class="top-nav__link" data-route="#fun">재미</a>
-                    <a href="#salary" class="top-nav__link" data-route="#salary">월급 루팡</a>
-                </nav>
-
                 <div class="header-account">
                     <button id="login-btn" class="button button--primary">로그인</button>
-                    <button id="header-profile" class="profile-pill hidden" onclick="location.hash='#home'">
+                    <button id="header-profile" class="profile-pill hidden" onclick="location.hash='#profile'">
                         <span id="user-emoji">👤</span>
                         <span id="user-name">닉네임</span>
                         <span class="profile-pill__points"><span id="user-points">0</span>P</span>
@@ -55,19 +46,34 @@
 
         <footer class="site-footer">
             <div class="site-footer__inner">
-                <p>심리테스트 선택 → 진행 → 결과</p>
+                <div class="footer-links">
+                    <a href="#info">개인정보처리방침</a>
+                    <a href="#info">이용약관</a>
+                    <a href="#info">문의</a>
+                    <span id="footer-admin-link" class="hidden"></span>
+                </div>
                 <div id="visitor-stats" class="site-stats">
                     TODAY <span id="today-visitors">0</span>
                     TOTAL <span id="total-visitors">0</span>
                 </div>
-                <span id="footer-admin-link" class="hidden"></span>
+                <small>© 2026 SevenCheck Studio · v8.6.3</small>
             </div>
         </footer>
+
+        <nav class="tabbar" aria-label="하단 탭">
+            <div class="tabs">
+                <a href="#home" class="tab active" data-route="#home">Home</a>
+                <a href="#categories" class="tab" data-route="#categories">Categories</a>
+                <a href="#profile" class="tab" data-route="#profile">Profile</a>
+            </div>
+        </nav>
+
+        <div id="toast-root" class="toast-wrap" aria-live="polite"></div>
     </div>
 
-    <script src="/js/site-config.js?v=8.6.2"></script>
-    <script type="module" src="/js/firebase-init.js?v=8.6.2"></script>
-    <script type="module" src="/js/sound.js?v=8.6.2"></script>
-    <script type="module" src="/js/app.js?v=8.6.2"></script>
+    <script src="/js/site-config.js?v=8.6.3"></script>
+    <script type="module" src="/js/firebase-init.js?v=8.6.3"></script>
+    <script type="module" src="/js/sound.js?v=8.6.3"></script>
+    <script type="module" src="/js/app.js?v=8.6.3"></script>
 </body>
 </html>
