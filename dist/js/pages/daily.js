@@ -1,5 +1,5 @@
-import { fetchDailyTest, fetchDailyTests, getDailyPath, requestDailyResult } from '../services/daily.js?v=8.5.2';
-import { saveAsStoryImage } from '../share.js?v=8.5.2';
+import { fetchDailyTest, fetchDailyTests, getDailyPath, requestDailyResult } from '../services/daily.js?v=8.5.4';
+import { saveAsStoryImage } from '../share.js?v=8.5.4';
 
 function setDailyMeta(title, description, path) {
   document.title = title ? `${title} | 오늘의 테스트 | SevenCheck` : '오늘의 테스트 | SevenCheck';

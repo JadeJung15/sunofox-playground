@@ -1,8 +1,8 @@
-import { UserState, postEconomyAction, updateUI } from '../auth.js?v=8.5.2';
-import { db } from '../firebase-init.js?v=8.5.2';
+import { UserState, postEconomyAction, updateUI } from '../auth.js?v=8.5.4';
+import { db } from '../firebase-init.js?v=8.5.4';
 import { collection, doc, getDocs, limit, orderBy, query, updateDoc, increment } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore.js";
-import { TESTS } from '../tests-data.js?v=8.5.2';
-import { renderTestCard } from './home.js?v=8.5.2';
+import { TESTS } from '../tests-data.js?v=8.5.4';
+import { renderTestCard } from './home.js?v=8.5.4';
 
 const ADMIN_UID = '6LVa2hs5ICSi4cgNjRBAx3dA2In2';
 
