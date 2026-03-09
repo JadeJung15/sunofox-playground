@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "mkdir -p dist && cp -r index.html privacy.html daily css js *.png sitemap.xml robots.txt ads.txt dist/ 2>/dev/null || true",
+    "build": "node scripts/build-seo.cjs && mkdir -p dist && cp -r index.html privacy.html daily css js *.png sitemap.xml robots.txt ads.txt dist/ 2>/dev/null || true",
     "lint": "node scripts/check-syntax.cjs",
     "test": "node scripts/check-syntax.cjs",
     "test:rules": "firebase emulators:exec --only firestore \"node --test tests/firestore.rules.test.mjs\"",
