@@ -26,15 +26,15 @@ const HOME_UPDATES = [
     },
     {
         badge: 'UPDATED',
-        title: '오락실 보상 흐름 정리',
-        desc: '게임별 수익 구조와 주간 보너스를 다시 다듬어서 재방문 동선을 보강했습니다.',
-        accent: '#d97706',
-        gradient: 'linear-gradient(145deg,#fff7ed 0%,#ffedd5 100%)'
+        title: '로딩 및 검색 최적화',
+        desc: '사이트 구조를 개선하여 검색 엔진에서 더 잘 노출되도록 최적화했습니다.',
+        accent: '#10b981',
+        gradient: 'linear-gradient(145deg,#ecfdf5 0%,#d1fae5 100%)'
     },
     {
         badge: 'POLISHED',
-        title: '프로필 · 게시판 개선',
-        desc: '프로필 가독성과 게시판 피드백을 손봐서 전체 사용감이 더 자연스러워졌습니다.',
+        title: '테스트 몰입도 개선',
+        desc: '오픈채팅 등 외부 링크를 덜어내고 심리테스트 본연의 몰입감을 높였습니다.',
         accent: '#7c3aed',
         gradient: 'linear-gradient(145deg,#f5f3ff 0%,#ede9fe 100%)'
     }
