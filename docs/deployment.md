@@ -2,14 +2,12 @@
 
 This repository uses separate deployment flows for development and production.
 
-- Repository: `JadeJung15/sunofox-playground`
-
 ## Development
 
 - Trigger: `git push` to `main`
 - GitHub Actions workflow: `.github/workflows/cloudflare-dev-deploy.yml`
-- Cloudflare Pages project: `sunofox-playground-test`
-- URL: `https://sunofox-playground-test.pages.dev/`
+- Cloudflare Pages project: `sunofox-test-g`
+- URL: `https://sunofox-test-g.pages.dev/`
 
 ## Production
 
@@ -29,7 +27,3 @@ This repository uses separate deployment flows for development and production.
 Disable automatic Git deployment for the `sunofox-playground` Pages project.
 
 If Cloudflare Git auto-deploy remains enabled for production, a push can still publish production outside GitHub Actions.
-
-## Legacy Notes
-
-- `https://sunofox-test-g.pages.dev/` is deprecated and should not be used as the development URL.

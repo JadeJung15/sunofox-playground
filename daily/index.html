@@ -1,12 +1,147 @@
 <!DOCTYPE html>
-<html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0; url=/#status" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Daily | Sunofox Playground</title>
-  </head>
-  <body>
-    <p><a href="/#status">메인 페이지로 이동</a></p>
-  </body>
+<html lang="ko-KR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>오늘의 테스트 | SevenCheck</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="description" content="10초 안에 끝나는 SevenCheck 오늘의 테스트. 매일 바뀌는 결과를 바로 확인하고 공유해보세요.">
+    <meta name="keywords" content="오늘의 테스트, 심리테스트, 데일리 테스트, SevenCheck">
+    <link rel="canonical" href="https://7checkfox.com/daily/">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://7checkfox.com/daily/">
+    <meta property="og:title" content="오늘의 테스트 | SevenCheck">
+    <meta property="og:description" content="10초 안에 끝나는 SevenCheck 오늘의 테스트. 매일 바뀌는 결과를 바로 확인하고 공유해보세요.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=1200&q=80">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="SevenCheck">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="오늘의 테스트 | SevenCheck">
+    <meta name="twitter:description" content="10초 안에 끝나는 SevenCheck 오늘의 테스트. 매일 바뀌는 결과를 바로 확인하고 공유해보세요.">
+    <meta name="twitter:image" content="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&w=1200&q=80">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "오늘의 테스트",
+            "url": "https://7checkfox.com/daily/",
+            "description": "10초 안에 끝나는 SevenCheck 오늘의 테스트 목록",
+            "isPartOf": {
+                "@type": "WebSite",
+                "name": "SevenCheck",
+                "url": "https://7checkfox.com/"
+            },
+            "inLanguage": "ko-KR"
+        }
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8153189313917337"
+     crossorigin="anonymous"></script>
+    <script async custom-element="amp-auto-ads"
+            src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
+    </script>
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+    <link rel="stylesheet" href="/css/style.css?v=8.5.2">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        (function() {
+            var ua = navigator.userAgent.toLowerCase();
+            var isInApp = /kakaotalk|line|naver|daum|instagram|facebook|twitter/i.test(ua);
+
+            if (isInApp) {
+                if (ua.indexOf('kakaotalk') > -1) {
+                    location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(window.location.href);
+                }
+
+                window.addEventListener('DOMContentLoaded', function() {
+                    var warningDiv = document.createElement('div');
+                    warningDiv.style.cssText = 'background:#fee500; color:#3c1e1e; padding:15px; text-align:center; font-weight:800; font-size:0.9rem; position:sticky; top:0; z-index:9999; border-bottom:2px solid rgba(0,0,0,0.1);';
+                    warningDiv.innerHTML = '⚠️ 현재 브라우저에서는 구글 로그인이 제한됩니다.<br>오른쪽 상단 메뉴( ⋮ 또는 ··· )를 눌러 <br>"외부 브라우저로 열기"를 선택해 주세요.';
+                    document.body.prepend(warningDiv);
+                });
+            }
+        })();
+    </script>
+    <amp-auto-ads type="adsense"
+            data-ad-client="ca-pub-8153189313917337">
+    </amp-auto-ads>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <div class="nav-top">
+                <div class="logo-wrapper">
+                    <a href="/" class="logo">
+                        <img src="/수노폭스%20로고.png" alt="SunoFox" style="height: 32px; width: auto; object-fit: contain;">
+                        <span style="margin-left: 8px;">7<span>Check</span></span>
+                    </a>
+                </div>
+                <div class="nav-right">
+                    <button id="login-btn" class="btn-primary" style="height: 38px; padding: 0 1.2rem; font-size: 0.85rem;">로그인</button>
+                    <div id="header-notif-bell" class="hidden" style="position:relative; cursor:pointer; font-size:1.3rem; margin-right:5px; margin-left:5px;">
+                        🔔<span id="header-notif-badge" class="notif-badge hidden">0</span>
+                    </div>
+                    <div id="header-profile" class="header-profile hidden" onclick="location.hash='#profile'">
+                        <span id="user-emoji" class="h-emoji">👤</span>
+                        <span id="user-name" class="h-name">닉네임</span>
+                        <div class="h-points">
+                            <span id="user-points">0</span>
+                            <span style="font-size: 0.7rem; font-weight: 800; margin-left: 1px;">P</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <nav class="nav-tabs">
+                <div class="nav-dropdown">
+                    <button class="nav-dropbtn">✨ 7Check</button>
+                    <div class="dropdown-content">
+                        <a href="/daily/" class="nav-link" data-filter="오늘의 테스트" data-path="/daily/" onclick="event.preventDefault(); window.goToDaily('/daily/');">☀️ 오늘의 테스트</a>
+                        <a href="/#personality" class="nav-link" data-filter="성격">🧠 성격 분석</a>
+                        <a href="/#face" class="nav-link" data-filter="얼굴">✨ 비주얼</a>
+                        <a href="/#fortune" class="nav-link" data-filter="사주">🔮 오늘의 운세</a>
+                        <a href="/#fun" class="nav-link" data-filter="재미">🎨 재미/심리</a>
+                        <a href="/#salary" class="nav-link" data-filter="월급 루팡">🖥️ 월급 루팡</a>
+                    </div>
+                </div>
+                <a href="/#board" class="nav-link" data-filter="게시판">💬 게시판</a>
+                <a href="/#arcade" class="nav-link" data-filter="오락실">🎰 오락실</a>
+                <a href="/#profile" class="nav-link" data-filter="프로필">👤 프로필</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="app">
+        <!-- 콘텐츠 주입 -->
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3 style="margin-bottom: 1px; line-height: 1.2;">SevenCheck Studio</h3>
+                <p style="color: #f97316; font-weight: 800; font-size: 0.75rem; margin-top: 0; margin-bottom: 0.8rem; line-height: 1.2; opacity: 0.9;">by.SunoFox</p>
+                <p>7번의 질문으로 끝내는 모든 확인. 당신의 일상에 즐거움을 더합니다.</p>
+                <a href="https://open.kakao.com/o/g1PIRRii" target="_blank" rel="noopener noreferrer" class="footer-openchat-link">💬 공식 오픈채팅방: 신생 2030 심테하고 수다ㄱ</a>
+            </div>
+            <div class="footer-links">
+                <a href="/#guide">이용 가이드</a> |
+                <a href="https://7checkfox.com/privacy">개인정보처리방침</a> |
+                <a href="/#terms">이용약관</a> |
+                <a href="/#contact">문의하기</a> |
+                <a href="https://open.kakao.com/o/g1PIRRii" target="_blank" rel="noopener noreferrer">공식 오픈채팅방</a>
+                <span id="footer-admin-link" class="hidden"> | <a href="/#admin" style="color:var(--accent-color); font-weight:800;">🛡️ 관리자 콘솔</a></span>
+            </div>
+        </div>
+        <p class="copyright">&copy; 2026 SevenCheck Studio. All rights reserved. <span id="site-version" style="font-weight: 800; color: var(--accent-color); margin-left: 10px; font-size: 0.75rem;">v8.5.3</span></p>
+        <div id="visitor-stats" style="text-align:center; font-size:0.7rem; color:var(--text-sub); margin-top:8px; font-weight:600; letter-spacing:0.05em; opacity:0.8;">
+            TODAY <span id="today-visitors" style="color:var(--accent-color); margin-right:10px;">0</span> TOTAL <span id="total-visitors" style="color:var(--accent-color);">0</span>
+        </div>
+    </footer>
+
+    <script src="/js/site-config.js?v=8.5.2"></script>
+    <script type="module" src="/js/firebase-init.js?v=8.5.2"></script>
+    <script type="module" src="/js/sound.js?v=8.5.2"></script>
+    <script type="module" src="/js/app.js?v=8.5.2"></script>
+</body>
 </html>

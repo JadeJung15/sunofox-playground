@@ -2,4 +2,3 @@ firebase-debug.log
 *.log
 scripts/serviceAccountKey.json
 .firebase/
-node_modules

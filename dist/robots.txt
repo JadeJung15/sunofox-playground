@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://sunofox-playground-test.pages.dev/sitemap.xml
